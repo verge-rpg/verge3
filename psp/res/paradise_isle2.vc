@@ -1,0 +1,113 @@
+// island.vc
+
+void start()
+{
+	InitMap();
+}
+
+
+// This is the first cutscene in the game, where crystal joins the party.
+// I'll do very explicit comments on this one to explain exactly what's 
+// going on here. (-Grue)
+void crystal_event()
+{
+	
+	if( crystal_bitch )
+	{
+		TextBox(T_CRYSTAL,	"Fuck off, cheapo.  No poonani until TBlit is back.", "", "");	
+		TextBox(T_DARIN,	"Awww baby, why you gotta be like that?", "", "");	
+	}
+	else
+	{
+		TextBoxM(T_CRYSTAL,	"Darin.... Hello. How are you today? I",
+						"needed to talk to you about something..." ,"");
+		TextBox(T_CRYSTAL,	"I... I've been thinking and I've decided",
+					"we need to leave Paradise Island.", "");
+		TextBox(T_DARIN, 	"But Crystal! What's wrong? I kinda like",
+						"this blue lagoon thing we have going on.","");
+
+		TextBox(T_CRYSTAL,	"No... it has to be this way. We'll go",
+						"insane if we don't have some adventure", 
+						"soon!");
+		TextBox(T_DARIN,	"I suppose you're right. I'd like to go",
+						"exploring some caves and stuff.", "");
+
+		TextBox(T_CRYSTAL,	"I'm glad you understand. I suppose we",
+						"can use the undersea passage. Let's go!", "");
+		TextBox(T_CRYSTAL,	"...wait... didn't there used to be mangas here?",
+						"", "");
+		TextBox(T_DARIN,	"Yup.",
+						"", "");
+		TextBox(T_CRYSTAL,	"Hmph.  Cheapskate.  ",
+						"I'm not joining up with you until I get my cels back.", "");
+
+		crystal_bitch = 1;
+	}
+}
+
+
+void sully() 
+{	
+	TextBox( T_SULLY,	
+		"Please leave me be.",
+		"I'm just a silly little clam.",
+		"I have no objects of value for you!" 
+	);
+}
+
+// Exit to the Undersea Passage.
+void Undersea()
+{
+	TextBox( 4269666,	
+		"Undersea passage closed for repairs.",
+		"",
+		"" 
+	);	
+}
+
+
+void Pearl_Cave()
+{
+	TextBox(T_DARIN,
+		"Something about this tree always seemed",
+		"weird to me."
+		"");
+}
+
+// Sancho, the Sad Octopus, first born about 5 posts into this thread:
+// http://www.verge-rpg.com/boards/display_thread.php?id=18329
+//
+// He is now the guardian of all netcode demonstrations.  Good for him!
+void Sancho()
+{	
+	TextBoxM( T_SANCHO, "I'm a sad, sad octopus.","","" );
+}
+
+void girlfriend_check()
+{
+	TextBox( T_DARIN, "Hrm... Crystal might get suspicious if I","sneak off the island without her...","");
+	TextBox( T_DARIN, "...again.","","");
+
+	PlayerMove("U2");
+}
+
+void chest_a()
+{
+	TextBox( T_DARIN, "Mmmmph!","","");
+	TextBox( T_DARIN, "...it's locked.","","");
+}
+
+void enter_house()
+{
+	Warp(99,13,TNONE);
+}
+
+void exit_house()
+{
+	Warp(10,56,TNONE);
+}
+
+void normal_tree()
+{
+	TextBox( T_DARIN, "This is a normal tree. It has to work twice","as hard as a palm tree for half the","recognition.");
+}

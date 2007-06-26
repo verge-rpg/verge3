@@ -1,0 +1,14 @@
+//
+// Prefix header for all source files of the 'verge3' target in the 'verge3' project
+//
+
+#define _ASSERTE assert
+
+#define _cdecl
+
+#define Line VERGE_Line
+
+void strupr(char *c);
+void strlwr(char *c);
+
+#include <stddef.h>

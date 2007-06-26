@@ -1,0 +1,578 @@
+================================================
+Verge 3 Changelog
+================================================
+
+
+Revision 37 (2007-06-20) (Overkill)
+=========================
+* Added a new dictionary function:
+	string DictListKeys(int dict, string separator);
+	// Returns the names of all the keys in a dictionary,
+	// with separator put in between each key, and after the last key.
+	Example:
+		int my_dict = DictNew();
+		DictSetString(my_dict, "foo", "bar");
+		DictSetString(my_dict, "barf", "fudge");
+		DictListKeys(my_dict, "+"); // Returns "foo+barf+"
+
+Revision 35 (2007-06-18) (zeromus)
+=========================
+* added SetCharacterWidth (manual override of EnableVariableWidth stuff)
+* added libs to project so dx sdk isnt necessary
+
+Revision 34 (2007-01-28) (Overkill)
+=========================
+* Forgot to commit the changelog, whoops :(
+
+Revision 33 (2007-01-28) (Overkill)
+=========================
+* Added trig functions that take/return 16.16 fixed-point angles: fsin(), fcos(), ftan(), fasin(), facos(), fatan(), fatan2(). FIXED_PI defines how pi is represented as fixed point, for easier angle calculation.
+
+Revision 32 (2007-05-22) (Jesse)
+=========================
+* Added SDL framework for mac build - now copied into the .app when compiling for deployment
+
+Revision 31 (2007-05-15) (Jesse)
+=========================
+* Now using universal version of libfmod to prevent problems with linking. All the hard work was done by kattkieru - I just submit things.
+
+Revision 30 (2007-01-22) (Overkill)
+=========================
+* Added HSV color functions:
+	int HSV(int hue, int saturation, int value);
+	int GetH(int color);
+	int GetS(int color);
+	int GetV(int color);
+* Added image color manipulation functions:
+	void HueReplace(int hue_to_find, int hue_tolerance, int hue_replacement, int image);
+	void ColorReplace(int color_to_find, int color_replacement, int image);
+
+
+Revision 29 (2007-01-22) (Overkill)
+=========================
+* Added variadic functions.
+* Variadic functions are declared something like this,
+  where ... is a new type, a vararg list:
+	void MyFunc(int a, string b, ... args)
+	{
+
+	}
+* The ... type must be the last argument in the function declaration.
+* All ints and strings prior to the ... args are required arguments,
+  additional arguments are optional and passed into to vararg list.
+  A mixture of the int and string types are allowed in vararg lists.
+  For example, if there were a function void Print(string a, ... args):
+	Print("Hello world"); // This is okay
+	Print("This has ", 3, "arguments"); // This is okay too
+	Print(); // THIS WILL NOT COMPILE.
+* variable argument lists have the following members (treat it like a struct):
+	int length;			(read-only)
+	int int[argument];		(read/write)
+	string string[argument];	(read/write)
+	int is_int[argument];		(read-only)
+	int is_string[argument];	(read-only)
+* CallFunction is now a variadic function, which means runtime-called functions
+  can be passed arguments. However, they still can't return a value.
+* The syntactic sugar "mystring"() for CallFunction has been better implemented to
+  work with any kind of string expression, and it allows any amount of arguments to be passed.
+  For example: "Print"("This has", 3, arguments);
+* The interpreter will error on runtime if the user neglects to pass the number of arguments
+  needed to call the function. This is a lot better than what it used to do, which was give you
+  obscure PushInt() error garbage.
+
+Revision 13 (2007-01-26) to 28 (2007-03-01) (zeromus, tatsumi)
+==============================================================
+* Verge3's release mode fixed.
+* Various MapEd3 bugfixes and additions.
+
+Revision 12 (2007-01-22) (zeromus)
+==================================
+Added DUMB modplayer.
+This can be enabled through the following line in in verge.cfg:
+dumb 1
+All relevant code is conditionally compiled with #define USE_DUMB
+The only code modified for this is in snd_fmod.cpp
+* Altered PlayMovie() resolution-setting behavior. 
+  Shouldnt set resolution if movie and screen res are the same
+
+Revision 11 (??) (aen)
+=========================
+I removed flac because I couldn't get it compiling. 
+Checked in with a snarky comment about the individual that might have added the code
+without making sure it compiled.  Im positive he didnt check. The problem couldn't be mine.
+
+Revision 8 - 10 (2006-12-31)
+=========================
+Altered this changelog.  That's it.  Honest.
+
+
+Revision 7 (2006-12-05)
+=========================
+Improved parsing of variables in vc_compiler.cpp throughVCCompiler::HandleVariable().
+Better errors for when you give too little/many arguments to a function.
++= concatination for strings now works the way it should.
+Parentheses () after a string, like this...
+	mystring();
+...Are syntactic sugar for
+	CallFunction(mystring);
+
+
+
+Revision 5 (2006-08)
+=========================
+New SVN server, if you're curious as to why the numbering's screwy. Added SoundIsPlaying(int channel), which returns 1 if a given sound channel is playing, 0 if not. Note that channel handles are the return value of a PlaySound() call.
+	-- Overkill
+
+
+Revision 115 (2006-08-16):
+=========================
+	* Structs instances exist (internally) at runtime.
+	* Added a function:
+		int CopyArray(string source, string dest)
+
+		Copies data from one global int/string
+		array to another, if they're of compatible size and type.
+		Returns 1 on success, 0 on failure.
+		
+
+Revision 114 (2006-08-16):
+=========================
+Nested structs were broken by multidim arrays. Fixed that.
+
+Revision 113 (2006-08-14):
+=========================
+Mac build fix for mouse when scaling screen - now tracks screen correctly.
+Silencing 2 warnings about virtual destructors.
+
+Revision 111 (2006-08-13):
+=========================
+Mac build now scales using software, rather than GL, scaling if needed to fit the screen window size. This is much faster, since there is no transferring of the data to GL each frame.
+
+Revision 110 (2006-08-08):
+=========================
+Mac build updates:
+
+Incompatibility Fixes:
+- #ifdef'ed out some PC-specific #defines in a_string.cpp
+- renamed logf to logfile in a_common.cpp (conflicts with standard function)
+- fixed PPC endian bug in lucent blitting in vid_ddblit.cpp 
+- removed <windows.h> include in p_datastructs.cpp (not needed because it included xerxes.h, which includes windows.h on Windows)
+
+Updates for Mac Intel build:
+- Check for endianness in the Apple-specific endian swaps in vc_library.cpp, a_vfile.cpp
+- Xcode project file update
+- Added x86 libfmod for Mac
+
+Revision 109 (2006-08-05):
+=========================
+Unary + operator allowed. That basically just means you can go x = +14; which is the exactly the same as x = 14; except it may or may not look nicer for particular code.
+
+Revision 108 (2006-08-05):
+=========================
+Multidim structs should work properly now. Yeah, I know, it took me 3 revisions to get it right.
+
+
+Revision 107 (2006-08-04):
+=========================
+Multidim structs should be assignable and readable from now >_<. Before, you could only declare them.
+
+Revision 106 (2006-08-04):
+=========================
+Multidim structs should be allowed now.
+
+Revision 105 (2006-08-04):
+=========================
+VSP::BlitTile() and VSP::TBlitTile() will now return rather than error if a tile index is not within range of the tiles array. This is preferrable, seeing as Maped3 will not raise errors if a deleted tile indices still exist on map, nor does it correct it, and it is very hard to track where the missing tiles are being plotted, as Maped3 makes no effort to draw them. Thus, Verge will copy Maped3's behaviour and do nothing, which is smart and less inconvenience in the long run.
+
+Revision 104 (2006-07-30):
+=========================
+	- Some newly introduced entity variables were not initialized in the Entity() constructor, due a false assumption that C++ automatically set all instance variables to 0, "", or null (like Java does). As a result, the entity lucency variable was filled random garbage numbers that caused them to be invisible. This has been fixed.
+
+
+Revision 103 (2006-07-30):
+=========================
+	- Forgot to update verge.exe file.
+
+Revision 102 (2006-07-30)
+=========================
+	- Er... now entity.description[] is actually a string, as it should be.
+
+Revision 101 (2006-07-30)
+=========================
+	- Added the variable entity.description[], which corresponds to the description attribute set in Maped. (read/write).
+	- Fixed some potentially bad string array read/write cases where the array index was not checked whether in bounds.
+
+Revision 100 (2006-07-28)
+========================
+	- FIX: TokenRight() included the delimiter character that was in front of the token string grabbed. This was pointless.
+
+Revision 99 (2006-07-28)
+========================
+	- ColorFilter() obeys transcolor setting. NOTE: Needs adding for the other platforms.
+	- Entity variables added:
+
+	entity.lucent[entity];
+		// The lucency of the entity.
+	entity.framew[entity];
+	entity.frameh[entity];
+		// The dimensions of the entity's chr frames (readonly).
+
+	- Sprite system sort of added.
+	int GetSprite() 
+		// returns a free (read: imageless) sprite handle.
+		// returns -1 if there aren't any open handles.
+		// (256 max sprites)
+	void ResetSprites()
+		// Clears all sprite data.
+		// Make sure to free all image handles associated
+		// with these entities prior to calling this.
+	int event.sprite
+		// The index to the currently "thinking" sprite.
+	int sprite.x[sprite], sprite.y[sprite];
+		// The coordinates of the sprite.
+	int sprite.sc[sprite];
+		// If sc == 0, that means the sprite's (x, y)
+		// is an absolute position on the map.
+		// If sc == 1, it means the sprite's (x, y)
+		// is a fixed screen position.
+	int sprite.image[sprite];
+		// The image handle of the sprite.
+		// Set this to zero to "free" the sprite.
+	int sprite.lucent[sprite];
+		// The lucency of the sprite's blitting operations.
+	int sprite.alphamap[sprite];
+		// The alpha map for this sprite.
+		// Overrides additive/subtractive blitting
+		// and silhouettes.
+	int sprite.addsub[sprite];
+		// The alpha map for this sprite.
+	string sprite.thinkproc[sprite];
+		// The function to call as a sprite "thinks".
+	int sprite.thinkrate[sprite];
+		// Rate in ticks at which this sprite "thinks"
+		// A rate of 1 is every tick, 0 is no thought.
+	int sprite.ent[sprite];
+		// is an entity to bind to.
+		// (x, y) relative to entity.
+	int sprite.silhouette[sprite];
+		// if you want a silhouette of the sprite image drawn.
+	int sprite.color[sprite];
+		// The color of the silhouette.
+	int sprite.wait[sprite];
+		// Amount of time to wait until processing.
+	int sprite.onmap[sprite];
+		// If the sprite bound to an onmap layer.
+	int sprite.layer[sprite];
+		// If map-bound: The layer to be drawn above.
+		// If ent-bound: 0 = below ent, 1 = above ent.
+		// Otherwise, does nothing.
+	int sprite.timer[sprite];
+		// Duration that this sprite has been active.
+
+
+Revision 98 (2006-07-28)
+========================
+	- FIX: Fixed the bug where FreeImage() didn't do what its name implied. Ouch.
+
+Revision 96-97 (2006-07-23)
+========================
+	- zeromus finally figures out why libflac doesnt build for some people--it was depending on executing nasmw. included that in the repository.
+
+Revision 94-95 (2006-07-23)
+========================
+	- zeromus fixes a bug in map loading, and spruces up the release build.
+	- regarding the link error, wtf. are you using the .sln file in the svn? it should automatically build that lib.
+
+Revision 93 (2006-07-23)
+========================
+	- FIX: WrapText() didn't actually wrap text, now it does. Seems I forgot to set the return value of a function to a variable :D
+	- To zeromus, I get this when I compile for some gay reason, using Visual C++ 2005 Express. However, I know my change worked before I clicked "Update" on TortoiseSVN:
+
+ Project : error PRJ0019: A tool returned an error code from "Performing Custom Build Step"
+ LINK : fatal error LNK1181: cannot open input file '..\flac-1.1.2\obj\release\lib\libflac_static.lib'
+
+
+
+Revision 92 (2006-07-23)
+========================
+	- zeromus adds examples of the plugin system, including a vector-like data structure. check out p_datastructs.cpp. as you can see, it is amazingly simple!
+
+Revision 91 (2006-07-22)
+========================
+	- Kael Added RectRGrad and Rect4Grad functions. Radial Gradient and 4-point (4-corner) Gradient respectively. Arguments are the same as RectHGrad and RectVGrad, except the 4-point one takes four colors instead of two.
+
+Revision 87 (2006-07-21)
+========================
+	- Nested structures added, allowing structure inside of structures. Checks to see if a struct tries to nest itself, but doesn't check to see if a struct it nests ends up nesting it. So use caution. 	Example:
+
+	struct spell_type
+	{
+		string name;
+		int cost;
+	}
+
+	struct player_type
+	{
+		int hp, mp;
+		spell_type spell[4];
+	}
+
+	- unless(conditions) can be used in place of if (!(conditions))
+	- until(conditions) can be used in place of while (!(conditions))
+	- Better type checking.
+	- Makes sure to note excess [] operators to a struct as such, when resolving assignment
+	- Working towards struct = assignment operator, for deep copying, but needs more planning still.
+
+Revision 86 (2006-07-20)
+========================
+	- zeromus drops in the old psp driver
+
+Revision 85 (2006-07-20)
+========================
+	- zeromus fixes a little new bug in the map loader
+
+Revision 84 (2006-07-20)
+========================
+	- *Important Note:* Build is unstable and broken at the moment. It runs the tests I specified for it just fine, but the build crashes when loading Sully's test map.
+	- Windows version now compiles, had to add garlick.cpp and garlick.h to the the solution.
+	- Temporarily commented out oakra code on Windows, sorry zeromus.
+	- Add functions/variables that assist with saving verge3 file formats. Each of the CHR/VSP/MAP formats has a save(FILE *f) method. Minor modifications to the internal representation of these file formats were necessary. A function in a_common.cpp for converting corona images back into bytes was added, by the name ImageTo24bpp(image *img);
+	- These are the related VergeC functions/variables:
+
+	string curmap.savevsp
+		* This The vsp path to use, when saving, in case FileWriteVSP() creates a new VSP and you want to use it.
+
+	void FileWriteMAP(int file)
+	void FileWriteVSP(int file)
+	void FileWriteCHR(int file, int entity)
+	void CompileMap(string filename)
+
+	- There were also a few other C++ MAP/CHR/VSP methods added, so to eventually get to the point of a VergeC interfaceish dealie.
+
+
+Revision 80-82 (2006-07-12)
+=======================
+	- zeromus adds an old build of maped3 which has been updated to vs8
+
+Revision 78-79 (2006-07-12)
+=======================
+	- zeromus finishes integration of garlick into snd_fmod
+	#define GARLICK_USE_FLAC  on garlick.cpp if you want to enable flaccing (and have managed to integrate libflac)
+	- zeromus adds upx to release mode build (why not?)
+
+Revision 71-77 (2006-07-11)
+========================
+	- zeromus cleans a couple of things, updates and slightly oakra, adds flac, and begins to integrate garlick.
+	some small changes were made to the sound apis, so non-windows ports will need to follow suit.
+	flac support is only for garlick, and is conditionally compiled.  however, if a game is made making use of garlick,
+	then it won't run on a port without garlick support.  So maybe mac should try and get that running soon.
+
+Revision 70 (2006-07-05)
+========================
+	- McGrue added redist exe doc
+
+Revision 69 (2006-07-05)
+========================
+	- Overkill: Now with more changelog.txt goodness!
+
+Revision 68 (2006-07-05)
+========================
+	- Overkill: Upon request, a compiled Windows executable of the current version has been added. However, whether or not this executable will be up-to-date depends on the platform that the changes were made on.
+
+Revision 67 (2006-07-05)
+========================
+	- Append mode for files was appended to the source. Har har. Creates a file if it does not exist. Otherwise, it writes starting at the end of the file opened, leaving existing file data in tact. Use the define FILE_WRITE_APPEND with FileOpen() to invoke this functionality.
+
+Revision 66 (2006-06-30)
+========================
+	- Key buffer functionality has been introduced. It allows typing of the standard characters and their upper cases, as well as buffering of enter, tab, and backspace. Backspaces should be iterated through via a VergeC-side loop in order to work:
+
+if (ch == 8)
+{
+	if (len(s))
+	{
+		s = left(s, len(s) - 1);
+	}
+}
+
+Note that this time, functionality still needs to be implemented for other platforms, and will raise a runtime error saying the functions are not supported.
+
+Revision 65 (2006-06-29)
+========================
+	- array.length or array.length(dimension_index_literal) return the length of an array, evaluated at compile-time. Note that dimension_index_literal must be a literal integer or define and can't be a variable, due to the compile-time eval of the length property. Sadly, this has meant an even more ugly CompileAtom() function, but all changes are documented.
+
+Revision 64 (2006-06-29)
+========================
+	- The += operator for concatination of strings is finally in.
+
+Revision 63 (2006-06-25)
+========================
+	- Upon request, the directionals can now be customized by SetButtonKey(). The keyboard directional variables are now associated with k_up, k_down, k_left and k_right in g_controls.cpp, and by default are the arrow keys on the keyboard.
+
+Directionals, however, cannot be changed for SetButtonJB(), because of the way Verge handles the joystick movement internally, and because it'd be rather pointless to customize.
+
+Revision 62 (2006-06-25)
+========================
+	- Added the read-only variable window.active to the source. It receives its value from AppIsForeground, which is now uncommented from win_system.cpp.
+
+	However, mac_system.cpp and eventually linux_system.cpp will need to add the functionality to their respective platforms. SDL_GetAppState(); seems to be the thing that should be used. (http://www.libsdl.org/cgi/docwiki.cgi/SDL_5fGetAppState)
+
+Revision 61 (2006-06-25)
+========================
+	- Added cbrt(), which returns the cube root of a number.
+
+Revision 60 (2006-06-25)
+========================
+	- Vertical and horizontal gradient rectangle routines added. RectHGrad() and RectVGrad(). Basically the same to use as RectFill(), plus one color argument before the destination image.
+
+Revision 59 (2006-06-25)
+========================
+	- zone.name and zone.event are now VC string[] arrays (instead of the flat string they were prior to modification), and are actually implemented in VCCore::ProcessString(). Good stuff.
+
+Revision 58 (2006-05-13)
+========================
+	- As of now, compiled code can handle builtin functions over the 255 mark. In  place of the previous byte is a word (unsigned short) which in turn will enable us 65535 functions, an amount we'll *never* reach. :D This will change will be handy for the near-future of v3's development.
+
+Revision 57 (2006-05-13)
+========================
+	- A modification to the compiler has been made, now HandleAssign() will check the type of variable being assigned to, before permitting certain operations. This prevents such things as runtime string corruption errors due to accidental use of +=, by giving a much nicer compile time error instead.
+
+Revision 56 (2006-04-13)
+========================
+	- Fixed auxwindow setsize to set to clientsize instead of actual windowsize
+
+Revision 55 (2006-03-03)
+========================
+	- Hex literals, like $FACE are parsed correctly again.
+
+
+========================================================================
+NOTE: A bunch of stuff happened between revision 49 and 55, but we ended up reverting back to revision 49 due to some conflicts about the rate at which Overkill was commiting changes to verge.
+========================================================================
+
+
+Revision 49 (2005-12-28)
+========================
+	- PrintString parses newlines.
+
+Revision 48 (2005-12-28)
+========================
+	- String functions:
+		string TokenLeft(string s, string delim, int tokenpos)
+		string TokenRight(string s, string delim, int tokenpos)
+		string strovr(string s, string ovr, int pos)
+		int strpos(string s, string sub, int start)
+		int GetTokenPos(string s, string delim, int tokenpos, int includetoken)
+		string WrapText(int font, string s, int line_width)
+		- Some of tese required helper functions, and are commented as such in the code.
+
+
+Revision 47 (2005-12-28)
+========================
+	- Added max(), min(), sgn(), and abs()
+	- Implemented VCCore::WriteInt() cases for b1-b4, up, down, left, and right.
+		Even though these values are overriden next UpdateControls()/ShowPage()...
+		I had to implement it so I could do demo recording via user keypresses.
+
+========================================================================
+
+Changes for Verge 3.0b5 2005.12.14
+* Added experimental plugin api. this is subject to change pending feedback.
+
+  * call VCPlugins::registerVariable("1","vartest",2,readfunc,writefunc)
+      where "1" is type int, "3" is type string, and "5" is type void [forbidden for variables]
+      2 is the number of dimensions, if it is an array. 0 would indicate a scalar variable.
+      -- void readfunc(VCPlugins::VariableContext &context)
+
+  * call VCPlugins::registerFunction("5","functest","13",func)
+        { for example: void functest(int arg0, string arg1) }
+      where "13" indicates arguments int,string
+      "5" indicates returning void
+      and "" for third parameter would indicate an empty parameter list
+      -- void func(VCPlugins::FunctionContext &context)
+
+  * you may leave readfunc and writefunc null for read-only or write-only
+  * to get the array indices, use std::vector context.indices
+
+  * please get arguments in order declared. to get an argument use
+      context.getOperandInt() and context.getOperandString().
+    for writeable variables, the value written is access through context.getOperandXXX also
+
+  * to set return values for functions and variable reads, use
+     context.setReturnInt(int value) and context.setReturnString(std::string value)
+
+
+
+Changes for Verge 3.0b5 2005.12.11
+* Added vc_AbortMovie, win_movie_abortSimple (and mac stub)
+* Fixed bug for 24bpp movies in win_movie_load
+* Adjusted the framerate calculation to something logical, instead of whatever gibberish it was before
+* Fixed bug where \'s in paths weren't property converted to / in mac build when using FILE_WRITE
+
+Changes for Verge 3.0b5 2005.12.10
+
+* Added LoadImage8. Identical to LoadImage0, but respects non-zero 8-bit transparency indices.
+* Fixed naming issue where locals and function arguments could have the same name as the function they were part of.
+* Fixed several issues with SetStringArray and GetStringArray lookups. These were iterating too little or too much, and were accidentally based on the internal arrays used by SetIntArray and GetIntArray.
+
+Changes for Verge 3.0b4 2005.12.05
+
+* VC identifiers can no longer be keywords.
+* Function arguments with the same name are now disallowed.
+* Local variables with the same name as an argument are now disallowed.
+* #define macro names must be valid identifiers. Previously, any valid token could be used, eg. #define 1 2
+* Function arguments must be separated by commas. Previously, the commas could be omitted, and a trailing comma could be included.
+* Empty for-statement clauses have been disallowed, eg: for(;;) {} Infinite loops or other partial uses of for-statements as in C should instead be implemented with a while-statement.
+* Assignments can no longer use the == token, eg. x == 3;
+
+Changes for Verge 3.0b3 2005.12.04
+
+* Fixed mac build id
+* Corrected rounding of values returned by asin, acos and atan to be closer to the actual values
+* Returns and map() now work within switch statements
+* Duplicate functions now produce an error.
+* /*/ is no longer considered a complete comment (ie the comment continues after that)
+* Fixed bug in runtime eval box that made // comments fail at the end of the text
+* Fixed a bug where a zone might not activate even with 100% activation chance, for real this time
+* Fixed a bug with parsing "" in a global initializer
+* Corrected error message when a string variable is used as an int
+* Added diagonal movestrings (DL/DR/UL/UR and reverses. First letter determines which direction to face.)
+* Added playerstep, which determines how far a player moves in a single button press.
+* SetSongPos() now works
+* You can now use as many .chr's as you want, so long as you don't have entities with more than 256 of them present at one time. It used to be a 256 limit in total.
+* Added playerdiagonals, which if set to 0 prevents the player from moving diagonally by pressing two directions at once, or by sliding along a wall.
+* FileReadToken now always returns "" when it runs out of tokens
+* Added misc. improved VC error messages.
+* Illegal characters in VC produce compile-time errors, eg: int @;
+* The $ and ' characters are no longer allowed in VC identifiers, eg: int $foo;
+* VC number parsing is more strict; erroneous $ and ' not allowed.
+* #include and #define now require the full name (previously allowed #i and #d).
+* Duplicate #defines now overwrite the previous definition. A warning is dumped to the logfile. Previously the override would not occur, silently.
+
+Changes for Verge 3.0b2 2005.07.21
+
+* Mac Version (see included readme for details)
+* By putting "editcode 1" in verge.cfg, you can reload and evaluate code at runtime. Incompatible with releasemode.
+* New expression parser that includes unary minus, unary bitwise not (~) and correct handling of logical operators and parenthesis. Also allows logical operators outside of conditionals. (eg. "int x = a || b")
+* verge.cfg now has comments (# or //) and handles tabs. Values must not have whitespace.
+* Added curmap.path, which is the path (relative to the verge top directory) of the current map.
+* Added Read/write access to parallax via layer.parallaxx[],layer.parallaxy[]
+* Added ImageValid(int img) to test if an int is a valid image handle
+* entity.obstructable[] now works for the player. To help with backwards compatibility, SetPlayer() now makes the passed entity obstructable.
+* entity.chr[] added to allow read/write access to the CHR for entities
+* Added FileEOF(int file). Returns 1 if the current file pos is at the end of the file
+* Added asc(). asc() returns the int value of the first character of the passed string, returns 0 for ""
+* Removed 253 chr limit on FileReadLn
+* Added an _os macro, which can take values "mac" or "win"
+* Added the _build macro, an int of the form YYYYMMDD
+* FileSeekPos's SEEK_END now accepts +ve or -ve values (both mean back from the end)
+* Fixed the automax 0 bug on win98 (and XP in odd cases)
+* Fixed a bug where a zone might not activate even with 100% activation chance
+* Fixed imageshell/rotscale bug
+* Fixed pixel-based movement in movestrings (P/T works now.)
+* Fixed a bug with stalking a CHR with different-length walk animation
+* Fixed a bug with switching entities from wandering to stalking and back
+* Fixed a bug where entities with speed < 100 would barely move
+* Fixed a parsing bug with numeric literals at the end of a line
+* Fixed a bug where #include's are not parsed properly at the end of a file
+* Fixed check for arrayness that prevented 1-length arrays

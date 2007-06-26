@@ -1,0 +1,381 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F646E122-D28B-4DB6-BB43-5FEB0B469C9D}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>resources\App.ico</ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>maped3</AssemblyName>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>winmaped2</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>winmaped2.App</StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>.\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>.\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="corona">
+      <Name>corona</Name>
+      <HintPath>..\components\corona.dll</HintPath>
+    </Reference>
+    <Reference Include="MRU">
+      <Name>MRU</Name>
+      <HintPath>..\components\MRU.dll</HintPath>
+    </Reference>
+    <Reference Include="RegisterFileType">
+      <Name>RegisterFileType</Name>
+      <HintPath>..\components\RegisterFileType.dll</HintPath>
+    </Reference>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+    <ProjectReference Include="..\pr2-common-cpp\pr2-common-cpp.vcproj">
+      <Project>{B4F47D0A-31B5-46AE-9F2F-DA4AB584353E}</Project>
+      <Name>pr2-common-cpp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Render\Render.vcproj">
+      <Project>{1808FF4E-64E7-473E-A0BD-D9C36945E7CB}</Project>
+      <Name>Render</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\zlib\zlib.net.vcproj">
+      <Name>zlib.net</Name>
+      <Project>{1C1C2264-1C1F-4CC2-8747-FE3781AA1BF0}</Project>
+      <Package>{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}</Package>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="code\App.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\Error.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\Global.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\HardcodedPlugins.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\InputOutput.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\Map.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\MapPlugins.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\Operations.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\PaintFunctions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\ThrottleBuffer.cs" />
+    <Compile Include="code\UserPrefs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\VSP.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\W32Externs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="code\WindowsClipboard.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="controls\ColorDisplay.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\ColorDlgPicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\ColorDlgSlider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\ColorPicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\ColorSliders.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\ColorTextbox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\ListViewIndexed.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\LPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\MapController.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\mapView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\miniMapView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\TileEditor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\TileViewer.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\ToggleButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\ToolPalette.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\VSPController.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="controls\vspView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="dialogs\AboutBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\AnimationEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\AppendTilesWnd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\ColorDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\EditEntityWnd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\EditVsp.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="dialogs\EditZoneWnd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\GetVspNameWnd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\ImportDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\LayerPropertiesWnd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\LayerResizerWnd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\LayerTool.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\mainWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\MapedPreferences.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\MapPropertiesWnd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\NewLayerWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\NewMapWnd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="dialogs\TileEd.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HardcodedPluginControlPanels\BasicToolsForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HardcodedPluginControlPanels\ResizerForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="HardcodedPluginControlPanels\ZoneEditorForm.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="controls\ColorPicker.resx">
+      <DependentUpon>ColorPicker.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\LPanel.resx">
+      <DependentUpon>LPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\MapController.resx">
+      <DependentUpon>MapController.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\mapView.resx">
+      <DependentUpon>mapView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\TileViewer.resx">
+      <DependentUpon>TileViewer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ToggleButton.resx">
+      <DependentUpon>ToggleButton.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\ToolPalette.resx">
+      <DependentUpon>ToolPalette.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="controls\vspView.resx">
+      <DependentUpon>vspView.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\AboutBox.resx">
+      <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\AnimationEditor.resx">
+      <DependentUpon>AnimationEditor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\AppendTilesWnd.resx">
+      <DependentUpon>AppendTilesWnd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\ColorDialog.resx">
+      <DependentUpon>ColorDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\EditEntityWnd.resx">
+      <DependentUpon>EditEntityWnd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\EditVsp.resx">
+      <DependentUpon>EditVsp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\EditZoneWnd.resx">
+      <DependentUpon>EditZoneWnd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\GetVspNameWnd.resx">
+      <DependentUpon>GetVspNameWnd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\ImportDialog.resx">
+      <DependentUpon>ImportDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\LayerPropertiesWnd.resx">
+      <DependentUpon>LayerPropertiesWnd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\LayerResizerWnd.resx">
+      <DependentUpon>LayerResizerWnd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\LayerTool.resx">
+      <DependentUpon>LayerTool.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\mainWindow.resx">
+      <DependentUpon>mainWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\MapedPreferences.resx">
+      <DependentUpon>MapedPreferences.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\MapPropertiesWnd.resx">
+      <DependentUpon>MapPropertiesWnd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\NewLayerWindow.resx">
+      <DependentUpon>NewLayerWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\NewMapWnd.resx">
+      <DependentUpon>NewMapWnd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="dialogs\TileEd.resx">
+      <DependentUpon>TileEd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HardcodedPluginControlPanels\BasicToolsForm.resx">
+      <DependentUpon>BasicToolsForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HardcodedPluginControlPanels\ResizerForm.resx">
+      <DependentUpon>ResizerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="resources\bitmaps\render.bmp" />
+    <EmbeddedResource Include="resources\bitmaps\write.bmp" />
+    <EmbeddedResource Include="resources\map.ico" />
+    <EmbeddedResource Include="resources\vsp.ico" />
+    <Content Include="resources\App.ico" />
+    <Content Include="resources\bitmaps\brush.bmp" />
+    <Content Include="resources\bitmaps\floodfill.bmp" />
+    <Content Include="resources\bitmaps\line.bmp" />
+    <Content Include="resources\bitmaps\rect.bmp" />
+    <Content Include="resources\bitmaps\rectfill.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="resources\cursors\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

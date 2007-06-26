@@ -1,0 +1,125 @@
+Maped 3 - 3.0.1
+===============
+- 0000005: [Display] removing zones from the map list doesn't remove them from the map (tatsumi)
+- 0000007: [General] Missing help file can cause crashes. (tatsumi)
+- 0000001: [Display] VSP animations do not display (tatsumi)
+- 0000003: [Importing] Import as Layer misbehaving (tatsumi)
+
+
+02/25/2007 (tatsumi)
+----------
+- Fixed: Various VSP Import crashes
+- Fixed: Many .NET 2.0 Incompatabilities
+- Fixed: VSPController was not being invalidated in some cases.
+- Fixed: V2 VSPs will now correctly convert transparency
+- Added: Ability to export tilesets without the grid
+- Added: Option to create a layer based on imported vsp contents
+- Removed: 'saving prefs' message when exiting.
+
+
+4/18/2004 (zeromus)
+--------
+- fixed bug in zlib.net which caused crashing when trying to encode 0-length data (# 10796)
+- added P and T movescript commands
+
+3/3/2004 (zeromus)
+--------
+- fixed bug with "edit zones" opening entity editor instead
+- fixed bug in v2 map loading that was wrecking a lot of things (moved the wtf 2byte read)
+- added activationscript to entities
+
+2/28/2004
+---------
+1:53 am -- moderate asskickage! not really, though. too distracted! so i turn in early so that i might dominate maped tomorrow
+- added export/import from clipboard (zeromus gets cred for the clipboard manager code)
+- double clicking on zone layer spawns zone editor, and same for entities
+- added wander delay, and autoface variables to the entiity editor and map format. map format is now solidified for release, i think.
+- updated the menus with all the shortcuts i could think of
+- if a file in the mru list is no longer there, clicking on it will remove it now
+- deleted some unused menu items, added some others. like 'Help' which doesnt do anything yet
+
+2/27/2004
+---------
+4:22 am -- sufficient asskickage for a single night. less than i planned on but asskickage nonetheless. weekend of asskicking ahead!
+- added an opacity slider to the layer control
+- minimap will now preserve the ratio of a map. Won't get scaling issues on non-square maps (see BUMVILLE.map)
+- added toolbar to the layer view.  will be used to change layer order, delete, and add layers
+- added Run Map button, but it doesn't really work. (I'm lacking an update engine binary)
+- fixed bug in entity editor that sometimes changes were getting lost
+- eyedropper now works on all layer types
+- renamed AutoExec script to Startup Script(that was an enormous amount of work. it belongs in this list!!)
+- put the finishing touches on the colorpickers for TileEd
+- TileEd's layout is basically -established-.  however i need to find a place for the brush picker
+- laid groundwork so that the tileed window can be the application's sole context, for editing a VSP without a map loaded.
+
+2/25/2004
+---------
+4:18 am -- kicked a lot of ass tonight. got rid of a bunch of bugs and added a bunch of new features
+- added onmap zone plotting
+- fixed onmap obs plotting (it now previews the action)
+- added delete function for entities and zones (via button or context menu)
+- added zonelayer zone-delete protection. if a user deletes a zone, maped gives them the option to re-index the zone layer with the new IDs
+- added entity 'Goto' button to the main sidebar.  Will scroll the map to the location of the entity
+- fixed bug where vsp control wouldnt update scrollbars in certain situations
+- fixed bug where obstruction vsp was not being cleared before a new map is loaded/created
+- maped should now keep a zone 0 at all times
+- map properties now has the Auto-exec event field
+- obstruction tiles write to the vsp now
+- added auto-exec scriptname and vcdata_offset quad to the map format
+
+
+
+2/22/2004
+---------
+4:40 am -- finished.  finally got to kick some ass after several days of formatting my system drive. -_-
+
+- added entity/zone double-click to edit feature
+- began the MapEd properties system, which is not available yet
+- added the new obstruction system.  you can plot and browse obstruction tiles, but you can't edit them yet.
+- fixed maxval issues with the entity editor
+- tweaked click region for layer control, to Select For Write, user just clicks anywhere east of the icons
+- tweaked layer control painting. now highlights currently selected layer
+- squished the sidebar a little more.  it just about fits in 1024x768 now.
+- fixed another bug with vsp controller scroll calculation
+- sidebar is now 'disabled' until a map is loaded.
+- renamed some menus again
+- fixed bug where tile 0 was not being drawn on the bottom layer
+- fixed problem where (sometimes) editing zones using the sidebar button wouldn't actually save the changes
+- fixed various edit tools that weren't 'touch'ing the map after editing the data, to ensure the user Saves
+
+
+
+2/16/2004
+---------
+- added entity virtual layer
+- added entity/zone edit buttons to the main sidebar
+- added entity listing to main sidebar
+- fixed a bug in entity editing that would cause new entities to break map saving
+- fixed a bug in VSPController that prevented the last tile row from rendering
+- added VSP->Append Tiles From External VSP
+- added VSP->Append Tiles From Image
+- added VSP->Append New Tiles
+- linked in Corona for image loading
+- cleaned up some of the menus
+- tweaked v3 vsp format a bit so vecna could get maps loading
+- fixed the tab orders on a number of dialogs. i know there's more i've missed. a lot more.
+- tweaked tool palette to use more of the panel
+- fixed a bug in the minimap where it was rendering the obs/zones as black tiles
+
+
+2/15/2004
+---------
+
+- Decided to start keeping one of these
+- entity edit dialog is almost 100% functional now
+- made changes to the map3 format
+- added an additional routine to the zone layer rendering.. now renders player start location
+- updated map properties window to allow editing of player start and render string
+- added (x,y) cursor display to statusbar
+- switched layer control bitmaps over to embedded resources. there are no more external bitmaps
+- fixed tool button bitmaps to be properly transparent (oops)
+- added lucency readout on layer control
+- fixed text layouts on layer control
+- added layer properties dialog
+- added listview to main sidebar when user switches layer write target to zone
+- updated map format doc

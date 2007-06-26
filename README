@@ -1,0 +1,16 @@
+The VERGE project is in the ./verge/ folder.  
+The mac verge project is in the ./mac/ folder.  
+
+All other projects that Verge and MacVerge are dependant upon are in their own 
+folders and include their own licensing therein.
+
+Oakra is a not necessarily uptodate fork of an experimental alternate sound engine.
+It can be enabled by #defines
+
+Garlick is a module repacker component. see url in code for details
+
+If you are interested in modifying verge, please familiarize yourself with 
+./verge/LICENSE
+
+If you are interested in contributing to the main build of VERGE, please email
+sourcemaster@verge-rpg.com or use the verge-rpg forums.

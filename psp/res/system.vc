@@ -1,0 +1,134 @@
+string player_chr;
+int mapswitchx, mapswitchy;
+
+int crystal_bitch;
+int playerent;
+int tawnee;
+
+#define T_DARIN		1
+#define T_CRYSTAL	4
+#define T_SANCHO	13
+#define T_SULLY		7
+
+#define TBLACK		0
+#define TNONE		0
+
+/// this autoexec is so... barren!
+void AutoExec()
+{
+	tawnee = loadimage("09.jpg");
+	player_chr = "res/chrs/darin.chr";
+	
+	last_time = systemtime;
+	
+	HookTimer( "Hooker" );
+
+	v1_MapSwitch( "paradise_isle2.map", 23,19, TBLACK );
+
+}
+
+
+/// the amazingly stripped-down v1_mapswitch
+void V1_MapSwitch(string mapn, int x, int y, int effect)
+{
+	mapswitchx = x;
+	mapswitchy = y;
+	
+	Map( mapn );
+}
+
+
+/// the incredibly stripped-down initmap.
+void InitMap() 
+{	
+	playerent = EntitySpawn( mapswitchx, mapswitchy, player_chr );
+	SetPlayer( playerent );
+}
+
+void TextBoxM( int w, string s1, string s2, string s3  )
+{
+	TextBox( w, s1, s2, s3 );
+}
+
+void TextBox( int w, string s1, string s2, string s3  )
+{
+	string speaker;
+	
+	switch(w)
+	{
+		case T_DARIN:
+			speaker = "Darin: ";
+		case T_CRYSTAL:
+			speaker = "Crystal: ";
+		case T_SANCHO:
+			speaker = "Sancho: ";
+		case T_SULLY:
+			speaker = "Sully: ";
+		default:
+			speaker = "YOUR MOTHER:";
+	}
+
+	/// unpress all buttons
+	Unpress( 0 );
+	
+	while( !b2 )
+	{
+		Render();
+	
+		RectFill( 1, 200, 318, 238, 0, screen );
+		
+		PrintString(
+			5, 201, 
+			screen, 
+			0, 
+			speaker
+		);		
+		
+
+		PrintString(
+			5, 211, 
+			screen, 
+			0, 
+			s1
+		);
+		
+		PrintString(
+			5, 221, 
+			screen, 
+			0, 
+			s2
+		);
+		
+		PrintString(
+			5, 231, 
+			screen, 
+			0, 
+			s3
+		);
+		
+		ShowPage();
+	}
+}
+
+void Warp(int x, int y, int effect)
+{
+	entity.x[playerent] = x*16;
+	entity.y[playerent] = y*16;
+}
+
+int last_time;
+int frames_in_last_second, frames_in_this_second;
+void Hooker()
+{
+	if( last_time+100 <= systemtime )
+	{
+		frames_in_last_second = frames_in_this_second;
+		frames_in_this_second = 0;
+		last_time = systemtime;
+	}
+	
+	frames_in_this_second++;
+	
+	PrintString( 10,10, screen, 0, "FPS: "+str(frames_in_last_second) );
+	blit(30,30,tawnee,screen);
+}

@@ -1,0 +1,20 @@
+{
+    IBClasses = (
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {
+            ACTIONS = {eval = id; reload = id; reloadMap = id; }; 
+            CLASS = MacCocoaUtil; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {evalField = NSTextField; fileSelector = NSPopUpButton; window = NSWindow; }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {
+            ACTIONS = {fullscreen = id; }; 
+            CLASS = SDLMain; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {macCocoaUtil = MacCocoaUtil; }; 
+            SUPERCLASS = NSObject; 
+        }
+    ); 
+    IBVersion = 1; 
+}

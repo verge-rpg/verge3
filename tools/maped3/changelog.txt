@@ -1,0 +1,19 @@
+Outstanding Issues
+- Animation bug (Next release)
+- Save bug (Difficult to reproduce)
+
+
+Release 2007-02-25
+
+- Fixed: Various VSP Import crashes
+- Fixed: Many .NET 2.0 Incompatabilities
+- Fixed: VSPController was not being invalidated in some cases.
+- Fixed: V2 VSPs will now correctly convert transparency
+- Added: Ability to export tilesets without the grid
+- Added: Option to create a layer based on imported vsp contents
+- Removed: 'saving prefs' message when exiting.
+
+
+
+
+

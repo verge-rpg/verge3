@@ -1,0 +1,51 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcproj", "{2A5E1656-8D0A-429D-9EB9-3F1786088FDD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3135588E-86D2-4980-B337-642F78AF93E8} = {3135588E-86D2-4980-B337-642F78AF93E8}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oakra", "oakra.vcproj", "{3135588E-86D2-4980-B337-642F78AF93E8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B90D241D-B1EB-4EB7-847F-2C0C02C9FD34} = {B90D241D-B1EB-4EB7-847F-2C0C02C9FD34}
+		{D63BE25D-6B79-469F-8DEB-0A67C064D444} = {D63BE25D-6B79-469F-8DEB-0A67C064D444}
+		{FB53BFC7-8B1D-469C-A6A6-E3A6F29A11B2} = {FB53BFC7-8B1D-469C-A6A6-E3A6F29A11B2}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "oggvorbis", "oggvorbis\oggvorbis.vcproj", "{FB53BFC7-8B1D-469C-A6A6-E3A6F29A11B2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mpegsound", "mpegsound\mpegsound.vcproj", "{B90D241D-B1EB-4EB7-847F-2C0C02C9FD34}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dumb", "dumb-0.9.3\vc8\dumb.vcproj", "{D63BE25D-6B79-469F-8DEB-0A67C064D444}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2A5E1656-8D0A-429D-9EB9-3F1786088FDD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2A5E1656-8D0A-429D-9EB9-3F1786088FDD}.Debug|Win32.Build.0 = Debug|Win32
+		{2A5E1656-8D0A-429D-9EB9-3F1786088FDD}.Release|Win32.ActiveCfg = Release|Win32
+		{2A5E1656-8D0A-429D-9EB9-3F1786088FDD}.Release|Win32.Build.0 = Release|Win32
+		{3135588E-86D2-4980-B337-642F78AF93E8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3135588E-86D2-4980-B337-642F78AF93E8}.Debug|Win32.Build.0 = Debug|Win32
+		{3135588E-86D2-4980-B337-642F78AF93E8}.Release|Win32.ActiveCfg = Release|Win32
+		{3135588E-86D2-4980-B337-642F78AF93E8}.Release|Win32.Build.0 = Release|Win32
+		{FB53BFC7-8B1D-469C-A6A6-E3A6F29A11B2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FB53BFC7-8B1D-469C-A6A6-E3A6F29A11B2}.Debug|Win32.Build.0 = Debug|Win32
+		{FB53BFC7-8B1D-469C-A6A6-E3A6F29A11B2}.Release|Win32.ActiveCfg = Release|Win32
+		{FB53BFC7-8B1D-469C-A6A6-E3A6F29A11B2}.Release|Win32.Build.0 = Release|Win32
+		{B90D241D-B1EB-4EB7-847F-2C0C02C9FD34}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B90D241D-B1EB-4EB7-847F-2C0C02C9FD34}.Debug|Win32.Build.0 = Debug|Win32
+		{B90D241D-B1EB-4EB7-847F-2C0C02C9FD34}.Release|Win32.ActiveCfg = Release|Win32
+		{B90D241D-B1EB-4EB7-847F-2C0C02C9FD34}.Release|Win32.Build.0 = Release|Win32
+		{D63BE25D-6B79-469F-8DEB-0A67C064D444}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D63BE25D-6B79-469F-8DEB-0A67C064D444}.Debug|Win32.Build.0 = Debug|Win32
+		{D63BE25D-6B79-469F-8DEB-0A67C064D444}.Release|Win32.ActiveCfg = Release|Win32
+		{D63BE25D-6B79-469F-8DEB-0A67C064D444}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

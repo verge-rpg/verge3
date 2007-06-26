@@ -1,0 +1,95 @@
+[16:22] <vec\dev> oh crap. maped needs some way to display the current tile NUMBER selected!
+
+ * clicking on an entity (when in entity mode) would open the editor for that entity
+ * and click somewhere where there is no entity would place one there
+ * add obstruction tile importing
+
+PLUGIN SYSTEM:
+
+ * Implement the Brush Properties tab. The Brush/properties tab layout is fine 
+   the way it is - the properties dont need to be visible at all times, thats
+   how its done in photoshop
+ * In addition to the existing plugins, a map Copy/Paste plugin needs to be 
+   created. There should be both a single-layer copy mode, as well as an
+   all-layer copy mode.
+ * Some doc needs to be made, which can be kind of terse and technical, that
+   explains how you can make a plugin
+
+GENERAL:
+ * Ability to use arrow keys to scroll the map ?
+ * Tile Animations - drawing on the map, as well as the ability to edit
+   the animations themselves in the vsp. The actual rendering of animations
+   should probably be a toggle, for people with slow computers that dont want the
+   map constantly redrawing? or maybe it is already sort of.
+ * Map parallaxing. There needs to be some way to preview how the 
+   parallaxing will look. Whether it be a "launch verge in mapviewer mode at xx res"
+   button or a built in scroller that works at a given resolution.. Idunno.
+   In general, a "launch map in engine" button, or just "launch engine" button
+   wouldnt be a bad thing to have. But maybe it should be in VergeIDE instead. idunno
+ * Tiled, however, IMO, this should be a low priority at this point. It should be one 
+   of the last things done. Obviously its important, but the engine can be basically
+   fully completed without it. The same isnt true of, say, entities. ^_^
+
+MENUS:
+ * Where there is Undo, there should ideally be Redo. I dont know how your undo system
+   is setup, but Redo really shouldn't be too hard to do. Any time a new edit is made,
+   the Redo list is cleared. An action can only be redone directly after an Undo.
+ * Zone Editor:
+
+    - POSSIBLY, a little Edit Script button that would pop up the awesome syntax highlighting 
+      RTF editor and display the VC for that script. that would own
+
+ * There should be an actual Help section under the Help menu, which would launch the aforementioned
+   HTML help.
+
+
+
+/*******  STUFF BELOW THIS LINE HAS BEEN FINISHED   **********/
+
+ * make eyedropper work on all layer types
+ * add Delete Entity/Zone
+ * add autoexec script functionality
+ * fix numeric up/downs in ent wander forms
+ * make sidebar ent/zone lists double-clickable
+PLUGIN SYSTEM:
+ * Remove the bottom Plugins section of the screen
+ * The plugin system will probably have to be modified some way to 
+   include an icon for the new Brush picker?
+ * It is extremely important that the "Brush" plugin be activated by default.
+
+GENERAL:
+ * The Layer tool and the Tiles tool should really be visible at the
+   same time. Some compression of the right-bar area might be needed to
+   fit everything. the Brush/properties tab area can probably be vertically
+   shrunk a bit
+ * Entities is a big one obviously
+ * File associations. Map/Vsp filetype icons. Double-clicking a map launches maped. etc.
+ * Updated obstruction editing - in whatever form that is decided upon
+ * Zone editing (on map)
+
+MENUS:
+ * New Map functionality. Should pop up a dialog. You probably know what should
+   be in the dialog, but we can hammer out details if you need.
+ * Zone Editor:
+    - Add Listview on the side of zones that you can click on.
+    - Event should be a String. EntityEvent should be removed, for now.
+    - There should be a way to allocate a new zone from within that zone editor dialog.
+    - I think you may need to increase the ComboBox number of options listed thingy or something.
+      I think it defaults to a cap of 100, but it can be changed. I THINK.
+    - In the Map menu, the Zones -> submenu should either have more options added to it, or it 
+      should be removed and the Edit Zones menu moved to the root Map menu. In either case, the
+      button should also be hook up (it doesnt fire any event right now).
+    - I would put a little LinkLabel control at the bottom/right corner or something titled "Help".
+      Maped3 should have a help system. I think we will just use HTML help. So the link label only
+      has to have code to open up a url, which is easy in .NET. Ask me if you need code. We can 
+      worry about actually making the help HTML later. But it would be nice to explain what the
+      different options are. Thats the difference between Us and Them.
+ * Map Properties dialog should have a way to set the starting location, and the renderstring.
+   Probably some other things that are currently slipping my mind.
+ * There needs to be a status bar line (looks like there is one already, but it needs to have 
+   stuff in it) - namely, the x/y location that the mouse is currently over should be displayed.
+   Thats pretty important ^_^
+ * There needs to be an Edit Layer dialog as well which edits the properties for the layer, such
+   as Transparency.
+ * Additionally, there should be Help linklabels that I mentioned before in the Map Properties dialog, 
+   the Layer Edit dialog, the Entity edit dialog box, and TileEd.

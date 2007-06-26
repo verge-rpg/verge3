@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pspv3", "pspv3.vcproj", "{4380D574-4F32-4112-B240-D329F296B21F}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{4380D574-4F32-4112-B240-D329F296B21F}.Debug.ActiveCfg = Debug|Win32
+		{4380D574-4F32-4112-B240-D329F296B21F}.Debug.Build.0 = Debug|Win32
+		{4380D574-4F32-4112-B240-D329F296B21F}.Release.ActiveCfg = Release|Win32
+		{4380D574-4F32-4112-B240-D329F296B21F}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

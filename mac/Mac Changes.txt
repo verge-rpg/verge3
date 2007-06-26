@@ -1,0 +1,98 @@
+Code Changes for Mac build:
+
+corona:
+	- Changed qualifier on enum references. Also fixed in new version of corona lib.
+
+mac:
+	- Added build files, icon, SDL stub files
+
+verge/Source:
+	
+	everywhere:
+		- Changed "sizeof x" to "sizeof(x)". The former is not liked by gcc.
+		- Changed "for(int i...)" to "int i; for(...)" when "i" was used after the loop. Again, this is needed for gcc compatibility. 
+
+	mac_*, vid_macbase:
+		- Added mac equivalents to all the windows-specific source. 
+
+	a_codec
+		- Changed cvread to _cvread and added a suite of cvread(...) functions with typed pointers. This allows us to byte-flip as needed. These could be replaced with a single template function, but then we have no sanity checking for the types being passed in. (Like, we don't want to byte-flip a char[4], for example.)
+
+	a_common
+		- Changed WriteFile call to writeToConsole
+
+	a_config
+		- Added mac equivalents for directory fiddling
+
+	a_string
+		- Added const qualifiers to make gcc happy.
+
+	a_vfile
+		- Added changing from "\" in paths to "/". This is ugly, since "\" characters are permitted in Mac paths, but I think preferable to make it compatible with PC-style paths.
+
+	a_vfile
+		- Same changes as a_codec, but for vread()
+
+	g_engine
+		- Changed "kill" flag to "die", since "kill" conflicted with a standard function.
+
+	g_map
+		- Removed the &'s used in the calls to vread in the constructor. I'm not sure how it was working before.
+
+	g_startup
+		- Changed SetWindowText() call to generic setWindowTitle() (found in *_system)
+		- Changed AllocConsole call to generic initConsole() (found in *_system)
+	
+	g_vsp
+		- Changed to reading each anim field separately so that we could byte-swap correctly.
+
+	vc_compiler.cpp
+		- Removed windows headers (not needed anymore, calls to them have been moved elsewhere)
+		- Consolodated multiple header includes into just xerxes.h
+		- Removed "using namespace std" - this was causing collisions
+		- Added const qualifier to catch() args. Otherwise, thrown strings were not being caught
+		- Moved to generic directory search function, listFilePattern (in win_system)
+		- Added explicit c_str() conversions for my_string->initializer assignment. 
+
+	vc_compiler.h
+		- Added needed #include <string> - not sure why it was working before
+
+	vc_core
+		- Same change of kill to die as in g_engine
+		- Changed to _vread() in LoadMapVC so that byte swapping would not be done on the number of functions. This should not be byte swapped because it is written during the compilation stage, and so is already big-endian. (Everything in the map other than VC code should be byte-swapped, though, since it's in a little-endian format)
+	
+	vc_library
+		- Removed windows-specific headers.
+		- Changed to generic time functions (implemented in *_system)
+		- Changed SetWindowText to generic setWindowTitle() (implemented in *_system)
+		- Added network exception catch to vc_GetConnection()
+		- Changed to generic getUrlText() and getUrlImage() functions (implemented in *_network)
+		- Changed to generic listFilePattern() function (implemented in *_system)
+		- Changed MessageBox() call to generic showMessageBox()(implemented in *_system)
+		- Added byte-flipping to file writing code to it's always little endian
+	
+	vid_ddbase
+		- Made sure vid_setMode function pointer was initialized to dd_SetMode
+	
+	vid_ddblit
+		- Added #ifdefs to make sure non-asm version of blits were used on the mac
+
+	vid_manager
+		- Added vid_setMode function pointer to replace direct call to dd_SetMode. (initialized in vid_*base)
+		- Moved clipboard functions to *_system, since vid_manager is otherwise platform neutral.
+
+	win_network
+		- Moved URL retrieval code here from vc_library
+	
+	win_system
+		- Added setWindowTitle function (generic function to replace calls to WindowText())
+		- Moved clipboard functions in here from vid_manager
+		- Added intiConsole function (generic function to replace calls to AllocConsole())
+		- Added writeToConsole function (generic function to replace calls to WriteFile())
+		- Added time functions (generic functions to replace calls to GetLocalTime())
+		- Added listFilePattern function (generic function to replace calls to _find* functions)
+		- Added showMessageBox function (generic function to replace calls to MessageBox())
+
+	xerxes.h
+		- Changed appname to "verge3" (Sorry! It didn't like the <= symbol for some reason.)
+		- Added #ifdef __APPLE__ to include mac-specific headers
