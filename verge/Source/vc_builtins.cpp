@@ -278,6 +278,9 @@ char* libfuncs[NUM_LIBFUNCS][3] = {
 	{"1", "ftan", "1"},
 	{"1", "SetCharacterWidth", "111"},
 	{"3", "DictListKeys", "13"},
+	{"3", "ListBuiltinFunctions", ""},
+	{"3", "ListBuiltinVariables", ""},
+	{"3", "ListBuiltinDefines", ""},
 };
 
 char* libvars[NUM_HVARS][3] = {

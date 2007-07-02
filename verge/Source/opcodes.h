@@ -104,7 +104,7 @@
 #define t_VOID				5
 #define t_STRUCT			6
 
-#define NUM_LIBFUNCS		265
+#define NUM_LIBFUNCS		268
 #define NUM_HVARS			121
 #define NUM_HDEFS			104
 

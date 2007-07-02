@@ -2924,6 +2924,34 @@ void vc_ColorReplace()
 	ColorReplace(find, replace, dest);
 }
 
+void vc_ListBuiltinFunctions()
+{
+	vc->vcretstr = "";
+	for (int i = 0; i < NUM_LIBFUNCS; i++)
+	{
+		vc->vcretstr += string(libfuncs[i][1]) + "|";
+	}
+}
+
+void vc_ListBuiltinVariables()
+{
+	vc->vcretstr = "";
+	for (int i = 0; i < NUM_HVARS; i++)
+	{
+		vc->vcretstr += string(libvars[i][1]) + "|";
+	}
+}
+
+void vc_ListBuiltinDefines()
+{
+	vc->vcretstr = "";
+	for (int i = 0; i < NUM_HDEFS; i++)
+	{
+		vc->vcretstr += string(hdefs[i][0]) + "|";
+	}
+}
+
+
 // ===================== End VC Standard Function Library =====================
 
 void VCCore::HandleLibFunc()
@@ -3220,6 +3248,9 @@ void VCCore::HandleLibFunc()
 		case 262: vc_ftan(); break;
 		case 263: vc_SetCharacterWidth(); break; //mbg (2007-06-18)
 		case 264: vc_DictListKeys(); break; // Overkill: (2007-06-20)
+		case 265: vc_ListBuiltinFunctions(); break;
+		case 266: vc_ListBuiltinVariables(); break;
+		case 267: vc_ListBuiltinDefines(); break;
 		default:
 			vc->vcerr("VC Execution error: Invalid STDLIB index. (%d)", (int) c);
 	}
