@@ -3,8 +3,11 @@ Verge 3 Changelog
 ================================================
 
 
-Revision 45? (2007-07-02) (Overkill)
-(this trunk/branch revision stuff confuses me)
+Revision 57
+========================
+This trunk/branch revision stuff confuses me, so I wrote the wrote the wrong revision numbers. Fixed.
+
+Revision 56 (2007-07-02) (Overkill)
 =========================
 * Added ListBuiltinFunctions(), ListBuiltinVariables() and ListBuiltinDefines(), which return a string list of functions, variables, and defines respectively, separated by "|" delimiters. Useful for having up-to-date VergeC syntax highlighting.
 
