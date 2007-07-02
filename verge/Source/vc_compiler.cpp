@@ -1941,7 +1941,10 @@ bool VCCompiler::IsKeyword(char* s)
 		|| !strcmp(s,"unless")
 		|| !strcmp(s,"until")
 		|| !strcmp(s,"case")
-		|| !strcmp(s,"default");
+		|| !strcmp(s,"default")
+		|| !strcmp(s,"and")
+		|| !strcmp(s,"or")
+		|| !strcmp(s,"not");
 }
 
 bool VCCompiler::IsHexEscapeSequence(char* s)
@@ -3347,7 +3350,7 @@ bool VCCompiler::TokenIsIntExpression()
     {
 		return true;
 	}
-	if (TokenIs("!"))
+	if (TokenIs("!") || TokenIs("not"))
 	{
 		// logical negation
 		return true;
@@ -3376,7 +3379,7 @@ void VCCompiler::CompileAtom()
 		CompileOperand();
 		Expect(")");
 		return;
-	} else if (NextIs("!")) {
+	} else if (NextIs("!") || NextIs("not")) {
 		// logical negation
 		output.EmitC(ifZERO);
 		GetToken(); // skip !
@@ -3498,8 +3501,8 @@ void VCCompiler::CompileOperand()
 
     while (true)
     {
-		if		(NextIs("&&"))	{output.EmitC(ifAND);			GetToken();}
-		else if (NextIs("||"))  {output.EmitC(ifOR);			GetToken();}
+		if		(NextIs("&&") || NextIs("and"))	{output.EmitC(ifAND);			GetToken();}
+		else if (NextIs("||") || NextIs("or"))  {output.EmitC(ifOR);			GetToken();}
 		else break;
 
 		output.EmitC(intGROUP);

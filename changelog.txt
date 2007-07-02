@@ -2,8 +2,11 @@
 Verge 3 Changelog
 ================================================
 
+Revision 58 (2007-07-02) (Overkill)
+========================
+Added the operator keywords "and", "or", "not", which are equivalent to "&&", "||", "!". These keywords might make it easier for new users to pick up the VergeC, or at least give an option to those who prefer words to symbols. It is probably in the best interest of people to not mix these two, in order to keep a consistent style in your code.
 
-Revision 57
+Revision 57 (2007-07-02) (Overkill)
 ========================
 This trunk/branch revision stuff confuses me, so I wrote the wrote the wrong revision numbers. Fixed.
 
