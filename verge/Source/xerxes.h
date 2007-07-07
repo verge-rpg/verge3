@@ -11,6 +11,10 @@
 #ifndef XERXES_H
 #define XERXES_H
 
+
+#include <math.h>
+#include <vector>
+
 #ifdef WIN32
 #define __WIN32__ 1
 #endif

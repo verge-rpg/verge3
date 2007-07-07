@@ -218,6 +218,7 @@ public:
 	void *LoadSample(char *fn) { return 0; }
 	void PlaySample(void *sample, int vol) {}
 	void StopSound(int chan) {}
+	int SoundIsPlaying(int chan) { return 0; }
 	void FreeSample(void *sample) {}
 
 

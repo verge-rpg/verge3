@@ -13,7 +13,6 @@
  * copyright (c) 2002 vecna                                       *
  ******************************************************************/
 
-#include <math.h>
 #include "xerxes.h"
 #include "sincos.h"
 #include "opcodes.h"

@@ -14,8 +14,8 @@
  * copyright (c) 2001 vecna                                       *
  ******************************************************************/
 
-#define DIRECTINPUT_VERSION 0x0300
 #include "xerxes.h"
+#define DIRECTINPUT_VERSION 0x0300
 #include "dinput.h"
 
 /****************************** data ******************************/

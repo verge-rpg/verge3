@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../dumb/include"
+				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;win32;../dumb/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;MIKMOD_STATIC;_CRT_SECURE_NO_DEPRECATE;USE_DUMB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib vfw32.lib winmm.lib ws2_32.lib dxguid.lib ddraw.lib dinput.lib wininet.lib ../zlib/debug/zlib.lib ../corona/output/debug/corona.lib ../fmod/fmodvc.lib user32.lib gdi32.lib"
+				AdditionalDependencies="msacm32.lib vfw32.lib winmm.lib ws2_32.lib win32/dxguid.lib win32/ddraw.lib win32/dinput.lib wininet.lib ../zlib/debug/zlib.lib ../corona/output/debug/corona.lib ../flac-1.1.2/obj/$(ConfigurationName)/lib/libFLAC_static.lib user32.lib gdi32.lib ../oakra/$(ConfigurationName)/oakra.lib ../fmod/fmodvc.lib"
 				OutputFile="$(OutDir)/verge.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -127,7 +127,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../dumb/include"
+				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../dumb/include;win32"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;USE_DUMB"
 				StringPooling="false"
 				BasicRuntimeChecks="0"
@@ -155,7 +155,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib vfw32.lib winmm.lib ws2_32.lib dxguid.lib ddraw.lib dinput.lib wininet.lib ../zlib/release/zlib.lib ../corona/output/release/corona.lib ../fmod/fmodvc.lib user32.lib gdi32.lib"
+				AdditionalDependencies="msacm32.lib vfw32.lib winmm.lib ws2_32.lib win32/dxguid.lib win32/ddraw.lib win32/dinput.lib wininet.lib ../zlib/release/zlib.lib ../corona/output/release/corona.lib user32.lib gdi32.lib ../fmod/fmodvc.lib"
 				OutputFile="$(OutDir)/verge.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
@@ -202,78 +202,249 @@
 			<File
 				RelativePath="Source\a_codec.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\a_common.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\a_config.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\a_dict.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\a_handle.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\a_image.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\a_string.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\a_vfile.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\g_chr.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\g_controls.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\g_editcode.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\g_engine.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\g_entity.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\g_font.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\g_map.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\g_sound.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\g_sprites.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\g_startup.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\g_vsp.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\garlick.cpp"
@@ -285,84 +456,257 @@
 						Name="VCCLCompilerTool"
 						AdditionalIncludeDirectories="../flac-1.1.2/include"
 						PreprocessorDefinitions="GARLICK_USE_FLAC"
+						UsePrecompiledHeader="0"
+						PrecompiledHeaderThrough="xerxes.h"
 					/>
 				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\p_datastructs.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\snd_fmod.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\vc_builtins.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\vc_compiler.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\vc_core.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\vc_debug.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\vc_library.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\vid_ddbase.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\vid_ddblit.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\vid_manager.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\vid_sysfont.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\win_editcode.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\win_joystick.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\win_keyboard.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\win_mouse.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Source\win_movie.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\win_network.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\win_system.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="Source\win_timer.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="1"
+						PrecompiledHeaderThrough="xerxes.h"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -751,6 +1095,10 @@
 					</File>
 				</Filter>
 			</Filter>
+		</Filter>
+		<Filter
+			Name="flac-1.1.4"
+			>
 		</Filter>
 	</Files>
 	<Globals>

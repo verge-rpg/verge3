@@ -22,6 +22,8 @@
 #include "../fmod/fmod.h"
 #include "garlick.h"
 
+#ifdef SND_USE_FMOD
+
 /****************************** data ******************************/
 
 #define MAX_SONGS	10
@@ -516,3 +518,5 @@ void SoundEngine_Fmod::FreeSong(int h)
 		songs[h].active = false;
 	}
 }
+
+#endif

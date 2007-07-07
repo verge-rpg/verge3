@@ -22,8 +22,11 @@
 //  do this by killing the voice as soon as pause is hit
 //  then starting the voice again on the correct sample when play() is called
 
+//2. remove gimping when fmod is missing!
 
+#ifdef SND_USE_FMOD
 signed char F_CALLBACKAPI win_movie_fmod_streamCallback(FSOUND_STREAM *stream, void *buff, int len, int param);
+#endif
 
 class win_movie_Rec
 {
@@ -56,7 +59,10 @@ public:
 	int timestampBegin;
 
 	//audio stuff
+	#ifdef SND_USE_FMOD
 	FSOUND_STREAM *fmod_stream;
+	#endif
+
 	bool bAudio;
 	bool bPlayAudio;
 
@@ -116,8 +122,10 @@ public:
 	{
 		if(bAudio)
 		{
+			#ifdef SND_USE_FMOD
 			if(fmod_stream)
 				FSOUND_Stream_Close(fmod_stream);
+			#endif
 
 			acmStreamUnprepareHeader(acmStream,&audioStreamHeader,0);
 			acmStreamClose(acmStream,0);
@@ -384,6 +392,7 @@ public:
 		else
 			mode |= FSOUND_STEREO;
 
+		#ifdef SND_USE_FMOD
 		fmod_stream = FSOUND_Stream_Create(win_movie_fmod_streamCallback,playBufferSize,mode,wfxDecoded.nSamplesPerSec,(int)this);
 		if(!fmod_stream)
 		{
@@ -393,6 +402,7 @@ public:
 			err("Error creating fmod stream for movieplayback.  Please report this case so we can improve the robustness of the movie player!");
 			return false;
 		}
+		#endif
 
 
 		//find out how large a decode buffer we need for the encode buffer chunksize
@@ -420,21 +430,24 @@ public:
 			return false;
 		}
 
+		#ifdef SND_USE_FMOD
 		//finally we're ready to start the audio stream
 		FSOUND_Stream_Play(FSOUND_FREE,fmod_stream);
+		#endif
 
 		return true;
 	}
 
 };
 
-
+#ifdef SND_USE_FMOD
 signed char F_CALLBACKAPI win_movie_fmod_streamCallback(FSOUND_STREAM *stream, void *buff, int len, int param)
 {
 	win_movie_Rec *m = (win_movie_Rec *)param;
 	m->audioFeed((char *)buff,len / m->sampleSize);
 	return 1;
 }
+#endif SND_USE_FMOD
 
 void win_movie_update()
 {
