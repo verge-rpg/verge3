@@ -744,8 +744,8 @@ bool VCCompiler::CompileAll()
 
 bool VCCompiler::CompileMaps()
 {
-	std::vector<string> filenames = listFilePattern("*.map");
-	for(std::vector<string>::iterator i = filenames.begin();
+	std::vector<std::string> filenames = listFilePattern("*.map");
+	for(std::vector<std::string>::iterator i = filenames.begin();
 		i != filenames.end();
 		i++)
 	{
@@ -2253,7 +2253,7 @@ void VCCompiler::ParseIntDecl(scan_t type)
 		int	 int_dim = 0;
 		std::vector<int> int_dims;
 		int_dims.push_back(0);
-		string initstr = "";
+		std::string initstr = "";
 
 		GetIdentifierToken();		// grab name of int
 		strcpy(int_name, token);
@@ -2334,7 +2334,7 @@ void VCCompiler::ParseStringDecl(scan_t type)
 
 	while (true)
 	{
-		string initstr = "";
+		std::string initstr = "";
 		char string_name[256];
 		int  string_len = 1;
 		int  string_dim = 0;

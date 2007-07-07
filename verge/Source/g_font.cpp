@@ -18,7 +18,7 @@
 
 /***************************** code *****************************/
 
-Font::Font(char *fname, int xsize, int ysize)
+Font::Font(const char *fname, int xsize, int ysize)
 {
 	width = xsize;
 	height = ysize;
@@ -42,7 +42,7 @@ Font::Font(char *fname, int xsize, int ysize)
 	delete workingimage;
 }
 
-Font::Font(char *fname)
+Font::Font(const char *fname)
 {
 	int w, h;
 	// this constructor autodetected cell dimensions, B
@@ -212,11 +212,11 @@ void Font::PrintCenter(char *str, int x, int y, image *dest, ...)
 	PrintString(msg, x, y, dest);
 }
 
-int Font::Pixels(char *str)
+int Font::Pixels(const char *str)
 {
 	int xsize = 0;
 
-    for (char *s = str; *s; s++)
+    for (const char *s = str; *s; s++)
 	{
 		if (*s == '@')
 		{

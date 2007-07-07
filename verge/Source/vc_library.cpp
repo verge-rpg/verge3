@@ -81,7 +81,7 @@ int HandleForDict(dict *d)
 
 
 
-void EnforceNoDirectories(string s)
+void EnforceNoDirectories(std::string s)
 {
 	int	n = 0;
 	if (!s.length()) return;
@@ -103,13 +103,13 @@ void EnforceNoDirectories(string s)
 
 void vc_Exit()
 {
-	string message = vc->ResolveString();
+	std::string message = vc->ResolveString();
 	err("%s", message.c_str());
 }
 
 void vc_Log()
 {
-	string message = vc->ResolveString();
+	std::string message = vc->ResolveString();
 	log("%s", message.c_str());
 }
 
@@ -147,19 +147,19 @@ void vc_SetClip()
 
 void vc_LoadImage()
 {
-	string fn = vc->ResolveString();
+	std::string fn = vc->ResolveString();
 	vc->vcreturn = HandleForImage(xLoadImage(fn.c_str()));
 }
 
 void vc_LoadImage0()
 {
-	string fn = vc->ResolveString();
+	std::string fn = vc->ResolveString();
 	vc->vcreturn = HandleForImage(xLoadImage0(fn.c_str()));
 }
 
 void vc_LoadImage8()
 {
-	string fn = vc->ResolveString();
+	std::string fn = vc->ResolveString();
 	vc->vcreturn = HandleForImage(xLoadImage8(fn.c_str()));
 }
 
@@ -479,7 +479,7 @@ void vc_Triangle()
 
 void vc_LoadFont()
 {
-	string filename = vc->ResolveString();
+	std::string filename = vc->ResolveString();
 	int width = vc->ResolveOperand();
 	int height = vc->ResolveOperand();
 	vc->vcreturn = (int) new Font(filename.c_str(), width, height);
@@ -495,7 +495,7 @@ void vc_SetCharacterWidth()
 
 void vc_LoadFont2()
 {
-	string filename = vc->ResolveString();
+	std::string filename = vc->ResolveString();
 	vc->vcreturn = (int) new Font(filename.c_str());
 }
 
@@ -511,7 +511,7 @@ void vc_PrintString()
 	int y = vc->ResolveOperand();
 	image *dest = ImageForHandle(vc->ResolveOperand());
 	Font *font = (Font*) vc->ResolveOperand();
-	string text = vc->ResolveString();
+	std::string text = vc->ResolveString();
 	if (font == 0)
 	{
 		GotoXY(x, y);
@@ -527,7 +527,7 @@ void vc_PrintRight()
 	int y = vc->ResolveOperand();
 	image *dest = ImageForHandle(vc->ResolveOperand());
 	Font *font = (Font*) vc->ResolveOperand();
-	string text = vc->ResolveString();
+	std::string text = vc->ResolveString();
 	if (font == 0)
 		PrintRight(x, y, va("%s",text.c_str()), dest);
 	else
@@ -540,7 +540,7 @@ void vc_PrintCenter()
 	int y = vc->ResolveOperand();
 	image *dest = ImageForHandle(vc->ResolveOperand());
 	Font *font = (Font*) vc->ResolveOperand();
-	string text = vc->ResolveString();
+	std::string text = vc->ResolveString();
 	if (font == 0)
 		PrintCenter(x, y, va("%s",text.c_str()), dest);
 	else
@@ -550,7 +550,7 @@ void vc_PrintCenter()
 void vc_TextWidth()
 {
 	Font *font = (Font*) vc->ResolveOperand();
-	string text = vc->ResolveString();
+	std::string text = vc->ResolveString();
 	if (font == 0)
 		vc->vcreturn = pixels(text.c_str());
 	else
@@ -573,13 +573,13 @@ void vc_Random()
 
 void vc_len()
 {
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	vc->vcreturn = s.length();
 }
 
 void vc_val()
 {
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	vc->vcreturn = atoi(s.c_str());
 }
 
@@ -643,7 +643,7 @@ void vc_FileOpen()
 	char *temp;
 	#endif
 	
-	string fname = vc->ResolveString();
+	std::string fname = vc->ResolveString();
 	int filemode = vc->ResolveOperand();
 
 	for (index=1; index<VCFILES; index++)
@@ -744,7 +744,7 @@ void vc_FileClose()
 void vc_FileWrite()
 {
 	int handle = vc->ResolveOperand();
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 
 	if (!handle) vc->vcerr("vc_FileWrite() - Yo, you be writin' to a file that aint open, foo.");
 	if (handle > VCFILES) vc->vcerr("vc_FileWrite() - given file handle is not a valid file handle.");
@@ -757,7 +757,7 @@ void vc_FileWrite()
 void vc_FileWriteln()
 {
 	int handle = vc->ResolveOperand();
-	string s = vc->ResolveString() + "\r\n";
+	std::string s = vc->ResolveString() + "\r\n";
 
 	if (!handle) vc->vcerr("vc_FileWriteln() - Yo, you be writin' to a file that aint open, foo.");
 	if (handle > VCFILES) vc->vcerr("vc_FileWriteln() - given file handle is not a valid file handle.");
@@ -778,7 +778,7 @@ void vc_FileReadln()
 
 
 	char buffer[255]; 	// buffer for each read
-	string result = ""; // all the text so far
+	std::string result = ""; // all the text so far
 	int eol = 0;        // flag for when we've hit the end of a line
 	do {
 		vgets(buffer, 255, vcfiles[handle].vfptr); // read it
@@ -843,7 +843,7 @@ void vc_FileEOF()
 
 void vc_LoadSound()
 {
-	string sname = vc->ResolveString();
+	std::string sname = vc->ResolveString();
 	vc->vcreturn = (int) LoadSample(sname.c_str());
 }
 
@@ -862,7 +862,7 @@ void vc_PlaySound()
 
 void vc_CallFunction()
 {
-	string func = vc->ResolveString();
+	std::string func = vc->ResolveString();
 	std::vector<argument_t> arguments;
 	if (vc->CheckForVarargs())
 	{
@@ -987,7 +987,7 @@ void vc_FileWriteQuad()
 void vc_FileWriteString()
 {
 	int handle = vc->ResolveOperand();
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 
 	if (!handle || handle > VCFILES || !vcfiles[handle].active)
 		vc->vcerr("vc_FileWriteString() - file handle is either invalid or file is not open.");
@@ -1073,7 +1073,7 @@ void vc_pow()
 
 void vc_SetAppName()
 {
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	setWindowTitle(s.c_str());
 }
 
@@ -1115,7 +1115,7 @@ void vc_TBlitLucent()
 
 void vc_Map()
 {
-	string map = vc->ResolveString();
+	std::string map = vc->ResolveString();
 	strcpy(mapname, map.c_str());
 	die = 1;
 	done = 1;
@@ -1124,14 +1124,14 @@ void vc_Map()
 
 void vc_strcmp()
 {
-	string s1 = vc->ResolveString();
-	string s2 = vc->ResolveString();
+	std::string s1 = vc->ResolveString();
+	std::string s2 = vc->ResolveString();
 	vc->vcreturn = strcmp(s1.c_str(), s2.c_str());
 }
 
 void vc_strdup()
 {
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	int times = vc->ResolveOperand();
 	vc->vcretstr = "";
 	for (int i=0; i<times; i++)
@@ -1141,20 +1141,20 @@ void vc_strdup()
 void vc_HookTimer()
 {
 	hooktimer = 0;
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	strcpy(timerfunc, s.c_str());
 }
 
 void vc_HookRetrace()
 {
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	strcpy(renderfunc, s.c_str());
 }
 
 void vc_HookKey()
 {
 	int k = vc->ResolveOperand();
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 
 	if (k<0 || k>127) return;
 	bindarray[k] = s;
@@ -1163,7 +1163,7 @@ void vc_HookKey()
 void vc_HookButton()
 {
 	int b = vc->ResolveOperand()-1;
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 
 	if (b<0 || b>3) return;
 	bindbutton[b] = s;
@@ -1172,7 +1172,7 @@ void vc_HookButton()
 void vc_HookEntityRender()
 {
 	int i = vc->ResolveOperand();
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 
 	if (i<0 || i>=entities)
 		err("vc_HookEntityRender() - no such entity %d", i);
@@ -1438,7 +1438,7 @@ void vc_WindowCreate()
 	int y = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
 	int h = vc->ResolveOperand();
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 
 	AuxWindow *auxwin = vid_createAuxWindow();
 	auxwin->setTitle(s.c_str());
@@ -1513,7 +1513,7 @@ void vc_WindowSetPosition()
 void vc_WindowSetTitle()
 {
 	int win = vc->ResolveOperand();
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 
 	AuxWindow *auxwin = vid_findAuxWindow(win);
 	___vc_window_checkhandle("vc_WindowSetTitle",win,auxwin);
@@ -1615,7 +1615,7 @@ void vc_SetMusicVolume()
 }
 
 
-bool isdelim(char c, string s)
+bool isdelim(char c, std::string s)
 {
 	for (int i=0; i<s.length(); i++)
 		if (c==s[i])
@@ -1625,8 +1625,8 @@ bool isdelim(char c, string s)
 
 void vc_TokenCount()
 {
-	string s = vc->ResolveString();
-	string d = vc->ResolveString();
+	std::string s = vc->ResolveString();
+	std::string d = vc->ResolveString();
 
 	int n = 0;
 	int tokenindex = 0;
@@ -1648,15 +1648,15 @@ void vc_TokenCount()
 
 void vc_StringToken()
 {
-	string s = vc->ResolveString();
-	string d = vc->ResolveString();
+	std::string s = vc->ResolveString();
+	std::string d = vc->ResolveString();
 	int i = vc->ResolveOperand();
 
 	int n = 0;
 	int tokenindex = 0;
 	while (n < s.length())
 	{
-		string token = "";
+		std::string token = "";
 
 		while (n < s.length() && isdelim(s[n], d))
 			n++;
@@ -1679,7 +1679,7 @@ void vc_StringToken()
 
 // Overkill: 2005-12-28
 // Helper function.
-int strpos(string source, string sub, int start)
+int strpos(std::string source, std::string sub, int start)
 {
 	int i;
 	int count = 0;
@@ -1687,7 +1687,7 @@ int strpos(string source, string sub, int start)
 	int lensource = source.length();
 	for (i = start; i < lensource; i++)
 	{
-		if (!strcmp(sub.c_str(), source.mid(i, lensub).c_str())) return i;
+		if (!strcmp(sub.c_str(), vc_strmid(source, i, lensub).c_str())) return i;
 	}
 	return lensource;
 }
@@ -1696,15 +1696,15 @@ int strpos(string source, string sub, int start)
 // Thank you, Zip.
 void vc_strpos()
 {
-	string sub = vc->ResolveString();
-	string source = vc->ResolveString();
+	std::string sub = vc->ResolveString();
+	std::string source = vc->ResolveString();
 	int start = vc->ResolveOperand();
 	vc->vcreturn = strpos(source, sub, start);
 }
 
 // Overkill: 2005-12-28
 // Helper function.
-int GetTokenPos(string teststr, string tokens, int pos, int tok)
+int GetTokenPos(std::string teststr, std::string tokens, int pos, int tok)
 {
 	int i = 0;
 	bool last = false;
@@ -1745,8 +1745,8 @@ int GetTokenPos(string teststr, string tokens, int pos, int tok)
 void vc_GetTokenPos()
 {
 
-	string teststr = vc->ResolveString();
-	string tokens = vc->ResolveString();
+	std::string teststr = vc->ResolveString();
+	std::string tokens = vc->ResolveString();
 	int pos = vc->ResolveOperand();
 	int tok = vc->ResolveOperand();
 	vc->vcreturn = GetTokenPos(teststr, tokens, pos, tok);
@@ -1757,8 +1757,8 @@ void vc_GetTokenPos()
 // Thank you, Zip.
 void vc_TokenLeft()	// Excludes token.
 {
-	string full = vc->ResolveString();
-	string tokens = vc->ResolveString();
+	std::string full = vc->ResolveString();
+	std::string tokens = vc->ResolveString();
 	int pos = vc->ResolveOperand();
 	if (pos < 1)
 	{
@@ -1773,7 +1773,7 @@ void vc_TokenLeft()	// Excludes token.
 	}
 	else
 	{
-		vc->vcretstr = full.left(pos);
+		vc->vcretstr = vc_strleft(full,pos);
 	}
 }
 
@@ -1783,8 +1783,8 @@ void vc_TokenLeft()	// Excludes token.
 //	Fixed a bug where it included the delimiter character in TokenRight()
 void vc_TokenRight()
 {
-	string full = vc->ResolveString();
-	string tokens = vc->ResolveString();
+	std::string full = vc->ResolveString();
+	std::string tokens = vc->ResolveString();
 	int pos = vc->ResolveOperand();
 	if (pos < 1)
 	{
@@ -1799,13 +1799,13 @@ void vc_TokenRight()
 	}
 	else
 	{
-		vc->vcretstr = full.right(full.length() - pos);
+		vc->vcretstr = vc_strright(full, full.length() - pos);
 	}
 }
 
 // Overkill: 2005-12-28
 // Helper function for WrapText.
-int TextWidth(int f, string text)
+int TextWidth(int f, std::string text)
 {
 	Font *font = (Font*) f;
 	if (font == 0)
@@ -1816,15 +1816,15 @@ int TextWidth(int f, string text)
 
 // Overkill: 2005-12-28
 // Thank you, Zip.
-string strovr(string source, string rep, int offset)
+std::string strovr(std::string source, std::string rep, int offset)
 // Pass: The offset in the source to overwrite from, the string to overwrite with, the source string
 // Return: The string after overwrite
 // Assmes: Offset is less than source length
 {
 	int length = source.length();
 	int replen = rep.length();
-	if (length < replen + offset) return source.left(offset) + rep;
-	return source.left(offset) + rep + source.right(length - offset - replen);
+	if (length < replen + offset) return vc_strleft(source,offset) + rep;
+	return vc_strleft(source,offset) + rep + vc_strright(source,length - offset - replen);
 }
 
 
@@ -1832,8 +1832,8 @@ string strovr(string source, string rep, int offset)
 // Thank you, Zip.
 void vc_strovr()
 {
-	string rep = vc->ResolveString();
-	string source = vc->ResolveString();
+	std::string rep = vc->ResolveString();
+	std::string source = vc->ResolveString();
 	int offset = vc->ResolveOperand();
 	vc->vcretstr = strovr(source, rep, offset);
 }
@@ -1849,10 +1849,10 @@ void vc_WrapText()
 {
 
 	int wt_font = vc->ResolveOperand();
-	string wt_s = vc->ResolveString();
+	std::string wt_s = vc->ResolveString();
 	int wt_linelen = vc->ResolveOperand();
 
-	string wt_tpara = "";
+	std::string wt_tpara = "";
 	int curpara = 0;
 	int nextpara, lenpara, curchr, nextchr, width = 0;
 	int length = wt_s.length();
@@ -1863,7 +1863,7 @@ void vc_WrapText()
 		if (nextpara > curpara + 1)
 		{
 			lenpara = nextpara - curpara - 1;
-			wt_tpara = wt_s.mid(curpara + 1, lenpara);
+			wt_tpara = vc_strmid(wt_s,curpara + 1, lenpara);
 			if (TextWidth(wt_font, wt_tpara) > wt_linelen)
 			{
 				curchr = -1;
@@ -1871,13 +1871,13 @@ void vc_WrapText()
 				while (curchr < lenpara)
 				{
 					nextchr = strpos(wt_tpara, " ", curchr + 1);
-					width += TextWidth(wt_font, wt_tpara.mid(curchr, nextchr - curchr));
+					width += TextWidth(wt_font, vc_strmid(wt_tpara, curchr, nextchr - curchr));
 					if (width > wt_linelen)
 					{
 						// Overkill (2006-07-23): D'oh.
 						// Forgot to set the string to the return value >__>
 						wt_s = strovr(wt_s, "\n", curpara + curchr + 1);
-						width = TextWidth(wt_font, wt_tpara.mid(curchr + 1, nextchr - curchr - 1));
+						width = TextWidth(wt_font, vc_strmid(wt_tpara, curchr + 1, nextchr - curchr - 1));
 					}
 					curchr = nextchr;
 				}
@@ -1890,8 +1890,8 @@ void vc_WrapText()
 
 void vc_ToUpper()
 {
-	string s = vc->ResolveString();
-	vc->vcretstr = s.upper();
+	std::string s = vc->ResolveString();
+	vc->vcretstr = to_upper_copy(s);
 }
 
 void vc_FontHeight()
@@ -1927,7 +1927,7 @@ void vc_CHR()
 
 void vc_PlayMovie()
 {
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	vc->vcreturn = win_movie_playSimple(s.c_str());
 }
 
@@ -1939,7 +1939,7 @@ void vc_AbortMovie()
 
 void vc_MovieLoad()
 {
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	int mute = vc->ResolveOperand();
 
 	vc->vcreturn = win_movie_load(s.c_str(), mute!=0);
@@ -2040,7 +2040,7 @@ void vc_EntitySpawn()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 
 	vc->vcreturn = AllocateEntity(x*16,y*16,s.c_str());
 }
@@ -2077,7 +2077,7 @@ void vc_StalkEntity()
 void vc_EntityMove()
 {
 	int e = vc->ResolveOperand();
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	if (e<0 || e >= entities)
 		return;
 	entity[e]->SetMoveScript(s.c_str());
@@ -2085,7 +2085,7 @@ void vc_EntityMove()
 
 void vc_PlayerMove()
 {
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
     if (!myself) return;
 	myself->SetMoveScript(s.c_str());
 	while (myself->movecode)
@@ -2099,7 +2099,7 @@ void vc_PlayerMove()
 void vc_ChangeCHR()
 {
 	int e = vc->ResolveOperand();
-	string c = vc->ResolveString();
+	std::string c = vc->ResolveString();
 	if (e<0 || e >= entities)
 		return;
 	entity[e]->set_chr(c);
@@ -2194,7 +2194,7 @@ void vc_SetButtonJB()
 
 void vc_FunctionExists()
 {
-	string f = vc->ResolveString();
+	std::string f = vc->ResolveString();
 	vc->vcreturn = vc->FunctionExists(f.c_str());
 }
 
@@ -2234,33 +2234,33 @@ void vc_GetImageFromClipboard()
 
 void vc_SetInt()
 {
-	string intname = vc->ResolveString();
+	std::string intname = vc->ResolveString();
 	int value = vc->ResolveOperand();
 	vc->SetInt(intname.c_str(), value);
 }
 
 void vc_GetInt()
 {
-	string intname = vc->ResolveString();
+	std::string intname = vc->ResolveString();
 	vc->vcreturn = vc->GetInt(intname.c_str());
 }
 
 void vc_SetString()
 {
-	string strname = vc->ResolveString();
-	string value = vc->ResolveString();
+	std::string strname = vc->ResolveString();
+	std::string value = vc->ResolveString();
 	vc->SetStr(strname.c_str(), value);
 }
 
 void vc_GetString()
 {
-	string strname = vc->ResolveString();
+	std::string strname = vc->ResolveString();
 	vc->vcretstr = vc->GetStr(strname.c_str());
 }
 
 void vc_SetIntArray()
 {
-	string intname = vc->ResolveString();
+	std::string intname = vc->ResolveString();
 	int index = vc->ResolveOperand();
 	int value = vc->ResolveOperand();
 	vc->SetIntArray(intname.c_str(), index, value);
@@ -2268,22 +2268,22 @@ void vc_SetIntArray()
 
 void vc_GetIntArray()
 {
-	string intname = vc->ResolveString();
+	std::string intname = vc->ResolveString();
 	int index = vc->ResolveOperand();
 	vc->vcreturn = vc->GetIntArray(intname.c_str(), index);
 }
 
 void vc_SetStringArray()
 {
-	string strname = vc->ResolveString();
+	std::string strname = vc->ResolveString();
 	int index = vc->ResolveOperand();
-	string value = vc->ResolveString();
+	std::string value = vc->ResolveString();
 	vc->SetStrArray(strname.c_str(), index, value);
 }
 
 void vc_GetStringArray()
 {
-	string strname = vc->ResolveString();
+	std::string strname = vc->ResolveString();
 	int index = vc->ResolveOperand();
 	vc->vcretstr = vc->GetStrArray(strname.c_str(), index);
 }
@@ -2303,7 +2303,7 @@ ServerSocket *vcserver = 0;
 
 void vc_Connect()
 {
-	string ip = vc->ResolveString();
+	std::string ip = vc->ResolveString();
 	Socket *s;
 	try
 	{
@@ -2374,7 +2374,7 @@ void vc_SocketGetString()
 void vc_SocketSendString()
 {
 	Socket *s = (Socket *) vc->ResolveOperand();
-	string str = vc->ResolveString();
+	std::string str = vc->ResolveString();
 	int len = str.length();
 	if (len>4095) err("yeah uh dont send such big strings thru the network plz0r");
 	char t = '3';
@@ -2432,20 +2432,20 @@ void vc_SocketGetInt()
 
 void vc_GetUrlText()
 {
-	string url = vc->ResolveString();
+	std::string url = vc->ResolveString();
 	vc->vcretstr = getUrlText(url);
 }
 
 void vc_GetUrlImage()
 {
-	string url = vc->ResolveString();
+	std::string url = vc->ResolveString();
 	vc->vcreturn = getUrlImage(url);
 }
 
 void vc_SocketSendFile()
 {
 	Socket *s = (Socket *) vc->ResolveOperand();
-	string fn = vc->ResolveString();
+	std::string fn = vc->ResolveString();
 
 	EnforceNoDirectories(fn);
 
@@ -2470,7 +2470,7 @@ void vc_SocketGetFile()
 {
 	static char stbuf[4096];
 	Socket *s = (Socket *) vc->ResolveOperand();
-	string override = vc->ResolveString();
+	std::string override = vc->ResolveString();
 
 	EnforceNoDirectories(override);
 
@@ -2484,7 +2484,7 @@ void vc_SocketGetFile()
 	ret = s->blockread(stlen, stbuf);
 	stbuf[stlen] = 0;
 
-	string fn = stbuf;
+	std::string fn = stbuf;
 	EnforceNoDirectories(fn);
 
 	int fl;
@@ -2515,11 +2515,11 @@ void vc_SocketGetFile()
 
 void vc_ListFilePattern()
 {
-	string pattern = vc->ResolveString();
-	std::vector<string> result = listFilePattern(pattern);
+	std::string pattern = vc->ResolveString();
+	std::vector<std::string> result = listFilePattern(pattern);
 	vc->vcretstr = "";
 
-	for(std::vector<string>::iterator i = result.begin();
+	for(std::vector<std::string>::iterator i = result.begin();
 		i != result.end();
 		i++)
 	{
@@ -2530,6 +2530,7 @@ void vc_ListFilePattern()
 void vc_ImageValid()
 {
 	int handle = vc->ResolveOperand();
+	std::string x;
 
 	if (handle <= 0 || handle >= Handle::getHandleCount(HANDLE_TYPE_IMAGE) || (Handle::getPointer(HANDLE_TYPE_IMAGE,handle) == NULL) ) {
 		vc->vcreturn = 0;
@@ -2540,7 +2541,7 @@ void vc_ImageValid()
 
 void vc_Asc()
 {
-	string s = vc->ResolveString();
+	std::string s = vc->ResolveString();
 	if(s == "")
 		vc->vcreturn = 0;
 	else
@@ -2567,8 +2568,8 @@ void vc_DictGetString() {
 
 void vc_DictSetString() {
 	dict *d = DictForHandle(vc->ResolveOperand());
-	string key = vc->ResolveString();
-	string value = vc->ResolveString();
+	std::string key = vc->ResolveString();
+	std::string value = vc->ResolveString();
 	d->SetString(key, value);
 }
 
@@ -2589,21 +2590,21 @@ void vc_DictGetInt() {
 
 void vc_DictSetInt() {
 	dict *d = DictForHandle(vc->ResolveOperand());
-	string key = vc->ResolveString();
+	std::string key = vc->ResolveString();
 	int value = vc->ResolveOperand();
 	d->SetString(key, va("%d", value));
 }
 
 void vc_DictRemove() {
 	dict *d = DictForHandle(vc->ResolveOperand());
-	string key = vc->ResolveString();
+	std::string key = vc->ResolveString();
 	d->RemoveString(key);
 }
 
 // Overkill: 2007-06-20
 void vc_DictListKeys() {
 	dict *d = DictForHandle(vc->ResolveOperand());
-	string separator = vc->ResolveString();
+	std::string separator = vc->ResolveString();
 	vc->vcretstr = d->ListKeys(separator);
 }
 
@@ -2794,7 +2795,7 @@ void vc_CompileMap()
 	{
 		vc->vcerr("vc_CompileMap() - Can't compile map in release mode!");
 	}
-	string filename = vc->ResolveString();
+	std::string filename = vc->ResolveString();
 	// Get the filename sans .map extension.
 	char *s = stripext(filename.c_str());
 	// If the vc file exists, compile it in.
@@ -2813,11 +2814,11 @@ void vc_CompileMap()
 
 void vc_ListStructMembers()
 {
-	string structname = vc->ResolveString();
-	std::vector<string> result = vc->ListStructMembers(structname.c_str());
+	std::string structname = vc->ResolveString();
+	std::vector<std::string> result = vc->ListStructMembers(structname.c_str());
 	vc->vcretstr = "";
 
-	for(std::vector<string>::iterator i = result.begin();
+	for(std::vector<std::string>::iterator i = result.begin();
 		i != result.end();
 		i++)
 	{
@@ -2827,8 +2828,8 @@ void vc_ListStructMembers()
 
 void vc_CopyArray()
 {
-	string src = vc->ResolveString();
-	string dest = vc->ResolveString();
+	std::string src = vc->ResolveString();
+	std::string dest = vc->ResolveString();
 	bool result = vc->CopyArray(src.c_str(), dest.c_str());
 	vc->vcreturn = result;
 }
@@ -2897,7 +2898,7 @@ void vc_ListBuiltinFunctions()
 	vc->vcretstr = "";
 	for (int i = 0; i < NUM_LIBFUNCS; i++)
 	{
-		vc->vcretstr += string(libfuncs[i][1]) + "|";
+		vc->vcretstr += std::string(libfuncs[i][1]) + "|";
 	}
 }
 
@@ -2906,7 +2907,7 @@ void vc_ListBuiltinVariables()
 	vc->vcretstr = "";
 	for (int i = 0; i < NUM_HVARS; i++)
 	{
-		vc->vcretstr += string(libvars[i][1]) + "|";
+		vc->vcretstr += std::string(libvars[i][1]) + "|";
 	}
 }
 
@@ -2915,7 +2916,7 @@ void vc_ListBuiltinDefines()
 	vc->vcretstr = "";
 	for (int i = 0; i < NUM_HDEFS; i++)
 	{
-		vc->vcretstr += string(hdefs[i][0]) + "|";
+		vc->vcretstr += std::string(hdefs[i][0]) + "|";
 	}
 }
 
@@ -3095,8 +3096,8 @@ void VCCore::HandleLibFunc()
 		case 141: vc_SetSongPos(); break;
 		case 142: vc_TokenCount(); break;
 		case 143: vc_StringToken(); break;
-		case 144: vc->vcretstr = vc->ResolveString().upper(); break;
-		case 145: vc->vcretstr = vc->ResolveString().lower(); break;
+		case 144: vc->vcretstr = to_upper_copy(vc->ResolveString()); break;
+		case 145: vc->vcretstr = to_lower_copy(vc->ResolveString()); break;
 		case 146: vc_LoadFont2(); break;
 		case 147: vc_FontHeight(); break;
 		case 148: vc_MixColor(); break;

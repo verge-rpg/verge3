@@ -99,7 +99,7 @@ char *va(char* format, ...)
 }
 
 
-int strcasecmp(char *s1, char *s2)
+int strcasecmp(const char *s1, const char *s2)
 {
 	while (true)
 	{
@@ -165,7 +165,7 @@ int sgn(int a)
 }
 
 
-char *stripext(char *s)
+char *stripext(const char *s)
 {
 	static char strbuf[512];
 	strcpy(strbuf, s);
@@ -177,9 +177,9 @@ char *stripext(char *s)
 }
 
 
-bool ExtensionIs(char *f, char *e)
+bool ExtensionIs(const char *f, const char *e)
 {
-	char *spt = f;
+	const char *spt = f;
 	while (*spt && *spt != '.')
 		spt++;
 	spt++;

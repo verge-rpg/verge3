@@ -23,9 +23,9 @@ public:
 	int animsize[9];
 	int *anims[9];
 
-	string name;                        // the filename this was loaded from
+	std::string name;                        // the filename this was loaded from
 
-	CHR(char *fname);
+	CHR(const char *fname);
 	~CHR();
 	void save(FILE *f);	// Overkill (2006-07-20): Saver functions!
 	void render(int x, int y, int frame, image *dest);

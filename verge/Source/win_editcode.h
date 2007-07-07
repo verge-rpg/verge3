@@ -10,4 +10,4 @@
 
 
 void InitEditCode();
-void AddSourceFile(string fname);
+void AddSourceFile(std::string fname);

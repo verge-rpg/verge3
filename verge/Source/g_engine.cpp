@@ -53,7 +53,7 @@ struct CHRnode
 
 CHRnode chrnodes[MAXCHRS];
 
-CHR *RequestCHR(char *fname)
+CHR *RequestCHR(const char *fname)
 {
 	int freeslot = -1;
 	for (int i=0; i<MAXCHRS; i++)
@@ -118,7 +118,7 @@ bool CleanupCHRs()
 
 // main engine code
 
-int AllocateEntity(int x, int y, char *chr)
+int AllocateEntity(int x, int y, const char *chr)
 {
 	entity[entities] = new Entity(x, y, chr);
 	entity[entities]->index = entities;

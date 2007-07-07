@@ -21,7 +21,7 @@ void FlushKeyBuffer();
 
 // Overkill (2006-06-30): Key buffer - stores ASCII keystrokes,
 // since verge sucks at reading input fast enough.
-extern string keybuffer;
+extern std::string keybuffer;
 // Overkill (2006-06-30): The delay before keys repeat. (Defaults to 0 - no repeat).
 extern int key_input_delay;
 
@@ -32,7 +32,7 @@ extern byte key_ascii_tbl[128];
 extern byte key_shift_tbl[128];
 extern byte lastkey;
 
-extern string bindarray[256];
+extern std::string bindarray[256];
 
 #endif
 

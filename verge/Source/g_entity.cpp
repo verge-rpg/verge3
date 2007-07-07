@@ -20,7 +20,7 @@
 
 /****************************** code ******************************/
 
-Entity::Entity(int x1, int y1, char *chrfn)
+Entity::Entity(int x1, int y1, const char *chrfn)
 {
 	follower = 0;
 	follow = 0;
@@ -531,7 +531,7 @@ void Entity::do_movescript()
 	}
 }
 
-void Entity::set_chr(string fname)
+void Entity::set_chr(std::string fname)
 {
     chr = RequestCHR(fname.c_str());
 	specframe = 0;
@@ -597,7 +597,7 @@ void Entity::SetWanderBox(int x1, int y1, int x2, int y2)
 	movecode = 2;
 }
 
-void Entity::SetMoveScript(char *s)
+void Entity::SetMoveScript(const char *s)
 {
     clear_stalk();
 	set_waypoint(getx(), gety());

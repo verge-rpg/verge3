@@ -226,7 +226,7 @@ struct argument_t
 {
 	byte type_id;
 	int int_value;
-	string string_value;
+	std::string string_value;
 };
 
 class VCCore
@@ -245,16 +245,15 @@ public:
 	bool ExecuteFunctionString(const char *s);
 	bool FunctionExists(const char *str);
 	int ResolveOperand();
-	string ResolveString();
-	std::string ResolveStdString() { return (std::string)ResolveString(); }
+	std::string ResolveString();
 	void vcerr(char *s, ...);
 
 	int vcreturn;
-	string vcretstr;
+	std::string vcretstr;
 
-	std::vector<string> ListStructMembers(char *structname);
+	std::vector<std::string> ListStructMembers(const char *structname);
 
-	bool CopyArray(char *srcname, char *destname);
+	bool CopyArray(const char *srcname, const char *destname);
 
 	bool CheckForVarargs();
 	void ReadVararg(std::vector<argument_t>& vararg);
@@ -263,17 +262,17 @@ public:
 	std::vector<argument_t> argument_pass_list;
 
 	void ArgumentPassAddInt(int value);
-	void ArgumentPassAddString(string value);
+	void ArgumentPassAddString(std::string value);
 	void ArgumentPassClear();
 
-	void SetInt(char *intname, int value);
-	int  GetInt(char *intname);
-	void SetStr(char *strname, string value);
-	string GetStr(char *strname);
-	void SetIntArray(char *intname, int index, int value);
-	int  GetIntArray(char *intname, int index);
-	void SetStrArray(char *strname, int index, string value);
-	string GetStrArray(char *strname, int index);
+	void SetInt(const char *intname, int value);
+	int  GetInt(const char *intname);
+	void SetStr(const char *strname, std::string value);
+	std::string GetStr(const char *strname);
+	void SetIntArray(const char *intname, int index, int value);
+	int  GetIntArray(const char *intname, int index);
+	void SetStrArray(const char *strname, int index, std::string value);
+	std::string GetStrArray(const char *strname, int index);
 
 private:
 	std::vector<function_t*>	userfuncs[NUM_CIMAGES];
@@ -289,14 +288,14 @@ private:
 
 	int int_stack[1024+20];
 	int int_stack_base, int_stack_ptr;
-	string str_stack[1024+20];
+	std::string str_stack[1024+20];
 	int str_stack_base, str_stack_ptr;
 	int int_last_base, str_last_base;
 	std::vector < std::vector<argument_t> > vararg_stack;
 	function_t *in_func;
 
 	int *vcint;
-	string *vcstring;
+	std::string *vcstring;
 	int maxint, maxstr;
 
 	Chunk* currentvc;
@@ -304,16 +303,14 @@ private:
 	Chunk coreimages[NUM_CIMAGES];
 
 	void LoadSystemXVC();
-	void LookupOffset(int ofs, string &s);
+	void LookupOffset(int ofs, std::string &s);
 
 	void PushInt(int n);
 	int  PopInt();
-	void PushString(string s);
-	string PopString();
+	void PushString(std::string s);
+	std::string PopString();
 
-	std::string ProcessStdString() { return (std::string)ProcessString(); }
-
-	string ProcessString();
+	std::string ProcessString();
 	int  ProcessOperand();
 	int  ReadInt(int c, int i, int ofs);
 	void WriteInt(int c, int i, int ofs, int value);
@@ -329,9 +326,9 @@ private:
 	void ExecuteUserFunc(int cimage, int i, bool argument_pass = false);
 
 	int GetIntArgument(int index);
-	string GetStringArgument(int index);
+	std::string GetStringArgument(int index);
 	void SetIntArgument(int index, int value);
-	void SetStringArgument(int index, string value);
+	void SetStringArgument(int index, std::string value);
 
 	FILE *vcd;
 	int dtablvl;
@@ -348,7 +345,7 @@ private:
 	static int _vcplugins_functioncontext_get_int(void *tag) { return ((VCCore *)tag)->ResolveOperand(); }
 	static std::string _vcplugins_functioncontext_get_str(void *tag) { return std::string(((VCCore *)tag)->ResolveString().c_str()); }
 	static void _vcplugins_functioncontext_get_intret(void *tag, int val) { ((VCCore *)tag)->vcreturn = val; }
-	static void _vcplugins_functioncontext_get_strret(void *tag, std::string &val) { ((VCCore *)tag)->vcretstr = string(val.c_str()); }
+	static void _vcplugins_functioncontext_get_strret(void *tag, std::string &val) { ((VCCore *)tag)->vcretstr = std::string(val.c_str()); }
 	static int _vcplugins_functioncontext_pop_int(void *tag) { return ((VCCore *)tag)->PopInt(); }
 	static std::string _vcplugins_functioncontext_pop_str(void *tag) { return std::string(((VCCore *)tag)->PopString().c_str()); }
 

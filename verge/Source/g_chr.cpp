@@ -23,7 +23,7 @@
 
 /***************************** code *****************************/
 
-CHR::CHR(char *fname)
+CHR::CHR(const char *fname)
 {
 	VFILE *f = vopen(fname);
 	if (!f) err("CHR::CHR(), couldn't open %s", fname);

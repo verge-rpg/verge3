@@ -25,9 +25,9 @@ void TimedProcessEntities();
 void TimedProcessSprites();
 void Render();
 void RenderEntities();
-int AllocateEntity(int x, int y, char *chr);
+int AllocateEntity(int x, int y, const char *chr);
 bool ObstructAt(int x, int y);
 
 // returns if it managed to clean up at least one spot
 bool CleanupCHRs();
-CHR *RequestCHR(char *fname);
+CHR *RequestCHR(const char *fname);

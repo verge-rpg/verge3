@@ -16,14 +16,14 @@
 
 class dict {
 	public:
-		string GetString(string key);
-		void SetString(string key, string val);
-		int ContainsString(string key);
-		void RemoveString(string key);
+		std::string GetString(std::string key);
+		void SetString(std::string key, std::string val);
+		int ContainsString(std::string key);
+		void RemoveString(std::string key);
 		int Size();
-		string ListKeys(string separator);
+		std::string ListKeys(std::string separator);
 	private:
-		std::map<string,string> data;
+		std::map<std::string,std::string> data;
 };
 
 #endif

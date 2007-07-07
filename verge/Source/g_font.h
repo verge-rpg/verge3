@@ -19,8 +19,8 @@ public:
 	char fwidth[100];
 	bool incolor;
 
-	Font(char *fname, int xsize, int ysize);
-	Font(char *fname);
+	Font(const char *fname, int xsize, int ysize);
+	Font(const char *fname);
 	~Font();
 	void EnableVariableWidth();
 	bool ColumnEmpty(int cell, int column);
@@ -29,5 +29,5 @@ public:
 	void PrintCenter(char *str, int x, int y, image *dest...);
 	void PrintRight(char *str, int x, int y, image *dest ...);
 	void SetCharacterWidth(int character, int width);
-	int  Pixels(char *str);
+	int  Pixels(const char *str);
 };

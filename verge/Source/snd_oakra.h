@@ -215,14 +215,14 @@ public:
 	void StopMusic() { dummyPlayer->StopMusic(); }
 	void SetMusicVolume(int v) { dummyPlayer->SetMusicVolume(v); }
 
-	void *LoadSample(char *fn) { return 0; }
+	void *LoadSample(const char *fn) { return 0; }
 	void PlaySample(void *sample, int vol) {}
 	void StopSound(int chan) {}
 	int SoundIsPlaying(int chan) { return 0; }
 	void FreeSample(void *sample) {}
 
 
-	int LoadSong(char *fn) { return -1; }
+	int LoadSong(const char *fn) { return -1; }
 	void PlaySong(int h) {}
 	void StopSong(int h) {}
 	void SetPaused(int h, int p) {}

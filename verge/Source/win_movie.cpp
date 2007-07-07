@@ -467,7 +467,7 @@ void win_movie_close(int handle)
 	Handle::free(HANDLE_TYPE_MOVIE,handle);
 }
 
-int win_movie_load(char *fname, bool bPlayAudio)
+int win_movie_load(const char *fname, bool bPlayAudio)
 {
 	win_movie_Rec *m = new win_movie_Rec();
 	m->bPlayAudio = bPlayAudio;
@@ -629,7 +629,7 @@ void win_movie_setFrame(int movie, int frame)
 
 //this is the function that plays a simple fmv
 bool bAbortSimpleMovie = false;
-int win_movie_playSimple(char *fname)
+int win_movie_playSimple(const char *fname)
 {
 	int movie = win_movie_load(fname,true);
 	if(movie == 0)

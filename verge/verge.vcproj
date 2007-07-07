@@ -338,29 +338,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Source\a_string.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="Source\a_vfile.cpp"
 				>
 				<FileConfiguration

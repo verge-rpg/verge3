@@ -58,7 +58,7 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE zwhocares, LPSTR szComman
 	return 0;
 }
 
-void setWindowTitle(char *str) {
+void setWindowTitle(const char *str) {
 	SetWindowText(hMainWnd, str);
 }
 
@@ -507,9 +507,9 @@ int getSecond()
 	return time.wSecond	;
 }
 
-std::vector<string> listFilePattern(string pattern)
+std::vector<std::string> listFilePattern(std::string pattern)
 {
-	std::vector<string> res;
+	std::vector<std::string> res;
 	_finddata_t rec;
 	int handle = _findfirst(pattern.c_str(), &rec);
 	int result = handle;
@@ -523,7 +523,7 @@ std::vector<string> listFilePattern(string pattern)
 }
 
 
-void showMessageBox(string message)
+void showMessageBox(std::string message)
 {
 	MessageBox(GetDesktopWindow(), message.c_str(), APPNAME, MB_OK | MB_TASKMODAL);
 }

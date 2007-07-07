@@ -12,8 +12,8 @@
 #include "xerxes.h"
 #include "a_dict.h"
 
-string dict::GetString(string key) {
-	const std::map<string,string>::iterator i = data.find(key);
+std::string dict::GetString(std::string key) {
+	const std::map<std::string,std::string>::iterator i = data.find(key);
 	if(i == data.end()) {
 		vc->vcerr("dict::GetString: No such key (%s)", key.c_str());
 		return ""; // should never happen
@@ -21,16 +21,16 @@ string dict::GetString(string key) {
 	return i->second;
 }
 
-void dict::SetString(string key, string val) {
+void dict::SetString(std::string key, std::string val) {
 	data[key] = val;
 }
 
-int dict::ContainsString(string key) {
+int dict::ContainsString(std::string key) {
 	return data.count(key);
 }
 
-void dict::RemoveString(string key) {
-	const std::map<string,string>::iterator i = data.find(key);
+void dict::RemoveString(std::string key) {
+	const std::map<std::string,std::string>::iterator i = data.find(key);
 	if(i == data.end()) {
 		vc->vcerr("dict::RemoveString: No such key (%s)", key.c_str());
 		return; // should never happen
@@ -42,15 +42,15 @@ int dict::Size() {
 	return data.size();
 }
 
-string dict::ListKeys(string separator)
+std::string dict::ListKeys(std::string separator)
 {
-	string s = "";
+	std::string s = "";
 
-	for(std::map<string,string>::iterator i = data.begin();
+	for(std::map<std::string,std::string>::iterator i = data.begin();
 		i != data.end();
 		i++)
 	{
-		s += string(i->first) + separator;
+		s += std::string(i->first) + separator;
 	}
 
 	return s;

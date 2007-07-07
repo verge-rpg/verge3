@@ -62,7 +62,7 @@ LRESULT APIENTRY editcode_WindowProc(HWND hWnd, UINT message,WPARAM wParam, LPAR
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-void AddSourceFile(string fname)
+void AddSourceFile(std::string fname)
 {
 	if(SendMessage(hListboxVC,LB_FINDSTRINGEXACT,-1,(LPARAM)fname.c_str()) == LB_ERR)
 		SendMessage(hListboxVC,LB_ADDSTRING,0,(LPARAM)fname.c_str());

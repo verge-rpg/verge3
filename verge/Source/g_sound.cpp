@@ -45,19 +45,19 @@ bool snd_Init(int soundEngine) {
 //global sound functions--link to active sound engine
 // Dummy music interface
 // Added checks for snd_engine - Jesse 19-10-2005
-void PlayMusic(char *sng) { if(snd_engine) snd_engine->PlayMusic(sng); }
+void PlayMusic(const char *sng) { if(snd_engine) snd_engine->PlayMusic(sng); }
 void StopMusic() { if(snd_engine) snd_engine->StopMusic(); }
 void SetMusicVolume(int v) { if(snd_engine) snd_engine->SetMusicVolume(v); }
 
 // Sound effect interface
-void *LoadSample(char *fn) { if(snd_engine) return snd_engine->LoadSample(fn); else return 0; }
+void *LoadSample(const char *fn) { if(snd_engine) return snd_engine->LoadSample(fn); else return 0; }
 void PlaySample(void *s, int vol) { if(snd_engine) snd_engine->PlaySample(s, vol); }
 void StopSound(int chan) { if(snd_engine) snd_engine->StopSound(chan); }
 // Overkill (2006-11-20)
 int SoundIsPlaying(int chan) { if(snd_engine) return snd_engine->SoundIsPlaying(chan); else return 0; } 
 void FreeSample(void *s) { if(snd_engine) snd_engine->FreeSample(s); }
 
-int LoadSong(char *fn) { if(snd_engine) return snd_engine->LoadSong(fn); else return -1; }
+int LoadSong(const char *fn) { if(snd_engine) return snd_engine->LoadSong(fn); else return -1; }
 void PlaySong(int h) { if(snd_engine) snd_engine->PlaySong(h); }
 void StopSong(int h) { if(snd_engine) snd_engine->StopSong(h); }
 void SetPaused(int h, int p) { if(snd_engine) snd_engine->SetPaused(h,p); }

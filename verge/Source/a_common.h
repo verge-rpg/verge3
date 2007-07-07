@@ -18,14 +18,14 @@ byte* ImageTo24bpp(image *img);
 void log_Init(bool on);
 void log(char *text, ...);
 char *va(char* format, ...);
-int strcasecmp(char *s1, char *s2);
+int strcasecmp(const char *s1, const char *s2);
 int fncmp(const char *s1, const char *s2);
-bool ExtensionIs(char *f, char *e);
-bool isletter(char c);
+bool ExtensionIs(const char *f, const char *e);
+bool isletter(const char c);
 void strclean(char *s);
 int sgn(int a);
 int rnd(int lo, int hi);
 void arandseed(unsigned int seed);
-char *stripext(char *s);
+char *stripext(const char *s);
 
 #endif

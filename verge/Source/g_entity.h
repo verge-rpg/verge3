@@ -31,7 +31,7 @@
 class Entity
 {
 public:
-	Entity(int x, int y, char *chrfn);
+	Entity(int x, int y, const char *chrfn);
 	~Entity();
 	int getx();
 	int gety();
@@ -52,11 +52,11 @@ public:
 	void clear_stalk(); // stop following people, if we are
     int get_leader_framect();
     void set_framect_follow(int f); // set our and our follower's framect
-    void set_chr(string fname);
+	void set_chr(std::string fname);
 
 	void SetWanderZone();
 	void SetWanderBox(int x1, int y1, int x2, int y2);
-	void SetMoveScript(char *script);
+	void SetMoveScript(const char *script);
 	void SetMotionless();
 	void SetWanderDelay(int n);
 
@@ -78,9 +78,9 @@ public:
 	int wx1, wy1, wx2, wy2;
     int movemult;
 	int index;
-	string description; // Overkill - 2006-05-21
-	string hookrender;
-	string script;
+	std::string description; // Overkill - 2006-05-21
+	std::string hookrender;
+	std::string script;
 	char movestr[256];
 	int moveofs;
 	Entity *follow, *follower;

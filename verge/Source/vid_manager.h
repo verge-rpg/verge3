@@ -52,7 +52,7 @@ public:
 	virtual void setResolution(int w, int h) = 0;
 	virtual void setSize(int w, int h) = 0;
 	virtual void setVisibility(bool vis) = 0;
-	virtual void setTitle(char *title) = 0;
+	virtual void setTitle(const char *title) = 0;
 	virtual void positionCommand(int command, int arg1, int arg2) =0;
 };
 

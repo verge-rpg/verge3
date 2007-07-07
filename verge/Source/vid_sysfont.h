@@ -17,7 +17,7 @@ void PrintRight(int x1, int y1, char *str, image *dest);
 void PrintCenter(int x1, int y1, char *str, image *dest, ...);
 void print_char(char, image *dest);
 void PrintString(char *, image *dest, ...);
-int  pixels(char *);
+int  pixels(const char *);
 void TextColor(int);
 extern int fontx, fonty;
 

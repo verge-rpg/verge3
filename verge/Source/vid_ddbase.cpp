@@ -70,7 +70,7 @@ public:
 	void setPosition(int x, int y);
 	void setSize(int w, int h);
 	void setVisibility(bool vis);
-	void setTitle(char *title);
+	void setTitle(const char *title);
 	void positionCommand(int command, int arg1, int arg2);
 };
 
@@ -482,7 +482,7 @@ void dd_Window::setVisibility(bool vis)
 	}
 	bVisible = vis;
 }
-void dd_Window::setTitle(char *title)
+void dd_Window::setTitle(const char *title)
 {
 	SetWindowText(hwnd,title);
 }

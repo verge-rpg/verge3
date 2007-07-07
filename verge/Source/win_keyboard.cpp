@@ -22,7 +22,7 @@
 
 // Overkill (2006-06-30): Key buffer - stores ASCII keystrokes,
 // since verge sucks at reading input fast enough.
-string keybuffer;
+std::string keybuffer;
 // Overkill (2006-06-30): The delay before keys repeat. (Defaults to 0 - no repeat).
 int key_input_delay;
 
@@ -33,7 +33,7 @@ LPDIRECTINPUTDEVICE di_joy;
 char keys[256];
 byte lastpressed;
 byte lastkey;
-string bindarray[256];
+std::string bindarray[256];
 
 byte key_ascii_tbl[128] =
 {
@@ -96,7 +96,7 @@ int ParseKeyEvent()
 				// Backspace.
 				if (lastpressed == SCAN_BACKSP)
 				{
-					keybuffer = keybuffer + 8;
+					keybuffer = keybuffer + (char)8;
 				}
 				// Enter.
 				else if (lastpressed == SCAN_ENTER)
@@ -105,7 +105,7 @@ int ParseKeyEvent()
 				}
 				else
 				{
-					keybuffer = keybuffer + lastkey;
+					keybuffer = keybuffer + (char)lastkey;
 				}
 
 				if (lastpressed != repeatedkey)
@@ -183,7 +183,7 @@ int ParseKeyEvent()
 		// Backspace.
 		if (repeatedkey == SCAN_BACKSP)
 		{
-			keybuffer = keybuffer + 8;
+			keybuffer = keybuffer + (char)8;
 		}
 		// Enter.
 		else if (repeatedkey == SCAN_ENTER)
@@ -192,7 +192,7 @@ int ParseKeyEvent()
 		}
 		else
 		{
-			keybuffer = keybuffer + mykey;
+			keybuffer = keybuffer + (char)mykey;
 		}
 		// Update the timestamp, so it'll repeat at a sane rate again.
 		key_timer = systemtime;
@@ -215,7 +215,7 @@ void UpdateKeyboard()
 		// If the string gets too long, shorten it to the 255 most recent characters.
 		if (keybuffer.length() > 255)
 		{
-			keybuffer = keybuffer.right(255);
+			keybuffer = vc_strright(keybuffer,255);
 		}
 	}
 	while (result);

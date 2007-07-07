@@ -14,18 +14,18 @@ public:
 	bool init();
 	void shutdown();
 
-	void PlayMusic(char *sng);
+	void PlayMusic(const char *sng);
 	void StopMusic();
 	void SetMusicVolume(int v);
 
-	void *LoadSample(char *fn);
+	void *LoadSample(const char *fn);
 	void PlaySample(void *sample, int vol);
 	void StopSound(int chan);
 	int SoundIsPlaying(int chan); // Overkill (2006-11-20)
 	void FreeSample(void *sample);
 
 
-	int LoadSong(char *fn);
+	int LoadSong(const char *fn);
 	void PlaySong(int h);
 	void StopSong(int h);
 	void SetPaused(int h, int p);

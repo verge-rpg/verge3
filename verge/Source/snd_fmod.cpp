@@ -45,7 +45,7 @@ static bool useDumb = false;
 class DumbWrapper {
 public:
 	FSOUND_STREAM *stream;
-	bool load(char *fname) {
+	bool load(const char *fname) {
 		int len = strlen(fname);
 		if(toupper(fname[len-1]) == 'T')
 			duh = dumb_load_it_quick(fname);
@@ -207,7 +207,7 @@ void killmodule()
 	#endif
 }
 
-void SoundEngine_Fmod::PlayMusic(char *sng)
+void SoundEngine_Fmod::PlayMusic(const char *sng)
 {
 	// Check all possible fail conditions. We do this so that if it does fail, we don't
 	// unnessarily stop whatever is presently playing.
@@ -288,7 +288,7 @@ void SoundEngine_Fmod::SetMusicVolume(int v)
 
 /******************** Sound effects interface *********************/
 
-void* SoundEngine_Fmod::LoadSample(char *fn)
+void* SoundEngine_Fmod::LoadSample(const char *fn)
 {
 	FSOUND_SAMPLE *s = FSOUND_Sample_Load(FSOUND_UNMANAGED, fn, 0, 0, 0);
 	FSOUND_Sample_SetMode(s, FSOUND_LOOP_OFF);
@@ -320,7 +320,7 @@ void SoundEngine_Fmod::FreeSample(void *s)
 
 /******************** Advanced Music Interface ********************/
 
-int SoundEngine_Fmod::LoadSong(char *fn)
+int SoundEngine_Fmod::LoadSong(const char *fn)
 {
 	int si = -1;
 	for (int i=0; i<MAX_SONGS; i++)

@@ -20,7 +20,7 @@ LRESULT APIENTRY win_auxWindowProc(HWND hWnd, UINT message,WPARAM wParam, LPARAM
 void win_addWindow(HWND window);
 void win_removeWindow(HWND window);
 
-void setWindowTitle(char *str);
+void setWindowTitle(const char *str);
 
 char *clipboard_getText();
 void clipboard_setText(const char *text);
@@ -43,9 +43,9 @@ int getHour();
 int getMinute();
 int getSecond();
 
-std::vector<string> listFilePattern(string pattern);
+std::vector<std::string> listFilePattern(std::string pattern);
 
 
-void showMessageBox(string message);
+void showMessageBox(std::string message);
 
 #endif

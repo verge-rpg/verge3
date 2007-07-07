@@ -116,7 +116,7 @@ void PrintString(char *str, image *dest, ...)
 	}
 }
 
-int pixels(char *str)
+int pixels(const char *str)
 {
 	int pix;
 

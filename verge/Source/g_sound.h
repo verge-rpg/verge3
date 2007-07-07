@@ -19,18 +19,18 @@ public:
 	virtual bool init()= 0;
 	virtual void shutdown()= 0;
 
-	virtual void PlayMusic(char *sng) = 0;
+	virtual void PlayMusic(const char *sng) = 0;
 	virtual void StopMusic() = 0;
 	virtual void SetMusicVolume(int v) = 0;
 
-	virtual void *LoadSample(char *fn) = 0;
+	virtual void *LoadSample(const char *fn) = 0;
 	virtual void PlaySample(void *sample, int vol) = 0;
 	virtual void StopSound(int chan) = 0;
 	virtual int SoundIsPlaying(int chan) = 0;
 	virtual void FreeSample(void *sample) = 0;
 
 
-	virtual int LoadSong(char *fn) = 0;
+	virtual int LoadSong(const char *fn) = 0;
 	virtual void PlaySong(int h) = 0;
 	virtual void StopSong(int h) = 0;
 	virtual void SetPaused(int h, int p) = 0;
@@ -46,18 +46,18 @@ bool snd_Init(int soundEngine);
 //////////////////////////////////////
 //global sound functions--link to active sound engine
 // Dummy music interface
-void PlayMusic(char *sng);
+void PlayMusic(const char *sng);
 void StopMusic();
 int SoundIsPlaying(int chan); // Overkill (2006-11-20)
 void SetMusicVolume(int v);
 
 // Sound effect interface
-void *LoadSample(char *fn);
+void *LoadSample(const char *fn);
 void PlaySample(void *s, int vol);
 void StopSound(int chan);
 void FreeSample(void *s);
 
-int LoadSong(char *fn);
+int LoadSong(const char *fn);
 void PlaySong(int h);
 void StopSong(int h);
 void SetPaused(int h, int p);
