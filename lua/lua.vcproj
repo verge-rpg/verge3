@@ -105,6 +105,8 @@
 				InlineFunctionExpansion="2"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
+				EnableFiberSafeOptimizations="false"
+				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="../boost-1.34.0;&quot;lua-5.1.2&quot;;luabind"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				RuntimeLibrary="0"
