@@ -16,6 +16,7 @@
 
 #include "xerxes.h"
 #include "garlick.h"
+#include "lua_main.h"
 
 /****************************** data ******************************/
 
@@ -30,6 +31,7 @@ bool decompile = false;
 bool editcode = false;
 int gamerate = 100;
 int soundengine = 0;
+bool use_lua = false;
 
 VCCore *vc;
 VCCompiler *vcc;
@@ -41,6 +43,8 @@ void LoadConfig()
 	cfg_Init("verge.cfg");
 	cfg_SetDefaultKeyValue("startmap", "");
 
+	if (cfg_KeyPresent("lua"))
+		use_lua = cfg_GetIntKeyValue("lua") ? true : false;
 	if (cfg_KeyPresent("xres"))
 		v3_xres = cfg_GetIntKeyValue("xres");
 	if (cfg_KeyPresent("yres"))
@@ -159,10 +163,27 @@ void InitGarlick() {
 	Garlick_cb_tell = Garlick_vf_tell;
 	Garlick_cb_seek = Garlick_vf_seek;
 }
-//---
 
+
+class VCScriptEngine : public ScriptEngine {
+public:
+	bool ExecuteFunctionString(const char *s)  {
+		return vc->ExecuteFunctionString(s);
+	}
+	bool FunctionExists(const char *str) {
+		return vc->FunctionExists(str);
+	}
+	void ExecAutoexec() {
+		vc->ExecAutoexec();
+	}
+};
+
+//---
+void funk();
 void xmain(int argc, char *argv[])
 {
+	funk();
+
 	InitGarlick();
 	Handle::init();
 	LoadConfig();
@@ -208,20 +229,31 @@ void xmain(int argc, char *argv[])
 		InitEditCode();
 	}
 
+	LUA *lua;
 	if (!releasemode)
 	{
 		DisplayCompileImage();
-		bool result = vcc->CompileAll();
-		if (!result) err(vcc->errmsg);
-		vcc->ExportSystemXVC();
-		result = vcc->CompileMaps();
-		if (!result) err(vcc->errmsg);
+		if(use_lua) {
+			lua = new LUA();
+			lua->compileSystem();
+			se = (ScriptEngine*)lua;
+		} else {
+			bool result = vcc->CompileAll();
+			if (!result) err(vcc->errmsg);
+			vcc->ExportSystemXVC();
+			result = vcc->CompileMaps();
+			if (!result) err(vcc->errmsg);
+		}
 	}
 
-	vc = new VCCore();
-	if (decompile)
-		vc->Decompile();
-	vc->ExecAutoexec();
+	if(!use_lua) {
+		vc = new VCCore();
+		if (decompile)
+			vc->Decompile();
+		se = new VCScriptEngine();
+	}
+
+	se->ExecAutoexec();
 
 	while (true && strlen(mapname))
 		Engine_Start(mapname);

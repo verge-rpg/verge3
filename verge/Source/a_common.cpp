@@ -120,7 +120,7 @@ char mycharcmp(char c)
 	return z;
 }
 
-int fncmp(char *s1, char *s2)
+int fncmp(const char *s1, const char *s2)
 {
 	while (true)
 	{

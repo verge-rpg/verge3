@@ -22,7 +22,7 @@
 #include <stdarg.h>
 
 extern char *va(char* format, ...);
-extern void err(char* str, ...);
+extern void err(const char* str, ...);
 extern void log(char* str, ...);
 extern char *stripext(char *s);
 

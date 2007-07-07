@@ -16,7 +16,7 @@
 
 #include "xerxes.h"
 
-image* xLoadImage_int_respect8bitTransparency(char* fname)
+image* xLoadImage_int_respect8bitTransparency(const char* fname)
 {
 	image* newimage;
 	
@@ -106,7 +106,7 @@ image* xLoadImage_int_respect8bitTransparency(char* fname)
 	}
 }
 
-image *xLoadImage_int(char *fname,int tflag)
+image *xLoadImage_int(const char *fname,int tflag)
 {
 	image *newimage;
 
@@ -173,17 +173,17 @@ image *xLoadImage_int(char *fname,int tflag)
 }
 //#endif
 
-image *xLoadImage(char *fname)
+image *xLoadImage(const char *fname)
 {
 	return xLoadImage_int(fname, 0);
 }
 
-image *xLoadImage0(char *fname)
+image *xLoadImage0(const char *fname)
 {
 	return xLoadImage_int(fname, 1);
 }
 
-image* xLoadImage8(char* fname)
+image* xLoadImage8(const char* fname)
 {
 	return xLoadImage_int_respect8bitTransparency(fname);
 }

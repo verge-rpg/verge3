@@ -242,10 +242,11 @@ public:
 	void LoadMapVC(VFILE *f); // same as LoadCore with map core
 	void ExecAutoexec();
 	void Decompile();
-	bool ExecuteFunctionString(char *s);
-	bool FunctionExists(char *str);
+	bool ExecuteFunctionString(const char *s);
+	bool FunctionExists(const char *str);
 	int ResolveOperand();
 	string ResolveString();
+	std::string ResolveStdString() { return (std::string)ResolveString(); }
 	void vcerr(char *s, ...);
 
 	int vcreturn;
@@ -310,6 +311,8 @@ private:
 	void PushString(string s);
 	string PopString();
 
+	std::string ProcessStdString() { return (std::string)ProcessString(); }
+
 	string ProcessString();
 	int  ProcessOperand();
 	int  ReadInt(int c, int i, int ofs);
@@ -351,8 +354,6 @@ private:
 
 };
 
-void HookTimer();
-void HookRetrace();
 extern bool die;
 extern int vc_paranoid, vc_arraycheck;
 extern char renderfunc[255], timerfunc[255];

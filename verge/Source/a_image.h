@@ -14,9 +14,9 @@
 
 extern int width, depth;
 
-image *xLoadImage(char *fname);
-image *xLoadImage0(char *name);
-byte *xLoadImage8bpp(char *fname);
-image *xLoadImage8(char *fname);
+image *xLoadImage(const char *fname);
+image *xLoadImage0(const char *name);
+byte *xLoadImage8bpp(const char *fname);
+image *xLoadImage8(const char *fname);
 
 #endif

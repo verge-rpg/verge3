@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;win32;../dumb/include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;MIKMOD_STATIC;_CRT_SECURE_NO_DEPRECATE;USE_DUMB"
+				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;win32;../dumb/include;&quot;../lua/lua-5.1.2&quot;;&quot;../boost-1.34.0&quot;;../lua/luabind"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;MIKMOD_STATIC;_CRT_SECURE_NO_DEPRECATE;USE_DUMB;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib vfw32.lib winmm.lib ws2_32.lib win32/dxguid.lib win32/ddraw.lib win32/dinput.lib wininet.lib ../zlib/debug/zlib.lib ../corona/output/debug/corona.lib ../flac-1.1.2/obj/$(ConfigurationName)/lib/libFLAC_static.lib user32.lib gdi32.lib ../oakra/$(ConfigurationName)/oakra.lib ../fmod/fmodvc.lib"
+				AdditionalDependencies="msacm32.lib vfw32.lib winmm.lib ws2_32.lib win32/dxguid.lib win32/ddraw.lib win32/dinput.lib wininet.lib ../zlib/debug/zlib.lib ../corona/output/debug/corona.lib ../flac-1.1.2/obj/$(ConfigurationName)/lib/libFLAC_static.lib user32.lib gdi32.lib ../oakra/$(ConfigurationName)/oakra.lib ../fmod/fmodvc.lib ../lua/$(ConfigurationName)/lua.lib"
 				OutputFile="$(OutDir)/verge.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -395,6 +395,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Source\g_script.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\g_sound.cpp"
 				>
 				<FileConfiguration
@@ -462,6 +466,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Source\lua_main.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\p_datastructs.cpp"
 				>
 				<FileConfiguration
@@ -495,7 +503,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
+						UsePrecompiledHeader="1"
 						PrecompiledHeaderThrough="xerxes.h"
 					/>
 				</FileConfiguration>
@@ -792,6 +800,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\g_script.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\g_sound.h"
 				>
 			</File>
@@ -809,6 +821,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\garlick.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\lua_main.h"
 				>
 			</File>
 			<File

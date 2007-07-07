@@ -51,24 +51,6 @@ string event_str;
 
 /****************************** code ******************************/
 
-void HookTimer()
-{
-	if (strlen(timerfunc))
-	{
-		while (hooktimer)
-		{
-			vc->ExecuteFunctionString(timerfunc);
-			hooktimer--;
-		}
-	}
-}
-
-void HookRetrace()
-{
-	if (strlen(renderfunc))
-		vc->ExecuteFunctionString(renderfunc);
-}
-
 VCCore::VCCore()
 {
 	int_stack_base = 0;
@@ -117,7 +99,7 @@ void VCCore::ExecAutoexec()
 	ExecuteFunctionString("autoexec");
 }
 
-bool VCCore::ExecuteFunctionString(char *str)
+bool VCCore::ExecuteFunctionString(const char *str)
 {
 	string s = str;
 	s = s.lower();
@@ -137,7 +119,7 @@ bool VCCore::ExecuteFunctionString(char *str)
 	return false;
 }
 
-bool VCCore::FunctionExists(char *str)
+bool VCCore::FunctionExists(const char *str)
 {
 string s = str;
 	s = s.lower();
@@ -441,7 +423,7 @@ int VCCore::ReadInt(int category, int loc, int ofs)
 			switch (loc)
 			{
 				case 2: return keys[max(ofs,256)]; break;
-				case 25: return sticks[cur_stick].button[max(ofs,32)];
+				case 25: if(ofs<0 || ofs>31) vcerr("Invalid button number: 0..31 inclusive are valid."); else return sticks[cur_stick].button[max(ofs,32)];
 				case 43: if (ofs>=0 && ofs<entities) return entity[ofs]->getx(); return 0;
 				case 44: if (ofs>=0 && ofs<entities) return entity[ofs]->gety(); return 0;
 				case 45: if (ofs>=0 && ofs<entities) return entity[ofs]->specframe; return 0;
@@ -1559,6 +1541,9 @@ std::vector<string> VCCore::ListStructMembers(char *structname)
 			return result;
 		}
 	}
+
+	err("Unexpected condition in VCCore::ListStructMembers! please contact tech support immediately!");
+	return result;
 }
 
 bool VCCore::CopyArray(char *srcname, char *destname)

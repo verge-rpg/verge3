@@ -42,9 +42,9 @@ struct mountstruct
 extern mountstruct pack[10];
 extern int filesmounted;
 
-bool Exist(char *fname);
+bool Exist(const char *fname);
 bool VExist(char *fname);
-VFILE *vopen(char *fname);
+VFILE *vopen(const char *fname);
 void MountVFile(char *fname);
 void flip(void *d, int size);
 int _vread(void *dest, int len, VFILE *f);

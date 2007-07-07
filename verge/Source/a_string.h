@@ -196,6 +196,7 @@ public:
 
 	// indexed char retrieval
 	char operator[](s32 n) const;
+	operator std::string() { return std::string(c_str()); }
 
 	// transformers
 	string upper();

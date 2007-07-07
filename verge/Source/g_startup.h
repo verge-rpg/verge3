@@ -12,6 +12,7 @@
 extern int v3_xres, v3_yres;
 extern bool windowmode;
 extern bool sound;
+extern bool use_lua;
 extern bool cheats;
 extern bool automax;
 extern bool releasemode;

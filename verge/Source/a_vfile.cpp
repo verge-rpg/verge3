@@ -24,7 +24,7 @@ char headertag[]={ 'V','3','P','A','K',0 };
 
 // ***************************** Code *****************************
 
-bool Exist(char *fname)
+bool Exist(const char *fname)
 {
 	FILE *tempf;
 
@@ -127,7 +127,7 @@ void MountVFile(char *fname)
 	filesmounted++;
 }
 
-VFILE *vopen(char *fname)
+VFILE *vopen(const char *fname)
 {
 	VFILE *tmp;
 	char rf=0,vf=0;

@@ -19,7 +19,7 @@ void log_Init(bool on);
 void log(char *text, ...);
 char *va(char* format, ...);
 int strcasecmp(char *s1, char *s2);
-int fncmp(char *s1, char *s2);
+int fncmp(const char *s1, const char *s2);
 bool ExtensionIs(char *f, char *e);
 bool isletter(char c);
 void strclean(char *s);

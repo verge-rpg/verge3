@@ -11,6 +11,14 @@
 #ifndef XERXES_H
 #define XERXES_H
 
+//version info macros
+#define DEF_VERSION "\"Verge 3.0c 2007.05.02\""
+#define DEF_BUILD "20070502"
+#ifdef __APPLE__
+#define DEF_OS "\"mac\""
+#else
+#define DEF_OS "\"win\""
+#endif
 
 #include <math.h>
 #include <vector>
@@ -159,6 +167,7 @@ typedef unsigned char  byte;
 
 #endif
 
+#include "g_script.h"
 #include "g_controls.h"
 #include "g_chr.h"
 #include "g_entity.h"
@@ -178,7 +187,7 @@ typedef unsigned char  byte;
 /* prototypes */
 
 void xmain(int argc, char *argv[]);
-void err(char *s, ...);
+void err(const char *s, ...);
 void HandleMessages();
 
 #endif

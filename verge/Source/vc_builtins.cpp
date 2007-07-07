@@ -8,7 +8,7 @@
 /// If you have altered this source file, please log your name, date, and what
 /// changes you made below this line.
 
-
+#include "xerxes.h"
 #include "opcodes.h"
 
 char* libfuncs[NUM_LIBFUNCS][3] = {
@@ -410,13 +410,9 @@ char* libvars[NUM_HVARS][3] = {
 
 char* hdefs[NUM_HDEFS][2] = {
   /* identifier,    value */
-	{"_version",	"\"Verge 3.0c 2007.05.02\"" },
-	{"_build",      "20070502" },
-#ifdef __APPLE__
-    {"_os",          "\"mac\""},
-#else
-    {"_os",          "\"win\""},
-#endif
+	{"_version",	DEF_VERSION },
+	{"_build",      DEF_BUILD },
+    {"_os",         DEF_OS },
 	{"screen",		"1" },
 	{"FILE_READ",	"1" },
 	{"FILE_WRITE",	"2" },

@@ -1,0 +1,24 @@
+void autoexec() 
+{
+	int imMouseCursor = LoadImage( "mouse-cursor.pcx" );
+
+	/// this loop runs forever.
+	while(1)
+	{
+		rectfill(0,0,320,240,makecolor(0,100,200),screen);
+		printstring(0,0,screen,0"hi!");
+		
+		/// TBlit stands for "Transparent Blit"
+		/// "Blit" means "draw an image onto another image".
+		/// The transparency bit
+		TBlit(
+			mouse.x,mouse.y,
+			imMouseCursor,
+			screen
+		);
+		
+		
+		
+		ShowPage();
+	}
+}

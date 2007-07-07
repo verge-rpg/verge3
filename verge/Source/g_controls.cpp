@@ -23,7 +23,7 @@ byte b1, b2, b3, b4;
 byte kill_up, kill_down, kill_left, kill_right;
 byte kill_b1, kill_b2, kill_b3, kill_b4;
 
-string bindbutton[4];
+std::string bindbutton[4];
 
 byte k_b1 = SCAN_ENTER,
      k_b2 = SCAN_ALT,
@@ -85,6 +85,7 @@ void UpdateControls()
 	if (b4 && kill_b4) b4 = false;
 
 	//mbg 9/5/05 todo removed for psp
+	//TODO LUA
 	if (b1 && !oldb1) vc->ExecuteFunctionString(bindbutton[0].c_str());
 	if (b2 && !oldb2) vc->ExecuteFunctionString(bindbutton[1].c_str());
 	if (b3 && !oldb3) vc->ExecuteFunctionString(bindbutton[2].c_str());

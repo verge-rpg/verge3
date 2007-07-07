@@ -112,7 +112,7 @@
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="&quot;jpeg-6b&quot;;..\zlib;&quot;libpng-1.2.1&quot;;libungif-4.1.0"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_WINDOWS;CORONA_EXPORTS;_CRT_SECURE_NO_DEPRECATE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_WINDOWS;CORONA_EXPORTS;_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				BufferSecurityCheck="false"

@@ -16,6 +16,7 @@
 
 #include "xerxes.h"
 #include <io.h>
+#include <fcntl.h>
 /***************************** data *****************************/
 
 HWND hMainWnd;
@@ -44,6 +45,13 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE zwhocares, LPSTR szComman
 	srand(timeGetTime());
 	log_Init(true);
 
+	//---this code is handy if you want to debug. bind it in to a debug flag later..
+	AllocConsole();
+	int lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+	int hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+	FILE *fp = _fdopen( hConHandle, "w" );
+	*stdout = *fp;
+	//---------
 
 	xmain(__argc,__argv);
 	err("");
@@ -69,7 +77,7 @@ char *clipboard_getText()
 	return buf;
 }
 
-void clipboard_setText(char *text)
+void clipboard_setText(const char *text)
 {
 	HANDLE h = GlobalAlloc(GMEM_MOVEABLE,strlen(text)+1);
 	char *cp = (char *)GlobalLock(h);
@@ -410,7 +418,7 @@ LRESULT APIENTRY win_gameWindowProc(HWND hWnd, UINT message,WPARAM wParam, LPARA
 }
 
 
-void err(char *str, ...)
+void err(const char *str, ...)
 {
 	va_list argptr;
 	char msg[256];
