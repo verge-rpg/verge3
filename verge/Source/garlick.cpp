@@ -152,12 +152,7 @@ void GarlickDecodeFlac(GarlickFile *gf) {
 
 	//prepare flac
 	FLAC__StreamDecoder *decoder = FLAC__stream_decoder_new();
-	FLAC__stream_decoder_set_client_data(decoder,gf);
-	FLAC__stream_decoder_set_read_callback(decoder,GarlickDecodeFlac_Read);
-	FLAC__stream_decoder_set_write_callback(decoder,GarlickDecodeFlac_Write);
-	FLAC__stream_decoder_set_metadata_callback(decoder,GarlickDecodeFlac_Metadata);
-	FLAC__stream_decoder_set_error_callback(decoder, GarickDecodeFlac_Error);
-	FLAC__stream_decoder_init(decoder);
+	FLAC__stream_decoder_init_stream(decoder, GarlickDecodeFlac_Read, 0, 0, 0, 0, GarlickDecodeFlac_Write, GarlickDecodeFlac_Metadata, GarickDecodeFlac_Error, (void*)gf);
 
 	//read the size of the flac stream
 	Garlick_cb_read(&gf->flac_in_counter,1,4,gf->lib);
