@@ -2,17 +2,47 @@
 Verge 3 Changelog
 ================================================
 
+Revision 75 (2007-07-07) (Overkill)
+========================
+* Updated the executable's version info. I think it's fair to see we are now Verge 3.1, given it's been a few years since the last actual version numbering update thing and there have been plenty of changes.
+* Never actually thought till now that maybe I should be in the CREDITS and LICENSE texts. I've contributed enough over the past two years to be acknowledged slightly, I think.
+* zeromus didn't document a lot of his recent changes to source in this log. Fixed that through copying the log messages in the svn itself to here.
+
+Revision 74 (2007-07-07) (zeromus)
+========================
+Moved upx to a win32-specific folder.
+
+Revision 73 (2007-07-07) (zeromus)
+========================
+I did something crazy. I removed a_string from the project, replacing it everywhere with std::string complex games run. I think I did it right. If you get tired of typing std:: everywhere, feel free to try setting up using namespace std in xerxes.h.
+
+Revision 72 (2007-07-07) (zeromus)
+========================
+Well, I still wanted a branches folder. I just wanted it to be empty. Also, the last verge.exe sucked.
+
+Revision 71 (2007-07-07) (zeromus)
+========================
+Removed the lua branch. Some cleanups to trunk, and a little better release mode configuration. Added PCH to release mode.
+
+Revision 68 (2007-07-07) (zeromus)
+========================
+Okay, that lua branch sucked. Wasn't worth the trouble. It was easier to just fix vc so it works again. Henceforth I shall develop vc and lua script binding code in parallel!
+
+Revision 66 (2007-07-07) (zeromus)
+========================
+Bringing some things up to date, fiddling with sound systems, re-added flac (garlick doesnt use it yet). This is a work in progress.
+
 Revision 63 (2007-07-06) (McGrue)
 ========================
 Put ddraw.h and dinput.h into \trunk\verge\Source so it will actually compile.  
 
-Revision 58 (2007-07-02) (Overkill)
+Revision 59 (2007-07-02) (Overkill)
 ========================
-Added the operator keywords "and", "or", "not", which are equivalent to "&&", "||", "!". These keywords might make it easier for new users to pick up the VergeC, or at least give an option to those who prefer words to symbols. It is probably in the best interest of people to not mix these two, in order to keep a consistent style in your code.
+* Added the operator keywords "and", "or", "not", which are equivalent to "&&", "||", "!". These keywords might make it easier for new users to pick up the VergeC, or at least give an option to those who prefer words to symbols. It is probably in the best interest of people to not mix these two, in order to keep a consistent style in your code.
 
 Revision 57 (2007-07-02) (Overkill)
 ========================
-This trunk/branch revision stuff confuses me, so I wrote the wrote the wrong revision numbers. Fixed.
+* This trunk/branch revision stuff confuses me, so I wrote the wrote the wrong revision numbers. Fixed.
 
 Revision 56 (2007-07-02) (Overkill)
 =========================
