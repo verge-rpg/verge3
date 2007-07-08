@@ -1,5 +1,5 @@
 /*
-garlick 1.0.0 7/12/06
+garlick 1.0.1 7/8/07
 see http://www.pi-r-squared.com/code/garlick for details
 */
 
