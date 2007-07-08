@@ -10,6 +10,7 @@
 
 
 #include "xerxes.h"
+extern VCCore *vc;
 
 // Runtime code compilation and loading functions
 

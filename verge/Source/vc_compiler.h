@@ -188,7 +188,7 @@ struct debuginfo
 	int  linenum;
 };
 
-class VCCompiler
+class VCCompiler : public MapScriptCompiler
 {
 public:
 	char errmsg[2048];
@@ -206,14 +206,13 @@ public:
 	// on error.
 	bool CompileAll();
 	void ExportSystemXVC();
-	bool CompileMaps(); // compiles all the maps sequentially
 
 	// call to compile a single map.
 	// Any map in core right now will be ignored
 	// when compiling this one. Returns false on
 	// failure. Can keep going if this happens, but
 	// the (partially) compiled map shouldn't be loaded.
-	bool CompileMap(char *f);
+	bool CompileMap(const char *f);
 
 	// call to compile some other code at runtime
 	// Must be loaded into the VCCore before anything

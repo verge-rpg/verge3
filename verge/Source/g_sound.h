@@ -24,7 +24,7 @@ public:
 	virtual void SetMusicVolume(int v) = 0;
 
 	virtual void *LoadSample(const char *fn) = 0;
-	virtual void PlaySample(void *sample, int vol) = 0;
+	virtual int PlaySample(void *sample, int vol) = 0;
 	virtual void StopSound(int chan) = 0;
 	virtual int SoundIsPlaying(int chan) = 0;
 	virtual void FreeSample(void *sample) = 0;
@@ -53,7 +53,7 @@ void SetMusicVolume(int v);
 
 // Sound effect interface
 void *LoadSample(const char *fn);
-void PlaySample(void *s, int vol);
+int PlaySample(void *s, int vol);
 void StopSound(int chan);
 void FreeSample(void *s);
 

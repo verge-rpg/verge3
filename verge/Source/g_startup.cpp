@@ -18,6 +18,9 @@
 #include "garlick.h"
 #include "lua_main.h"
 
+#include <memory>
+#include <functional>
+
 /****************************** data ******************************/
 
 int v3_xres=320, v3_yres=240;
@@ -33,8 +36,8 @@ int gamerate = 100;
 int soundengine = 0;
 bool use_lua = false;
 
-VCCore *vc;
 VCCompiler *vcc;
+VCCore *vc;
 
 /****************************** code ******************************/
 
@@ -165,25 +168,28 @@ void InitGarlick() {
 }
 
 
-class VCScriptEngine : public ScriptEngine {
-public:
-	bool ExecuteFunctionString(const char *s)  {
-		return vc->ExecuteFunctionString(s);
+bool CompileMaps(const char *ext, MapScriptCompiler *compiler)
+{
+	std::vector<std::string> filenames = listFilePattern("*.map");
+	for(std::vector<std::string>::iterator i = filenames.begin();
+		i != filenames.end();
+		i++)
+	{
+		char *s = stripext(i->c_str());
+		if (Exist(va("%s.%s", s,ext))) {
+			if(!compiler->CompileMap(s))
+				return false;
+			}
 	}
-	bool FunctionExists(const char *str) {
-		return vc->FunctionExists(str);
-	}
-	void ExecAutoexec() {
-		vc->ExecAutoexec();
-	}
-};
+	log ("");
+	return true;
+}
+
+
 
 //---
-void funk();
 void xmain(int argc, char *argv[])
 {
-	funk();
-
 	InitGarlick();
 	Handle::init();
 	LoadConfig();
@@ -230,27 +236,30 @@ void xmain(int argc, char *argv[])
 	}
 
 	LUA *lua;
+
+	if(use_lua)
+		se = lua = new LUA();
+	else
+		se = vc = new VCCore();
+
 	if (!releasemode)
 	{
 		DisplayCompileImage();
 		if(use_lua) {
-			lua = new LUA();
 			lua->compileSystem();
-			se = (ScriptEngine*)lua;
+			CompileMaps("lua",lua);
 		} else {
 			bool result = vcc->CompileAll();
 			if (!result) err(vcc->errmsg);
 			vcc->ExportSystemXVC();
-			result = vcc->CompileMaps();
+			result = CompileMaps("vc",vcc);
 			if (!result) err(vcc->errmsg);
 		}
 	}
 
 	if(!use_lua) {
-		vc = new VCCore();
 		if (decompile)
 			vc->Decompile();
-		se = new VCScriptEngine();
 	}
 
 	se->ExecAutoexec();

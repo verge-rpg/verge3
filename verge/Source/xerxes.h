@@ -12,8 +12,8 @@
 #define XERXES_H
 
 //version info macros
-#define DEF_VERSION "\"Verge 3.1 2007.07.07\""
-#define DEF_BUILD "20070707"
+#define DEF_VERSION "\"Verge 3.1 2007.07.08\""
+#define DEF_BUILD "20070708"
 #ifdef __APPLE__
 #define DEF_OS "\"mac\""
 #else
@@ -107,6 +107,7 @@ typedef unsigned char  byte;
 #define _WIN32_WINNT 0x0500
 #include <crtdbg.h>
 #include <windows.h>
+#undef MessageBox
 #include <mmsystem.h>
 #include <stdlib.h>
 #include <stdio.h>

@@ -55,7 +55,7 @@ void log_Init(bool on)
 }
 
 
-void log(char *text, ...)
+void log(const char *text, ...)
 {
 	va_list argptr;
 	char msg[4096];

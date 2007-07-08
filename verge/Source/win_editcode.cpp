@@ -42,7 +42,7 @@ LRESULT APIENTRY editcode_WindowProc(HWND hWnd, UINT message,WPARAM wParam, LPAR
 			case BTN_RELOADVC:
 				index = SendMessage(hListboxVC,LB_GETCURSEL,0,0);
 				if(index == LB_ERR) {
-					MessageBox(hWnd,"Please choose a VC file from the list to the right.","Error",MB_OK);
+					MessageBoxA(hWnd,"Please choose a VC file from the list to the right.","Error",MB_OK);
 					return 0;
 				}
 				SendMessage(hListboxVC,LB_GETTEXT,index,(LPARAM)buf);

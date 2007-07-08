@@ -486,7 +486,7 @@ void ProcessControls()
 			event_ty = entity[i]->gety()/16;
 			event_entity = i;
 			int cur_timer = timer;
-			vc->ExecuteFunctionString(entity[i]->script.c_str());
+			se->ExecuteFunctionString(entity[i]->script.c_str());
 			timer = cur_timer;
 			return;
 		}
@@ -500,7 +500,7 @@ void ProcessControls()
 			event_tx = ex/16;
 			event_ty = ey/16;
 
-			vc->ExecuteFunctionString(current_map->zones[cz]->script);
+			se->ExecuteFunctionString(current_map->zones[cz]->script);
 			timer = cur_timer;
 		}
 	}
@@ -613,7 +613,7 @@ void CheckZone()
 		event_zone = cz;
 		event_tx = px;
 		event_ty = py;
-		vc->ExecuteFunctionString(current_map->zones[cz]->script);
+		se->ExecuteFunctionString(current_map->zones[cz]->script);
 	}
 	timer = cur_timer;
 }
@@ -664,7 +664,7 @@ void TimedProcessSprites()
 			{
 				sprites[i].thinkctr = 0;
 				event_sprite = i;
-				vc->ExecuteFunctionString(sprites[i].thinkproc.c_str());
+				se->ExecuteFunctionString(sprites[i].thinkproc.c_str());
 			}
 		}
 		lastspritethink++;

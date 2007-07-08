@@ -86,8 +86,8 @@ void UpdateControls()
 
 	//mbg 9/5/05 todo removed for psp
 	//TODO LUA
-	if (b1 && !oldb1) vc->ExecuteFunctionString(bindbutton[0].c_str());
-	if (b2 && !oldb2) vc->ExecuteFunctionString(bindbutton[1].c_str());
-	if (b3 && !oldb3) vc->ExecuteFunctionString(bindbutton[2].c_str());
-	if (b4 && !oldb4) vc->ExecuteFunctionString(bindbutton[3].c_str());
+	if (b1 && !oldb1) se->ExecuteFunctionString(bindbutton[0].c_str());
+	if (b2 && !oldb2) se->ExecuteFunctionString(bindbutton[1].c_str());
+	if (b3 && !oldb3) se->ExecuteFunctionString(bindbutton[2].c_str());
+	if (b4 && !oldb4) se->ExecuteFunctionString(bindbutton[3].c_str());
 }

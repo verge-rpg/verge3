@@ -229,8 +229,7 @@ struct argument_t
 	std::string string_value;
 };
 
-class VCCore
-{
+class VCCore : public ScriptEngine {
 public:
 	VCCore();
 	~VCCore();
@@ -239,14 +238,23 @@ public:
 	void UnloadCore(int cimage);
 	Chunk *GetCore(int cimage);
 
-	void LoadMapVC(VFILE *f); // same as LoadCore with map core
+	void LoadMapScript(VFILE *f);
 	void ExecAutoexec();
 	void Decompile();
-	bool ExecuteFunctionString(const char *s);
-	bool FunctionExists(const char *str);
+	bool ExecuteFunctionString(const std::string &script);
+	bool FunctionExists(const std::string &func);
 	int ResolveOperand();
 	std::string ResolveString();
-	void vcerr(char *s, ...);
+	void DisplayError(const std::string &msg);
+	void vcerr(char *str, ...) {
+	  	va_list argptr;
+		char msg[256];
+
+		va_start(argptr, str);
+		vsprintf(msg, str, argptr);
+		va_end(argptr);
+		Error("%s",msg);
+	}
 
 	int vcreturn;
 	std::string vcretstr;
@@ -353,9 +361,8 @@ private:
 
 extern bool die;
 extern int vc_paranoid, vc_arraycheck;
-extern char renderfunc[255], timerfunc[255];
+extern std::string renderfunc, timerfunc;
 
-//void HookKey(int script);
 extern int event_tx;
 extern int event_ty;
 extern int event_zone;

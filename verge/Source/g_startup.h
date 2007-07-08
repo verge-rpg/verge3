@@ -17,7 +17,6 @@ extern bool cheats;
 extern bool automax;
 extern bool releasemode;
 extern char mapname[255];
-extern VCCore *vc;
 extern VCCompiler *vcc;
 extern int gamerate;
 void ShowPage();

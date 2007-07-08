@@ -439,7 +439,7 @@ void err(const char *str, ...)
 
 	if (strlen(msg))
 	{
-		MessageBox(GetDesktopWindow(), msg, APPNAME, MB_OK | MB_TASKMODAL);
+		MessageBoxA(GetDesktopWindow(), msg, APPNAME, MB_OK | MB_TASKMODAL);
 		log("Exiting: %s", msg);
 	}
 	delete systimer;
@@ -525,5 +525,5 @@ std::vector<std::string> listFilePattern(std::string pattern)
 
 void showMessageBox(std::string message)
 {
-	MessageBox(GetDesktopWindow(), message.c_str(), APPNAME, MB_OK | MB_TASKMODAL);
+	MessageBoxA(GetDesktopWindow(), message.c_str(), APPNAME, MB_OK | MB_TASKMODAL);
 }

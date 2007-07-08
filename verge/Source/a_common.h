@@ -16,7 +16,7 @@ extern bool logconsole;
 
 byte* ImageTo24bpp(image *img);
 void log_Init(bool on);
-void log(char *text, ...);
+void log(const char *text, ...);
 char *va(char* format, ...);
 int strcasecmp(const char *s1, const char *s2);
 int fncmp(const char *s1, const char *s2);

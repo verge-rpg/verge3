@@ -51,7 +51,7 @@ void SetMusicVolume(int v) { if(snd_engine) snd_engine->SetMusicVolume(v); }
 
 // Sound effect interface
 void *LoadSample(const char *fn) { if(snd_engine) return snd_engine->LoadSample(fn); else return 0; }
-void PlaySample(void *s, int vol) { if(snd_engine) snd_engine->PlaySample(s, vol); }
+int PlaySample(void *s, int vol) { if(snd_engine) return snd_engine->PlaySample(s, vol); else return 0;}
 void StopSound(int chan) { if(snd_engine) snd_engine->StopSound(chan); }
 // Overkill (2006-11-20)
 int SoundIsPlaying(int chan) { if(snd_engine) return snd_engine->SoundIsPlaying(chan); else return 0; } 

@@ -295,11 +295,11 @@ void* SoundEngine_Fmod::LoadSample(const char *fn)
 	return s;
 }
 
-void SoundEngine_Fmod::PlaySample(void *s, int vol)
+int SoundEngine_Fmod::PlaySample(void *s, int vol)
 {
 	int chan = FSOUND_PlaySound(FSOUND_FREE, (FSOUND_SAMPLE*)s);
 	FSOUND_SetVolume(chan, vol);
-	vc->vcreturn = chan;
+	return chan;
 }
 
 void SoundEngine_Fmod::StopSound(int chan)

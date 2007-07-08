@@ -38,8 +38,7 @@ std::vector<VCPlugins::Plugin*> VCPlugins::plugins;
 /******************* vc engine state variables ********************/
 
 int cur_stick = 0;
-char renderfunc[255];
-char timerfunc[255];
+std::string renderfunc,timerfunc;
 
 int event_tx;
 int event_ty;
@@ -99,9 +98,10 @@ void VCCore::ExecAutoexec()
 	ExecuteFunctionString("autoexec");
 }
 
-bool VCCore::ExecuteFunctionString(const char *str)
+//TODO - yuck I cant believe this looks at all the strings
+bool VCCore::ExecuteFunctionString(const std::string &script)
 {
-	std::string s = str;
+	std::string s = script;
 	to_lower(s);
 
 	int i, j;
@@ -110,7 +110,7 @@ bool VCCore::ExecuteFunctionString(const char *str)
 
 	for (i=0; i<NUM_CIMAGES; i++)
 		for (j=0; j<userfuncs[i].size(); j++)
-			if (!strcasecmp(userfuncs[i][j]->name, s.c_str())) {
+			if (!strcasecmp(userfuncs[i][j]->name, s)) {
 				invc++;
 				// Overkill (2007-05-02): Argument passing introduced.
 				ExecuteUserFunc(i, j, true);
@@ -121,16 +121,16 @@ bool VCCore::ExecuteFunctionString(const char *str)
 	return false;
 }
 
-bool VCCore::FunctionExists(const char *str)
+bool VCCore::FunctionExists(const std::string &func)
 {
-	std::string s = str;
+	std::string s = func;
 	to_lower(s);
 
 	int i, j;
 
 	for (i=0; i<NUM_CIMAGES; i++)
 		for (j=0; j<userfuncs[i].size(); j++)
-			if (!strcasecmp(userfuncs[i][j]->name, s.c_str())) {
+			if (!strcasecmp(userfuncs[i][j]->name, s)) {
 				return true;
 			}
 
@@ -234,9 +234,10 @@ void VCCore::LoadCore(VFILE *f, int cimage, bool append, bool patch_others)
 		coreimages[cimage].LoadChunk(f->fp);
 }
 
-void VCCore::LoadMapVC(VFILE *f)
+void VCCore::LoadMapScript(VFILE *f)
 {
 	LoadCore(f, CIMAGE_MAP, false, false);
+	
 }
 
 void VCCore::UnloadCore(int cimage)
@@ -443,7 +444,7 @@ int VCCore::ReadInt(int category, int loc, int ofs)
 				case 56: return (int) (*(char *)ofs);
 				case 57: return (int) (*(short*)ofs);
 				case 58: return (int) (*(int  *)ofs);
-				case 59: vc->vcerr("Cannot write to gameWindow!");
+				case 59: vcerr("Cannot write to gameWindow!");
 				case 61: if (ofs>=0 && ofs<entities) return entity[ofs]->movecode; return 0;
 				case 62: if (ofs>=0 && ofs<entities) return entity[ofs]->face; return 0;
 				case 63: if (ofs>=0 && ofs<entities) return entity[ofs]->speed; return 0;
@@ -733,7 +734,7 @@ std::string VCCore::ProcessString()
 					dimofs *= global_strings[idx]->dims[j];
 				d += dimofs;
 			}
-			if (d>=0 || d<maxstr)
+			if (d>=0 && d<maxstr)
 				ret = vcstring[d];
 			else
 				vcerr("VCCore::ProcessString() - bad offset to vcstring[]");
@@ -1511,17 +1512,9 @@ void VCCore::LookupOffset(int ofs, std::string &s)
 	s += va("\tUNKNOWN: %d\n", ofs);
 }
 
-void VCCore::vcerr(char *str, ...)
+void VCCore::DisplayError(const std::string &msg)
 {
-  	va_list argptr;
-	char msg[256];
-
-	va_start(argptr, str);
-	vsprintf(msg, str, argptr);
-	va_end(argptr);
-
-	std::string s;
-	s.assign(msg);
+	std::string s = msg;
 	s += ": \n\n";
 	LookupOffset(currentvc->curpos(), s);
 	/*int stackentries = vcsp - vcstack;

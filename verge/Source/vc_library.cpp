@@ -19,6 +19,8 @@
 
 /****************************** data ******************************/
 
+extern VCCore *vc;
+
 #define VCFILES				51
 #define VC_READ				1
 #define VC_WRITE			2
@@ -107,11 +109,7 @@ void vc_Exit()
 	err("%s", message.c_str());
 }
 
-void vc_Log()
-{
-	std::string message = vc->ResolveString();
-	log("%s", message.c_str());
-}
+void vc_Log() { vc->Log(vc->ResolveString()); }
 
 void vc_NewImage()
 {
@@ -564,11 +562,10 @@ void vc_FreeFont()
 		delete font;
 }
 
-void vc_Random()
-{
+void vc_Random() { 
 	int min = vc->ResolveOperand();
 	int max = vc->ResolveOperand();
-	vc->vcreturn = rnd(min, max);
+	vc->vcreturn = vc->Random(min, max);
 }
 
 void vc_len()
@@ -583,22 +580,7 @@ void vc_val()
 	vc->vcreturn = atoi(s.c_str());
 }
 
-void vc_Unpress()
-{
-	int n = vc->ResolveOperand();
-	switch (n)
-	{
-		case 0: if (b1) UnB1(); if (b2) UnB2(); if (b3) UnB3(); if (b4) UnB4();	break;
-		case 1: if (b1) UnB1(); break;
-		case 2: if (b2) UnB2(); break;
-		case 3: if (b3) UnB3(); break;
-		case 4: if (b4) UnB4(); break;
-		case 5: if (up) UnUp(); break;
-		case 6: if (down) UnDown(); break;
-		case 7: if (left) UnLeft(); break;
-		case 8: if (right) UnRight(); break;
-	}
-}
+void vc_Unpress() { vc->Unpress(vc->ResolveOperand()); }
 
 int vc_GetYear()
 {
@@ -857,7 +839,7 @@ void vc_PlaySound()
 {
 	int slot = vc->ResolveOperand();
 	int volume = vc->ResolveOperand();
-	PlaySample((FSOUND_SAMPLE *) slot, volume * 255 / 100);
+	vc->vcreturn = PlaySample((FSOUND_SAMPLE *) slot, volume * 255 / 100);
 }
 
 void vc_CallFunction()
@@ -1071,18 +1053,11 @@ void vc_pow()
 	vc->vcreturn = (int) pow((double)a, (double)b);
 }
 
-void vc_SetAppName()
-{
-	std::string s = vc->ResolveString();
-	setWindowTitle(s.c_str());
-}
-
-void vc_SetResolution()
-{
-	v3_xres = vc->ResolveOperand();
-	v3_yres = vc->ResolveOperand();
-
-	vid_SetMode(v3_xres, v3_yres, vid_bpp, vid_window, MODE_SOFTWARE);
+void vc_SetAppName() { vc->SetAppName(vc->ResolveString()); }
+void vc_SetResolution() { 
+	int x = vc->ResolveOperand();
+	int y = vc->ResolveOperand();
+	vc->SetResolution(x,y);
 }
 
 void vc_BlitLucent()
@@ -1116,10 +1091,7 @@ void vc_TBlitLucent()
 void vc_Map()
 {
 	std::string map = vc->ResolveString();
-	strcpy(mapname, map.c_str());
-	die = 1;
-	done = 1;
-	return;
+	ScriptEngine::Map(map);
 }
 
 void vc_strcmp()
@@ -1138,35 +1110,17 @@ void vc_strdup()
 		vc->vcretstr += s;
 }
 
-void vc_HookTimer()
-{
-	hooktimer = 0;
-	std::string s = vc->ResolveString();
-	strcpy(timerfunc, s.c_str());
-}
-
-void vc_HookRetrace()
-{
-	std::string s = vc->ResolveString();
-	strcpy(renderfunc, s.c_str());
-}
-
-void vc_HookKey()
-{
+void vc_HookTimer() { vc->HookTimer(vc->ResolveString()); }
+void vc_HookRetrace() { vc->HookRetrace(vc->ResolveString()); }
+void vc_HookKey() { 
 	int k = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
-
-	if (k<0 || k>127) return;
-	bindarray[k] = s;
+	vc->HookKey(k,s);
 }
-
-void vc_HookButton()
-{
-	int b = vc->ResolveOperand()-1;
+void vc_HookButton() { 
+	int b = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
-
-	if (b<0 || b>3) return;
-	bindbutton[b] = s;
+	vc->HookButton(b,s);
 }
 
 void vc_HookEntityRender()
@@ -2159,37 +2113,15 @@ void vc_RenderMap()
 		current_map->render(x, y, dest);
 }
 
-void vc_SetButtonKey()
-{
+void vc_SetButtonKey() { 
 	int b = vc->ResolveOperand();
 	int k = vc->ResolveOperand();
-
-	switch (b)
-	{
-		case 1: k_b1 = k; break;
-		case 2: k_b2 = k; break;
-		case 3: k_b3 = k; break;
-		case 4: k_b4 = k; break;
-		// Overkill (2006-06-25): Can set the directionals as well, now.
-		case 5: k_up = k; break;
-		case 6: k_down = k; break;
-		case 7: k_left = k; break;
-		case 8: k_right = k; break;
-	}
+	vc->SetButtonKey(b,k);
 }
-
-void vc_SetButtonJB()
-{
+void vc_SetButtonJB() { 
 	int b = vc->ResolveOperand();
 	int jb = vc->ResolveOperand();
-
-	switch (b)
-	{
-		case 1: j_b1 = jb; break;
-		case 2: j_b2 = jb; break;
-		case 3: j_b3 = jb; break;
-		case 4: j_b4 = jb; break;
-	}
+	vc->SetButtonJB(b,jb);
 }
 
 void vc_FunctionExists()
@@ -2940,7 +2872,7 @@ void VCCore::HandleLibFunc()
 		case 6: vc_LoadImage(); break;
 		case 7: vc_LoadImage0(); break;
 		case 8: UpdateControls(); ShowPage(); break;
-		case 9: UpdateControls(); break;
+		case 9: vc->UpdateControls(); break;
 		case 10: vc_Blit(); break;
 		case 11: vc_TBlit(); break;
 		case 12: vc_AdditiveBlit(); break;
@@ -3126,7 +3058,7 @@ void VCCore::HandleLibFunc()
 		case 171: vc_EntitySetWanderRect(); break;
 		case 172: vc_EntityStop(); break;
 		case 173: vc_EntitySetWanderDelay(); break;
-		case 174: arandseed(vc->ResolveOperand()); break;
+		case 174: vc->SetRandSeed(vc->ResolveOperand()); break;
 		case 175: ResetSprites(); break;
 		case 176: vc->vcreturn = GetSprite(); break;
 		case 177: vc_RenderMap(); break;

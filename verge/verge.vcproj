@@ -1123,20 +1123,6 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
-			>
-			<File
-				RelativePath="..\verge-logo.ico"
-				DeploymentContent="true"
-				>
-			</File>
-			<File
-				RelativePath=".\verge.rc"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc"
 			>
@@ -1521,6 +1507,15 @@
 			Name="flac-1.1.4"
 			>
 		</Filter>
+		<File
+			RelativePath="..\verge-logo.ico"
+			DeploymentContent="true"
+			>
+		</File>
+		<File
+			RelativePath=".\verge.rc"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -1,10 +1,13 @@
 #include "xerxes.h"
 #include "lua_main.h"
 #include <luabind/object.hpp>
+#include <stdio.h>
 
 #include <string>
+#include <vector>
 #include <algorithm>
 #include <cctype>
+#include <memory>
 
 extern "C" {
 #include <lua.h>
@@ -19,8 +22,52 @@ void funk() {
 //lets you do some test things at the beginning of xmain
 }
 
+bool LUA::CompileMap(const char *f) {
+
+	VFILE *si = vopen(va("%s.lua", f));
+	if (!si) ::err("unable to open %s.lua", f);
+	int scriptlen = filesize(si);
+	std::auto_ptr<char> temp(new char[scriptlen]);
+	vread(temp.get(),scriptlen,si);
+	vclose(si);
+
+	VFILE *mi = vopen(va("%s.map", f));
+	if (!mi) ::err("unable to open %s.map", f);
+	vseek(mi, 10, 0);
+
+	int mapcoresize;
+	vread(&mapcoresize, 4, mi);
+	log("DESTINATION POS: %d", mapcoresize);
+	vseek(mi, 0, 0);
+	byte* buf = new byte[mapcoresize];
+	vread(buf, mapcoresize, mi);
+	vclose(mi);
+
+	FILE *mo = fopen(va("%s.map", f), "wb");
+	if (!mo)
+		::err("couldn't open map for writing");
+	fwrite(buf, 1, mapcoresize, mo);
+	delete[] buf;
+
+	fwrite(&scriptlen,4,1,mo);
+	fwrite(temp.get(),1,scriptlen,mo);
+	fclose(mo);
+
+	return true;
+}
+
+
 void LUA::compileSystem() {
 	loadFile("system.lua");
+}
+
+void LUA::LoadMapScript(VFILE *f) {
+	int scriptsize;
+	vread(&scriptsize,4,f);
+	std::auto_ptr<char> temp(new char[scriptsize+1]);
+	vread(temp.get(),scriptsize,f);
+	temp.get()[scriptsize] = 0;
+	luaL_dostring(L,temp.get());
 }
 
 void LUA::loadFile(const char *fname) {
@@ -107,21 +154,21 @@ std::string strtolower(std::string val) { std::transform(val.begin(), val.end(),
 
 //VI.a. General Utility Functions
 //FUNC(CallFunction);
-static void ___exit(std::string msg) { err(msg.c_str()); }
+//static void ___exit(std::string msg) { err(msg.c_str()); }
 //TODO(FunctionExists);
 //TODO(GetInt);
 //TODO(GetIntArray);
 //TODO(GetString);
 //TODO(GetStringArray);
-static void ___HookButton(int b, std::string script) { b--; if(b<0||b>3) return; bindbutton[b] = script; }
-//FUNC(HookKey);
-//FUNC(HookRetrace);
-//FUNC(HookTimer);
-//FUNC(Log);
-static void ___MessageBox(std::string msg) { MessageBox(0,msg.c_str(),"Message Box",0); }
-//FUNC(Random);
-//FUNC(SetAppName);
-//FUNC(SetButtonJB);
+//static void ___HookButton(int b, std::string s) { ScriptEngine::HookButton(b,s); }
+//static void ___HookKey(int k, std::string s) { ScriptEngine::HookKey(k,s); }
+//static void ___HookRetrace(std::string s) { strcpy(renderfunc, s.c_str()); }
+//static void ___HookTimer(std::string s) { hooktimer = 0; strcpy(timerfunc, s.c_str()); }
+//static void ___Log(std::string s) { log(s.c_str()); }
+//static void ___MessageBox(std::string msg) { MessageBox(0,msg.c_str(),"Message Box",0); }
+//static int ___Random(int min, int max) { return rnd(min, max); }
+//static void ___SetAppName(std::string s) { setWindowTitle(s.c_str()); }
+//static void ___SetButtonJB(int b, int jb) { ScriptEngine::SetButtonJB(b,jb); }
 //FUNC(SetButtonKey);
 //FUNC(SetInt);
 //FUNC(SetIntArray);
@@ -405,34 +452,47 @@ void LUA::bindApi() {
 		___xmagic_table(_G,true); \
 		");
 
+		#define SEFUNC(name) { { module(L) [ def("___"#name, ScriptEngine::##name) ]; }  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
 		#define FUNC(name) { { module(L) [ def("___"#name, ___##name) ]; }  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
 		#define TODO(name) {  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() exit('`"#name"` is not implemented yet in lua. Post a bug or consider whether you need it') end,function(val) ___set_fail_func('"#name"') end);"); }
 		//VI.a. General Utility Functions
-		//FUNC(CallFunction);
-		FUNC(exit);
+		TODO(CallFunction);
+		SEFUNC(Exit);
 		TODO(FunctionExists);
 		TODO(GetInt);
 		TODO(GetIntArray);
 		TODO(GetString);
 		TODO(GetStringArray);
-		FUNC(HookButton);
-		//FUNC(HookKey);
-		//FUNC(HookRetrace);
-		//FUNC(HookTimer);
-		//FUNC(Log);
-		FUNC(MessageBox);
-		//FUNC(Random);
-		//FUNC(SetAppName);
-		//FUNC(SetButtonJB);
-		//FUNC(SetButtonKey);
-		//FUNC(SetInt);
-		//FUNC(SetIntArray);
-		//FUNC(SetRandSeed);
-		//FUNC(SetResolution);
-		//FUNC(SetString);
-		//FUNC(SetStringArray);
-		//FUNC(Unpress);
-		//FUNC(UpdateControls);
+		SEFUNC(HookButton);
+		SEFUNC(HookKey);
+		SEFUNC(HookRetrace);
+		SEFUNC(HookTimer);
+		SEFUNC(Log);
+		SEFUNC(MessageBox);
+		SEFUNC(Random);
+		SEFUNC(SetAppName);
+		SEFUNC(SetButtonJB);
+		SEFUNC(SetButtonKey);
+		TODO(SetInt);
+		TODO(SetIntArray);
+		SEFUNC(SetRandSeed);
+		SEFUNC(SetResolution);
+		TODO(SetString);
+		TODO(SetStringArray);
+		SEFUNC(Unpress);
+		SEFUNC(UpdateControls);
+		
+		//VI.d. Map Functions
+		TODO(GetObs);
+		TODO(GetObsPixel);
+		TODO(GetTile);
+		TODO(GetZone);
+		SEFUNC(Map);
+		TODO(Render);
+		TODO(RenderMap);
+		TODO(SetObs);
+		TODO(SetTile);
+		TODO(SetZone);
 
 		//some handy functions
 		grr |= luaL_dostring(L,"\

@@ -15,7 +15,7 @@
 std::string dict::GetString(std::string key) {
 	const std::map<std::string,std::string>::iterator i = data.find(key);
 	if(i == data.end()) {
-		vc->vcerr("dict::GetString: No such key (%s)", key.c_str());
+		se->Error("dict::GetString: No such key (%s)", key.c_str());
 		return ""; // should never happen
 	}
 	return i->second;
@@ -32,7 +32,7 @@ int dict::ContainsString(std::string key) {
 void dict::RemoveString(std::string key) {
 	const std::map<std::string,std::string>::iterator i = data.find(key);
 	if(i == data.end()) {
-		vc->vcerr("dict::RemoveString: No such key (%s)", key.c_str());
+		se->Error("dict::RemoveString: No such key (%s)", key.c_str());
 		return; // should never happen
 	}
 	data.erase(i);

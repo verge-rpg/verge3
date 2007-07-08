@@ -569,7 +569,7 @@ void Entity::draw()
 	if (hookrender.length())
 	{
 		event_entity = index;
-		vc->ExecuteFunctionString(hookrender.c_str());
+		se->ExecuteFunctionString(hookrender.c_str());
 		return;
 	}
 

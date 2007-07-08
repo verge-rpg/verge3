@@ -25,6 +25,7 @@ extern char *va(char* format, ...);
 extern void err(const char* str, ...);
 extern void log(char* str, ...);
 extern char *stripext(char *s);
+extern VCCore *vc;
 
 int verbose = 0;
 
@@ -742,23 +743,6 @@ bool VCCompiler::CompileAll()
 	return result;
 }
 
-bool VCCompiler::CompileMaps()
-{
-	std::vector<std::string> filenames = listFilePattern("*.map");
-	for(std::vector<std::string>::iterator i = filenames.begin();
-		i != filenames.end();
-		i++)
-	{
-		char *s = stripext(i->c_str());
-		if (Exist(va("%s.vc", s))) {
-			if(!CompileMap(s))
-				return false;
-			}
-	}
-	log ("");
-	return true;
-}
-
 debuginfo VCCompiler::GetDebugForOffset(int ofs)
 {
 	debuginfo debug;
@@ -825,7 +809,7 @@ void VCCompiler::ExportSystemXVC()
 }
 
 
-bool VCCompiler::CompileMap(char *f)
+bool VCCompiler::CompileMap(const char *f)
 {
 	bool result = true;
 

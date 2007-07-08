@@ -6,7 +6,7 @@ extern "C" {
 #include <lualib.h>
 }
 
-class LUA : public ScriptEngine {
+class LUA : public ScriptEngine, public MapScriptCompiler {
 public:
 	LUA() {
 		L = lua_open();
@@ -19,14 +19,28 @@ public:
 
 	void loadFile(const char *fname);
 	void compileSystem();
-	virtual void ExecAutoexec();
-
+	
+	//MapScriptCompiler implementations
+	bool CompileMap(const char *fname);
+	
 	//ScriptEngine implementations
-	virtual bool ExecuteFunctionString(const char *s) {
-		return false;
+	void DisplayError(const std::string &msg) {
+		::err(msg.c_str());
 	}
-	virtual bool FunctionExists(const char *str) {
-		lua_getglobal(L, str);
+	
+	virtual void LoadMapScript(VFILE *f);
+	virtual void ExecAutoexec();
+	virtual bool ExecuteFunctionString(const std::string &func) {
+		//the gettop/settop is to recover the stack from the user having returned a value from the callback function (we dont want one)
+		int temp = lua_gettop(L);
+		lua_getglobal(L, func.c_str());
+		bool ret = lua_isfunction(L,-1);
+		if(ret) lua_call(L,0,0);
+		lua_settop(L,temp);
+		return ret;
+	}
+	virtual bool FunctionExists(const std::string &func) {
+		lua_getglobal(L, func.c_str());
 		bool ret = lua_isfunction(L, -1);
 		lua_remove(L, -1);
 		return ret;

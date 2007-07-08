@@ -199,7 +199,7 @@ int ParseKeyEvent()
 	}
 
 	if (key_pressed && bindarray[lastpressed].length())
-		vc->ExecuteFunctionString(bindarray[lastpressed].c_str());
+		se->ExecuteFunctionString(bindarray[lastpressed]);
 	if (key_pressed)
 		return 1;
 	return 0;
