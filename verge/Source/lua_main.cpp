@@ -18,10 +18,6 @@ extern "C" {
 
 //http://www.codeproject.com/cpp/luaincpp.asp
 
-void funk() {
-//lets you do some test things at the beginning of xmain
-}
-
 bool LUA::CompileMap(const char *f) {
 
 	VFILE *si = vopen(va("%s.lua", f));
@@ -481,18 +477,221 @@ void LUA::bindApi() {
 		TODO(SetStringArray);
 		SEFUNC(Unpress);
 		SEFUNC(UpdateControls);
-		
+		//VI.b. String Functions
+		SEFUNC(Asc);
+		SEFUNC(Chr);
+		SEFUNC(GetToken);
+		SEFUNC(Left);
+		SEFUNC(Len);
+		SEFUNC(Mid);
+		SEFUNC(Right);
+		TODO(str);
+		TODO(strcmp);
+		TODO(strdup);
+		TODO(TokenCount);
+		TODO(ToLower);
+		TODO(ToUpper);
+		TODO(val);
+		//VI.c. Dictionary Functions
+		TODO(DictContains);
+		TODO(DictFree);
+		TODO(DictGetInt);
+		TODO(DictGetString);
+		TODO(DictNew);
+		TODO(DictRemove);
+		TODO(DictSetInt);
+		TODO(DictSetString);
+		TODO(DictSize);
 		//VI.d. Map Functions
 		TODO(GetObs);
-		TODO(GetObsPixel);
-		TODO(GetTile);
-		TODO(GetZone);
+		SEFUNC(GetObsPixel);
+		SEFUNC(GetTile);
+		SEFUNC(GetZone);
 		SEFUNC(Map);
-		TODO(Render);
-		TODO(RenderMap);
-		TODO(SetObs);
-		TODO(SetTile);
-		TODO(SetZone);
+		SEFUNC(Render);
+		SEFUNC(RenderMap);
+		SEFUNC(SetObs);
+		SEFUNC(SetTile);
+		SEFUNC(SetZone);
+		//VI.e. Entity Functions
+		SEFUNC(ChangeCHR);
+		SEFUNC(EntityMove);
+		SEFUNC(EntitySetWanderDelay);
+		SEFUNC(EntitySetWanderRect);
+		SEFUNC(EntitySetWanderZone);
+		SEFUNC(EntitySpawn);
+		SEFUNC(EntityStalk);
+		SEFUNC(EntityStop);
+		SEFUNC(HookEntityRender);
+		SEFUNC(PlayerMove);
+		SEFUNC(SetEntitiesPaused);
+		SEFUNC(SetPlayer);
+		//VI.f. Graphics Functions
+		SEFUNC(AdditiveBlit);
+		SEFUNC(AlphaBlit);
+		SEFUNC(Blit);
+		SEFUNC(BlitEntityFrame);
+		SEFUNC(BlitLucent);
+		SEFUNC(BlitTile);
+		SEFUNC(BlitWrap);
+		SEFUNC(Circle);
+		SEFUNC(CircleFill);
+		SEFUNC(ColorFilter);
+		SEFUNC(CopyImageToClipboard);
+		SEFUNC(DuplicateImage);
+		SEFUNC(FlipBlit);
+		SEFUNC(FreeImage);
+		SEFUNC(GetB);
+		SEFUNC(GetG);
+		SEFUNC(GetImageFromClipboard);
+		SEFUNC(GetPixel);
+		SEFUNC(GetR);
+		SEFUNC(GrabRegion);
+		SEFUNC(ImageHeight);
+		SEFUNC(ImageShell);
+		SEFUNC(ImageValid);
+		SEFUNC(ImageWidth);
+		SEFUNC(Line);
+		SEFUNC(LoadImage);
+		SEFUNC(LoadImage0);
+		SEFUNC(MakeColor);
+		SEFUNC(MixColor);
+		SEFUNC(Mosaic);
+		SEFUNC(NewImage);
+		SEFUNC(Rect);
+		SEFUNC(RectFill);
+		SEFUNC(rgb);
+		SEFUNC(RotScale);
+		SEFUNC(ScaleBlit);
+		SEFUNC(SetClip);
+		SEFUNC(SetCustomColorFilter);
+		SEFUNC(SetLucent);
+		SEFUNC(SetPixel);
+		SEFUNC(ShowPage);
+		SEFUNC(Silhouette);
+		SEFUNC(SubtractiveBlit);
+		SEFUNC(SuperSecretThingy);
+		SEFUNC(TAdditiveBlit);
+		SEFUNC(TBlit);
+		SEFUNC(TBlitLucent);
+		SEFUNC(TBlitTile);
+		SEFUNC(TGrabRegion);
+		SEFUNC(Triangle);
+		SEFUNC(TScaleBlit);
+		SEFUNC(TSubtractiveBlit);
+		SEFUNC(TWrapBlit);
+		SEFUNC(WrapBlit);
+		//VI.g. Sprite Functions
+		SEFUNC(GetSprite);
+		SEFUNC(ResetSprites);
+		//VI.h. Sound/Music Functions
+		SEFUNC(FreeSong);
+		SEFUNC(FreeSound);
+		SEFUNC(GetSongPos);
+		SEFUNC(GetSongVolume);
+		SEFUNC(LoadSong);
+		SEFUNC(LoadSound);
+		SEFUNC(PlayMusic);
+		SEFUNC(PlaySong);
+		SEFUNC(PlaySound);
+		SEFUNC(SetMusicVolume);
+		SEFUNC(SetSongPaused);
+		SEFUNC(SetSongPos);
+		SEFUNC(SetSongVolume);
+		SEFUNC(StopMusic);
+		SEFUNC(StopSong);
+		SEFUNC(StopSound);
+		//VI.i. Font Functions
+		SEFUNC(EnableVariableWidth);
+		SEFUNC(FontHeight);
+		SEFUNC(FreeFont);
+		SEFUNC(LoadFont);
+		SEFUNC(LoadFontEx);
+		SEFUNC(PrintCenter);
+		SEFUNC(PrintRight);
+		SEFUNC(PrintString);
+		SEFUNC(TextWidth);
+		//VI.j. Math Functions
+		SEFUNC(acos);
+		SEFUNC(facos);
+		SEFUNC(asin);
+		SEFUNC(fasin);
+		SEFUNC(atan);
+		SEFUNC(fatan);
+		SEFUNC(atan2);
+		SEFUNC(fatan2);
+		SEFUNC(cos);
+		SEFUNC(fcos);
+		SEFUNC(pow);
+		SEFUNC(sin);
+		SEFUNC(fsin);
+		SEFUNC(sqrt);
+		SEFUNC(tan);
+		SEFUNC(ftan);
+		//VI.k. File Functions
+		SEFUNC(FileClose);
+		SEFUNC(FileCurrentPos);
+		SEFUNC(FileEOF);
+		SEFUNC(FileOpen);
+		SEFUNC(FileReadByte);
+		SEFUNC(FileReadln);
+		SEFUNC(FileReadQuad);
+		SEFUNC(FileReadString);
+		SEFUNC(FileReadToken);
+		SEFUNC(FileReadWord);
+		SEFUNC(FileSeekLine);
+		SEFUNC(FileSeekPos);
+		SEFUNC(FileWrite);
+		SEFUNC(FileWriteByte);
+		SEFUNC(FileWriteln);
+		SEFUNC(FileWriteQuad);
+		SEFUNC(FileWriteString);
+		SEFUNC(FileWriteWord);
+		SEFUNC(ListFilePattern);
+		SEFUNC(FileWriteCHR);
+		SEFUNC(FileWriteMAP);
+		SEFUNC(FileWriteVSP);
+		//VI.l. Window Managment Functions
+		SEFUNC(WindowClose);
+		SEFUNC(WindowCreate);
+		SEFUNC(WindowGetHeight);
+		SEFUNC(WindowGetImage);
+		SEFUNC(WindowGetWidth);
+		SEFUNC(WindowGetXRes);
+		SEFUNC(WindowGetYRes);
+		SEFUNC(WindowHide);
+		SEFUNC(WindowSetPosition);
+		SEFUNC(WindowSetResolution);
+		SEFUNC(WindowSetSize);
+		SEFUNC(WindowSetTitle);
+		SEFUNC(WindowShow);
+		//VI.m. Movie Playback Functions
+		SEFUNC(AbortMovie);
+		SEFUNC(MovieClose);
+		SEFUNC(MovieGetCurrFrame);
+		SEFUNC(MovieGetFramerate);
+		SEFUNC(MovieGetImage);
+		SEFUNC(MovieLoad);
+		SEFUNC(MovieNextFrame);
+		SEFUNC(MoviePlay);
+		SEFUNC(MovieRender);
+		SEFUNC(MovieSetFrame);
+		SEFUNC(PlayMovie);
+		//VI.n. Netcode Functions
+		SEFUNC(Connect);
+		SEFUNC(GetConnection);
+		SEFUNC(GetUrlImage);
+		SEFUNC(GetUrlText);
+		SEFUNC(SocketClose);
+		SEFUNC(SocketConnected);
+		SEFUNC(SocketGetFile);
+		SEFUNC(SocketGetInt);
+		SEFUNC(SocketGetString);
+		SEFUNC(SocketHasData);
+		SEFUNC(SocketSendFile);
+		SEFUNC(SocketSendInt);
+		SEFUNC(SocketSendString);
+
 
 		//some handy functions
 		grr |= luaL_dostring(L,"\

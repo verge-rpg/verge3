@@ -35,7 +35,8 @@ public:
 		int temp = lua_gettop(L);
 		lua_getglobal(L, func.c_str());
 		bool ret = lua_isfunction(L,-1);
-		if(ret) lua_call(L,0,0);
+		if(ret) if(lua_pcall(L,0,0,0)) err("couldnt ExecuteFunctionString");
+
 		lua_settop(L,temp);
 		return ret;
 	}

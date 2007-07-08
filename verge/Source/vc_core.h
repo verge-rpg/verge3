@@ -9,8 +9,6 @@
 /// changes you made below this line.
 
 
-void InitVCLibrary();
-
 int HandleForImage(image *img);
 image *ImageForHandle(int handle);
 void SetHandleImage(int handle, image *img);

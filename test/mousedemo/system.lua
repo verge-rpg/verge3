@@ -1,4 +1,5 @@
 function testkey()
+	log("wtf");
 	mapalert("you hit w key!");
 end
 

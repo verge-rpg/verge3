@@ -27,7 +27,7 @@ inline int strcasecmp(std::string s1, std::string s2) {
 }
 
 //a vc-style substring operation (very kind and lenient)
-inline std::string vc_strsub(std::string str, int pos, int len) {
+inline std::string vc_strsub(const std::string &str, int pos, int len) {
 	int strlen = str.size();
 	
 	if(strlen==0) return str; //empty strings always return empty strings
@@ -45,8 +45,8 @@ inline std::string vc_strsub(std::string str, int pos, int len) {
 	return str.substr(pos,len);
 }
 
-inline std::string vc_strmid(std::string str, int pos, int len) { return vc_strsub(str,pos,len); }
-inline std::string vc_strleft(std::string str, int len) { return vc_strsub(str,0,len); }
-inline std::string vc_strright(std::string str, int len) { return vc_strsub(str,str.size()-len,len); }
+inline std::string vc_strmid(const std::string &str, int pos, int len) { return vc_strsub(str,pos,len); }
+inline std::string vc_strleft(const std::string &str, int len) { return vc_strsub(str,0,len); }
+inline std::string vc_strright(const std::string &str, int len) { return vc_strsub(str,str.size()-len,len); }
 
 #endif

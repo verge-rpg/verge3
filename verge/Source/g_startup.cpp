@@ -200,6 +200,7 @@ void xmain(int argc, char *argv[])
 	mouse_Init();
 	InitKeyboard();
 	joy_Init();
+	InitScriptEngine();
 
 	//---cross-platform plugins initialization
 	extern void p_datastructs();

@@ -14,42 +14,17 @@
  ******************************************************************/
 
 #include "xerxes.h"
-#include "sincos.h"
 #include "opcodes.h"
 
 /****************************** data ******************************/
 
 extern VCCore *vc;
 
-#define VCFILES				51
-#define VC_READ				1
-#define VC_WRITE			2
-#define VC_WRITE_APPEND		3 // Overkill (2006-07-05): Append mode added.
-
-struct FileRecord
-{
-	bool active;
-	FILE *fptr;
-	VFILE *vfptr;
-	int mode;
-};
-
-FileRecord vcfiles[VCFILES];
-
-
 int cf_r1, cf_g1, cf_b1;
 int cf_r2, cf_g2, cf_b2;
 int cf_rr, cf_gr, cf_br;
 
 /****************************** code ******************************/
-
-void InitVCLibrary()
-{
-	memset(vcfiles, 0, sizeof (vcfiles));
-
-	// allocate one dummy handle for dicts (0, null handle)
-	Handle::forceAlloc(HANDLE_TYPE_DICT,1);
-}
 
 dict *DictForHandle(int handle)
 {
@@ -81,28 +56,6 @@ int HandleForDict(dict *d)
 	return Handle::alloc(HANDLE_TYPE_DICT, d);
 }
 
-
-
-void EnforceNoDirectories(std::string s)
-{
-	int	n = 0;
-	if (!s.length()) return;
-
-    if (s[0]=='/' || s[0]=='\\')
-		vc->vcerr("vc does not allow accessing dir: %s", s.c_str());
-
-    if (s[1]==':')
-		vc->vcerr("vc does not allow accessing dir: %s", s.c_str());
-
-    n=0;
-    while (n<s.length()-1)
-    {
-		if (s[n]=='.' && s[n+1]=='.')
-			vc->vcerr("vc does not allow accessing dir: %s", s.c_str());
-		n++;
-    }
-}
-
 void vc_Exit()
 {
 	std::string message = vc->ResolveString();
@@ -111,12 +64,10 @@ void vc_Exit()
 
 void vc_Log() { vc->Log(vc->ResolveString()); }
 
-void vc_NewImage()
-{
+void vc_NewImage() {
 	int xsize = vc->ResolveOperand();
 	int ysize = vc->ResolveOperand();
-	image *n = new image(xsize, ysize);
-	vc->vcreturn = HandleForImage(n);
+	vc->vcreturn = vc->NewImage(xsize,ysize);
 }
 
 void vc_MakeColor()
@@ -124,14 +75,10 @@ void vc_MakeColor()
 	int r = vc->ResolveOperand();
 	int g = vc->ResolveOperand();
 	int b = vc->ResolveOperand();
-	vc->vcreturn = MakeColor(r, g, b);
+	vc->vcreturn = vc->MakeColor(r,g,b);
 }
 
-void vc_SetLucent()
-{
-	int p = vc->ResolveOperand();
-	SetLucent(p);
-}
+void vc_SetLucent() { vc->SetLucent(vc->ResolveOperand()); }
 
 void vc_SetClip()
 {
@@ -139,37 +86,23 @@ void vc_SetClip()
 	int y1 = vc->ResolveOperand();
 	int x2 = vc->ResolveOperand();
 	int y2 = vc->ResolveOperand();
-	image *i = ImageForHandle(vc->ResolveOperand());
-	i->SetClip(x1, y1, x2, y2);
+	int i = vc->ResolveOperand();
+	vc->SetClip(x1, y1, x2, y2, i);
 }
 
-void vc_LoadImage()
-{
-	std::string fn = vc->ResolveString();
-	vc->vcreturn = HandleForImage(xLoadImage(fn.c_str()));
-}
+void vc_LoadImage() { vc->vcreturn = vc->LoadImage(vc->ResolveString()); }
+void vc_LoadImage0()  { vc->vcreturn = vc->LoadImage0(vc->ResolveString()); }
+void vc_LoadImage8()  { vc->vcreturn = vc->LoadImage8(vc->ResolveString()); }
 
-void vc_LoadImage0()
-{
-	std::string fn = vc->ResolveString();
-	vc->vcreturn = HandleForImage(xLoadImage0(fn.c_str()));
-}
+void vc_ShowPage() { vc->ShowPage(); }
+void vc_UpdateControls() { vc->UpdateControls(); }
 
-void vc_LoadImage8()
-{
-	std::string fn = vc->ResolveString();
-	vc->vcreturn = HandleForImage(xLoadImage8(fn.c_str()));
-}
-
-void vc_Blit()
-{
+void vc_Blit() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int xxx = vc->ResolveOperand();
 	int yyy = vc->ResolveOperand();
-	image *s = ImageForHandle(xxx);
-	image *d = ImageForHandle(yyy);
-	Blit(x, y, s, d);
+	vc->Blit(x, y, xxx, yyy);
 }
 
 void vc_TBlit()
@@ -181,69 +114,64 @@ void vc_TBlit()
 	TBlit(x, y, s, d);
 }
 
-void vc_AdditiveBlit()
-{
+void vc_AdditiveBlit() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	AdditiveBlit(x, y, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->AdditiveBlit(x, y, s, d);
 }
 
 void vc_TAdditiveBlit()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	TAdditiveBlit(x, y, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->TAdditiveBlit(x, y, s, d);
 }
 
-void vc_SubtractiveBlit()
-{
+void vc_SubtractiveBlit() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	SubtractiveBlit(x, y, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->SubtractiveBlit(x, y, s, d);
 }
 
 void vc_TSubtractiveBlit()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	TSubtractiveBlit(x, y, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->TSubtractiveBlit(x, y, s, d);
 }
 
-void vc_WrapBlit()
-{
+void vc_WrapBlit() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	WrapBlit(x, y, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->WrapBlit(x, y, s, d);
 }
 
-void vc_TWrapBlit()
-{
+void vc_TWrapBlit() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	TWrapBlit(x, y, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->TWrapBlit(x, y, s, d);
 }
 
-void vc_ScaleBlit()
-{
+void vc_ScaleBlit() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int dw = vc->ResolveOperand();
 	int dh = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	ScaleBlit(x, y, dw, dh, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->ScaleBlit(x, y, dw, dh, s, d);
 }
 
 void vc_TScaleBlit()
@@ -252,45 +180,41 @@ void vc_TScaleBlit()
 	int y = vc->ResolveOperand();
 	int dw = vc->ResolveOperand();
 	int dh = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	TScaleBlit(x, y, dw, dh, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->TScaleBlit(x, y, dw, dh, s, d);
 }
 
-void vc_RGB()
-{
+void vc_RGB() {
 	int r = vc->ResolveOperand();
 	int g = vc->ResolveOperand();
 	int b = vc->ResolveOperand();
-	vc->vcreturn = MakeColor(r, g, b);
+	vc->vcreturn = vc->rgb(r,g,b);
 }
 
-void vc_SetPixel()
-{
+void vc_SetPixel() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	PutPixel(x, y, c, d);
+	int d = vc->ResolveOperand();
+	vc->SetPixel(x, y, c, d);
 }
 
-void vc_GetPixel()
-{
+void vc_GetPixel() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	vc->vcreturn = ReadPixel(x, y, s);
+	int s = vc->ResolveOperand();
+	vc->vcreturn = vc->GetPixel(x,y,s);
 }
 
-void vc_Line()
-{
+void vc_Line() {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
 	int x2 = vc->ResolveOperand();
 	int y2 = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	Line(x1, y1, x2, y2, c, d);
+	int d = vc->ResolveOperand();
+	vc->Line(x1, y1, x2, y2, c, d);
 }
 
 void vc_Rect()
@@ -300,8 +224,8 @@ void vc_Rect()
 	int x2 = vc->ResolveOperand();
 	int y2 = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	Box(x1, y1, x2, y2, c, d);
+	int d = vc->ResolveOperand();
+	vc->Rect(x1, y1, x2, y2, c, d);
 }
 
 void vc_RectFill()
@@ -311,114 +235,65 @@ void vc_RectFill()
 	int x2 = vc->ResolveOperand();
 	int y2 = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	Rect(x1, y1, x2, y2, c, d);
+	int d = vc->ResolveOperand();
+	vc->RectFill(x1, y1, x2, y2, c, d);
 }
 
-void vc_Circle()
-{
+void vc_Circle() {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
 	int xr = vc->ResolveOperand();
 	int yr = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	Circle(x1, y1, xr, yr, c, d);
+	int d = vc->ResolveOperand();
+	vc->Circle(x1, y1, xr, yr, c, d);
 }
 
-void vc_CircleFill()
-{
+void vc_CircleFill() {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
 	int xr = vc->ResolveOperand();
 	int yr = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	Sphere(x1, y1, xr, yr, c, d);
+	int d = vc->ResolveOperand();
+	vc->CircleFill(x1, y1, xr, yr, c, d);
 }
 
-void vc_GetR()
-{
-	int c = vc->ResolveOperand();
-	int g, b;
-	GetColor(c, vc->vcreturn, g, b);
-}
+void vc_GetR() { vc->vcreturn = vc->GetR(vc->ResolveOperand()); }
+void vc_GetG() { vc->vcreturn = vc->GetG(vc->ResolveOperand()); }
+void vc_GetB() { vc->vcreturn = vc->GetB(vc->ResolveOperand()); }
 
-void vc_GetG()
-{
-	int c = vc->ResolveOperand();
-	int r, b;
-	GetColor(c, r, vc->vcreturn, b);
-}
-
-void vc_GetB()
-{
-	int c = vc->ResolveOperand();
-	int r, g;
-	GetColor(c, r, g, vc->vcreturn);
-}
-
-void vc_RotScale()
-{
+void vc_RotScale() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int angle = vc->ResolveOperand();
 	int scale = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	RotScale(x, y,  angle*(float)3.14159/(float)180.0, scale/(float)1000.0, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->RotScale(x,y,angle,scale,s,d);
 }
 
-// Overkill (2006-07-28):
-// Fixed the bug where FreeImage() didn't do what its name implied.
-void vc_FreeImage()
-{
-	int handle = vc->ResolveOperand();
-	if (handle == 0)
-	{
- 		vc->vcerr("vc_FreeImage() - cannot free a null image reference!");
-	}
-	if (handle == 1)
-	{
- 		vc->vcerr("vc_FreeImage() - cannot free the screen reference");
-	}
-	delete ImageForHandle(handle);
-	FreeImageHandle(handle);
-}
+void vc_FreeImage() { vc->FreeImage(vc->ResolveOperand()); }
 
-void vc_Silhouette()
-{
+void vc_Silhouette() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	Silhouette(x, y, c, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->Silhouette(x, y, c, s, d);
 }
 
-void vc_GrabRegion()
-{
+void vc_GrabRegion() {
 	int sx1 = vc->ResolveOperand();
 	int sy1 = vc->ResolveOperand();
 	int sx2 = vc->ResolveOperand();
 	int sy2 = vc->ResolveOperand();
 	int dx = vc->ResolveOperand();
 	int dy = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-
-	int dcx1, dcy1, dcx2, dcy2;
-	d->GetClip(dcx1, dcy1, dcx2, dcy2);
-
-	if (sx1>sx2) SWAP(sx1, sx2);
-	if (sy1>sy2) SWAP(sy1, sy2);
-	int grabwidth = sx2 - sx1;
-	int grabheight = sy2 - sy1;
-	if (dx+grabwidth<0 || dy+grabheight<0) return;
-	d->SetClip(dx, dy, dx+grabwidth, dy+grabheight);
-	Blit(dx-sx1, dy-sy1, s, d);
-
-	d->SetClip(dcx1, dcy1, dcx2, dcy2);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->GrabRegion(sx1,sy1,sx2,sy2,dx,dy,s,d);
 }
 
 void vc_TGrabRegion()
@@ -429,38 +304,19 @@ void vc_TGrabRegion()
 	int sy2 = vc->ResolveOperand();
 	int dx = vc->ResolveOperand();
 	int dy = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-
-	int dcx1, dcy1, dcx2, dcy2;
-	d->GetClip(dcx1, dcy1, dcx2, dcy2);
-
-	if (sx1>sx2) SWAP(sx1, sx2);
-	if (sy1>sy2) SWAP(sy1, sy2);
-	int grabwidth = sx2 - sx1;
-	int grabheight = sy2 - sy1;
-	if (dx+grabwidth<0 || dy+grabheight<0) return;
-	d->SetClip(dx, dy, dx+grabwidth, dy+grabheight);
-	TBlit(dx-sx1, dy-sy1, s, d);
-
-	d->SetClip(dcx1, dcy1, dcx2, dcy2);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->TGrabRegion(sx1,sy1,sx2,sy2,dx,dy,s,d);
 }
 
-void vc_Mosaic()
-{
+void vc_Mosaic() {
 	int xgran = vc->ResolveOperand();
 	int ygran = vc->ResolveOperand();
-	image *dest = ImageForHandle(vc->ResolveOperand());
-	Mosaic(xgran, ygran, dest);
+	int dest = vc->ResolveOperand();
+	vc->Mosaic(xgran, ygran, dest);
 }
 
-void vc_DuplicateImage()
-{
-	image *src = ImageForHandle(vc->ResolveOperand());
-	image *img = new image(src->width, src->height);
-	Blit(0, 0, src, img);
-	vc->vcreturn = HandleForImage(img);
-}
+void vc_DuplicateImage() { vc->vcreturn = vc->DuplicateImage(vc->ResolveOperand()); }
 
 void vc_Triangle()
 {
@@ -471,16 +327,18 @@ void vc_Triangle()
 	int x3 = vc->ResolveOperand();
 	int y3 = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
-	image *dest = ImageForHandle(vc->ResolveOperand());
-	Triangle(x1, y1, x2, y2, x3, y3, c, dest);
+	int dest = vc->ResolveOperand();
+	vc->Triangle(x1, y1, x2, y2, x3, y3, c, dest);
 }
 
-void vc_LoadFont()
-{
+void vc_ImageWidth() { vc->vcreturn = vc->ImageWidth(vc->ResolveOperand()); }
+void vc_ImageHeight() { vc->vcreturn = vc->ImageHeight(vc->ResolveOperand()); }
+
+void vc_LoadFont() {
 	std::string filename = vc->ResolveString();
 	int width = vc->ResolveOperand();
 	int height = vc->ResolveOperand();
-	vc->vcreturn = (int) new Font(filename.c_str(), width, height);
+	vc->vcreturn = vc->LoadFont(filename,width,height);
 }
 
 void vc_SetCharacterWidth()
@@ -491,76 +349,48 @@ void vc_SetCharacterWidth()
 	font->SetCharacterWidth(character,width);
 }
 
-void vc_LoadFont2()
-{
+void vc_LoadFontEx() {
 	std::string filename = vc->ResolveString();
-	vc->vcreturn = (int) new Font(filename.c_str());
+	vc->vcreturn = vc->LoadFontEx(filename);
 }
 
-void vc_EnableVariableWidth()
-{
-	Font *font = (Font*) vc->ResolveOperand();
-	font->EnableVariableWidth();
-}
+void vc_EnableVariableWidth() { vc->EnableVariableWidth(vc->ResolveOperand()); }
 
-void vc_PrintString()
-{
+void vc_PrintString() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *dest = ImageForHandle(vc->ResolveOperand());
-	Font *font = (Font*) vc->ResolveOperand();
+	int dest = vc->ResolveOperand();
+	int fh =vc->ResolveOperand();
 	std::string text = vc->ResolveString();
-	if (font == 0)
-	{
-		GotoXY(x, y);
-		PrintString(va("%s",text.c_str()), dest);
-	}
-	else
-		font->PrintString("%s", x, y, dest, text.c_str());
+	vc->PrintString(x,y,dest,fh,text);
 }
 
-void vc_PrintRight()
-{
+void vc_PrintRight() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *dest = ImageForHandle(vc->ResolveOperand());
-	Font *font = (Font*) vc->ResolveOperand();
+	int dest = vc->ResolveOperand();
+	int fh =vc->ResolveOperand();
 	std::string text = vc->ResolveString();
-	if (font == 0)
-		PrintRight(x, y, va("%s",text.c_str()), dest);
-	else
-		font->PrintRight("%s", x, y, dest, text.c_str());
+	vc->PrintRight(x,y,dest,fh,text);
 }
 
-void vc_PrintCenter()
-{
+void vc_PrintCenter() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *dest = ImageForHandle(vc->ResolveOperand());
-	Font *font = (Font*) vc->ResolveOperand();
+	int dest = vc->ResolveOperand();
+	int fh =vc->ResolveOperand();
 	std::string text = vc->ResolveString();
-	if (font == 0)
-		PrintCenter(x, y, va("%s",text.c_str()), dest);
-	else
-		font->PrintCenter("%s", x, y, dest, text.c_str());
+	vc->PrintCenter(x,y,dest,fh,text);
 }
 
-void vc_TextWidth()
-{
-	Font *font = (Font*) vc->ResolveOperand();
+
+void vc_TextWidth() {
+	int fh = vc->ResolveOperand();
 	std::string text = vc->ResolveString();
-	if (font == 0)
-		vc->vcreturn = pixels(text.c_str());
-	else
-		vc->vcreturn = font->Pixels(text.c_str());
+	vc->vcreturn = vc->TextWidth(fh,text);
 }
 
-void vc_FreeFont()
-{
-	Font *font = (Font*) vc->ResolveOperand();
-	if (font)
-		delete font;
-}
+void vc_FreeFont() { vc->FreeFont(vc->ResolveOperand()); }
 
 void vc_Random() { 
 	int min = vc->ResolveOperand();
@@ -568,17 +398,8 @@ void vc_Random() {
 	vc->vcreturn = vc->Random(min, max);
 }
 
-void vc_len()
-{
-	std::string s = vc->ResolveString();
-	vc->vcreturn = s.length();
-}
-
-void vc_val()
-{
-	std::string s = vc->ResolveString();
-	vc->vcreturn = atoi(s.c_str());
-}
+void vc_len() { vc->vcreturn = vc->Len(vc->ResolveString()); }
+void vc_val() { vc->vcreturn = vc->Val(vc->ResolveString()); }
 
 void vc_Unpress() { vc->Unpress(vc->ResolveOperand()); }
 
@@ -617,229 +438,45 @@ int vc_GetSecond()
 	return getSecond();
 }
 
-void vc_FileOpen()
-{
-	int index;
-
-	#ifdef __APPLE__
-	char *temp;
-	#endif
-	
+void vc_FileOpen() {
 	std::string fname = vc->ResolveString();
-	int filemode = vc->ResolveOperand();
-
-	for (index=1; index<VCFILES; index++)
-		if (!vcfiles[index].active)
-			break;
-	if (index == VCFILES)
-		vc->vcerr("vc_FileOpen() - Out of file handles! \nTry closing files you're done with, or if you really need more, \nemail vecna@verge-rpg.com and pester me!");
-
-	switch (filemode)
-	{
-		case VC_READ:
-			vcfiles[index].vfptr = vopen(fname.c_str());
-			if (!vcfiles[index].vfptr)
-			{
-				log("opening of %s for reading failed.", fname.c_str());
-				vc->vcreturn = 0;
-				return;
-			}
-			vcfiles[index].active = true;
-			vcfiles[index].mode = VC_READ;
-			break;
-		case VC_WRITE:
-#ifdef __APPLE__
-			// swap backslashes in path for forward slashes
-			// (windows -> unix/max) -- JR Dec 11/05
-			temp = fname.c_str();
-			while(*temp) {
-				if(*temp == '\\')
-					*temp = '/';
-				temp++;
-			}	
-#endif
-			vcfiles[index].fptr = fopen(fname.c_str(), "wb");
-			if (!vcfiles[index].fptr)
-			{
-				log("opening of %s for writing failed.", fname.c_str());
-				vc->vcreturn = 0;
-				return;
-			}
-			vcfiles[index].active = true;
-			vcfiles[index].mode = VC_WRITE;
-			break;
-		case VC_WRITE_APPEND: // Overkill (2006-07-05): Append mode added.
-#ifdef __APPLE__
-			// swap backslashes in path for forward slashes
-			// (windows -> unix/max) -- JR Dec 11/05
-			temp = fname.c_str();
-			while(*temp) {
-				if(*temp == '\\')
-					*temp = '/';
-				temp++;
-			}	
-#endif
-			vcfiles[index].fptr = fopen(fname.c_str(), "ab");
-			if (!vcfiles[index].fptr)
-			{
-				//log("opening of %s for writing failed.", fname.c_str());
-				vc->vcreturn = 0;
-				return;
-			}
-			vcfiles[index].active = true;
-			vcfiles[index].mode = VC_WRITE;
-			break;
-		default:
-			vc->vcerr("vc_FileOpen() - not a valid file mode!");
-	}
-	vc->vcreturn = index;
+	int mode = vc->ResolveOperand();
+	vc->vcreturn = vc->FileOpen(fname,mode);
 }
 
-void vc_FileClose()
-{
-	int handle = vc->ResolveOperand();
-	if (!handle) return;
-	if (handle > VCFILES)
-		vc->vcerr("vc_FileClose() - uhh, given file handle is not a valid file handle.");
-	if (!vcfiles[handle].active)
-		vc->vcerr("vc_FileClose() - given file handle is not open.");
+void vc_FileClose() { vc->FileClose(vc->ResolveOperand()); }
 
-	switch (vcfiles[handle].mode)
-	{
-		case VC_READ:
-			vclose(vcfiles[handle].vfptr);
-			vcfiles[handle].vfptr = 0;
-			vcfiles[handle].mode = 0;
-			vcfiles[handle].active = false;
-			break;
-		case VC_WRITE:
-			fclose(vcfiles[handle].fptr);
-			vcfiles[handle].fptr = 0;
-			vcfiles[handle].mode = 0;
-			vcfiles[handle].active = false;
-			break;
-		default:
-			vc->vcerr("vc_FileClose() - uhhh. file mode is not valid?? you did something very bad!");
-	}
-}
-
-void vc_FileWrite()
-{
+void vc_FileWrite() {
 	int handle = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
-
-	if (!handle) vc->vcerr("vc_FileWrite() - Yo, you be writin' to a file that aint open, foo.");
-	if (handle > VCFILES) vc->vcerr("vc_FileWrite() - given file handle is not a valid file handle.");
-	if (!vcfiles[handle].active) vc->vcerr("vc_FileWrite() - given file handle is not open.");
-	if (vcfiles[handle].mode != VC_WRITE) vc->vcerr("vc_FileWrite() - given file handle is a read-mode file.");
-
-	fwrite(s.c_str(), 1, s.length(), vcfiles[handle].fptr);
+	vc->FileWrite(handle,s);
 }
 
-void vc_FileWriteln()
-{
+void vc_FileWriteln() {
 	int handle = vc->ResolveOperand();
-	std::string s = vc->ResolveString() + "\r\n";
-
-	if (!handle) vc->vcerr("vc_FileWriteln() - Yo, you be writin' to a file that aint open, foo.");
-	if (handle > VCFILES) vc->vcerr("vc_FileWriteln() - given file handle is not a valid file handle.");
-	if (!vcfiles[handle].active) vc->vcerr("vc_FileWriteln() - given file handle is not open.");
-	if (vcfiles[handle].mode != VC_WRITE) vc->vcerr("vc_FileWriteln() - given file handle is a read-mode file.");
-
-	fwrite(s.c_str(), 1, s.length(), vcfiles[handle].fptr);
+	std::string s = vc->ResolveString();
+	vc->FileWriteln(handle,s);
 }
 
-void vc_FileReadln()
-{
-	int handle = vc->ResolveOperand();
+void vc_FileReadln() { vc->vcretstr = vc->FileReadln(vc->ResolveOperand()); }
+void vc_FileReadToken() { vc->vcretstr = vc->FileReadToken(vc->ResolveOperand()); }
 
-	if (!handle) vc->vcerr("vc_FileReadln() - File is not open.");
-	if (handle > VCFILES) vc->vcerr("vc_FileReadln() - given file handle is not a valid file handle.");
-	if (!vcfiles[handle].active) vc->vcerr("vc_FileReadln() - given file handle is not open.");
-	if (vcfiles[handle].mode != VC_READ) vc->vcerr("vc_FileReadln() - given file handle is a write-mode file.");
-
-
-	char buffer[255]; 	// buffer for each read
-	std::string result = ""; // all the text so far
-	int eol = 0;        // flag for when we've hit the end of a line
-	do {
-		vgets(buffer, 255, vcfiles[handle].vfptr); // read it
-
-		if(buffer[0] == '\0')  {
-			eol = 1; // we didn't read anything, this is eof
-		} else if(buffer[strlen(buffer)-1] == 10 || buffer[strlen(buffer)-1] == 13) {
-			// last character is a EOL character, so it's the end of a line
-			eol = 1;
-		}
-
-		strclean(buffer);
-		result += buffer;
-	} while(!eol);
-
-	vc->vcretstr = result;
-}
-
-void vc_FileReadToken()
-{
-	int handle = vc->ResolveOperand();
-
-	if (!handle) vc->vcerr("vc_FileReadToken() - File is not open.");
-	if (handle > VCFILES) vc->vcerr("vc_FileReadToken() - given file handle is not a valid file handle.");
-	if (!vcfiles[handle].active) vc->vcerr("vc_FileReadToken() - given file handle is not open.");
-	if (vcfiles[handle].mode != VC_READ) vc->vcerr("vc_FileReadToken() - given file handle is a write-mode file.");
-
-	char buffer[255];
-	buffer[0] = '\0'; // ensure sending back "" on error
-	vscanf(vcfiles[handle].vfptr, "%s", buffer);
-	strclean(buffer);
-	vc->vcretstr.assign(buffer);
-}
-
-void vc_FileSeekLine()
-{
+void vc_FileSeekLine() {
 	int handle = vc->ResolveOperand();
 	int line = vc->ResolveOperand();
-
-	if (!handle) vc->vcerr("vc_FileSeekLine() - File is not open.");
-	if (handle > VCFILES) vc->vcerr("vc_FileSeekLine() - given file handle is not a valid file handle.");
-	if (!vcfiles[handle].active) vc->vcerr("vc_FileSeekLine() - given file handle is not open.");
-	if (vcfiles[handle].mode != VC_READ) vc->vcerr("vc_FileSeekLine() - given file handle is a write-mode file.");
-
-	vseek(vcfiles[handle].vfptr, 0, SEEK_SET);
-	char temp[256+1];
-	while (line-->0)
-        vgets(temp, 256, vcfiles[handle].vfptr);
+	vc->FileSeekLine(handle,line);
 }
 
 
-void vc_FileEOF()
-{
-	int handle = vc->ResolveOperand();
-	if (!handle) vc->vcerr("vc_FileEOF() - File is not open.");
-	if (handle > VCFILES) vc->vcerr("vc_FileEOF() - given file handle is not a valid file handle.");
-	if (!vcfiles[handle].active) vc->vcerr("vc_FileEOF() - given file handle is not open.");
-	if (vcfiles[handle].mode != VC_READ) vc->vcerr("vc_FileEOF() - given file handle is a write-mode file.");
+void vc_FileEOF() { vc->vcreturn = vc->FileEOF(vc->ResolveOperand())?1:0; }
 
-	vc->vcreturn = veof(vcfiles[handle].vfptr);
-}
+void vc_LoadSound() { vc->vcreturn = vc->LoadSound(vc->ResolveString()); }
+void vc_FreeSound() { vc->FreeSound(vc->ResolveOperand()); }
 
-void vc_LoadSound()
-{
-	std::string sname = vc->ResolveString();
-	vc->vcreturn = (int) LoadSample(sname.c_str());
-}
-
-void vc_FreeSound()
-{
-	int slot = vc->ResolveOperand();
-	FreeSample((FSOUND_SAMPLE *) slot);
-}
-
-void vc_PlaySound()
-{
+void vc_PlaySound() {
 	int slot = vc->ResolveOperand();
 	int volume = vc->ResolveOperand();
-	vc->vcreturn = PlaySample((FSOUND_SAMPLE *) slot, volume * 255 / 100);
+	vc->vcreturn = vc->PlaySound(slot,volume);
 }
 
 void vc_CallFunction()
@@ -885,172 +522,48 @@ void vc_AssignArray()
 	}*/
 }
 
-void vc_FileSeekPos()
-{
+void vc_FileSeekPos() {
 	int handle = vc->ResolveOperand();
 	int offset = vc->ResolveOperand();
 	int mode = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileSeekPos() - file handle is either invalid or file is not open.");
-
-	switch (vcfiles[handle].mode)
-	{
-		case VC_READ:
-			vseek(vcfiles[handle].vfptr, offset, mode);
-			break;
-		case VC_WRITE:
-			fseek(vcfiles[handle].fptr, offset, mode);
-			break;
-		default:
-			vc->vcerr("vc_SeekPos() - File mode not valid! That's bad!");
-	}
+	vc->FileSeekPos(handle,offset,mode);
 }
 
-void vc_FileCurrentPos()
-{
-	int handle = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileCurrentPos() - file handle is either invalid or file is not open.");
-
-	switch (vcfiles[handle].mode)
-	{
-		case VC_READ:
-			vc->vcreturn = vtell(vcfiles[handle].vfptr);
-			break;
-		case VC_WRITE:
-			vc->vcreturn = ftell(vcfiles[handle].fptr);
-			break;
-		default:
-			vc->vcerr("vc_FileCurentPos() - File mode not valid! That's bad!");
-	}
-}
-
-void vc_FileWriteByte()
-{
+void vc_FileCurrentPos() { vc->vcreturn = vc->FileCurrentPos(vc->ResolveOperand()); }
+void vc_FileWriteByte() {
 	int handle = vc->ResolveOperand();
 	int var = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileWriteByte() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_WRITE)
-		vc->vcerr("vc_FileWriteByte() - given file handle is a read-mode file.");
-	flip(&var, sizeof(var)); // ensure little-endian writing
-	fwrite(&var, 1, 1, vcfiles[handle].fptr);
+	vc->FileWriteByte(handle,var);
 }
 
-void vc_FileWriteWord()
-{
+void vc_FileWriteWord() {
 	int handle = vc->ResolveOperand();
 	int var = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileWriteWord() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_WRITE)
-		vc->vcerr("vc_FileWriteWord() - given file handle is a read-mode file.");
-	flip(&var, sizeof(var)); // ensure little-endian writing
-	fwrite(&var, 1, 2, vcfiles[handle].fptr);
+	vc->FileWriteWord(handle,var);
 }
 
-void vc_FileWriteQuad()
-{
+void vc_FileWriteQuad() {
 	int handle = vc->ResolveOperand();
 	int var = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileWriteQuad() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_WRITE)
-		vc->vcerr("vc_FileWriteQuad() - given file handle is a read-mode file.");
-	flip(&var, sizeof(var)); // ensure little-endian writing
-	fwrite(&var, 1, 4, vcfiles[handle].fptr);
+	vc->FileWriteQuad(handle,var);
 }
 
-void vc_FileWriteString()
-{
+void vc_FileWriteString() {
 	int handle = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileWriteString() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_WRITE)
-		vc->vcerr("vc_FileWriteString() - given file handle is a read-mode file.");
-
-	int l = s.length();
-	int writeLength = l;
-
-	flip(&writeLength, sizeof(writeLength)); // ensure little-endian writing
-	fwrite(&writeLength, 1, 2, vcfiles[handle].fptr);
-	fwrite(s.c_str(), 1, l, vcfiles[handle].fptr);
+	vc->FileWriteString(handle,s);
 }
 
-void vc_FileReadByte()
-{
-	int handle = vc->ResolveOperand();
+void vc_FileReadByte() { vc->vcreturn = vc->FileReadByte(vc->ResolveOperand()); }
+void vc_FileReadWord() { vc->vcreturn = vc->FileReadWord(vc->ResolveOperand()); }
+void vc_FileReadQuad() { vc->vcreturn = vc->FileReadQuad(vc->ResolveOperand()); }
+void vc_FileReadString() { vc->vcretstr = vc->FileReadString(vc->ResolveOperand()); }
 
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileReadByte() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_READ)
-		vc->vcerr("vc_FileReadByte() - given file handle is a write-mode file.");
-
-	vc->vcreturn = 0;
-	vread(&vc->vcreturn, 1, vcfiles[handle].vfptr);
-}
-
-void vc_FileReadWord()
-{
-	int handle = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileReadWord() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_READ)
-		vc->vcerr("vc_FileReadWord() - given file handle is a write-mode file.");
-
-	vc->vcreturn = 0;
-	vread(&vc->vcreturn, 2, vcfiles[handle].vfptr);
-}
-
-void vc_FileReadQuad()
-{
-	int handle = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileReadQuad() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_READ)
-		vc->vcerr("vc_FileReadQuad() - given file handle is a write-mode file.");
-
-	vread(&vc->vcreturn, 4, vcfiles[handle].vfptr);
-}
-
-void vc_FileReadString()
-{
-	int handle = vc->ResolveOperand();
-	int len = 0;
-	char *buffer;
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileReadString() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_READ)
-		vc->vcerr("vc_FileReadString() - given file handle is a write-mode file.");
-
-	vread(&len, 2, vcfiles[handle].vfptr);
-	buffer = new char[len+1];
-	vread(buffer, len, vcfiles[handle].vfptr);
-	buffer[len]=0;
-	vc->vcretstr.assign(buffer);
-	delete[] buffer;
-}
-
-void vc_sqrt()
-{
-	vc->vcreturn = (int) (float) sqrt((float) vc->ResolveOperand());
-}
-
-void vc_pow()
-{
+void vc_sqrt() { vc->vcreturn = vc->sqrt(vc->ResolveOperand()); }
+void vc_pow() {
 	int a = vc->ResolveOperand();
 	int b = vc->ResolveOperand();
-	vc->vcreturn = (int) pow((double)a, (double)b);
+	vc->vcreturn = vc->pow(a,b);
 }
 
 void vc_SetAppName() { vc->SetAppName(vc->ResolveString()); }
@@ -1065,13 +578,9 @@ void vc_BlitLucent()
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int lucent = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-
-	int oldalpha = alpha;
-	SetLucent(lucent);
-	Blit(x, y, s, d);
-	SetLucent(oldalpha);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->BlitLucent(x,y,lucent,s,d);
 }
 
 void vc_TBlitLucent()
@@ -1079,35 +588,29 @@ void vc_TBlitLucent()
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int lucent = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-
-	int oldalpha = alpha;
-	SetLucent(lucent);
-	TBlit(x, y, s, d);
-	SetLucent(oldalpha);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->TBlitLucent(x,y,lucent,s,d);
 }
 
 void vc_Map()
 {
 	std::string map = vc->ResolveString();
-	ScriptEngine::Map(map);
+	vc->Map(map);
 }
 
 void vc_strcmp()
 {
 	std::string s1 = vc->ResolveString();
 	std::string s2 = vc->ResolveString();
-	vc->vcreturn = strcmp(s1.c_str(), s2.c_str());
+	vc->vcreturn = vc->Strcmp(s1,s2);
 }
 
 void vc_strdup()
 {
 	std::string s = vc->ResolveString();
 	int times = vc->ResolveOperand();
-	vc->vcretstr = "";
-	for (int i=0; i<times; i++)
-		vc->vcretstr += s;
+	vc->vcretstr = vc->Strdup(s,times);
 }
 
 void vc_HookTimer() { vc->HookTimer(vc->ResolveString()); }
@@ -1127,10 +630,7 @@ void vc_HookEntityRender()
 {
 	int i = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
-
-	if (i<0 || i>=entities)
-		err("vc_HookEntityRender() - no such entity %d", i);
-	entity[i]->hookrender = s;
+	vc->HookEntityRender(i,s);
 }
 
 void vc_BlitTile()
@@ -1138,9 +638,8 @@ void vc_BlitTile()
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int t = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	if (current_map)
-		current_map->tileset->Blit(x, y, t, d);
+	int d = vc->ResolveOperand();
+	vc->BlitTile(x,y,t,d);
 }
 
 void vc_TBlitTile()
@@ -1148,9 +647,8 @@ void vc_TBlitTile()
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int t = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	if (current_map)
-		current_map->tileset->TBlit(x, y, t, d);
+	int d = vc->ResolveOperand();
+	vc->TBlitTile(x,y,t,d);
 }
 
 void vc_BlitEntityFrame()
@@ -1159,24 +657,15 @@ void vc_BlitEntityFrame()
 	int y = vc->ResolveOperand();
 	int e = vc->ResolveOperand();
 	int f = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-
-	if (!current_map || e<0 || e >= entities)
-		return;
-	entity[e]->chr->render(x, y, f, d);
+	int d = vc->ResolveOperand();
+	vc->BlitEntityFrame(x,y,e,f,d);
 }
 
-void vc_GetTile()
-{
+void vc_GetTile() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int i = vc->ResolveOperand();
-	if (!current_map)
-		return;
-	if (i>= current_map->numlayers)
-		return;
-
-	vc->vcreturn = current_map->layers[i]->GetTile(x, y);
+	vc->vcreturn = vc->GetTile(x,y,i);
 }
 
 void vc_SetTile()
@@ -1185,21 +674,14 @@ void vc_SetTile()
 	int y = vc->ResolveOperand();
 	int i = vc->ResolveOperand();
 	int z = vc->ResolveOperand();
-
-	if (!current_map)
-		return;
-	if (i>= current_map->numlayers)
-		return;
-	current_map->layers[i]->SetTile(x, y, z);
+	vc->SetTile(x,y,i,z);
 }
 
 void vc_GetZone()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	if (!current_map)
-		return;
-	vc->vcreturn = current_map->zone(x, y);
+	vc->vcreturn = vc->GetZone(x,y);
 }
 
 void vc_SetZone()
@@ -1207,71 +689,39 @@ void vc_SetZone()
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int z = vc->ResolveOperand();
-	if (!current_map)
-		return;
-	if (z >= current_map->numzones)
-		return;
-
-	current_map->SetZone(x, y, z);
+	vc->SetZone(x,y,z);
 }
 
-void vc_SuperSecretThingy()
-{
+void vc_SuperSecretThingy() {
 	int xskew = vc->ResolveOperand();
 	int yofs = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-
-	if (s->width != 256 || s->height != 256)
-		err("SuperSecretThingy() - Source image MUST be 256x256!!");
-
-	Timeless(xskew, yofs, y, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->SuperSecretThingy(xskew, yofs, y, s, d);
 }
 
-void vc_BlitWrap()
-{
+void vc_BlitWrap() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	BlitWrap(x, y, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->BlitWrap(x, y, s, d);
 }
 
-void vc_ColorFilter()
-{
+void vc_ColorFilter() {
 	int filter = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	ColorFilter(filter, d);
+	int d = vc->ResolveOperand();
+	vc->ColorFilter(filter, d);
 }
 
-void vc_ImageShell()
-{
+void vc_ImageShell() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
 	int h = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	if (w+x > s->width || y+h > s->height)
-		err("ImageShell() - Bad arguements. x/y+w/h greater than original image dimensions");
-
-	image *d = new image(w, h);
-	d->delete_data();
-	d->shell = 1;
-
-	switch (s->bpp)
-	{
-		case 15:
-		case 16:
-			d->data = (void *) ((word *) s->data + (y*s->pitch)+x);
-			d->pitch = s->pitch;
-			break;
-		case 32:
-			d->data = (void *) ((quad *) s->data + (y*s->pitch)+x);
-			d->pitch = s->pitch;
-			break;
-	}
-	vc->vcreturn = HandleForImage(d);
+	int s = vc->ResolveOperand();
+	vc->vcreturn = vc->ImageShell(x,y,w,h,s);
 }
 
 void vc_Malloc()
@@ -1294,342 +744,124 @@ void vc_MemCopy()
 	memcpy((void*) dst, (void *) src, len);
 }
 
-int mydtoi(double d)
-{
-	return (int)floor(d + 0.5);
-}
 
-void vc_asin()
-{
-	int val = vc->ResolveOperand();
-	double dv = (double) val / 65535;
-	double as = asin(dv);
-	as = as * 180 / 3.14159265358979; // convert radians to degrees
-	vc->vcreturn = mydtoi(as);
-}
+void vc_sin() { vc->vcreturn = vc->sin(vc->ResolveOperand()); }
+void vc_cos() { vc->vcreturn = vc->cos(vc->ResolveOperand()); }
+void vc_tan() { vc->vcreturn = vc->tan(vc->ResolveOperand()); }
+void vc_fsin() { vc->vcreturn = vc->fsin(vc->ResolveOperand()); }
+void vc_fcos() { vc->vcreturn = vc->fcos(vc->ResolveOperand()); }
+void vc_ftan() { vc->vcreturn = vc->ftan(vc->ResolveOperand()); }
 
-void vc_fasin()
-{
-	int val = vc->ResolveOperand();
-	double dv = (double) val / 65535;
-	double as = asin(dv);
-	as *= 65536; // Convert to 16.16 fixed point
-	vc->vcreturn = mydtoi(as);
-}
+void vc_asin() { vc->vcreturn = vc->asin(vc->ResolveOperand()); }
+void vc_fasin() { vc->vcreturn = vc->fasin(vc->ResolveOperand()); }
+void vc_acos() { vc->vcreturn = vc->acos(vc->ResolveOperand()); }
+void vc_facos() { vc->vcreturn = vc->facos(vc->ResolveOperand()); }
+void vc_atan() { vc->vcreturn = vc->atan(vc->ResolveOperand()); }
+void vc_fatan() { vc->vcreturn = vc->fatan(vc->ResolveOperand()); }
 
-void vc_fsin()
-{
-	int val = vc->ResolveOperand();
-	double magnitude = sin((double) val / 65536);
-	vc->vcreturn = mydtoi(magnitude * 65536);
-}
-
-void vc_fcos()
-{
-	int val = vc->ResolveOperand();
-	double magnitude = cos((double) val / 65536);
-	vc->vcreturn = mydtoi(magnitude * 65536);
-}
-
-void vc_ftan()
-{
-	int val = vc->ResolveOperand();
-	double magnitude = tan((double) val / 65536);
-	vc->vcreturn = mydtoi(magnitude * 65536);
-}
-
-void vc_acos()
-{
-	int val = vc->ResolveOperand();
-	double dv = (double) val / 65535;
-	double ac = acos(dv);
-	ac = ac * 180 / 3.14159265358979; // convert radians to degrees
-	vc->vcreturn = mydtoi(ac);
-}
-
-void vc_facos()
-{
-	int val = vc->ResolveOperand();
-	double dv = (double) val / 65535;
-	double ac = acos(dv);
-	ac *= 65536; // Convert to 16.16 fixed point
-	vc->vcreturn = mydtoi(ac);
-}
-
-
-void vc_atan()
-{
-	int val = vc->ResolveOperand();
-	double dv = (double) val / 65535;
-	double at = atan(dv);
-	at = at * 180 / 3.14159265358979; // convert radians to degrees
-	vc->vcreturn = mydtoi(at);
-}
-
-void vc_fatan()
-{
-	int val = vc->ResolveOperand();
-	double dv = (double) val / 65535;
-	double at = atan(dv);
-	at *= 65536; // Convert to 16.16 fixed point
-	vc->vcreturn = mydtoi(at);
-}
-
-void vc_AlphaBlit()
-{
+void vc_AlphaBlit() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *a = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	AlphaBlit(x, y, s, a, d);
+	int s = vc->ResolveOperand();
+	int a = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->AlphaBlit(x, y, s, a, d);
 }
 
 
-void vc_WindowCreate()
-{
+void vc_WindowCreate() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
 	int h = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
-
-	AuxWindow *auxwin = vid_createAuxWindow();
-	auxwin->setTitle(s.c_str());
-	auxwin->setPosition(x,y);
-	auxwin->setResolution(w,h);
-	auxwin->setSize(w,h);
-	auxwin->setVisibility(true);
-	vc->vcreturn = auxwin->getHandle();
+	vc->vcreturn = vc->WindowCreate(x,y,w,h,s);
 }
 
-void ___vc_window_checkhandle(char *func, int handle, AuxWindow *auxwin)
-{
-	if(!handle)
-		vc->vcerr("%s() - cannot access a null window handle!",func);
-	if(!auxwin)
-		vc->vcerr("%s() - invalid window handle!",func);
-}
+void vc_WindowGetImage() { vc->vcreturn = vc->WindowGetImage(vc->ResolveOperand()); }
+void vc_WindowClose() { vc->WindowClose(vc->ResolveOperand()); }
 
-void vc_WindowGetImage()
-{
-	int win = vc->ResolveOperand();
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowGetImage",win,auxwin);
-	vc->vcreturn = auxwin->getImageHandle();
-}
-
-void vc_WindowClose()
-{
-	int win = vc->ResolveOperand();
-	if(win == 1)
-		vc->vcerr("vc_WindowClose() - cannot close gameWindow");
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowClose",win,auxwin);
-	auxwin->dispose();
-}
-
-void vc_WindowSetSize()
-{
+void vc_WindowSetSize() {
 	int win = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
 	int h = vc->ResolveOperand();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowSetSize",win,auxwin);
-	auxwin->setSize(w,h);
+	vc->WindowSetSize(win,w,h);
 }
 
-void vc_WindowSetResolution()
-{
+void vc_WindowSetResolution() {
 	int win = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
 	int h = vc->ResolveOperand();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowSetSize",win,auxwin);
-	auxwin->setResolution(w,h);
-	auxwin->setSize(w,h);
+	vc->WindowSetResolution(win,w,h);
 }
 
-void vc_WindowSetPosition()
-{
+void vc_WindowSetPosition() {
 	int win = vc->ResolveOperand();
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowSetPosition",win,auxwin);
-	auxwin->setPosition(x,y);
+	vc->WindowSetPosition(win,x,y);
 }
 
-void vc_WindowSetTitle()
-{
+void vc_WindowSetTitle() {
 	int win = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowSetTitle",win,auxwin);
-	auxwin->setTitle(s.c_str());
+	vc->WindowSetTitle(win,s);
 }
 
-void vc_WindowHide()
-{
-	int win = vc->ResolveOperand();
+void vc_WindowHide() { vc->WindowHide(vc->ResolveOperand()); }
+void vc_WindowShow() { vc->WindowHide(vc->ResolveOperand()); }
 
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowHide",win,auxwin);
-	auxwin->setVisibility(false);
-}
+void vc_WindowGetXRes() { vc->vcreturn = vc->WindowGetXRes(vc->ResolveOperand()); }
+void vc_WindowGetYRes() { vc->vcreturn = vc->WindowGetYRes(vc->ResolveOperand()); }
+void vc_WindowGetWidth() { vc->vcreturn = vc->WindowGetWidth(vc->ResolveOperand()); }
+void vc_WindowGetHeight() { vc->vcreturn = vc->WindowGetHeight(vc->ResolveOperand()); }
 
-void vc_WindowShow()
-{
-	int win = vc->ResolveOperand();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowShow",win,auxwin);
-	auxwin->setVisibility(true);
-}
-
-void vc_WindowGetXRes()
-{
-	int win = vc->ResolveOperand();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowGetXRes",win,auxwin);
-	vc->vcreturn = auxwin->getXres();
-}
-
-void vc_WindowGetYRes()
-{
-	int win = vc->ResolveOperand();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowGetYRes",win,auxwin);
-	vc->vcreturn = auxwin->getYres();
-}
-
-void vc_WindowGetWidth()
-{
-	int win = vc->ResolveOperand();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowGetWidth",win,auxwin);
-	vc->vcreturn = auxwin->getWidth();
-}
-
-void vc_WindowGetHeight()
-{
-	int win = vc->ResolveOperand();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowGetHeight",win,auxwin);
-	vc->vcreturn = auxwin->getHeight();
-}
-
-void vc_WindowPositionCommand()
-{
+void vc_WindowPositionCommand() {
 	int win = vc->ResolveOperand();
 	int command = vc->ResolveOperand();
 	int arg1 = vc->ResolveOperand();
 	int arg2 = vc->ResolveOperand();
-
-	AuxWindow *auxwin = vid_findAuxWindow(win);
-	___vc_window_checkhandle("vc_WindowGetHeight",win,auxwin);
-
-	auxwin->positionCommand(command,arg1,arg2);
+	vc->WindowPositionCommand(win,command,arg1,arg2);
 }
 
-void vc_SetSongPaused()
-{
+void vc_SetSongPaused() {
 	int h = vc->ResolveOperand();
 	int p = vc->ResolveOperand();
-	SetPaused(h, p);
+	vc->SetSongPaused(h, p);
 }
 
-void vc_SetSongVolume()
-{
+void vc_SetSongVolume() {
 	int h = vc->ResolveOperand();
 	int v = vc->ResolveOperand();
-	SetSongVol(h, v);
+	vc->SetSongVolume(h, v);
 }
 
-void vc_SetSongPos()
-{
+void vc_SetSongPos() {
 	int h = vc->ResolveOperand();
 	int v = vc->ResolveOperand();
-	SetSongPos(h, v);
+	vc->SetSongPos(h, v);
 }
 
-void vc_SetMusicVolume()
-{
-	int v = vc->ResolveOperand();
-	SetMusicVolume(v);
-}
+void vc_SetMusicVolume() { vc->SetMusicVolume(vc->ResolveOperand()); }
 
 
-bool isdelim(char c, std::string s)
-{
-	for (int i=0; i<s.length(); i++)
-		if (c==s[i])
-			return true;
-	return false;
-}
-
-void vc_TokenCount()
-{
+bool isdelim(char c, std::string s);
+void vc_TokenCount() {
 	std::string s = vc->ResolveString();
 	std::string d = vc->ResolveString();
-
-	int n = 0;
-	int tokenindex = 0;
-	while (n < s.length())
-	{
-		bool tp = false;
-
-		while (n < s.length() && isdelim(s[n], d))
-			n++;
-		while (n < s.length() && !isdelim(s[n], d))
-		{
-			tp = true;
-			n++;
-		}
-		if (tp) tokenindex++;
-	}
-	vc->vcreturn = tokenindex;
+	vc->vcreturn = vc->TokenCount(s,d);
 }
 
-void vc_StringToken()
+void vc_GetToken()
 {
 	std::string s = vc->ResolveString();
 	std::string d = vc->ResolveString();
 	int i = vc->ResolveOperand();
-
-	int n = 0;
-	int tokenindex = 0;
-	while (n < s.length())
-	{
-		std::string token = "";
-
-		while (n < s.length() && isdelim(s[n], d))
-			n++;
-		while (n < s.length() && !isdelim(s[n], d))
-		{
-			token += s[n];
-			n++;
-		}
-		if (i == tokenindex)
-		{
-			vc->vcretstr = token;
-			return;
-		}
-		tokenindex++;
-	}
-
-	vc->vcretstr = "";
+	vc->vcretstr = vc->GetToken(s,d,i);
 }
 
+void vc_ToLower() { vc->vcretstr = vc->ToLower(vc->ResolveString()); }
+void vc_ToUpper() { vc->vcretstr = vc->ToUpper(vc->ResolveString()); }
 
 // Overkill: 2005-12-28
 // Helper function.
@@ -1842,138 +1074,56 @@ void vc_WrapText()
 	vc->vcretstr = wt_s;
 }
 
-void vc_ToUpper()
-{
-	std::string s = vc->ResolveString();
-	vc->vcretstr = to_upper_copy(s);
-}
 
-void vc_FontHeight()
-{
-	int f = vc->ResolveOperand();
-	if (!f) vc->vcreturn = 7;
-	else vc->vcreturn = ((Font *) f)->height;
-}
+void vc_FontHeight() { vc->vcreturn = vc->FontHeight(vc->ResolveOperand()); }
 
-void vc_MixColor()
-{
+void vc_MixColor() {
 	int c1 = vc->ResolveOperand();
 	int c2 = vc->ResolveOperand();
 	int p = vc->ResolveOperand();
-
-	if (p>255) p=255;
-	if (p<0) p=0;
-
-	int r1, g1, b1;
-	int r2, g2, b2;
-	GetColor(c1, r1, g1, b1);
-	GetColor(c2, r2, g2, b2);
-
-	vc->vcreturn = MakeColor((r1*(255-p)/255)+(r2*p/255), (g1*(255-p)/255)+(g2*p/255), (b1*(255-p)/255)+(b2*p/255));
+	vc->vcreturn = vc->MixColor(c1,c2,p);
 }
 
-void vc_CHR()
-{
-	int c = vc->ResolveOperand();
+void vc_CHR() { vc->vcretstr = vc->Chr(vc->ResolveOperand()); }
 
-	vc->vcretstr = va("%c", c);
-}
+void vc_PlayMovie() { vc->vcreturn = vc->PlayMovie(vc->ResolveString()); }
+void vc_AbortMovie() { vc->AbortMovie(); }
 
-void vc_PlayMovie()
-{
-	std::string s = vc->ResolveString();
-	vc->vcreturn = win_movie_playSimple(s.c_str());
-}
-
-//mbg 12/11/05
-void vc_AbortMovie()
-{
-	win_movie_abortSimple();
-}
-
-void vc_MovieLoad()
-{
+void vc_MovieLoad() {
 	std::string s = vc->ResolveString();
 	int mute = vc->ResolveOperand();
-
-	vc->vcreturn = win_movie_load(s.c_str(), mute!=0);
+	vc->vcreturn = vc->MovieLoad(s,mute!=0);
 }
 
-void vc_MoviePlay()
-{
+void vc_MoviePlay() {
 	int m = vc->ResolveOperand();
 	int loop = vc->ResolveOperand();
-	win_movie_play(m,loop);
+	vc->MoviePlay(m,loop!=0);
 }
 
-void vc_MovieGetImage()
-{
-	int m = vc->ResolveOperand();
-	vc->vcreturn = win_movie_getImage(m);
-}
-
-void vc_MovieRender()
-{
-	int m = vc->ResolveOperand();
-	win_movie_render(m);
-}
-
-void vc_MovieClose()
-{
-	int m = vc->ResolveOperand();
-	win_movie_close(m);
-}
-
-void vc_MovieGetCurrFrame()
-{
-	int m = vc->ResolveOperand();
-	vc->vcreturn = win_movie_getCurrFrame(m);
-}
-
-void vc_MovieGetFramerate()
-{
-	int m = vc->ResolveOperand();
-	vc->vcreturn = win_movie_getFramerate(m);
-}
-
-void vc_MovieNextFrame()
-{
-	int m = vc->ResolveOperand();
-	win_movie_nextFrame(m);
-}
-
-void vc_MovieSetFrame()
-{
+void vc_MovieGetImage() {  vc->vcreturn = vc->MovieGetImage(vc->ResolveOperand()); }
+void vc_MovieRender() { vc->MovieRender(vc->ResolveOperand()); }
+void vc_MovieClose() { vc->MovieClose(vc->ResolveOperand()); }
+void vc_MovieGetCurrFrame() { vc->vcreturn = vc->MovieGetCurrFrame(vc->ResolveOperand()); }
+void vc_MovieGetFramerate() { vc->vcreturn = vc->MovieGetFramerate(vc->ResolveOperand()); }
+void vc_MovieNextFrame() { vc->MovieNextFrame(vc->ResolveOperand()); }
+void vc_MovieSetFrame() {
 	int m = vc->ResolveOperand();
 	int f = vc->ResolveOperand();
-	win_movie_setFrame(m,f);
+	vc->MovieSetFrame(m,f);
 }
 
-void vc_GetObsPixel()
-{
+void vc_GetObsPixel() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-
-	if (!current_map)
-	{
-		vc->vcreturn = 0;
-		return;
-	}
-
-	vc->vcreturn = current_map->obstructpixel(x, y);
+	vc->vcreturn = vc->GetObsPixel(x,y);
 }
 
 void vc_GetObs()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-
-	if (!current_map)
-	{
-		vc->vcreturn = 0;
-		return;
-	}
-	vc->vcreturn = current_map->obstruct(x, y);
+	vc->vcreturn = vc->GetObs(x,y);
 }
 
 void vc_SetObs()
@@ -1981,92 +1131,43 @@ void vc_SetObs()
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
-
-	if (!current_map)
-	{
-		vc->vcreturn = 0;
-		return;
-	}
-	current_map->SetObs(x, y, c);
+	vc->SetObs(x,y,c);
 }
 
-void vc_EntitySpawn()
-{
+void vc_EntitySpawn() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
-
-	vc->vcreturn = AllocateEntity(x*16,y*16,s.c_str());
+	vc->vcreturn = vc->EntitySpawn(x,y,s);
 }
 
-void vc_SetPlayer()
-{
-	int e = vc->ResolveOperand();
-	if (e<0 || e>=entities)
-	{
-		player = -1;
-		myself = 0;
-		return;
-	}
-	myself = entity[e];
-	player = e;
-	myself->SetMotionless();
-	myself->obstructable = true;
-}
+void vc_SetPlayer() { vc->SetPlayer(vc->ResolveOperand()); }
 
-void vc_StalkEntity()
+void vc_EntityStalk()
 {
 	int stalker = vc->ResolveOperand();
 	int stalkee = vc->ResolveOperand();
-	if (stalker<0 || stalker>=entities)
-		return;
-	if (stalkee<0 || stalkee>=entities)
-	{
-		entity[stalker]->clear_stalk();
-		return;
-	}
-	entity[stalker]->stalk(entity[stalkee]);
+	vc->EntityStalk(stalker,stalkee);
 }
 
-void vc_EntityMove()
-{
+void vc_EntityMove() {
 	int e = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
-	if (e<0 || e >= entities)
-		return;
-	entity[e]->SetMoveScript(s.c_str());
+	vc->EntityMove(e,s);
 }
 
 void vc_PlayerMove()
 {
 	std::string s = vc->ResolveString();
-    if (!myself) return;
-	myself->SetMoveScript(s.c_str());
-	while (myself->movecode)
-	{
-		TimedProcessEntities();
-		Render();
-		ShowPage();
-	}
+	vc->PlayerMove(s);
 }
 
-void vc_ChangeCHR()
-{
+void vc_ChangeCHR() {
 	int e = vc->ResolveOperand();
 	std::string c = vc->ResolveString();
-	if (e<0 || e >= entities)
-		return;
-	entity[e]->set_chr(c);
+	vc->ChangeCHR(e,c);
 }
-
-void vc_EntitySetWanderZone()
-{
-	int e = vc->ResolveOperand();
-	if (e<0 || e >= entities)
-		return;
-	entity[e]->SetWanderZone();
-}
-
+void vc_EntitySetWanderZone() { vc->EntitySetWanderZone(vc->ResolveOperand()); }
 void vc_EntitySetWanderRect()
 {
 	int e = vc->ResolveOperand();
@@ -2074,44 +1175,26 @@ void vc_EntitySetWanderRect()
 	int y1 = vc->ResolveOperand();
 	int x2 = vc->ResolveOperand();
 	int y2 = vc->ResolveOperand();
-	if (e<0 || e >= entities)
-		return;
-	entity[e]->SetWanderBox(x1, y1, x2, y2);
+	vc->EntitySetWanderRect(e,x1,y1,x2,y2);
 }
-
-void vc_EntityStop()
-{
-	int e = vc->ResolveOperand();
-	if (e<0 || e >= entities)
-		return;
-	entity[e]->SetMotionless();
-}
-
+void vc_EntityStop() { vc->EntityStop(vc->ResolveOperand()); }
 void vc_EntitySetWanderDelay()
 {
 	int e = vc->ResolveOperand();
 	int d = vc->ResolveOperand();
-	if (e<0 || e >= entities)
-		return;
-	entity[e]->SetWanderDelay(d);
+	vc->EntitySetWanderDelay(e,d);
 }
+void vc_SetEntitiesPaused() { vc->SetEntitiesPaused(vc->ResolveOperand()); }
 
-void vc_SetEntitiesPaused()
-{
-	int i = vc->ResolveOperand();
-	entitiespaused = i ? true : false;
-	if (!entitiespaused)
-		lastentitythink = systemtime;
-}
-
-void vc_RenderMap()
-{
+void vc_Render() { vc->Render(); }
+void vc_RenderMap() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	image *dest = ImageForHandle(vc->ResolveOperand());
-	if (current_map)
-		current_map->render(x, y, dest);
+	int dest = vc->ResolveOperand();
+	vc->RenderMap(x,y,dest);
 }
+void vc_GetSprite() { vc->vcreturn = vc->GetSprite(); }
+void vc_ResetSprites() { vc->ResetSprites(); }
 
 void vc_SetButtonKey() { 
 	int b = vc->ResolveOperand();
@@ -2130,39 +1213,21 @@ void vc_FunctionExists()
 	vc->vcreturn = vc->FunctionExists(f.c_str());
 }
 
-void vc_atan2()
-{
+void vc_atan2() {
 	int y = vc->ResolveOperand();
 	int x = vc->ResolveOperand();
-	float f = atan2((float)y,(float)x);
-	vc->vcreturn = (int)(f/2.0/3.14159265358979*360.0);
+	vc->vcreturn = vc->atan2(y,x);
 }
 
 void vc_fatan2()
 {
 	int y = vc->ResolveOperand();
 	int x = vc->ResolveOperand();
-	double theta = atan2((double) y, (double) x);
-	vc->vcreturn = mydtoi(theta * 65536);
+	vc->vcreturn = vc->fatan2(y,x);
 }
 
-void vc_CopyImageToClipboard()
-{
-	image *src = ImageForHandle(vc->ResolveOperand());
-	clipboard_putImage(src);
-}
-
-void vc_GetImageFromClipboard()
-{
-	image *t = clipboard_getImage();
-	if (!t)
-	{
-		vc->vcreturn = 0;
-		return;
-	}
-
-	else vc->vcreturn = HandleForImage(t);
-}
+void vc_CopyImageToClipboard() { vc->CopyImageToClipboard(vc->ResolveOperand()); }
+void vc_GetImageFromClipboard() { vc->vcreturn = vc->GetImageFromClipboard(); }
 
 void vc_SetInt()
 {
@@ -2220,266 +1285,63 @@ void vc_GetStringArray()
 	vc->vcretstr = vc->GetStrArray(strname.c_str(), index);
 }
 
-void vc_FlipBlit()
-{
+void vc_FlipBlit() {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int fx = vc->ResolveOperand();
 	int fy = vc->ResolveOperand();
-	image *s = ImageForHandle(vc->ResolveOperand());
-	image *d = ImageForHandle(vc->ResolveOperand());
-	FlipBlit(x, y, fx, fy, s, d);
+	int s = vc->ResolveOperand();
+	int d = vc->ResolveOperand();
+	vc->FlipBlit(x, y, fx!=0, fy!=0, s, d);
 }
 
-ServerSocket *vcserver = 0;
+void vc_Connect() { vc->vcreturn = vc->Connect(vc->ResolveString()); }
+void vc_GetConnection() { vc->vcreturn = vc->GetConnection(); }
+void vc_SocketConnected() { vc->vcreturn = vc->SocketConnected(vc->ResolveOperand())?1:0; }
+void vc_SocketHasData()  { vc->vcreturn = vc->SocketHasData(vc->ResolveOperand())?1:0; }
+void vc_SocketGetString() { vc->vcretstr = vc->SocketGetString(vc->ResolveOperand()); }
 
-void vc_Connect()
-{
-	std::string ip = vc->ResolveString();
-	Socket *s;
-	try
-	{
-		s = new Socket(ip.c_str(), 45150);
-	}
-	catch (NetworkException ne)
-	{
-		vc->vcreturn = 0;
-		return;
-	}
-	vc->vcreturn = (int) s;
-}
-
-void vc_GetConnection()
-{
-	try
-    {
-		if (!vcserver)
-			vcserver = new ServerSocket(45150);
-		Socket *s = vcserver->accept();
-		vc->vcreturn = (int) s;
-	}
-	catch(NetworkException e)
-    {
-		vc->vcreturn = 0;
-		return;
-    }
-}
-
-void vc_SocketConnected()
-{
-	Socket *s = (Socket *) vc->ResolveOperand();
-	vc->vcreturn = s->connected();
-}
-
-void vc_SocketHasData()
-{
-	Socket *s = (Socket *) vc->ResolveOperand();
-	vc->vcreturn = s->dataready();
-}
-
-void vc_SocketGetString()
-{
-	static char buf[4096];
-	Socket *s = (Socket *) vc->ResolveOperand();
-	int stlen = 0, ret;
-	char t;
-	ret = s->blockread(1, &t);
-	if (t != '3')
-		err("SocketGetString() - packet being received is not a string");
-	ret = s->blockread(2, &stlen);
-	if (!ret)
-	{
-		vc->vcretstr = "";
-		return;
-	}
-#ifdef __APPLE__
-#ifdef __BIG_ENDIAN__
-	stlen >>= 16;
-#endif
-#endif
-	if (stlen>4095) err("yeah uh dont send such big strings thru the network plz0r");
-	ret = s->blockread(stlen, buf);
-	buf[stlen] = 0;
-	vc->vcretstr = buf;
-}
-
-void vc_SocketSendString()
-{
-	Socket *s = (Socket *) vc->ResolveOperand();
+void vc_SocketSendString() {
+	int sh = vc->ResolveOperand();
 	std::string str = vc->ResolveString();
-	int len = str.length();
-	if (len>4095) err("yeah uh dont send such big strings thru the network plz0r");
-	char t = '3';
-	s->write(1, &t);
-#ifdef __APPLE__
-#ifdef __BIG_ENDIAN__
-	len <<= 16;
-#endif
-#endif
-	s->write(2, &len);
-#ifdef __APPLE__
-#ifdef __BIG_ENDIAN__
-	len >>= 16;
-#endif
-#endif
-	s->write(len, str.c_str());
+	vc->SocketSendString(sh,str);
 }
 
-void vc_SocketClose()
-{
-	Socket *s = (Socket *) vc->ResolveOperand();
-	delete s;
-}
+void vc_SocketClose() { vc->SocketClose(vc->ResolveOperand()); }
 
 void vc_SetCustomColorFilter()
 {
 	int c1 = vc->ResolveOperand();
 	int c2 = vc->ResolveOperand();
-	GetColor(c1, cf_r1, cf_g1, cf_b1);
-	GetColor(c2, cf_r2, cf_g2, cf_b2);
-	cf_rr = cf_r2 - cf_r1;
-	cf_gr = cf_g2 - cf_g1;
-	cf_br = cf_b2 - cf_b1;
+	vc->SetCustomColorFilter(c1, c2);
 }
 
-void vc_SocketSendInt()
-{
-	Socket *s = (Socket *) vc->ResolveOperand();
+void vc_SocketSendInt() { 
+	int sh = vc->ResolveOperand();
 	int i = vc->ResolveOperand();
-	char t = '1';
-	s->write(1, &t);
-	s->write(4, &i);
+	vc->SocketSendInt(sh,i);
 }
 
-void vc_SocketGetInt()
-{
-	Socket *s = (Socket *) vc->ResolveOperand();
-	int ret;
-	char t;
-	ret = s->blockread(1, &t);
-	if (t != '1')
-		err("SocketGetInt() - packet being received is not an int");
-	ret = s->blockread(4, &vc->vcreturn);
-}
+void vc_SocketGetInt() { vc->vcreturn = vc->SocketGetInt(vc->ResolveOperand()); }
+void vc_GetUrlText() { vc->vcretstr = vc->GetUrlText(vc->ResolveString()); }
+void vc_GetUrlImage() { vc->vcreturn = vc->GetUrlImage(vc->ResolveString()); }
 
-void vc_GetUrlText()
-{
-	std::string url = vc->ResolveString();
-	vc->vcretstr = getUrlText(url);
-}
-
-void vc_GetUrlImage()
-{
-	std::string url = vc->ResolveString();
-	vc->vcreturn = getUrlImage(url);
-}
-
-void vc_SocketSendFile()
-{
-	Socket *s = (Socket *) vc->ResolveOperand();
+void vc_SocketSendFile() {
+	int sh = vc->ResolveOperand();
 	std::string fn = vc->ResolveString();
-
-	EnforceNoDirectories(fn);
-
-	VFILE *f = vopen(fn.c_str());
-	if (!f)
-		err("ehhhhhh here's a tip. SocketSendFile can't send a file that doesnt exist (you tried to send %s)", fn.c_str());
-
-	int i = fn.length();
-	s->write(2, &i);
-	s->write(i, fn.c_str());
-
-	int l = filesize(f);
-	s->write(4, &l);
-	char *buf = new char[l];
-	vread(buf, l, f);
-	s->write(l, buf);
-	delete[] buf;
-	vclose(f);
+	vc->SocketSendFile(sh,fn);
 }
 
-void vc_SocketGetFile()
-{
-	static char stbuf[4096];
-	Socket *s = (Socket *) vc->ResolveOperand();
+void vc_SocketGetFile() {
+	int sh = vc->ResolveOperand();
 	std::string override = vc->ResolveString();
-
-	EnforceNoDirectories(override);
-
-	int stlen = 0, ret;
-	ret = s->blockread(2, &stlen);
-	if (!ret)
-	{
-		vc->vcretstr = "";
-		return;
-	}
-	ret = s->blockread(stlen, stbuf);
-	stbuf[stlen] = 0;
-
-	std::string fn = stbuf;
-	EnforceNoDirectories(fn);
-
-	int fl;
-	s->blockread(4, &fl);
-
-	char *buf = new char[fl];
-	s->blockread(fl, buf);
-
-	FILE *f;
-	if (override.length())
-	{
-		vc->vcretstr = override;
-		f = fopen(override.c_str(), "wb");
-	}
-	else
-	{
-		vc->vcretstr = fn;
-		f = fopen(fn.c_str(), "wb");
-	}
-	if (!f)
-		err("SocketGetFile: couldn't open file for writing!");
-	fwrite(buf, 1, fl, f);
-	fclose(f);
-	delete[] buf;
-
-	vc->vcretstr = buf;
+	vc->vcretstr = vc->SocketGetFile(sh,override); 
 }
 
-void vc_ListFilePattern()
-{
-	std::string pattern = vc->ResolveString();
-	std::vector<std::string> result = listFilePattern(pattern);
-	vc->vcretstr = "";
+void vc_ListFilePattern() { vc->vcretstr = vc->ListFilePattern(vc->ResolveString());}
 
-	for(std::vector<std::string>::iterator i = result.begin();
-		i != result.end();
-		i++)
-	{
-		vc->vcretstr += *i + "|";
-	}
-}
-
-void vc_ImageValid()
-{
-	int handle = vc->ResolveOperand();
-	std::string x;
-
-	if (handle <= 0 || handle >= Handle::getHandleCount(HANDLE_TYPE_IMAGE) || (Handle::getPointer(HANDLE_TYPE_IMAGE,handle) == NULL) ) {
-		vc->vcreturn = 0;
-	} else {
-		vc->vcreturn = 1;
-	}
-}
-
-void vc_Asc()
-{
-	std::string s = vc->ResolveString();
-	if(s == "")
-		vc->vcreturn = 0;
-	else
-		vc->vcreturn = (int)s[0];
-}
-
+void vc_ImageValid() { vc->vcreturn = vc->ImageValid(vc->ResolveOperand()); }
+void vc_Asc() { vc->vcreturn = vc->Asc(vc->ResolveString()); }
 
 void vc_DictNew() {
 	dict *d = new dict();
@@ -2669,54 +1531,23 @@ void vc_SetKeyDelay()
 }
 // Overkill (2006-07-20):
 // Saves a CHR file, using an open file handle, saving the specified entity.
-void vc_FileWriteCHR()
-{
+void vc_FileWriteCHR() {
 	int handle = vc->ResolveOperand();
 	int ent = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileWriteCHR() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_WRITE)
-		vc->vcerr("vc_FileWriteCHR() - given file handle is a read-mode file.");
-	if (ent < 0 || ent >= entities)
-		vc->vcerr("Tried saving an invalid or inactive ent index (%d).", ent);
-
-	entity[ent]->chr->save(vcfiles[handle].fptr);	
+	vc->FileWriteCHR(handle,ent);
 }
 
 // Overkill (2006-07-20):
 // Saves a MAP file, using an open file handle, saving the current map.
-void vc_FileWriteMAP()
-{
+void vc_FileWriteMAP() {
 	int handle = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileWriteMAP() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_WRITE)
-		vc->vcerr("vc_FileWriteMAP() - given file handle is a read-mode file.");
-	if (!current_map)
-	{
-		vc->vcerr("vc_FileWriteMAP() - There is no active map, therefore making it not possible to save this map.");
-	}
-
-	current_map->save(vcfiles[handle].fptr);	
+	vc->FileWriteMAP(handle);
 }
 // Overkill (2006-07-20):
 // Saves a VSP file, using an open file handle, saving the current map's VSP.
-void vc_FileWriteVSP()
-{
+void vc_FileWriteVSP() {
 	int handle = vc->ResolveOperand();
-
-	if (!handle || handle > VCFILES || !vcfiles[handle].active)
-		vc->vcerr("vc_FileWriteVSP() - file handle is either invalid or file is not open.");
-	if (vcfiles[handle].mode != VC_WRITE)
-		vc->vcerr("vc_FileWriteVSP() - given file handle is a read-mode file.");
-	if (!current_map)
-	{
-		vc->vcerr("vc_FileWriteVSP() - There is no active map, therefore making it not possible to save the map's vsp.");
-	}
-
-	current_map->tileset->save(vcfiles[handle].fptr);	
+	vc->FileWriteVSP(handle);
 }
 
 // Overkill (2006-07-20):
@@ -2871,8 +1702,8 @@ void VCCore::HandleLibFunc()
 		case 5: vc_SetClip(); break;
 		case 6: vc_LoadImage(); break;
 		case 7: vc_LoadImage0(); break;
-		case 8: UpdateControls(); ShowPage(); break;
-		case 9: vc->UpdateControls(); break;
+		case 8: vc_ShowPage(); break;
+		case 9: vc_UpdateControls(); break;
 		case 10: vc_Blit(); break;
 		case 11: vc_TBlit(); break;
 		case 12: vc_AdditiveBlit(); break;
@@ -2896,13 +1727,13 @@ void VCCore::HandleLibFunc()
 		case 30: vc_GetB(); break;
 		case 31: vc_RotScale(); break;
 		case 32: vc_FreeImage(); break;
-		case 33: vc->vcreturn = LoadSong(vc->ResolveString().c_str()); break;
-		case 34: PlaySong(vc->ResolveOperand()); break;
-		case 35: StopSong(vc->ResolveOperand()); break;
-		case 36: PlayMusic(vc->ResolveString().c_str()); break;
-		case 37: StopMusic(); break;
-		case 38: StopSound(vc->ResolveOperand()); break;
-		case 39: FreeSong(vc->ResolveOperand()); break;
+		case 33: vc->vcreturn = vc->LoadSong(vc->ResolveString()); break;
+		case 34: vc->PlaySong(vc->ResolveOperand()); break;
+		case 35: vc->StopSong(vc->ResolveOperand()); break;
+		case 36: vc->PlayMusic(vc->ResolveString()); break;
+		case 37: vc->StopMusic(); break;
+		case 38: vc->StopSound(vc->ResolveOperand()); break;
+		case 39: vc->FreeSong(vc->ResolveOperand()); break;
 		case 40: vc->vcerr("mask"); break;
 		case 41: vc_Silhouette(); break;
 		case 42: vc_GrabRegion(); break;
@@ -2914,8 +1745,8 @@ void VCCore::HandleLibFunc()
 		case 48: vc_TBlitTile(); break;
 		case 49: vc->vcerr("horzflip"); break;
 		case 50: vc->vcerr("vertflip"); break;
-		case 51: vc->vcreturn = ((image*)ImageForHandle(vc->ResolveOperand()))->width; break;
-		case 52: vc->vcreturn = ((image*)ImageForHandle(vc->ResolveOperand()))->height; break;
+		case 51: vc_ImageWidth(); break;
+		case 52: vc_ImageHeight(); break;
 		case 53: vc_LoadFont(); break;
 		case 54: vc_EnableVariableWidth(); break;
 		case 55: vc_PrintString(); break;
@@ -2972,30 +1803,9 @@ void VCCore::HandleLibFunc()
 		case 106: vc_GetZone(); break;
 		case 107: vc_SetZone(); break;
 		case 108: showMessageBox(vc->ResolveString()); break;
-		case 109:
-			{	// sin()
-				int n = ResolveOperand();
-                while (n < 0) n += 360;
-                while (n >= 360) n -= 360;
-				vcreturn = sintbl[n];
-			}
-			break;
-		case 110:
-			{	// cos()
-				int n = ResolveOperand();
-                while (n < 0) n += 360;
-                while (n >= 360) n -= 360;
-				vcreturn = costbl[n];
-			}
-			break;
-		case 111:
-			{	// tan()
-				int n = ResolveOperand();
-                while (n < 0) n += 360;
-                while (n >= 360) n -= 360;
-				vcreturn = tantbl[n];
-			}
-			break;
+		case 109: vc_sin(); break;
+		case 110: vc_cos(); break;
+		case 111: vc_tan(); break;
 		case 112: vc_SuperSecretThingy(); break;
 		case 113: vc_BlitWrap(); break;
 		case 114: vc_ColorFilter(); break;
@@ -3023,14 +1833,14 @@ void VCCore::HandleLibFunc()
 		case 136: vc_WindowPositionCommand(); break;
 		case 137: vc_SetSongPaused(); break;
 		case 138: vc_SetSongVolume(); break;
-		case 139: vc->vcreturn = GetSongVol(vc->ResolveOperand()); break;
-		case 140: vc->vcreturn = GetSongPos(vc->ResolveOperand()); break;
+		case 139: vc->vcreturn = vc->GetSongVolume(vc->ResolveOperand()); break;
+		case 140: vc->vcreturn = vc->GetSongPos(vc->ResolveOperand()); break;
 		case 141: vc_SetSongPos(); break;
 		case 142: vc_TokenCount(); break;
-		case 143: vc_StringToken(); break;
-		case 144: vc->vcretstr = to_upper_copy(vc->ResolveString()); break;
-		case 145: vc->vcretstr = to_lower_copy(vc->ResolveString()); break;
-		case 146: vc_LoadFont2(); break;
+		case 143: vc_GetToken(); break;
+		case 144: vc_ToUpper(); break;
+		case 145: vc_ToLower(); break;
+		case 146: vc_LoadFontEx(); break;
 		case 147: vc_FontHeight(); break;
 		case 148: vc_MixColor(); break;
 		case 149: vc_CHR(); break;
@@ -3044,12 +1854,12 @@ void VCCore::HandleLibFunc()
 		case 157: vc_MovieGetFramerate(); break;
 		case 158: vc_MovieNextFrame(); break;
 		case 159: vc_MovieSetFrame(); break;
-		case 160: TimedProcessEntities(); Render(); break;
+		case 160: vc_Render(); break;
 		case 161: vc_GetObs(); break;
 		case 162: vc_SetObs(); break;
 		case 163: vc_EntitySpawn(); break;
 		case 164: vc_SetPlayer(); break;
-		case 165: vc_StalkEntity(); break;
+		case 165: vc_EntityStalk(); break;
 		case 166: vc_EntityMove(); break;
 		case 167: vc_SetMusicVolume(); break;
 		case 168: vc_PlayerMove(); break;
@@ -3059,8 +1869,8 @@ void VCCore::HandleLibFunc()
 		case 172: vc_EntityStop(); break;
 		case 173: vc_EntitySetWanderDelay(); break;
 		case 174: vc->SetRandSeed(vc->ResolveOperand()); break;
-		case 175: ResetSprites(); break;
-		case 176: vc->vcreturn = GetSprite(); break;
+		case 175: vc_ResetSprites(); break;
+		case 176: vc_GetSprite(); break;
 		case 177: vc_RenderMap(); break;
 		case 178: vc_SetButtonKey(); break;
 		case 179: vc_SetButtonJB(); break;

@@ -58,7 +58,6 @@ VCCore::VCCore()
 	str_stack_ptr = 0;
 	currentvc = &coreimages[CIMAGE_SYSTEM];
 	current_cimage = CIMAGE_SYSTEM;
-	InitVCLibrary();
 	LoadSystemXVC();
 }
 
