@@ -645,8 +645,7 @@
 					<Tool
 						Name="VCCLCompilerTool"
 						AdditionalIncludeDirectories="../flac-1.1.2/include"
-						PreprocessorDefinitions="GARLICK_USE_FLAC"
-						UsePrecompiledHeader="0"
+						UsePrecompiledHeader="1"
 						PrecompiledHeaderThrough="xerxes.h"
 					/>
 				</FileConfiguration>
@@ -655,7 +654,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
+						UsePrecompiledHeader="1"
 						PrecompiledHeaderThrough="xerxes.h"
 						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
 					/>

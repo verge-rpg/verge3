@@ -11,6 +11,7 @@
 
 #define _G_SOUND_CPP
 #include "xerxes.h"
+#include "garlick.h"
 
 #ifdef SND_USE_FMOD
 #include "snd_fmod.h"
@@ -44,8 +45,24 @@ bool snd_Init(int soundEngine) {
 //////////////////////////////////////
 //global sound functions--link to active sound engine
 // Dummy music interface
-// Added checks for snd_engine - Jesse 19-10-2005
-void PlayMusic(const char *sng) { if(snd_engine) snd_engine->PlayMusic(sng); }
+extern char playingsng[];
+void PlayMusic(const char *sng) { 
+	// Check all possible fail conditions. We do this so that if it does fail, we don't
+	// unnessarily stop whatever is presently playing.
+	if(!snd_engine) return;
+
+	if (!strlen(sng)) return;
+	if(!strcasecmp(sng, playingsng)) return;
+	VFILE *f = vopen(sng);
+	if (!f) {
+		GarlickFile *gf = GarlickOpen(sng,"library");
+		if(!gf) return;
+		GarlickClose(gf);
+	}
+	else vclose(f);
+
+	snd_engine->PlayMusic(sng);
+}
 void StopMusic() { if(snd_engine) snd_engine->StopMusic(); }
 void SetMusicVolume(int v) { if(snd_engine) snd_engine->SetMusicVolume(v); }
 

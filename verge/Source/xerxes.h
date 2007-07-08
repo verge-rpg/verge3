@@ -31,6 +31,7 @@
 #ifdef __WIN32__
 #define SND_USE_FMOD
 //#define SND_USE_OAKRA
+#define GARLICK_USE_FLAC
 #endif
 
 #ifdef __APPLE__

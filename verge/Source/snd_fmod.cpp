@@ -212,11 +212,6 @@ void SoundEngine_Fmod::PlayMusic(const char *sng)
 	// Check all possible fail conditions. We do this so that if it does fail, we don't
 	// unnessarily stop whatever is presently playing.
 	if (!UseSound) return;
-	if (!strlen(sng)) return;
-	if (!strcasecmp(sng, playingsng)) return;
-	VFILE *f = vopen(sng);
-	if (!f) return;
-	vclose(f);
 
 	killmodule();
     strcpy(playingsng, sng);
@@ -242,7 +237,7 @@ void SoundEngine_Fmod::PlayMusic(const char *sng)
 	if (ExtensionIs(sng, "mid") || ExtensionIs(sng, "midi") || ExtensionIs(sng, "rmi"))
 	{
 		// MIDI wont load through the File I/O callbacks, so we need to load it into memory ourselves.
-		f = vopen(sng);
+		VFILE *f = vopen(sng);
 		int len = filesize(f);
 		char *buf = (char *) malloc(len);
 		vread(buf, len, f);

@@ -154,17 +154,19 @@ void DisplayCompileImage()
 
 //---
 //setup garlick to use vfile
-void *Garlick_vf_open(char *fname) { return vopen(fname); }
+void *Garlick_vf_open(const char *fname) { return vopen(fname); }
 void Garlick_vf_close(void *handle) { vclose((VFILE*)handle); }
 size_t Garlick_vf_read(void *ptr, size_t elemsize, size_t amt, void *handle) { return vread((char *)ptr, elemsize*amt,(VFILE*)handle); }
 long Garlick_vf_tell(void *handle) { return vtell((VFILE*)handle); }
 int Garlick_vf_seek(void *handle, long offset, int origin) { vseek((VFILE*)handle,offset,origin); return 0; }
+void Garlick_error(const char *msg) { err(msg); }
 void InitGarlick() {
 	Garlick_cb_open = Garlick_vf_open;
 	Garlick_cb_close = Garlick_vf_close;
 	Garlick_cb_read = Garlick_vf_read;
 	Garlick_cb_tell = Garlick_vf_tell;
 	Garlick_cb_seek = Garlick_vf_seek;
+	Garlick_cb_error = Garlick_error;
 }
 
 

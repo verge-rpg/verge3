@@ -10,13 +10,14 @@ see http://www.pi-r-squared.com/code/garlick for details
 //-------------------------
 
 #ifndef _GARLICK_C_
-extern void *(*Garlick_cb_open)(char *fname);
+extern void *(*Garlick_cb_open)(const char *fname);
 extern void (*Garlick_cb_close)(void *handle);
 extern size_t (*Garlick_cb_read)(void *ptr, size_t elemsize, size_t amt, void *handle);
 extern long (*Garlick_cb_tell)(void *handle);
 extern int (*Garlick_cb_seek)(void *handle, long offset, int origin);
 extern void *(*Garlick_cb_malloc)(int amt);
 extern void (*Garlick_cb_free)(void *ptr);
+extern void (*Garlick_cb_error)(const char *msg);
 #endif
 
 //please make sure this is 64bits
@@ -47,7 +48,7 @@ struct GarlickFile {
 size_t GarlickRead(void *buf, size_t elemsize, size_t amt, GarlickFile *gf);
 GARLICK_LONG GarlickTell(GarlickFile *gf);
 int GarlickSeek(GarlickFile *gf, GARLICK_LONG offset, int origin);
-GarlickFile *GarlickOpen(char *fname, char *fnamelib);
+GarlickFile *GarlickOpen(const char *fname, const char *fnamelib);
 void GarlickClose(GarlickFile *gf);
 
 //------------------------

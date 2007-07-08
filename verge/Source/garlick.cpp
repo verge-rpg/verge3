@@ -1,27 +1,32 @@
 //see accompanying garlick.h
 
 #define _GARLICK_C_
+#include "xerxes.h"
 #include "garlick.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-void *Garlick_std_open(char *fname) { return fopen(fname,"rb"); }
+void *Garlick_std_open(const char *fname) { return fopen(fname,"rb"); }
 void Garlick_std_close(void *handle) { fclose((FILE*)handle); }
 size_t Garlick_std_read(void *ptr, size_t elemsize, size_t amt, void *handle) { return fread(ptr,elemsize,amt,(FILE*)handle); }
 long Garlick_std_tell(void *handle) { return ftell((FILE *)handle); }
 int Garlick_std_seek(void *handle, long offset, int origin) { return fseek((FILE*)handle,offset,origin); }
 void *Garlick_std_malloc(int amt) { return malloc(amt); }
 void Garlick_std_free(void *ptr) { return free(ptr); }
+void Garlick_std_error(const char *msg) {
+	printf("%s\n",msg);
+	exit(0);
+}
 
-
-void *(*Garlick_cb_open)(char *fname) = Garlick_std_open;
+void *(*Garlick_cb_open)(const char *fname) = Garlick_std_open;
 void (*Garlick_cb_close)(void *handle) = Garlick_std_close;
 size_t (*Garlick_cb_read)(void *ptr, size_t elemsize, size_t amt, void *handle) = Garlick_std_read;
 long (*Garlick_cb_tell)(void *handle) = Garlick_std_tell;
 int (*Garlick_cb_seek)(void *handle, long offset, int origin) = Garlick_std_seek;
 void *(*Garlick_cb_malloc)(int amt) = Garlick_std_malloc;
 void (*Garlick_cb_free)(void *ptr) = Garlick_std_free;
+void (*Garlick_cb_error)(const char *ptr) = Garlick_std_error;
 
 //ensures that the temp buffer has the required space
 void GarlickEnsureBuffer(GarlickFile *gf, int size) {
@@ -31,7 +36,6 @@ void GarlickEnsureBuffer(GarlickFile *gf, int size) {
 	}
 }
 
-#undef GARLICK_USE_FLAC
 #ifdef GARLICK_USE_FLAC
 #define FLAC__NO_DLL
 #include "FLAC/all.h"
@@ -207,8 +211,7 @@ size_t GarlickRead(void *buf, size_t elemsize, size_t amt, GarlickFile *gf) {
 					#ifdef GARLICK_USE_FLAC
 					GarlickDecodeFlac(gf);
 					#else
-					printf("PANIC! Garlick received a flacced file, but was not compiled with flac support!");
-					exit(0);
+					Garlick_cb_error("PANIC! Garlick received a flacced file, but was not compiled with flac support!");
 					#endif
 					gf->mode = 2;
 				}
@@ -316,7 +319,7 @@ GarlickFile *GarlickInternalOpen(char *fname, char *fnamelib) {
 	return gf;
 }
 
-GarlickFile *GarlickPassthroughOpen(char *fname) {
+GarlickFile *GarlickPassthroughOpen(const char *fname) {
 	void *inf = Garlick_cb_open(fname);
 	if(!inf) return 0;
 
@@ -327,7 +330,7 @@ GarlickFile *GarlickPassthroughOpen(char *fname) {
 }
 
 //opens a GarlickFile, possibly in passthrough mode if the garlicked file cannot be found or opened
-GarlickFile *GarlickOpen(char *fname, char *fnamelib) {
+GarlickFile *GarlickOpen(const char *fname, const char *fnamelib) {
 	
 	//build the _ fname
 	int flen = strlen(fname);
