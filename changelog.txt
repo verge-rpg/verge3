@@ -2,6 +2,11 @@
 Verge 3 Changelog
 ================================================
 
+Revision ..84 (2007-07-08) (zeromus)
+========================
+* Garlick: re-enabled it, upgraded the flac to 1.1.4, taught it how to handle .wav sfx files
+* Completed the preliminary lua bindings. I guess I'm ready to announce and support it.
+
 Revision 75 (2007-07-07) (Overkill)
 ========================
 * Updated the executable's version info. I think it's fair to see we are now Verge 3.1, given it's been a few years since the last actual version numbering update thing and there have been plenty of changes.
