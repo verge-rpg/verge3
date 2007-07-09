@@ -19,8 +19,16 @@ function testloop()
 	
 end
 
+local sfx = loadsound("slidewhistledown.wav");
+
+function whizz()
+	log(str(playsound(sfx,100)));
+end
+
 function autoexec()
+	playmusic("cd-credits.it");
 	HookKey(SCAN_W,"testkey");
+	HookKey(SCAN_E,"whizz");
 	--entities[3].tx = 9;
 	map("bumville.map");
 	

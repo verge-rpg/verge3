@@ -79,10 +79,7 @@ void log(const char *text, ...)
 	}
 
 	if (logconsole)
-	{
-		char *buf = va("%s\n",msg);
-        writeToConsole(buf);
-	}
+		printf("%s\n",msg);
 }
 
 

@@ -13,6 +13,10 @@
 #include "xerxes.h"
 #include "garlick.h"
 
+#ifdef SND_USE_AUDIERE
+#include "snd_audiere.h"
+#endif
+
 #ifdef SND_USE_FMOD
 #include "snd_fmod.h"
 #endif
@@ -34,6 +38,11 @@ bool snd_Init(int soundEngine) {
 #ifdef SND_USE_OAKRA
 	if(soundEngine == 1)
 		snd_engine = new SoundEngine_Oakra();
+#endif
+
+#ifdef SND_USE_AUDIERE
+	if(soundEngine == 2)
+		snd_engine = new SoundEngine_Audiere();
 #endif
 
 	if(snd_engine)

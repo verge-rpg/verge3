@@ -441,13 +441,13 @@ void LUA::bindApi() {
 		SEFUNC(Len);
 		SEFUNC(Mid);
 		SEFUNC(Right);
-		TODO(str);
-		TODO(strcmp);
-		TODO(strdup);
-		TODO(TokenCount);
-		TODO(ToLower);
-		TODO(ToUpper);
-		TODO(val);
+		SEFUNC(Str);
+		SEFUNC(Strcmp);
+		SEFUNC(Strdup);
+		SEFUNC(TokenCount);
+		SEFUNC(ToLower);
+		SEFUNC(ToUpper);
+		SEFUNC(Val);
 		//VI.c. Dictionary Functions
 		TODO(DictContains);
 		TODO(DictFree);

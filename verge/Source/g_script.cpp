@@ -82,7 +82,7 @@ image *ImageForHandle(int handle)
 	if (handle == 0)
 		se->Error("ImageForHandle() - Null image reference, probably an uninitialized image handle");
 
-	if (handle<0 || handle >= Handle::getHandleCount(HANDLE_TYPE_IMAGE) )
+	if (!Handle::isValid(HANDLE_TYPE_IMAGE, handle) )
 		se->Error("ImageForHandle() - Image reference is bogus! (%d)", handle);
 
 	image* ptr = (image*) Handle::getPointer(HANDLE_TYPE_IMAGE,handle);

@@ -15,7 +15,8 @@
 #define HANDLE_TYPE_MOVIE (0)
 #define HANDLE_TYPE_IMAGE (1)
 #define HANDLE_TYPE_DICT  (2)
-#define HANDLE_TYPE_MAX (2)
+#define HANDLE_TYPE_AUDCHN  (3)
+#define HANDLE_TYPE_MAX (3)
 
 #include <vector>
 #include <stack>
@@ -78,6 +79,7 @@ public:
 	static void *getPointer(int type, int handle) { return handleTypes[type].handleVals[handle]; }
 	static void setPointer(int type, int handle, void *ptr) { handleTypes[type].handleVals[handle] = ptr; }
 	static int getHandleCount(int type) { return handleTypes[type].handleCount; }
+	static bool isValid(int type, int handle) { return handle < getHandleCount(type) && handle >= 0; }
 
 	//note:
 	//do this before any allocations!

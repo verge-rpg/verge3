@@ -30,6 +30,15 @@ int DesktopBPP;
 
 /***************************** code *****************************/
 
+void initConsole()
+{
+	AllocConsole();
+	int lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
+	int hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
+	FILE *fp = _fdopen( hConHandle, "w" );
+	*stdout = *fp;
+}
+
 LRESULT APIENTRY WndProc(HWND hWnd, UINT message,WPARAM wParam, LPARAM lParam);
 void HandleMessages();
 
@@ -44,17 +53,6 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE zwhocares, LPSTR szComman
 
 	srand(timeGetTime());
 	log_Init(true);
-
-	//---this code is handy if you want to debug.
-	#ifdef _DEBUG
-	AllocConsole();
-	int lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
-	int hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-	FILE *fp = _fdopen( hConHandle, "w" );
-	*stdout = *fp;
-	#endif
-	//---------
-	
 
 	xmain(__argc,__argv);
 	err("");
@@ -448,17 +446,6 @@ void err(const char *str, ...)
 	delete systimer;
 	PostQuitMessage(0);
 	exit(strlen(msg)==0?0:-1);
-}
-
-void initConsole()
-{
-	AllocConsole();
-}
-
-void writeToConsole(char *str)
-{
-	DWORD crap;
-	WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), str, strlen(str), &crap, 0);
 }
 
 int getYear()
