@@ -80,37 +80,6 @@ void LUA::ExecAutoexec() {
 }
 
 
-//gfx routines
-static int ___LoadImage(std::string fname) { return HandleForImage(xLoadImage(fname.c_str())); }
-static void ___rectfill(int x0, int y0, int x1, int y1, int c, int d) { Rect(x0,y0,x1,y1,c,ImageForHandle(d)); }
-static int ___makecolor(int r, int g, int b) { return MakeColor(r,g,b); }
-static void ___printstring(int x, int y, int d, int f, std::string text) { 
-	image *dest = ImageForHandle(d);
-	Font *font = (Font*)f;
-	if (font == 0)
-	{
-		GotoXY(x, y);
-		PrintString(va("%s",text.c_str()), dest);
-	}
-	else
-		font->PrintString("%s", x, y, dest, text.c_str());
-}
-static void ___tblit(int x, int y, int s, int d) { TBlit(x,y,ImageForHandle(s),ImageForHandle(d)); }
-static void ___showpage() { UpdateControls(); ShowPage(); }
-
-int ___get_mx() { return mouse_x; }
-void ___set_mx(int val) { mouse_set(val,mouse_y); }
-int ___get_my() { return mouse_y; }
-void ___set_my(int val) { mouse_set(mouse_x,val); }
-int ___get_ml() { return mouse_l; }
-void ___set_ml(int val) { mouse_l = val; }
-int ___get_mm() { return mouse_l; }
-void ___set_mm(int val) { mouse_m = val; }
-int ___get_mr() { return mouse_r; }
-void ___set_mr(int val) { mouse_r = val; }
-int ___get_mw() { return (int)mwheel; }
-void ___set_mw(int val) { mwheel = (float)val; }
-
 std::string strtolower(std::string val) { std::transform(val.begin(), val.end(), val.begin(), tolower); return val; }
 
 #define LUA_VAR(name) { \
@@ -148,34 +117,7 @@ std::string strtolower(std::string val) { std::transform(val.begin(), val.end(),
 #define LUA_BIND_W(name)  { module(L) [ def("___set_"#name,___get_##name) ]; }
 #define LUA_BIND_RW(name) { LUA_BIND_R(name); LUA_BIND_W(name); }
 
-//VI.a. General Utility Functions
-//FUNC(CallFunction);
-//static void ___exit(std::string msg) { err(msg.c_str()); }
-//TODO(FunctionExists);
-//TODO(GetInt);
-//TODO(GetIntArray);
-//TODO(GetString);
-//TODO(GetStringArray);
-//static void ___HookButton(int b, std::string s) { ScriptEngine::HookButton(b,s); }
-//static void ___HookKey(int k, std::string s) { ScriptEngine::HookKey(k,s); }
-//static void ___HookRetrace(std::string s) { strcpy(renderfunc, s.c_str()); }
-//static void ___HookTimer(std::string s) { hooktimer = 0; strcpy(timerfunc, s.c_str()); }
-//static void ___Log(std::string s) { log(s.c_str()); }
-//static void ___MessageBox(std::string msg) { MessageBox(0,msg.c_str(),"Message Box",0); }
-//static int ___Random(int min, int max) { return rnd(min, max); }
-//static void ___SetAppName(std::string s) { setWindowTitle(s.c_str()); }
-//static void ___SetButtonJB(int b, int jb) { ScriptEngine::SetButtonJB(b,jb); }
-//FUNC(SetButtonKey);
-//FUNC(SetInt);
-//FUNC(SetIntArray);
-//FUNC(SetRandSeed);
-//FUNC(SetResolution);
-//FUNC(SetString);
-//FUNC(SetStringArray);
-//FUNC(Unpress);
-//FUNC(UpdateControls);
-
-
+//VII.a. General System Variables
 int ___get_systemtime() { return systemtime; }
 int ___get_timer() { return timer; }
 void ___set_timer(int val) { timer = val; }
@@ -185,6 +127,20 @@ int ___get_lastkey() { return lastkey; }
 void ___set_lastkey(int val) { lastkey = val; }
 int ___get_key(int idx) { return keys[idx]; }
 void ___set_key(int idx, int val) { keys[idx] = val; }
+
+//VII.b. Mouse Variables
+int ___get_mx() { return mouse_x; }
+void ___set_mx(int val) { mouse_set(val,mouse_y); }
+int ___get_my() { return mouse_y; }
+void ___set_my(int val) { mouse_set(mouse_x,val); }
+int ___get_ml() { return mouse_l; }
+void ___set_ml(int val) { mouse_l = val; }
+int ___get_mm() { return mouse_l; }
+void ___set_mm(int val) { mouse_m = val; }
+int ___get_mr() { return mouse_r; }
+void ___set_mr(int val) { mouse_r = val; }
+int ___get_mw() { return (int)mwheel; }
+void ___set_mw(int val) { mwheel = (float)val; }
 
 //VII.c. Joystick Variables
 //todo - bounds
@@ -979,34 +935,7 @@ void LUA::bindApi() {
 			_G:___r('FIXED_PI',function() return 205887 end); \
 		");
 
-
-
-	//			{"FILE_READ",	"1" },
-	//{"FILE_WRITE",	"2" },
-	//{"FILE_WRITE_APPEND",	"3" }, // Overkill (2006-07-05): Append mode added.
-	//{"SEEK_SET",    "0" },
-	//{"SEEK_CUR",    "1" },
-	//{"SEEK_END",    "2" },
-
-		/*grr |= luaL_dostring(L,"do \
-			_G:___r('screen',___get_screen); \
-			\
-			_G:___embed_magic_table('mouse'); \
-			_G.mouse:___rw('x',___get_mx,___set_mx); \
-			_G.mouse:___rw('y',___get_my,___set_my); \
-			\
-			_G:___embed_magic_collection('entities',function(table) \
-				table:___irw('tx',___get_ent_tx,___set_ent_tx);\
-				table:___irw('yx',___get_ent_ty,___set_ent_ty);\
-			end);\
-			\
-			___magic_table(_G:___embed('joy'));\
-			_G.joy:___r('active',___get_joy_active); \
-			_G.joy:___embed_array_collection('button',  function(idx) return ___get_joy_button(idx) end);\
-			\
-		end");*/
-
-			if(grr) err("grr");
+		if(grr) err("grr");
 
 
 		//cleanup some functions we were using for convenience
@@ -1016,7 +945,7 @@ void LUA::bindApi() {
 
 	if(grr) err("grr");
 
-	//examples use cases:
+	//example use cases:
 	//timer
 	//entities[10].tx
 	//mouse.x
@@ -1024,70 +953,4 @@ void LUA::bindApi() {
 
 	int zzz=9;
 	
-	//-------------------------
-	//funcs here
-	//system things
-	
-	//gfxthings
-	LUA_FUNC(LoadImage);
-	LUA_FUNC(rectfill);
-	LUA_FUNC(makecolor);
-	LUA_FUNC(printstring);
-	LUA_FUNC(tblit);
-	LUA_FUNC(showpage);
-	//-------------------------
-
-
-		
 }
-
-//old crap
-
-  //static void set(lua_State *L, int table_index, const char *key) {
-  //  lua_pushstring(L, key);
-  //  lua_insert(L, -2);  // swap value and key
-  //  lua_settable(L, table_index);
-  //}
-
-
-//const char *msg = lua_tostring(L, -1); get last error
-//printf(lua_tostring(L, -1));
-
-
-
-
-//int __newindex(lua_State *L) {
-//	const char *val = lua_tostring(L,-1);
-//	const char *key = lua_tostring(L,-2);
-//	//const void *tbl = lua_topointer(L,-3); //dont need this
-//
-//	if(!strcmp(key,"smack")) {
-//		smack = string(val) + "SEX";
-//		lua_pop(L,3); //pop all
-//	} else {
-//		lua_rawset(L,-3);
-//		lua_pop(L,1); //pop table
-//	}
-//
-//	return 0;
-//}
-//
-//int __index(lua_State *L) {
-//	const char *key = lua_tostring(L,-1);
-//	//const void *tbl = lua_topointer(L,-2); //dont need this
-//
-//	if(!strcmp(key,"smack")) {
-//		lua_pop(L,2);
-//		lua_pushstring(L,smack.c_str());
-//	} else {
-//		//lua_getfield(L, LUA_GLOBALSINDEX, L);
-//		lua_rawget(L,-2);
-//		lua_remove(L,-2); //remove the table
-//	}
-//
-//	
-//
-//	return 1;
-//
-//}
-
