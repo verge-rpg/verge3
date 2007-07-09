@@ -4,6 +4,8 @@
 
 using namespace audiere;
 
+//TODO: isolate an individual handleset from Handle and manage instances along with each instance of soundengine_audiere
+
 class SoundEngine_Audiere : public SoundEngine, public audiere::Mutex {
 public:
 	AudioDevicePtr device;
@@ -13,10 +15,11 @@ public:
 		music = 0;
 		myStopCallback.eng = this;
 		myStopCallback.ref();
+		Handle::forceAlloc(HANDLE_TYPE_AUDCHN,1);
 	}
 
 	~SoundEngine_Audiere() {
-		StopMusic();
+		shutdown();
 		myStopCallback.unref();
 	}
 
@@ -64,6 +67,7 @@ public:
 		music = OpenSound(device,sng,true);
 		if(!music) err("Could not open specified music file: %s",sng);
 		music->ref();
+		music->setRepeat(true);
 		music->play();
 	}
 	void StopMusic() { 
