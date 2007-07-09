@@ -2,10 +2,11 @@
 Verge 3 Changelog
 ================================================
 
-Revision ..92 (2007-07-08) (zeromus)
+Revision ..93 (2007-07-08) (zeromus)
 ========================
 * LUA bugfixes and cleanups
 * Added preliminary audiere integration as soundengine 2
+* Improved mousedemo to test audiere and stuff
 
 Revision ..85 (2007-07-08) (zeromus)
 ========================
