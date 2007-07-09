@@ -45,13 +45,16 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE zwhocares, LPSTR szComman
 	srand(timeGetTime());
 	log_Init(true);
 
-	//---this code is handy if you want to debug. bind it in to a debug flag later..
+	//---this code is handy if you want to debug.
+	#ifdef _DEBUG
 	AllocConsole();
 	int lStdHandle = (long)GetStdHandle(STD_OUTPUT_HANDLE);
 	int hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
 	FILE *fp = _fdopen( hConHandle, "w" );
 	*stdout = *fp;
+	#endif
 	//---------
+	
 
 	xmain(__argc,__argv);
 	err("");
