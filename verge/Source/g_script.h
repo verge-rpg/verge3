@@ -84,7 +84,7 @@ public:
 	static int GetObsPixel(int x, int y);
 	static int GetTile(int x, int y, int i);
 	static int GetZone(int x, int y);
-	static void Map(const std::string map);
+	static void Map(std::string map);
 	static void Render();
 	static void RenderMap(int x, int y, int d);
 	static void SetObs(int x, int y, int c);

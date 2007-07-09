@@ -254,7 +254,7 @@ int ScriptEngine::GetObs(int x, int y) { if(!current_map) return 0; else return 
 int ScriptEngine::GetObsPixel(int x, int y) { if(!current_map) return 0; else return current_map->obstructpixel(x, y); }
 int ScriptEngine::GetTile(int x, int y, int i) { if(!current_map) return 0; if(i>=current_map->numlayers) return 0; return current_map->layers[i]->GetTile(x,y); }
 int ScriptEngine::GetZone(int x, int y) { if(!current_map) return 0; else return current_map->zone(x,y); }
-void ScriptEngine::Map(const std::string map) {
+void ScriptEngine::Map(std::string map) {
 	strcpy(mapname, map.c_str());
 	die = 1;
 	done = 1;
