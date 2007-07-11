@@ -81,7 +81,7 @@ public:
 	
 	
 	bool init() {
-		device = AudioDevicePtr(OpenDevice());
+		device = AudioDevicePtr(OpenDevice("winmm"));
 		device->registerCallback(&myStopCallback);
 		if (!device) return false;
 		return true;
