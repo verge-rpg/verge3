@@ -2345,9 +2345,9 @@ int mpaudec_decode_frame(MPAuDecContext * mpctx,
                     /* no sync found : move by one byte (inefficient, but simple!) */
                     memmove(s->inbuf, s->inbuf + 1, s->inbuf_ptr - s->inbuf - 1);
                     s->inbuf_ptr--;
-#ifdef DEBUG
-                    printf("skip %x\n", header);
-#endif
+//#ifdef DEBUG
+//                    printf("skip %x\n", header);
+//#endif
                     /* reset free format frame size to give a chance
                        to get a new bitrate */
                     s->free_format_frame_size = 0;

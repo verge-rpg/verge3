@@ -11,4 +11,4 @@
 
 #include "a_handle.h"
 
-std::vector<Handle::HandleSet> Handle::handleTypes;
+std::vector<Handle::VoidHandleSet> Handle::handleTypes;

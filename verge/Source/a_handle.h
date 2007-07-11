@@ -24,10 +24,11 @@
 class Handle
 {
 public:
+	template<class T>
 	class HandleSet {
 	public:
 		std::stack<int> handles;
-		std::vector<void *> handleVals;
+		std::vector<T> handleVals;
 		int handleCount;
 		HandleSet() {
 			handleCount = 0;
@@ -37,7 +38,7 @@ public:
 			for(int i=0;i<count;i++)
 				handleVals.push_back(0);
 		}
-		int alloc(void *ptr) {
+		int alloc(T ptr) {
 			//expand if necessary
 			if(handles.empty())
 				for(int i=0;i<16;i++,handleCount++) {
@@ -55,16 +56,26 @@ public:
 			handleVals[handle] = 0;
 			handles.push(handle);
 		}
+
+		T getPointer(int handle) { return handleVals[handle]; }
+		void setPointer(int handle, T ptr) { handleVals[handle] = ptr; }
+		int getHandleCount() { return handleCount; }
+		bool isValid(int handle) { return handle < getHandleCount() && handle >= 0; }
+
+		T operator[](int handle) { return getPointer(handle); }
+
 	};
 
-	static std::vector<HandleSet> handleTypes;
+	typedef HandleSet<void*> VoidHandleSet;
+	static std::vector<VoidHandleSet> handleTypes;
+	
 
 
 public:
 
 	static void init() {
 		for(int i=0;i<=HANDLE_TYPE_MAX;i++)
-			handleTypes.push_back(HandleSet());
+			handleTypes.push_back(VoidHandleSet());
 	}
 
 	static int alloc(int type, void *ptr)

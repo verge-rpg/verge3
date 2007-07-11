@@ -2,6 +2,16 @@
 Verge 3 Changelog
 ================================================
 
+Revision ..98 (2007-07-10) (zeromus)
+========================
+* Improved handle system
+* Fixed and improved audiere integration
+ - added loadsong (etc) apis
+ - Routed through pakfile and garlick systems
+* Changed mousedemo to test the above
+* Removed oakra, audiere is better
+* Tweaked an irritating line of code in audiere which made debug mode run real slow when loading music
+
 Revision ..93 (2007-07-08) (zeromus)
 ========================
 * LUA bugfixes and cleanups

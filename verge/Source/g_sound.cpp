@@ -55,10 +55,12 @@ bool snd_Init(int soundEngine) {
 //global sound functions--link to active sound engine
 // Dummy music interface
 extern char playingsng[];
-void PlayMusic(const char *sng) { 
+void PlayMusic(const std::string &ssng) { 
 	// Check all possible fail conditions. We do this so that if it does fail, we don't
 	// unnessarily stop whatever is presently playing.
 	if(!snd_engine) return;
+
+	const char *sng = ssng.c_str();
 
 	if (!strlen(sng)) return;
 	if(!strcasecmp(sng, playingsng)) return;
@@ -83,7 +85,7 @@ void StopSound(int chan) { if(snd_engine) snd_engine->StopSound(chan); }
 int SoundIsPlaying(int chan) { if(snd_engine) return snd_engine->SoundIsPlaying(chan); else return 0; } 
 void FreeSample(void *s) { if(snd_engine) snd_engine->FreeSample(s); }
 
-int LoadSong(const char *fn) { if(snd_engine) return snd_engine->LoadSong(fn); else return -1; }
+int LoadSong(const std::string &fn) { if(snd_engine) return snd_engine->LoadSong(fn); else return -1; }
 void PlaySong(int h) { if(snd_engine) snd_engine->PlaySong(h); }
 void StopSong(int h) { if(snd_engine) snd_engine->StopSong(h); }
 void SetPaused(int h, int p) { if(snd_engine) snd_engine->SetPaused(h,p); }

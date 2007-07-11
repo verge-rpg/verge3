@@ -207,8 +207,9 @@ void killmodule()
 	#endif
 }
 
-void SoundEngine_Fmod::PlayMusic(const char *sng)
+void SoundEngine_Fmod::PlayMusic(const std::string &ssng)
 {
+	const char *sng = ssng.c_str();
 	// Check all possible fail conditions. We do this so that if it does fail, we don't
 	// unnessarily stop whatever is presently playing.
 	if (!UseSound) return;
@@ -315,8 +316,9 @@ void SoundEngine_Fmod::FreeSample(void *s)
 
 /******************** Advanced Music Interface ********************/
 
-int SoundEngine_Fmod::LoadSong(const char *fn)
+int SoundEngine_Fmod::LoadSong(const std::string &xfn)
 {
+	const char *fn = xfn.c_str();
 	int si = -1;
 	for (int i=0; i<MAX_SONGS; i++)
 	{

@@ -14,7 +14,7 @@ public:
 	bool init();
 	void shutdown();
 
-	void PlayMusic(const char *sng);
+	void PlayMusic(const std::string &ssng);
 	void StopMusic();
 	void SetMusicVolume(int v);
 
@@ -25,7 +25,7 @@ public:
 	void FreeSample(void *sample);
 
 
-	int LoadSong(const char *fn);
+	int LoadSong(const std::string &xfn);
 	void PlaySong(int h);
 	void StopSong(int h);
 	void SetPaused(int h, int p);

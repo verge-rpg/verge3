@@ -19,7 +19,7 @@ public:
 	virtual bool init()= 0;
 	virtual void shutdown()= 0;
 
-	virtual void PlayMusic(const char *sng) = 0;
+	virtual void PlayMusic(const std::string &sng) = 0;
 	virtual void StopMusic() = 0;
 	virtual void SetMusicVolume(int v) = 0;
 
@@ -30,7 +30,7 @@ public:
 	virtual void FreeSample(void *sample) = 0;
 
 
-	virtual int LoadSong(const char *fn) = 0;
+	virtual int LoadSong(const std::string &fn) = 0;
 	virtual void PlaySong(int h) = 0;
 	virtual void StopSong(int h) = 0;
 	virtual void SetPaused(int h, int p) = 0;
@@ -46,7 +46,7 @@ bool snd_Init(int soundEngine);
 //////////////////////////////////////
 //global sound functions--link to active sound engine
 // Dummy music interface
-void PlayMusic(const char *sng);
+void PlayMusic(const std::string &sng);
 void StopMusic();
 int SoundIsPlaying(int chan); // Overkill (2006-11-20)
 void SetMusicVolume(int v);
@@ -57,7 +57,7 @@ int PlaySample(void *s, int vol);
 void StopSound(int chan);
 void FreeSample(void *s);
 
-int LoadSong(const char *fn);
+int LoadSong(const std::string &sng);
 void PlaySong(int h);
 void StopSong(int h);
 void SetPaused(int h, int p);

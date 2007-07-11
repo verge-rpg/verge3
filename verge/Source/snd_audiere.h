@@ -1,15 +1,44 @@
 #include "audiere.h"
 #include "threads.h"
 #include "a_handle.h"
+#include "garlick.h"
+
+#include <string>
 
 using namespace audiere;
 
 //TODO: isolate an individual handleset from Handle and manage instances along with each instance of soundengine_audiere
+//not that we ever have multiple instances. but handle could use that flexibility anyway
 
 class SoundEngine_Audiere : public SoundEngine, public audiere::Mutex {
 public:
 	AudioDevicePtr device;
 	OutputStream *music;
+	Handle::HandleSet<OutputStream*> songHandles;
+
+	class AudiereFile : public RefImplementation<File> {
+	private:
+		GarlickFile *gf;
+		AudiereFile(GarlickFile *gf) { this->gf = gf; }
+		~AudiereFile() { 
+			GarlickClose(gf);
+		}
+	public:
+		static AudiereFile *tryOpen(const std::string &fname) {
+			GarlickFile *gf = GarlickOpen(fname.c_str(),"library");
+			if(!gf) return 0;
+			return new AudiereFile(gf);
+		}
+		virtual int ADR_CALL read (void *buffer, int size) {
+			return GarlickRead(buffer,1,size,gf);
+		}
+		virtual bool ADR_CALL seek (int position, SeekMode mode) {
+			return GarlickSeek(gf,position,mode)==0;
+		}
+		virtual int ADR_CALL tell () {
+			return (int)GarlickTell(gf);
+		}
+	};
 
 	SoundEngine_Audiere() {
 		music = 0;
@@ -33,8 +62,10 @@ public:
 	void unregisterChannel(OutputStream *os) { 
 		ScopedLock lock(this);
 		int h = channels[os];
+		if(h==0) return; //wasnt a sound effect
 		Handle::free(HANDLE_TYPE_AUDCHN,h);
 		channels.erase(os);
+		os->unref();
 	}
 	
 	class MyStopCallback : public RefImplementation<audiere::StopCallback> {
@@ -62,9 +93,12 @@ public:
 	}
 
 
-	void PlayMusic(const char *sng) {
+	void PlayMusic(const std::string &sng) {
+		AudiereFile *af = AudiereFile::tryOpen(sng);
+		if(!af) err("Could not open specified music file: %s",sng);
+		
 		StopMusic();
-		music = OpenSound(device,sng,true);
+		music = OpenSound(device,FilePtr(af),true);
 		if(!music) err("Could not open specified music file: %s",sng);
 		music->ref();
 		music->setRepeat(true);
@@ -97,8 +131,7 @@ public:
 		if(!Handle::isValid(HANDLE_TYPE_AUDCHN, chan)) return;
 		OutputStream *os = (OutputStream*)Handle::getPointer(HANDLE_TYPE_AUDCHN,chan);
 		if(!os) return; //maybe this sound is already gone
-		os->unref();
-		//os->stop(); //necessary?
+		os->stop(); //wait for it to naturally stop, then unref it
 	}
 	int SoundIsPlaying(int chan) {
 		if(!Handle::isValid(HANDLE_TYPE_AUDCHN, chan)) return 0;
@@ -111,14 +144,43 @@ public:
 		sb->unref();
 	}
 
-	int LoadSong(const char *fn){return 0;}
-	void PlaySong(int h){}
-	void StopSong(int h){}
-	void SetPaused(int h, int p){}
-	int GetSongPos(int h){return 0;}
-	void SetSongPos(int h, int p){}
-	void SetSongVol(int h, int v){}
-	int GetSongVol(int h){return 0;}
-	void FreeSong(int h){}
+	int LoadSong(const std::string &sng) {
+		AudiereFile *af = AudiereFile::tryOpen(sng);
+		if(!af) err("Could not load specified music file: %s",sng);
+		
+		StopMusic();
+		OutputStream *os = OpenSound(device,FilePtr(af),true);
+		if(!os) err("Could not load specified music file: %s",sng);
+		os->ref();
+		os->setRepeat(true);
+		int h = songHandles.alloc(os);
+		return h;
+	}
+
+	void PlaySong(int h) {
+		songHandles[h]->play();
+	}
+	void StopSong(int h) {
+		songHandles[h]->stop();
+		songHandles[h]->reset();
+		OutputStream *os;
+	}
+	void SetPaused(int h, int p) {
+		if(p) songHandles[h]->stop();
+		else if(p) songHandles[h]->play();
+	}
+	int GetSongPos(int h) { err("Not implemented yet, sorry"); return 0; }
+	void SetSongPos(int h, int p){ err("Not implemented yet, sorry"); }
+	void SetSongVol(int h, int v) {
+		songHandles[h]->setVolume(v/100.0f);
+	}
+	int GetSongVol(int h) {
+		return (int)songHandles[h]->getVolume()*100;
+	}
+	
+	void FreeSong(int h) {
+		StopSong(h);
+		songHandles[h]->unref();
+	}
 
 };
