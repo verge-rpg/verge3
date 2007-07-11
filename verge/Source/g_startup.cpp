@@ -242,9 +242,7 @@ void xmain(int argc, char *argv[])
 
 	if(use_lua)
 		se = lua = new LUA();
-	else
-		se = vc = new VCCore();
-
+	
 	if (!releasemode)
 	{
 		DisplayCompileImage();
@@ -261,6 +259,7 @@ void xmain(int argc, char *argv[])
 	}
 
 	if(!use_lua) {
+		se = vc = new VCCore();
 		if (decompile)
 			vc->Decompile();
 	}
