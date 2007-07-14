@@ -518,6 +518,14 @@ sdl_Window::~sdl_Window()
 // Sets actual window dimensions & attrs
 void sdl_Window::adjust(int w, int h)
 {
+	// we're never going to get a 320x240 window back from SDL,
+	// so just ask for a 640x480 one and we'll scale it up when we flip
+	if(!vid_window && w == 320 && h == 240 )
+	{
+		w = 640;
+		h = 480;
+	}
+	
 	screen_surface = SDL_SetVideoMode(w, h, vid_bpp, (vid_window ? SDL_RESIZABLE : SDL_FULLSCREEN) | SDL_SWSURFACE); // SWSURFACE because we may need to scale into it in flip_win
 	shouldclear = true;
 
