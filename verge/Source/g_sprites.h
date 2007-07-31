@@ -12,6 +12,25 @@
 class sprite
 {
 public:
+	// we can no longer memset this struct, since it contains a std::string
+	// so we set up a constructor to do the initialization for us
+	sprite() :
+	x(0), y(0),
+	sc(0),
+	ent(-1),
+	image(0), alphamap(0),
+	xflip(0), yflip(0),
+	addsub(0), lucent(0),
+	thinkrate(0), thinkctr(0),
+	silhouette(0),
+	color(0),
+	wait(0),
+	timer(0),
+	layer(0),
+	onmap(0),
+	thinkproc("")
+	{}
+	
 	int x, y;
 	int sc;
 	int ent;

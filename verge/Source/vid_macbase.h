@@ -57,7 +57,7 @@ public:
 	void setPosition(int x, int y);
 	void setSize(int w, int h);
 	void setVisibility(bool vis);
-	void setTitle(char *title);
+	void setTitle(const char *title);
 	void positionCommand(int command, int arg1, int arg2);
 };
 

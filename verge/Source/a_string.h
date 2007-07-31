@@ -20,6 +20,7 @@ using boost::algorithm::to_upper;
 using boost::algorithm::to_lower_copy;
 using boost::algorithm::to_lower;
 using boost::algorithm::equals;
+using std::string;
 //ex: std::string x = to_lower_copy(std::string("HI"));
 
 inline int strcasecmp(std::string s1, std::string s2) {

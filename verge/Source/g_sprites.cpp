@@ -24,10 +24,9 @@ sprite sprites[256];
 
 void ResetSprites()
 {
-	memset(sprites, 0, sizeof (sprites));
 	for (int i=0; i<256; i++)
 	{
-		sprites[i].ent = -1;
+		sprites[i] = sprite();
 	}
 }
 
@@ -38,10 +37,7 @@ int GetSprite()
 		if (!sprites[i].image)
 		{
 			// Reset the element.
-			memset(&sprites[i], 0,
-					sizeof (sprite));	// <-- Important! Only initializing size of a struct (sprite).
-										// Not array of structs (sprites).
-			sprites[i].ent = -1;
+			sprites[i] = sprite();
 			return i;
 		}
 	}

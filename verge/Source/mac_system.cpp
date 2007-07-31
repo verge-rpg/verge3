@@ -81,7 +81,7 @@ char *clipboard_getText()
 	return "";
 }
 
-void clipboard_setText(char *text)
+void clipboard_setText(const char *text)
 {
 }
 
@@ -224,11 +224,11 @@ std::vector<string> listFilePattern(string pattern)
 	if(pattern[0] == '*')
 	{
 		matchEnd = true; // just match last piece of name
-		pattern = pattern.right(pattern.length()-1);
+		pattern = vc_strright(pattern, pattern.length()-1);
 	}
 
 	// lowercase it and all read names for case-insensitive
-	strlwr(pattern.c_str());
+	to_lower(pattern);
 
 	// get each entry, look at the name
 	while((ent = readdir(d)) != NULL)
@@ -240,7 +240,7 @@ std::vector<string> listFilePattern(string pattern)
 		if(matchEnd)
 		{
 			// just check end
-			if(name.right(pattern.length()) == pattern)
+			if(vc_strright(name, pattern.length()) == pattern)
 			{
 				matches = true;
 			}
@@ -278,7 +278,7 @@ void strlwr(char *c)
 }
 
 // set main window title, if we have one
-void setWindowTitle(char *str)
+void setWindowTitle(const char *str)
 {
 	if(gameWindow) {
 		gameWindow->setTitle(str);
@@ -290,7 +290,7 @@ void Sleep(unsigned int msec)
 	SDL_Delay(msec);
 }
 
-void err(char *str, ...)
+void err(const char *str, ...)
 {
 	va_list argptr;
 	char msg[256];

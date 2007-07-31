@@ -365,7 +365,7 @@ void ParseKeyEvent(SDL_KeyboardEvent keyEvent)
 	if (lastpressed == SCAN_DOWN && keys[SCAN_UP]) keys[SCAN_UP]=0;
 
 	if (key_pressed && bindarray[lastpressed].length())
-		vc->ExecuteFunctionString(bindarray[lastpressed].c_str());
+		se->ExecuteFunctionString(bindarray[lastpressed].c_str());
 	return ;
 }
 

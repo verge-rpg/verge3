@@ -260,23 +260,23 @@ void sdl_Window::setVisibility(bool vis)
 	bVisible = vis;
 }
 
-void sdl_Window::setTitle(char *title)
+void sdl_Window::setTitle(const char *title)
 {
-	int n = strlen(title);
-	for(int i = 0; i < n; i++) {
+	string titleConverted = title;
+	for(int i = 0; i < titleConverted.length(); i++) {
 		// check for high-ascii characters,
 		// remove them and give warning message
-		if(title[i] & 0x80) {
+		if(titleConverted[i] & 0x80) {
 			// special case often used >= character
-			if(title[i] == -77) {
-				title[i] = '3';
+			if(titleConverted[i] == -77) {
+				titleConverted[i] = '3';
 			} else {
-				title[i] = ' ';
+				titleConverted[i] = ' ';
 			}
 			log("Modified non 7-bit-ascii title.\n");
 		}
 	}
-	SDL_WM_SetCaption(title, 0);
+	SDL_WM_SetCaption(titleConverted.c_str(), 0);
 }
 
 void sdl_Window::createWindow()

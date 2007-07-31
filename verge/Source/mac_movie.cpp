@@ -17,10 +17,10 @@ void win_movie_init() {}
 void win_movie_shutdown() {}
 
 void win_movie_update() {}
-int win_movie_load(char *fname, bool bPlayAudio) {return 0;}
+int win_movie_load(const char *fname, bool bPlayAudio) {return 0;}
 void win_movie_close(int handle) {}
 
-int win_movie_playSimple(char *fname) {return 0;}
+int win_movie_playSimple(const char *fname) {return 0;}
 
 
 

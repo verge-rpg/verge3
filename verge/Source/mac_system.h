@@ -15,10 +15,10 @@
 //void win_addWindow(HWND window);
 //void win_removeWindow(HWND window);
 
-void setWindowTitle(char *str);
+void setWindowTitle(const char *str);
 
 char *clipboard_getText();
-void clipboard_setText(char *text);
+void clipboard_setText(const char *text);
 image *clipboard_getImage();
 void clipboard_putImage(image *img);
 

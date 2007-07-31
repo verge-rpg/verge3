@@ -15,7 +15,7 @@ extern "C++" {
 // include xerxes.h, which conflics with Cocoa
 class image;
 int HandleForImage(image *img);
-image *xLoadImage(char *fname);
+image *xLoadImage(const char *fname);
 
 // this value is set when we want to ignore
 // all incoming events to verge (if we're focused

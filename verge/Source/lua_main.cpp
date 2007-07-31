@@ -404,7 +404,7 @@ void LUA::bindApi() {
 		___xmagic_table(_G,true); \
 		");
 
-		#define SEFUNC(name) { { module(L) [ def("___"#name, ScriptEngine::##name) ]; }  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
+		#define SEFUNC(name) { { module(L) [ def("___"#name, ScriptEngine:: name) ]; }  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
 		#define FUNC(name) { { module(L) [ def("___"#name, ___##name) ]; }  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
 		#define TODO(name) {  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() exit('`"#name"` is not implemented yet in lua. Post a bug or consider whether you need it') end,function(val) ___set_fail_func('"#name"') end);"); }
 		//VI.a. General Utility Functions

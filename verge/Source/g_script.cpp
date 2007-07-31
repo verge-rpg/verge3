@@ -852,15 +852,11 @@ int ScriptEngine::FileOpen(std::string fname, int filemode) {
 		se->Error("FileOpen() - Out of file handles! \nTry closing files you're done with, or if you really need more, \nemail vecna@verge-rpg.com and pester me!");
 
 	#ifdef __APPLE__
-		char *temp;
-		// swap backslashes in path for forward slashes
-		// (windows -> unix/max) -- JR Dec 11/05
-		temp = fname.c_str();
-		while(*temp) {
-			if(*temp == '\\')
-				*temp = '/';
-			temp++;
-		}	
+	// swap backslashes in path for forward slashes
+	// (windows -> unix/max)
+	string converted = fname;
+	boost::algorithm::replace_all(converted, "\\", "/");
+	fname = converted.c_str();
 	#endif
 
 	switch (filemode)

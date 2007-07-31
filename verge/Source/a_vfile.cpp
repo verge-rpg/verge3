@@ -135,13 +135,9 @@ VFILE *vopen(const char *fname)
 #ifdef __APPLE__
 	// swap backslashes in path for forward slashes
 	// (windows -> unix/max)
-	char * temp = fname;
-	while(*temp) {
-		if(*temp == '\\')
-			*temp = '/';
-		temp++;
-	}
-
+	string converted = fname;
+	boost::algorithm::replace_all(converted, "\\", "/");
+	fname = converted.c_str();
 #endif
 	// All files using V* are read-only. To write a file, use regular i/o.
 	// First we'll see if a real file exists, then we'll check for one in VFiles,
