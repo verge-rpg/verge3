@@ -2,6 +2,13 @@
 Verge 3 Changelog
 ================================================
 
+Revision  (2007-08-25) (Overkill)
+========================
+Thanks to Eldritch for pointing out the following bugs:
+* BlitLucent and TBlitLucent were blitting from dest to src, instead of src to dest. Whoops!
+* HookButton was off-by-one! HookButton(3, "whatever") would hook to button 2, instead of button 3!
+* right(s, 0) returned s instead of "". Fixed that.
+
 Revision ..98 (2007-07-10) (zeromus)
 ========================
 * Improved handle system

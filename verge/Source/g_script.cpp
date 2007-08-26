@@ -122,9 +122,11 @@ void ScriptEngine::SetButtonJB(int b, int jb) {
 	}
 }
 
+// Overkill (2007-08-25): HookButton is supposed to start at 1, not 0.
+// It's meant to be consistent with Unpress().
 void ScriptEngine::HookButton(int b, std::string s) {
-	if (b<0 || b>3) return;
-	bindbutton[b] = s;
+	if (b<1 || b>4) return;
+	bindbutton[b-1] = s;
 }
 
 void ScriptEngine::HookKey(int k, std::string s) {
@@ -362,9 +364,11 @@ void ScriptEngine::BlitEntityFrame(int x, int y, int e, int f, int dst) {
 	if (!current_map || e<0 || e >= entities) return;
 	entity[e]->chr->render(x, y, f, d);
 }
+
+// Overkill (2007-08-25): src and dest were backwards. Whoops!
 void ScriptEngine::BlitLucent(int x, int y, int lucent, int src, int dst) {
-	image *s = ImageForHandle(dst);
-	image *d = ImageForHandle(src);
+	image *s = ImageForHandle(src);
+	image *d = ImageForHandle(dst);
 	int oldalpha = alpha;
 	::SetLucent(lucent);
 	::Blit(x, y, s, d);
@@ -585,9 +589,10 @@ void ScriptEngine::TBlit(int x, int y, int src, int dst) {
 	image *d = ImageForHandle(dst);
 	::TBlit(x, y, s, d);
 }
+// Overkill (2007-08-25): src and dest were backwards. Whoops!
 void ScriptEngine::TBlitLucent(int x, int y, int lucent, int src, int dst) {
-	image *s = ImageForHandle(dst);
-	image *d = ImageForHandle(src);
+	image *s = ImageForHandle(src);
+	image *d = ImageForHandle(dst);
 	int oldalpha = alpha;
 	::SetLucent(lucent);
 	::TBlit(x, y, s, d);

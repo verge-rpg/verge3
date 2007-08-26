@@ -48,6 +48,7 @@ inline std::string vc_strsub(const std::string &str, int pos, int len) {
 
 inline std::string vc_strmid(const std::string &str, int pos, int len) { return vc_strsub(str,pos,len); }
 inline std::string vc_strleft(const std::string &str, int len) { return vc_strsub(str,0,len); }
-inline std::string vc_strright(const std::string &str, int len) { return vc_strsub(str,str.size()-len,len); }
+// Overkill (2007-08-25): Fixed a bug in right() where len of 0 returns str, instead of "".
+inline std::string vc_strright(const std::string &str, int len) { return len ? vc_strsub(str,str.size()-len,len) : ""; }
 
 #endif
