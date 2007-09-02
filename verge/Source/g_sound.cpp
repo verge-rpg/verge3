@@ -12,6 +12,7 @@
 #define _G_SOUND_CPP
 #include "xerxes.h"
 #include "garlick.h"
+#include <delayimp.h>
 
 #ifdef SND_USE_AUDIERE
 #include "snd_audiere.h"
@@ -26,6 +27,12 @@
 #endif
 
 SoundEngine *snd_engine;
+
+FARPROC WINAPI FmodFailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
+	err("Failure initializing fmod. FMOD.dll is probably missing");
+	return 0;
+}
+
 
 bool snd_Init(int soundEngine) {
 	snd_engine = 0;
@@ -45,9 +52,20 @@ bool snd_Init(int soundEngine) {
 		snd_engine = new SoundEngine_Audiere();
 #endif
 
+	bool ret;
+
+	if(soundEngine == 0)
+		__pfnDliFailureHook2 = FmodFailHook;
+	
 	if(snd_engine)
-		return snd_engine->init();
-	else return false;
+		ret = snd_engine->init();
+	else ret = false;
+	
+	if(soundEngine == 0)
+		__pfnDliFailureHook2 = 0;
+
+	return ret;
+	
 }
 
 

@@ -63,9 +63,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib vfw32.lib winmm.lib ws2_32.lib ../win32/dxguid.lib ../win32/ddraw.lib ../win32/dinput.lib wininet.lib ../zlib/debug/zlib.lib ../corona/output/debug/corona.lib ../flac-1.1.4/obj/$(ConfigurationName)/lib/libFLAC_static.lib user32.lib gdi32.lib ../fmod/fmodvc.lib ../lua/$(ConfigurationName)/lua.lib ../audiere/vc7/bin/$(ConfigurationName)/audiere.lib"
+				AdditionalDependencies="DelayImp.lib msacm32.lib vfw32.lib winmm.lib ws2_32.lib ../win32/dxguid.lib ../win32/ddraw.lib ../win32/dinput.lib wininet.lib ../zlib/debug/zlib.lib ../corona/output/debug/corona.lib ../flac-1.1.4/obj/$(ConfigurationName)/lib/libFLAC_static.lib user32.lib gdi32.lib ../fmod/fmodvc.lib ../lua/$(ConfigurationName)/lua.lib ../audiere/vc7/bin/$(ConfigurationName)/audiere.lib"
 				OutputFile="$(OutDir)/verge.exe"
 				LinkIncremental="2"
+				DelayLoadDLLs="fmod.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/verge.pdb"
 				SubSystem="2"
@@ -155,7 +156,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="msacm32.lib vfw32.lib winmm.lib ws2_32.lib ../win32/dxguid.lib ../win32/ddraw.lib ../win32/dinput.lib wininet.lib ../zlib/release/zlib.lib ../corona/output/release/corona.lib user32.lib gdi32.lib ../fmod/fmodvc.lib ../flac-1.1.4/obj/$(ConfigurationName)/lib/libFLAC_static.lib ../audiere/vc7/bin/$(ConfigurationName)/audiere.lib"
+				AdditionalDependencies="delayimp.lib msacm32.lib vfw32.lib winmm.lib ws2_32.lib ../win32/dxguid.lib ../win32/ddraw.lib ../win32/dinput.lib wininet.lib ../zlib/release/zlib.lib ../corona/output/release/corona.lib user32.lib gdi32.lib ../fmod/fmodvc.lib ../flac-1.1.4/obj/$(ConfigurationName)/lib/libFLAC_static.lib ../audiere/vc7/bin/$(ConfigurationName)/audiere.lib"
 				OutputFile="$(OutDir)/verge.exe"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
