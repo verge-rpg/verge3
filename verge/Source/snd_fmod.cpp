@@ -304,9 +304,9 @@ void SoundEngine_Fmod::StopSound(int chan)
 }
 
 // Overkill (2006-11-20)
-int SoundEngine_Fmod::SoundIsPlaying(int chan)
+bool SoundEngine_Fmod::SoundIsPlaying(int chan)
 {
-	return FSOUND_IsPlaying(chan);
+	return FSOUND_IsPlaying(chan)?true:false;
 }
 
 void SoundEngine_Fmod::FreeSample(void *s)

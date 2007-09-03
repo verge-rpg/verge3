@@ -37,13 +37,13 @@ end
 
 function autoexec()
 	musics = {}
-	musics[1] = LoadSong("cd-level1.it");
-	musics[2] = LoadSong("cd-level2.it");
-	musics[3] = LoadSong("cd-level3.it");
-	musics[4] = LoadSong("cd-level4.it");
-	musics[5] = LoadSong("cd-level5.it");
+--	musics[1] = LoadSong("cd-level1.it");
+--	musics[2] = LoadSong("cd-level2.it");
+--	musics[3] = LoadSong("cd-level3.it");
+--	musics[4] = LoadSong("cd-level4.it");
+--	musics[5] = LoadSong("cd-level5.it");
 	
-	playmusic("cd-credits.it");
+	--playmusic("cd-credits.it");
 	HookKey(SCAN_W,"testkey");
 	HookKey(SCAN_E,"whizz");
 	HookKey(SCAN_1,"spam");

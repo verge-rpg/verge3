@@ -469,8 +469,8 @@ int VCCore::ReadInt(int category, int loc, int ofs)
 				case 110: if (ofs>=0 && ofs<256) return sprites[ofs].layer; return 0; // Overkill (2006-07-28)
 				case 111: if (ofs>=0 && ofs<entities) return entity[ofs]->lucent; return 0; // Overkill (2006-07-28)
 				case 112: if (ofs>=0 && ofs<256) return sprites[ofs].timer; return 0; // Overkill (2006-07-28)
-				case 113: if (ofs>=0 && ofs<entities) return entity[ofs]->chr->fxsize; return 0; // Overkill (2006-07-28)
-				case 114: if (ofs>=0 && ofs<entities) return entity[ofs]->chr->fysize; return 0; // Overkill (2006-07-28)
+				case 113: return ScriptEngine::Get_EntityFrameW(ofs); // Overkill (2006-07-28)
+				case 114: return ScriptEngine::Get_EntityFrameH(ofs); // Overkill (2006-07-28)
 				// Overkill (2007-05-02): Variable argument lists.
 				case 117: return GetIntArgument(ofs);
 				case 118: if (ofs >= 0 && ofs < vararg_stack[vararg_stack.size() - 1].size()) { return vararg_stack[vararg_stack.size() - 1][ofs].type_id == t_INT; } return 0;
@@ -572,6 +572,8 @@ void VCCore::WriteInt(int category, int loc, int ofs, int value)
 				case 110: if (ofs>=0 && ofs<256) sprites[ofs].layer = value; return; // Overkill (2006-07-28)
 				case 111: if (ofs>=0 && ofs<entities) entity[ofs]->lucent = value; return; // Overkill (2006-07-28)
 				case 112: if (ofs>=0 && ofs<256) sprites[ofs].timer = value; return; // Overkill (2006-07-28)
+				//case 113: ent.framew
+				//case 114: ent.frameh
 				// Overkill (2007-05-02): Variable argument lists.
 				case 117: return SetIntArgument(ofs, value);
 				default: vcerr("Unknown HVAR1 (%d, %d) (set %d)", loc, ofs, value);
@@ -800,19 +802,12 @@ std::string VCCore::ProcessString()
 							}
 						}
 						break;
-				case 100:
-					if(arg >= 0 && arg < entities && entity[arg]->chr != 0)
-						ret = entity[arg]->chr->name;
-					else
-						ret = "";
+				case 100: //entity.chr
+					ret = ScriptEngine::Get_EntityChr(arg);
 					break;
 				case 115:
 					// Overkill (2006-07-30): Entity description
-					if(arg >= 0 && arg < entities)
-						ret = entity[arg]->description;
-					else
-						ret = "";
-					break;
+					return ScriptEngine::Get_EntityDescription(arg);
 				case 120: // Overkill (2007-02-05): Variable argument lists.
 					ret = GetStringArgument(arg);
 					break;
@@ -1271,19 +1266,11 @@ void VCCore::HandleAssign()
 					ResolveString(); // invalid arg, just ignore the string
 				}
 				break;
-			case 100:
-				if(arg >= 0 && arg < entities) {
-					entity[arg]->set_chr(ResolveString());
-				} else {
-					ResolveString(); // invalid arg, just ignore the string
-				}
+			case 100: //Entity.Chr
+				ScriptEngine::Set_EntityChr(arg,ResolveString());
 				break;
 			case 115: // Overkill (2006-07-30): Entity description
-				if(arg >= 0 && arg < entities) {
-					entity[arg]->description = ResolveString();
-				} else {
-					ResolveString(); // invalid arg, just ignore the string
-				}
+				ScriptEngine::Set_EntityDescription(arg,ResolveString());
 				break;
 			case 120: // Overkill (2007-05-02): Variable argument lists.
 				SetStringArgument(arg, ResolveString());

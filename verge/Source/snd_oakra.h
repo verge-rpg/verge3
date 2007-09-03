@@ -218,7 +218,7 @@ public:
 	void *LoadSample(const char *fn) { return 0; }
 	void PlaySample(void *sample, int vol) {}
 	void StopSound(int chan) {}
-	int SoundIsPlaying(int chan) { return 0; }
+	bool SoundIsPlaying(int chan) { return false; }
 	void FreeSample(void *sample) {}
 
 

@@ -114,7 +114,7 @@ std::string strtolower(std::string val) { std::transform(val.begin(), val.end(),
 #define LUA_FUNC(name) { module(L) [ def(#name, ___##name) ]; }
 #define LUA_BIND(name) { module(L) [ def(#name, ##name)]; }
 #define LUA_BIND_R(name)  { module(L) [ def("___get_"#name,___get_##name) ]; }
-#define LUA_BIND_W(name)  { module(L) [ def("___set_"#name,___get_##name) ]; }
+#define LUA_BIND_W(name)  { module(L) [ def("___set_"#name,___set_##name) ]; }
 #define LUA_BIND_RW(name) { LUA_BIND_R(name); LUA_BIND_W(name); }
 
 //VII.a. General System Variables
@@ -159,7 +159,9 @@ int ___get_joy_button(int idx, int btn) { return sticks[idx].button[btn]; }
 int ___get_entities() { return entities; }
 
 int ___get_ent_x(int ofs) { return entity[ofs]->getx(); }
-void ___set_ent_x(int ofs, int value) { entity[ofs]->setxy(value, entity[ofs]->gety()); }
+void ___set_ent_x(int ofs, int value) { 
+	entity[ofs]->setxy(value, entity[ofs]->gety());
+}
 int ___get_ent_y(int ofs) { return entity[ofs]->gety(); }
 void ___set_ent_y(int ofs, int value) { entity[ofs]->setxy(entity[ofs]->getx(), value); }
 int ___get_ent_specframe(int ofs) { return entity[ofs]->specframe; }
@@ -176,15 +178,24 @@ int ___get_ent_face(int ofs) { return entity[ofs]->face; }
 void ___set_ent_face(int ofs, int value) { entity[ofs]->setface(value); }
 int ___get_ent_speed(int ofs) { return entity[ofs]->speed; }
 void ___set_ent_speed(int ofs, int value) { entity[ofs]->setspeed(value); }
-int ___get_ent_visible(int ofs) { return entity[ofs]->visible; }
-void ___set_ent_visible(int ofs, int value) { entity[ofs]->visible = value ? true : false; }
-int ___get_ent_obstruct(int ofs) { return entity[ofs]->obstruction; }
-void ___set_ent_obsctruct(int ofs, int value) { entity[ofs]->obstruction = (value!=0); }
-int ___get_ent_obstructable(int ofs) { return entity[ofs]->obstructable; }
-void ___set_ent_obstructable(int ofs, int value) { entity[ofs]->obstructable = (value!=0); }
+bool ___get_ent_visible(int ofs) { return entity[ofs]->visible; }
+void ___set_ent_visible(int ofs, bool value) { entity[ofs]->visible = value; }
+bool ___get_ent_obstruct(int ofs) { return entity[ofs]->obstruction; }
+void ___set_ent_obstruct(int ofs, bool value) { entity[ofs]->obstruction = value; }
+bool ___get_ent_obstructable(int ofs) { return entity[ofs]->obstructable; }
+void ___set_ent_obstructable(int ofs, bool value) { entity[ofs]->obstructable = value; }
+int ___get_ent_lucent(int ofs) { return entity[ofs]->lucent; }
+void ___set_ent_lucent(int ofs, int value) { entity[ofs]->lucent = value; }
 
-std::string ___get_ent_script(int ofs) { return std::string(entity[ofs]->script.c_str()); }
-std::string ___get_ent_chr(int ofs) { err("entity.chr is not implemented. please post a bug."); return 0; }
+std::string ___get_ent_script(int ofs) { return entity[ofs]->script; }
+
+std::string ___get_ent_chr(int ofs) { return se->Get_EntityChr(ofs); }
+void ___set_ent_chr(int ofs, std::string chr) { se->Set_EntityChr(ofs,chr); }
+int ___get_ent_framew(int ofs) { return se->Get_EntityFrameW(ofs); }
+int ___get_ent_frameh(int ofs) { return se->Get_EntityFrameH(ofs); }
+std::string ___get_ent_description(int ofs) { return se->Get_EntityDescription(ofs); }
+void ___set_ent_description(int ofs, std::string val) { se->Set_EntityDescription(ofs, val); }
+
 
 //------------------------------
 //VII.e. Sprite Variables
@@ -376,7 +387,7 @@ void LUA::bindApi() {
 				table.___index = index; \
 				function table:___ir(name,rfunc) table:___rw(name, function() return rfunc(index) end, nil) end; \
 				function table:___iw(name,wfunc) table:___rw(name, nil, function() return wfunc(index) end) end; \
-				function table:___irw(name,rfunc,wfunc) table:___rw(name, function() return rfunc(index) end, function() return wfunc(index) end) end; \
+				function table:___irw(name,rfunc,wfunc) table:___rw(name, function() return rfunc(index) end, function(val) return wfunc(index,val) end) end; \
 				makeitem(table); \
 				return table; \
 			end \
@@ -647,6 +658,21 @@ void LUA::bindApi() {
 		SEFUNC(SocketSendFile);
 		SEFUNC(SocketSendInt);
 		SEFUNC(SocketSendString);
+		//XX: unsorted functions and variables, mostly newly added and undocumented
+		SEFUNC(SoundIsPlaying);
+		SEFUNC(RectVGrad);
+		SEFUNC(RectHGrad);
+		SEFUNC(RectRGrad);
+		SEFUNC(Rect4Grad);
+		SEFUNC(strovr);
+		SEFUNC(WrapText);
+		SEFUNC(strpos);
+		SEFUNC(HSV);
+		SEFUNC(GetH);
+		SEFUNC(GetS);
+		SEFUNC(GetV);
+		SEFUNC(HueReplace);
+		SEFUNC(ColorReplace);
 
 
 		//some handy functions
@@ -731,7 +757,11 @@ void LUA::bindApi() {
 				table:___irw('obstruct',___get_ent_obstruct,___set_ent_obstruct); \
 				table:___irw('obstructable',___get_ent_obstructable,___set_ent_obstructable); \
 				table:___ir('script',___get_ent_script); \
-				table:___ir('chr',___get_ent_chr); \
+				table:___irw('chr',___get_ent_chr); \
+				table:___irw('lucent',___get_ent_lucent,___set_ent_lucent); \
+				table:___ir('framew',___get_ent_framew); \
+				table:___ir('frameh',___get_ent_frameh); \
+				table:___irw('description',___get_ent_description,___set_ent_description); \
 			end);");
 
 		

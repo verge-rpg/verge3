@@ -21,7 +21,7 @@ public:
 	void *LoadSample(const char *fn);
 	int PlaySample(void *sample, int vol);
 	void StopSound(int chan);
-	int SoundIsPlaying(int chan); // Overkill (2006-11-20)
+	bool SoundIsPlaying(int chan); // Overkill (2006-11-20)
 	void FreeSample(void *sample);
 
 

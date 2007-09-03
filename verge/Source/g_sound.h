@@ -26,7 +26,7 @@ public:
 	virtual void *LoadSample(const char *fn) = 0;
 	virtual int PlaySample(void *sample, int vol) = 0;
 	virtual void StopSound(int chan) = 0;
-	virtual int SoundIsPlaying(int chan) = 0;
+	virtual bool SoundIsPlaying(int chan) = 0;
 	virtual void FreeSample(void *sample) = 0;
 
 
@@ -48,7 +48,7 @@ bool snd_Init(int soundEngine);
 // Dummy music interface
 void PlayMusic(const std::string &sng);
 void StopMusic();
-int SoundIsPlaying(int chan); // Overkill (2006-11-20)
+bool SoundIsPlaying(int chan); // Overkill (2006-11-20)
 void SetMusicVolume(int v);
 
 // Sound effect interface

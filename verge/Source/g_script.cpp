@@ -1358,3 +1358,144 @@ void ScriptEngine::SocketSendString(int sh, std::string str) {
 #endif
 	s->write(len, str.c_str());
 }
+
+//XX: unsorted functions and variables, mostly newly added and undocumented
+std::string ScriptEngine::Get_EntityChr(int arg) {
+	if(arg >= 0 && arg < entities && entity[arg]->chr != 0)
+		return entity[arg]->chr->name;
+	else
+		return "";
+}
+void ScriptEngine::Set_EntityChr(int arg, std::string chr) {
+	if(arg >= 0 && arg < entities)
+		entity[arg]->set_chr(chr);
+}
+int ScriptEngine::Get_EntityFrameW(int ofs) {
+	if (ofs>=0 && ofs<entities) return entity[ofs]->chr->fxsize; else return 0;
+}
+int ScriptEngine::Get_EntityFrameH(int ofs) {
+	if (ofs>=0 && ofs<entities) return entity[ofs]->chr->fxsize; else return 0;
+}
+
+std::string ScriptEngine::Get_EntityDescription(int arg) {
+	if(arg >= 0 && arg < entities)
+		return entity[arg]->description;
+	else
+		return "";
+}
+void ScriptEngine::Set_EntityDescription(int arg, std::string val) { 
+	if(arg >= 0 && arg < entities)
+		entity[arg]->description = val;
+}
+
+bool ScriptEngine::SoundIsPlaying(int chn) { return ::SoundIsPlaying(chn); }
+void ScriptEngine::RectVGrad(int x1, int y1, int x2, int y2, int c, int c2, int d)
+{
+	image *id = ImageForHandle(d);
+	::RectVGrad(x1, y1, x2, y2, c, c2, id);
+}
+void ScriptEngine::RectHGrad(int x1, int y1, int x2, int y2, int c, int c2, int d)
+{
+	image *id = ImageForHandle(d);
+	::RectHGrad(x1, y1, x2, y2, c, c2, id);
+}
+void ScriptEngine::RectRGrad(int x1, int y1, int x2, int y2, int c, int c2, int d)
+{
+	image *id = ImageForHandle(d);
+	::RectRGrad(x1, y1, x2, y2, c, c2, id);
+}
+void ScriptEngine::Rect4Grad(int x1, int y1, int x2, int y2, int c1, int c2, int c3, int c4, int d)
+{
+	image *id = ImageForHandle(d);
+	::Rect4Grad(x1, y1, x2, y2, c1, c2, c3, c4, id);
+}
+
+// Overkill: 2005-12-28
+// Helper function for WrapText.
+static int TextWidth(int f, std::string text)
+{
+	Font *font = (Font*) f;
+	if (font == 0)
+		return pixels(text.c_str());
+	else
+		return font->Pixels(text.c_str());
+}
+
+// Overkill: 2005-12-28
+// Thank you, Zip.
+std::string ScriptEngine::strovr(std::string rep, std::string source, int offset)
+{
+	return ::strovr(source, rep, offset);
+}
+
+// Overkill: 2005-12-19
+// Thank you, Zip.
+std::string ScriptEngine::WrapText(int wt_font, std::string wt_s, int wt_linelen)
+// Pass: The font to use, the string to wrap, the length in pixels to fit into
+// Return: The passed string with \n characters inserted as breaks
+// Assmes: The font is valid, and will overrun if a word is longer than linelen
+// Note: Existing breaks will be respected, but adjacent \n characters will be
+//     replaced with a single \n so add a space for multiple line breaks
+{
+	std::string wt_tpara = "";
+	int curpara = 0;
+	int nextpara, lenpara, curchr, nextchr, width = 0;
+	int length = wt_s.length();
+
+	while (curpara < length)
+	{
+		nextpara = strpos(wt_s, "\n", curpara + 1);
+		if (nextpara > curpara + 1)
+		{
+			lenpara = nextpara - curpara - 1;
+			wt_tpara = vc_strmid(wt_s,curpara + 1, lenpara);
+			if (TextWidth(wt_font, wt_tpara) > wt_linelen)
+			{
+				curchr = -1;
+				width = 0;
+				while (curchr < lenpara)
+				{
+					nextchr = strpos(wt_tpara, " ", curchr + 1);
+					width += TextWidth(wt_font, vc_strmid(wt_tpara, curchr, nextchr - curchr));
+					if (width > wt_linelen)
+					{
+						// Overkill (2006-07-23): D'oh.
+						// Forgot to set the string to the return value >__>
+						wt_s = strovr(wt_s, "\n", curpara + curchr + 1);
+						width = TextWidth(wt_font, vc_strmid(wt_tpara, curchr + 1, nextchr - curchr - 1));
+					}
+					curchr = nextchr;
+				}
+			}
+		}
+		curpara = nextpara;
+	}
+	return wt_s;
+}
+int ScriptEngine::strpos(std::string sub, std::string source, int start) {
+	return ::strpos(source, sub, start);
+}
+
+int ScriptEngine::HSV(int h, int s, int v) { return ::HSVtoColor(h,s,v); }
+int ScriptEngine::GetH(int col) {
+	int h, s, v;
+	::GetHSV(col, h, s, v);
+	return h;
+}
+int ScriptEngine::GetS(int col) {
+	int h, s, v;
+	::GetHSV(col, h, s, v);
+	return s;
+}
+int ScriptEngine::GetV(int col) {
+	int h, s, v;
+	::GetHSV(col, h, s, v);
+	return v;
+}
+void ScriptEngine::HueReplace(int hue_find, int hue_tolerance, int hue_replace, int image) {
+	::HueReplace(hue_find, hue_tolerance, hue_replace, ImageForHandle(image));
+}
+void ScriptEngine::ColorReplace(int find, int replace, int image)
+{
+	::ColorReplace(find, replace, ImageForHandle(image));
+}

@@ -51,4 +51,33 @@ inline std::string vc_strleft(const std::string &str, int len) { return vc_strsu
 // Overkill (2007-08-25): Fixed a bug in right() where len of 0 returns str, instead of "".
 inline std::string vc_strright(const std::string &str, int len) { return len ? vc_strsub(str,str.size()-len,len) : ""; }
 
+// Overkill: 2005-12-28
+// Thank you, Zip.
+inline std::string strovr(std::string source, std::string rep, int offset)
+// Pass: The offset in the source to overwrite from, the string to overwrite with, the source string
+// Return: The string after overwrite
+// Assmes: Offset is less than source length
+{
+	int length = source.length();
+	int replen = rep.length();
+	if (length < replen + offset) return vc_strleft(source,offset) + rep;
+	return vc_strleft(source,offset) + rep + vc_strright(source,length - offset - replen);
+}
+
+// Overkill: 2005-12-28
+// Helper function.
+inline int strpos(std::string source, std::string sub, int start)
+{
+	int i;
+	int count = 0;
+	int lensub = sub.length();
+	int lensource = source.length();
+	for (i = start; i < lensource; i++)
+	{
+		if (!strcmp(sub.c_str(), vc_strmid(source, i, lensub).c_str())) return i;
+	}
+	return lensource;
+}
+
+
 #endif

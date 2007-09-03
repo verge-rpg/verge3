@@ -100,7 +100,7 @@ void *LoadSample(const char *fn) { if(snd_engine) return snd_engine->LoadSample(
 int PlaySample(void *s, int vol) { if(snd_engine) return snd_engine->PlaySample(s, vol); else return 0;}
 void StopSound(int chan) { if(snd_engine) snd_engine->StopSound(chan); }
 // Overkill (2006-11-20)
-int SoundIsPlaying(int chan) { if(snd_engine) return snd_engine->SoundIsPlaying(chan); else return 0; } 
+bool SoundIsPlaying(int chan) { if(snd_engine) return snd_engine->SoundIsPlaying(chan); else return 0; } 
 void FreeSample(void *s) { if(snd_engine) snd_engine->FreeSample(s); }
 
 int LoadSong(const std::string &fn) { if(snd_engine) return snd_engine->LoadSong(fn); else return -1; }

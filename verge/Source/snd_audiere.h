@@ -133,11 +133,11 @@ public:
 		if(!os) return; //maybe this sound is already gone
 		os->stop(); //wait for it to naturally stop, then unref it
 	}
-	int SoundIsPlaying(int chan) {
+	bool SoundIsPlaying(int chan) {
 		if(!Handle::isValid(HANDLE_TYPE_AUDCHN, chan)) return 0;
 		OutputStream *os = (OutputStream*)Handle::getPointer(HANDLE_TYPE_AUDCHN,chan);
-		if(!os) return 0;
-		return os->isPlaying()?1:0;
+		if(!os) return false;
+		return os->isPlaying();
 	}
 	void FreeSample(void *sample) {
 		SampleBuffer *sb = (SampleBuffer *)sample;
@@ -163,7 +163,6 @@ public:
 	void StopSong(int h) {
 		songHandles[h]->stop();
 		songHandles[h]->reset();
-		OutputStream *os;
 	}
 	void SetPaused(int h, int p) {
 		if(p) songHandles[h]->stop();

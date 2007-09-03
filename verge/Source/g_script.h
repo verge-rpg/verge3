@@ -270,6 +270,27 @@ public:
 	static void SocketSendFile(int sh, std::string fn);
 	static void SocketSendInt(int sh, int i);
 	static void SocketSendString(int sh, std::string str);
+	//XX: unsorted functions and variables, mostly newly added and undocumented
+	static std::string Get_EntityChr(int arg);
+	static void Set_EntityChr(int arg, std::string chr);
+	static int Get_EntityFrameW(int ofs);
+	static int Get_EntityFrameH(int ofs);
+	static std::string Get_EntityDescription(int arg);
+	static void Set_EntityDescription(int arg, std::string val);
+	static bool SoundIsPlaying(int chn);
+	static void RectVGrad(int x1, int y1, int x2, int y2, int c, int c2, int d);
+	static void RectHGrad(int x1, int y1, int x2, int y2, int c, int c2, int d);
+	static void RectRGrad(int x1, int y1, int x2, int y2, int c, int c2, int d);
+	static void Rect4Grad(int x1, int y1, int x2, int y2, int c1, int c2, int c3, int c4, int d);
+	static std::string strovr(std::string rep, std::string source, int offset);
+	static std::string WrapText(int wt_font, std::string wt_s, int wt_linelen);
+	static int strpos(std::string sub, std::string source, int start);
+	static int HSV(int h, int s, int v);
+	static int GetH(int col);
+	static int GetS(int col);
+	static int GetV(int col);
+	static void HueReplace(int hue_find, int hue_tolerance, int hue_replace, int image);
+	static void ColorReplace(int find, int replace, int image);
 };
 
 

@@ -864,21 +864,6 @@ void vc_ToLower() { vc->vcretstr = vc->ToLower(vc->ResolveString()); }
 void vc_ToUpper() { vc->vcretstr = vc->ToUpper(vc->ResolveString()); }
 
 // Overkill: 2005-12-28
-// Helper function.
-int strpos(std::string source, std::string sub, int start)
-{
-	int i;
-	int count = 0;
-	int lensub = sub.length();
-	int lensource = source.length();
-	for (i = start; i < lensource; i++)
-	{
-		if (!strcmp(sub.c_str(), vc_strmid(source, i, lensub).c_str())) return i;
-	}
-	return lensource;
-}
-
-// Overkill: 2005-12-28
 // Thank you, Zip.
 void vc_strpos()
 {
@@ -989,30 +974,6 @@ void vc_TokenRight()
 	}
 }
 
-// Overkill: 2005-12-28
-// Helper function for WrapText.
-int TextWidth(int f, std::string text)
-{
-	Font *font = (Font*) f;
-	if (font == 0)
-		return pixels(text.c_str());
-	else
-		return font->Pixels(text.c_str());
-}
-
-// Overkill: 2005-12-28
-// Thank you, Zip.
-std::string strovr(std::string source, std::string rep, int offset)
-// Pass: The offset in the source to overwrite from, the string to overwrite with, the source string
-// Return: The string after overwrite
-// Assmes: Offset is less than source length
-{
-	int length = source.length();
-	int replen = rep.length();
-	if (length < replen + offset) return vc_strleft(source,offset) + rep;
-	return vc_strleft(source,offset) + rep + vc_strright(source,length - offset - replen);
-}
-
 
 // Overkill: 2005-12-28
 // Thank you, Zip.
@@ -1037,41 +998,7 @@ void vc_WrapText()
 	int wt_font = vc->ResolveOperand();
 	std::string wt_s = vc->ResolveString();
 	int wt_linelen = vc->ResolveOperand();
-
-	std::string wt_tpara = "";
-	int curpara = 0;
-	int nextpara, lenpara, curchr, nextchr, width = 0;
-	int length = wt_s.length();
-
-	while (curpara < length)
-	{
-		nextpara = strpos(wt_s, "\n", curpara + 1);
-		if (nextpara > curpara + 1)
-		{
-			lenpara = nextpara - curpara - 1;
-			wt_tpara = vc_strmid(wt_s,curpara + 1, lenpara);
-			if (TextWidth(wt_font, wt_tpara) > wt_linelen)
-			{
-				curchr = -1;
-				width = 0;
-				while (curchr < lenpara)
-				{
-					nextchr = strpos(wt_tpara, " ", curchr + 1);
-					width += TextWidth(wt_font, vc_strmid(wt_tpara, curchr, nextchr - curchr));
-					if (width > wt_linelen)
-					{
-						// Overkill (2006-07-23): D'oh.
-						// Forgot to set the string to the return value >__>
-						wt_s = strovr(wt_s, "\n", curpara + curchr + 1);
-						width = TextWidth(wt_font, vc_strmid(wt_tpara, curchr + 1, nextchr - curchr - 1));
-					}
-					curchr = nextchr;
-				}
-			}
-		}
-		curpara = nextpara;
-	}
-	vc->vcretstr = wt_s;
+	vc->vcretstr = ScriptEngine::WrapText(wt_font,wt_s,wt_linelen);
 }
 
 
@@ -1441,8 +1368,8 @@ void vc_RectVGrad()
 	int y2 = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
 	int c2 = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	RectVGrad(x1, y1, x2, y2, c, c2, d);
+	int d = vc->ResolveOperand();
+	ScriptEngine::RectVGrad(x1, y1, x2, y2, c, c2, d);
 }
 
 // Overkill 2006-02-04
@@ -1454,8 +1381,8 @@ void vc_RectHGrad()
 	int y2 = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
 	int c2 = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	RectHGrad(x1, y1, x2, y2, c, c2, d);
+	int d = vc->ResolveOperand();
+	ScriptEngine::RectHGrad(x1, y1, x2, y2, c, c2, d);
 }
 
 // janus 2006-07-22
@@ -1465,10 +1392,10 @@ void vc_RectRGrad()
 	int y1 = vc->ResolveOperand();
 	int x2 = vc->ResolveOperand();
 	int y2 = vc->ResolveOperand();
-	int c1 = vc->ResolveOperand();
+	int c = vc->ResolveOperand();
 	int c2 = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	RectRGrad(x1, y1, x2, y2, c1, c2, d);
+	int d = vc->ResolveOperand();
+	ScriptEngine::RectRGrad(x1, y1, x2, y2, c, c2, d);
 }
 
 // janus 2006-07-22
@@ -1482,8 +1409,8 @@ void vc_Rect4Grad()
 	int c2 = vc->ResolveOperand();
 	int c3 = vc->ResolveOperand();
 	int c4 = vc->ResolveOperand();
-	image *d = ImageForHandle(vc->ResolveOperand());
-	Rect4Grad(x1, y1, x2, y2, c1, c2, c3, c4, d);
+	int d = vc->ResolveOperand();
+	ScriptEngine::Rect4Grad(x1, y1, x2, y2, c1, c2, c3, c4, d);
 }
 
 // Overkill (2006-06-25): Returns the cube root of a number.
@@ -1598,34 +1525,24 @@ void vc_CopyArray()
 }
 
 // Overkill (2006-11-20)
-void vc_SoundIsPlaying()
-{
-	int chan = vc->ResolveOperand();
-	vc->vcreturn = SoundIsPlaying(chan);
-}
+void vc_SoundIsPlaying() { vc->vcreturn = ScriptEngine::SoundIsPlaying(vc->ResolveOperand()); }
 
 // Overkill (2007-05-04)
 void vc_GetH()
 {
-	int c = vc->ResolveOperand();
-	int s, v;
-	GetHSV(c, vc->vcreturn, s, v);
+	vc->vcreturn = ScriptEngine::GetH(vc->ResolveOperand());
 }
 
 // Overkill (2007-05-04)
 void vc_GetS()
 {
-	int c = vc->ResolveOperand();
-	int h, v;
-	GetHSV(c, h, vc->vcreturn, v);
+	vc->vcreturn = ScriptEngine::GetS(vc->ResolveOperand());
 }
 
 // Overkill (2007-05-04)
 void vc_GetV()
 {
-	int c = vc->ResolveOperand();
-	int h, s;
-	GetHSV(c, h, s, vc->vcreturn);
+	vc->vcreturn = ScriptEngine::GetV(vc->ResolveOperand());
 }
 
 // Overkill (2007-05-04)
@@ -1643,8 +1560,8 @@ void vc_HueReplace()
 	int hue_find = vc->ResolveOperand();
 	int hue_tolerance = vc->ResolveOperand();
 	int hue_replace = vc->ResolveOperand();
-	image *dest = ImageForHandle(vc->ResolveOperand());
-	HueReplace(hue_find, hue_tolerance, hue_replace, dest);
+	int dest = vc->ResolveOperand();
+	ScriptEngine::HueReplace(hue_find, hue_tolerance, hue_replace, dest);
 }
 
 // Overkill (2007-05-04)
@@ -1652,8 +1569,8 @@ void vc_ColorReplace()
 {
 	int find = vc->ResolveOperand();
 	int replace = vc->ResolveOperand();
-	image *dest = ImageForHandle(vc->ResolveOperand());
-	ColorReplace(find, replace, dest);
+	int dest = vc->ResolveOperand();
+	ScriptEngine::ColorReplace(find, replace, dest);
 }
 
 void vc_ListBuiltinFunctions()
