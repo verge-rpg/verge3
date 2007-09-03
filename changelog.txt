@@ -2,6 +2,11 @@
 Verge 3 Changelog
 ================================================
 
+revision 111 (2007-09-02) (zeromus)
+========================
+* setup lua global namespace control for overkill to play with.
+  did not checkin executable.. I am proposing to release revision 110
+
 revision ..110 (2007-09-02) (zeromus)
 ========================
 * "Pretty much any Lua entity variable can't be set"

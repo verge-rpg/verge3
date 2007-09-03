@@ -316,8 +316,8 @@ void LUA::bindApi() {
 			exit('`'..k..'` is a builtin global function. You are trying to overwrite it. Please do not.')\
 			end");
 	grr |= luaL_dostring(L," function ___getname(self) \
-			if(self == _G) then return '_G'; \
-			else return ___getname(self.___parent)..self.___name; end \
+			if(self.___parent) then return ___getname(self.___parent)..self.___name; \
+			else return '::'; end \
 			end");
 	grr |= luaL_dostring(L,"function ___newtable(parent,name) \
 			local table = {___parent=parent,___name=name} \
@@ -416,14 +416,23 @@ void LUA::bindApi() {
 
 		if(grr) err("grr");
 
-		//special setup for _G
+		//OVERKILL: use this instead of the _G one below to put things in the other namespace
 		grr |= luaL_dostring(L,"\
-		___xmagic_table(_G,true); \
+		LuaVergeRaw = {}; \
+		___xmagic_table(LuaVergeRaw,true); \
 		");
+		#define GLOBAL_NAMESPACE "LuaVergeRaw"
 
-		#define SEFUNC(name) { { module(L) [ def("___"#name, ScriptEngine:: name) ]; }  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
-		#define FUNC(name) { { module(L) [ def("___"#name, ___##name) ]; }  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
-		#define TODO(name) {  grr |= luaL_dostring(L,"_G:___rw('"#name"',function() exit('`"#name"` is not implemented yet in lua. Post a bug or consider whether you need it') end,function(val) ___set_fail_func('"#name"') end);"); }
+		//special setup for _G
+		//grr |= luaL_dostring(L,"\
+		//___xmagic_table(_G,true); \
+		//");
+		//#define GLOBAL_NAMESPACE "_G"
+
+		
+		#define SEFUNC(name) { { module(L) [ def("___"#name, ScriptEngine:: name) ]; }  grr |= luaL_dostring(L,GLOBAL_NAMESPACE":___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
+		#define FUNC(name) { { module(L) [ def("___"#name, ___##name) ]; }  grr |= luaL_dostring(L,GLOBAL_NAMESPACE":___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
+		#define TODO(name) {  grr |= luaL_dostring(L,GLOBAL_NAMESPACE":___rw('"#name"',function() exit('`"#name"` is not implemented yet in lua. Post a bug or consider whether you need it') end,function(val) ___set_fail_func('"#name"') end);"); }
 		//VI.a. General Utility Functions
 		TODO(CallFunction);
 		SEFUNC(Exit);
@@ -683,12 +692,12 @@ void LUA::bindApi() {
 
 		//some handy functions
 		grr |= luaL_dostring(L,"\
-			function xr(table,name,funcname) table:___r(name,_G['___get_'..funcname]) end\
-			function xw(table,name,funcname) table:___w(name,_G['___set_'..funcname]) end\
-			function xrw(table,name,funcname) table:___r(name,_G['___get_'..funcname],_G['___set_'..funcname]) end\
-			function r(table,name) table:___r(name,_G['___get_'..name]) end\
-			function w(table,name) table:___w(name,_G['___set_'..name]) end\
-			function rw(table,name) table:___r(name,_G['___get_'..name],_G['___set_'..name]) end\
+			function xr(table,name,funcname) table:___r(name,"GLOBAL_NAMESPACE"['___get_'..funcname]) end\
+			function xw(table,name,funcname) table:___w(name,"GLOBAL_NAMESPACE"['___set_'..funcname]) end\
+			function xrw(table,name,funcname) table:___r(name,"GLOBAL_NAMESPACE"['___get_'..funcname],"GLOBAL_NAMESPACE"['___set_'..funcname]) end\
+			function r(table,name) table:___r(name,"GLOBAL_NAMESPACE"['___get_'..name]) end\
+			function w(table,name) table:___w(name,"GLOBAL_NAMESPACE"['___set_'..name]) end\
+			function rw(table,name) table:___r(name,"GLOBAL_NAMESPACE"['___get_'..name],"GLOBAL_NAMESPACE"['___set_'..name]) end\
 		");
 	
 		//VII.a. General System Variables
@@ -698,11 +707,11 @@ void LUA::bindApi() {
 		LUA_BIND_RW(lastkey)
 		LUA_BIND_RW(key);
 		grr |= luaL_dostring(L,"\
-			_G:___r('systemtime',___get_systemtime);  \
-			_G:___rw('timer',___get_timer,___set_timer);  \
-			_G:___rw('lastpressed',___get_lastpressed,___set_lastpressed);  \
-			_G:___rw('lastkey',___get_lastkey,___set_lastkey);  \
-			_G:___embed_array_collection('key',  ___get_key, ___set_key);\
+			"GLOBAL_NAMESPACE":___r('systemtime',___get_systemtime);  \
+			"GLOBAL_NAMESPACE":___rw('timer',___get_timer,___set_timer);  \
+			"GLOBAL_NAMESPACE":___rw('lastpressed',___get_lastpressed,___set_lastpressed);  \
+			"GLOBAL_NAMESPACE":___rw('lastkey',___get_lastkey,___set_lastkey);  \
+			"GLOBAL_NAMESPACE":___embed_array_collection('key',  ___get_key, ___set_key);\
 		");
 		//VII.b. Mouse Variables
 		LUA_BIND_RW(mx); LUA_BIND_RW(my);
@@ -721,7 +730,7 @@ void LUA::bindApi() {
 		LUA_BIND_R(joy_analogx); LUA_BIND_R(joy_analogy); 
 		LUA_BIND_R(joy_button);
 		grr |= luaL_dostring(L,"\
-			_G:___embed_magic_collection('joy', function(table) \
+			"GLOBAL_NAMESPACE":___embed_magic_collection('joy', function(table) \
 				table:___ir('active',___get_joy_active); \
 				table:___ir('up',___get_joy_up); \
 				table:___ir('down',___get_joy_down); \
@@ -746,8 +755,8 @@ void LUA::bindApi() {
 		LUA_BIND_R(ent_script);
 		LUA_BIND_R(ent_chr);
 		grr |= luaL_dostring(L,"\
-			_G:___r('entities',___get_entities); \
-			_G:___embed_magic_collection('entity', function(table) \
+			"GLOBAL_NAMESPACE":___r('entities',___get_entities); \
+			"GLOBAL_NAMESPACE":___embed_magic_collection('entity', function(table) \
 				table:___irw('x',___get_ent_x,___set_ent_x); \
 				table:___irw('y',___get_ent_y,___set_ent_y); \
 				table:___irw('specframe',___get_ent_specframe,___set_ent_specframe); \
@@ -777,7 +786,7 @@ void LUA::bindApi() {
 		LUA_BIND_RW(sprite_image); LUA_BIND_RW(sprite_lucent);
 		LUA_BIND_RW(sprite_addsub); LUA_BIND_RW(sprite_alphamap);
 		grr |= luaL_dostring(L,"\
-			_G:___embed_magic_collection('sprite', function(table) \
+			"GLOBAL_NAMESPACE":___embed_magic_collection('sprite', function(table) \
 				table:___irw('x',___get_sprite_x,___set_sprite_x); \
 				table:___irw('x',___get_sprite_y,___set_sprite_y); \
 				table:___irw('x',___get_sprite_sc,___set_sprite_sc); \
@@ -791,10 +800,10 @@ void LUA::bindApi() {
 		LUA_BIND_RW(xwin); LUA_BIND_RW(ywin); 
 		LUA_BIND_RW(cameratracking); LUA_BIND_RW(cameratracker); 
 		grr |= luaL_dostring(L,"\
-			r(_G,'xwin'); \
-			r(_G,'ywin'); \
-			r(_G,'cameratracking'); \
-			r(_G,'cameratracker'); \
+			r("GLOBAL_NAMESPACE",'xwin'); \
+			r("GLOBAL_NAMESPACE",'ywin'); \
+			r("GLOBAL_NAMESPACE",'cameratracking'); \
+			r("GLOBAL_NAMESPACE",'cameratracker'); \
 		");
 
 		//VII.g. Map Variables
@@ -804,12 +813,12 @@ void LUA::bindApi() {
 		LUA_BIND_R(curmap_name);  LUA_BIND_R(curmap_rstring); 
 		LUA_BIND_R(curmap_music);  LUA_BIND_R(curmap_path); 
 		grr |= luaL_dostring(L,"\
-			_G:___embed_magic_table('curmap'); \
-			xr(_G.curmap,'w','curmap_w'); xr(_G.curmap,'h','curmap_h'); \
-			xr(_G.curmap,'startx','curmap_startx'); xr(_G.curmap,'starty','curmap_starty'); \
-			xr(_G.curmap,'tileset','curmap_tileset'); \
-			xr(_G.curmap,'name','curmap_name'); xr(_G.curmap,'rstring','curmap_rstring'); \
-			xr(_G.curmap,'music','curmap_music'); xr(_G.curmap,'path','curmap_path'); \
+			"GLOBAL_NAMESPACE":___embed_magic_table('curmap'); \
+			xr("GLOBAL_NAMESPACE".curmap,'w','curmap_w'); xr("GLOBAL_NAMESPACE".curmap,'h','curmap_h'); \
+			xr("GLOBAL_NAMESPACE".curmap,'startx','curmap_startx'); xr("GLOBAL_NAMESPACE".curmap,'starty','curmap_starty'); \
+			xr("GLOBAL_NAMESPACE".curmap,'tileset','curmap_tileset'); \
+			xr("GLOBAL_NAMESPACE".curmap,'name','curmap_name'); xr("GLOBAL_NAMESPACE".curmap,'rstring','curmap_rstring'); \
+			xr("GLOBAL_NAMESPACE".curmap,'music','curmap_music'); xr("GLOBAL_NAMESPACE".curmap,'path','curmap_path'); \
 		");
 
 		//VII.h. Layer Variables
@@ -818,7 +827,7 @@ void LUA::bindApi() {
 		LUA_BIND_RW(layer_parallaxx); LUA_BIND_RW(layer_parallaxy);
 		LUA_BIND_R(layer_w); LUA_BIND_R(layer_h);
 		grr |= luaL_dostring(L,"\
-			_G:___embed_magic_collection('layer', function(table) \
+			"GLOBAL_NAMESPACE":___embed_magic_collection('layer', function(table) \
 				table:___irw('visible',___get_layer_visible,___set_layer_visible); \
 				table:___irw('lucent',___get_layer_lucent,___set_layer_lucent); \
 				table:___irw('parallaxx',___get_layer_parallaxx,___set_layer_parallaxx); \
@@ -831,10 +840,10 @@ void LUA::bindApi() {
 		LUA_BIND_R(event_tx); LUA_BIND_R(event_ty); LUA_BIND_R(event_zone); 
 		LUA_BIND_R(event_entity); LUA_BIND_R(event_param); 
 		grr |= luaL_dostring(L,"\
-			_G:___embed_magic_table('event'); \
-			xr(_G.event,'tx','event_tx'); xr(_G.event,'ty','event_ty'); \
-			xr(_G.event,'zone','event_zone'); xr(_G.event,'entity','event_entity'); \
-			xr(_G.event,'param','event_param'); \
+			"GLOBAL_NAMESPACE":___embed_magic_table('event'); \
+			xr("GLOBAL_NAMESPACE".event,'tx','event_tx'); xr(_G.event,'ty','event_ty'); \
+			xr("GLOBAL_NAMESPACE".event,'zone','event_zone'); xr(_G.event,'entity','event_entity'); \
+			xr("GLOBAL_NAMESPACE".event,'param','event_param'); \
 		");
 
 		//VII.j. Date/Time Variables
@@ -842,141 +851,141 @@ void LUA::bindApi() {
 		LUA_BIND_R(sysdate_day); LUA_BIND_R(sysdate_dayofweek); 
 		LUA_BIND_R(sysdate_hour); LUA_BIND_R(sysdate_minute); LUA_BIND_R(sysdate_second); 
 		grr |= luaL_dostring(L,"\
-			_G:___embed_magic_table('sysdate'); \
-			xr(_G.sysdate,'year','sysdate_year'); xr(_G.sysdate,'month','sysdate_month'); \
-			xr(_G.sysdate,'day','sysdate_day'); xr(_G.sysdate,'dayofweek','sysdate_dayofweek'); \
-			xr(_G.sysdate,'hour','sysdate_hour'); xr(_G.sysdate,'minute','sysdate_minute'); xr(_G.sysdate,'second','sysdate_second'); \
+			"GLOBAL_NAMESPACE":___embed_magic_table('sysdate'); \
+			xr("GLOBAL_NAMESPACE".sysdate,'year','sysdate_year'); xr("GLOBAL_NAMESPACE".sysdate,'month','sysdate_month'); \
+			xr("GLOBAL_NAMESPACE".sysdate,'day','sysdate_day'); xr("GLOBAL_NAMESPACE".sysdate,'dayofweek','sysdate_dayofweek'); \
+			xr("GLOBAL_NAMESPACE".sysdate,'hour','sysdate_hour'); xr("GLOBAL_NAMESPACE".sysdate,'minute','sysdate_minute'); xr("GLOBAL_NAMESPACE".sysdate,'second','sysdate_second'); \
 		");
 
 		//VII.k. Clipboard Variables
 		LUA_BIND_RW(clipboard_text);
 		grr |= luaL_dostring(L,"\
-			_G:___embed_magic_table('clipboard'); \
-			xrw(_G.clipboard,'text','clipboard_text'); \
+			"GLOBAL_NAMESPACE":___embed_magic_table('clipboard'); \
+			xrw("GLOBAL_NAMESPACE".clipboard,'text','clipboard_text'); \
 		");
 
 		///VIII.a. Version
 		LUA_BIND_R(version); LUA_BIND_R(build); LUA_BIND_R(os); 
 		grr |= luaL_dostring(L,"\
-			_G:___embed_magic_table('clipboard'); \
-			r(_G,'_version','version'); \
-			r(_G,'_build','build'); \
-			r(_G,'_os','os'); \
+			"GLOBAL_NAMESPACE":___embed_magic_table('clipboard'); \
+			r("GLOBAL_NAMESPACE",'_version','version'); \
+			r("GLOBAL_NAMESPACE",'_build','build'); \
+			r("GLOBAL_NAMESPACE",'_os','os'); \
 		");
 
 		grr |= luaL_dostring(L,"\
-			_G:___r('SCAN_ESC',function() return 01 end); \
-			_G:___r('SCAN_1',function() return 02 end); \
-			_G:___r('SCAN_2',function() return 03 end); \
-			_G:___r('SCAN_3',function() return 04 end); \
-			_G:___r('SCAN_4',function() return 05 end); \
-			_G:___r('SCAN_5',function() return 06 end); \
-			_G:___r('SCAN_6',function() return 07 end); \
-			_G:___r('SCAN_7',function() return 08 end); \
-			_G:___r('SCAN_8',function() return 09 end); \
-			_G:___r('SCAN_9',function() return 10 end); \
-			_G:___r('SCAN_0',function() return 11 end); \
-			_G:___r('SCAN_MINUS',function() return 12 end); \
-			_G:___r('SCAN_EQUALS',function() return 13 end); \
-			_G:___r('SCAN_BACKSP',function() return 14 end); \
-			_G:___r('SCAN_TAB',function() return 15 end); \
-			_G:___r('SCAN_Q',function() return 16 end); \
-			_G:___r('SCAN_W',function() return 17 end); \
-			_G:___r('SCAN_E',function() return 18 end); \
-			_G:___r('SCAN_R',function() return 19 end); \
-			_G:___r('SCAN_T',function() return 20 end); \
-			_G:___r('SCAN_Y',function() return 21 end); \
-			_G:___r('SCAN_U',function() return 22 end); \
-			_G:___r('SCAN_I',function() return 23 end); \
-			_G:___r('SCAN_O',function() return 24 end); \
-			_G:___r('SCAN_P',function() return 25 end); \
-			_G:___r('SCAN_LANGLE',function() return 26 end); \
-			_G:___r('SCAN_RANGLE',function() return 27 end); \
-			_G:___r('SCAN_ENTER',function() return 28 end); \
-			_G:___r('SCAN_CTRL',function() return 29 end); \
-			_G:___r('SCAN_A',function() return 30 end); \
-			_G:___r('SCAN_S',function() return 31 end); \
-			_G:___r('SCAN_D',function() return 32 end); \
-			_G:___r('SCAN_F',function() return 33 end); \
-			_G:___r('SCAN_G',function() return 34 end); \
-			_G:___r('SCAN_H',function() return 35 end); \
-			_G:___r('SCAN_J',function() return 36 end); \
-			_G:___r('SCAN_K',function() return 37 end); \
-			_G:___r('SCAN_L',function() return 38 end); \
-			_G:___r('SCAN_SCOLON',function() return 39 end); \
-			_G:___r('SCAN_QUOTA',function() return 40 end); \
-			_G:___r('SCAN_RQUOTA',function() return 41 end); \
-			_G:___r('SCAN_LSHIFT',function() return 42 end); \
-			_G:___r('SCAN_BSLASH',function() return 43 end); \
-			_G:___r('SCAN_Z',function() return 44 end); \
-			_G:___r('SCAN_X',function() return 45 end); \
-			_G:___r('SCAN_C',function() return 46 end); \
-			_G:___r('SCAN_V',function() return 47 end); \
-			_G:___r('SCAN_B',function() return 48 end); \
-			_G:___r('SCAN_N',function() return 49 end); \
-			_G:___r('SCAN_M',function() return 50 end); \
-			_G:___r('SCAN_COMMA',function() return 51 end); \
-			_G:___r('SCAN_DOT',function() return 52 end); \
-			_G:___r('SCAN_SLASH',function() return 53 end); \
-			_G:___r('SCAN_RSHIFT',function() return 54 end); \
-			_G:___r('SCAN_STAR',function() return 55 end); \
-			_G:___r('SCAN_ALT',function() return 56 end); \
-			_G:___r('SCAN_SPACE',function() return 57 end); \
-			_G:___r('SCAN_CAPS',function() return 58 end); \
-			_G:___r('SCAN_F1',function() return 59 end); \
-			_G:___r('SCAN_F2',function() return 60 end); \
-			_G:___r('SCAN_F3',function() return 61 end); \
-			_G:___r('SCAN_F4',function() return 62 end); \
-			_G:___r('SCAN_F5',function() return 63 end); \
-			_G:___r('SCAN_F6',function() return 64 end); \
-			_G:___r('SCAN_F7',function() return 65 end); \
-			_G:___r('SCAN_F8',function() return 66 end); \
-			_G:___r('SCAN_F9',function() return 67 end); \
-			_G:___r('SCAN_F10',function() return 68 end); \
-			_G:___r('SCAN_NUMLOCK',function() return 69 end); \
-			_G:___r('SCAN_SCRLOCK',function() return 70 end); \
-			_G:___r('SCAN_HOME',function() return 71 end); \
-			_G:___r('SCAN_UP',function() return 72 end); \
-			_G:___r('SCAN_PGUP',function() return 73 end); \
-			_G:___r('SCAN_GMINUS',function() return 74 end); \
-			_G:___r('SCAN_LEFT',function() return 75 end); \
-			_G:___r('SCAN_PAD_5',function() return 76 end); \
-			_G:___r('SCAN_RIGHT',function() return 77 end); \
-			_G:___r('SCAN_GPLUS',function() return 78 end); \
-			_G:___r('SCAN_END',function() return 79 end); \
-			_G:___r('SCAN_DOWN',function() return 80 end); \
-			_G:___r('SCAN_PGDN',function() return 81 end); \
-			_G:___r('SCAN_INSERT',function() return 82 end); \
-			_G:___r('SCAN_DEL',function() return 83 end); \
-			_G:___r('SCAN_F11',function() return 87 end); \
-			_G:___r('SCAN_F12',function() return 88 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_ESC',function() return 01 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_1',function() return 02 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_2',function() return 03 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_3',function() return 04 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_4',function() return 05 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_5',function() return 06 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_6',function() return 07 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_7',function() return 08 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_8',function() return 09 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_9',function() return 10 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_0',function() return 11 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_MINUS',function() return 12 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_EQUALS',function() return 13 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_BACKSP',function() return 14 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_TAB',function() return 15 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_Q',function() return 16 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_W',function() return 17 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_E',function() return 18 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_R',function() return 19 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_T',function() return 20 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_Y',function() return 21 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_U',function() return 22 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_I',function() return 23 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_O',function() return 24 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_P',function() return 25 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_LANGLE',function() return 26 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_RANGLE',function() return 27 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_ENTER',function() return 28 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_CTRL',function() return 29 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_A',function() return 30 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_S',function() return 31 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_D',function() return 32 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F',function() return 33 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_G',function() return 34 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_H',function() return 35 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_J',function() return 36 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_K',function() return 37 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_L',function() return 38 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_SCOLON',function() return 39 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_QUOTA',function() return 40 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_RQUOTA',function() return 41 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_LSHIFT',function() return 42 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_BSLASH',function() return 43 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_Z',function() return 44 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_X',function() return 45 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_C',function() return 46 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_V',function() return 47 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_B',function() return 48 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_N',function() return 49 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_M',function() return 50 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_COMMA',function() return 51 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_DOT',function() return 52 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_SLASH',function() return 53 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_RSHIFT',function() return 54 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_STAR',function() return 55 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_ALT',function() return 56 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_SPACE',function() return 57 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_CAPS',function() return 58 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F1',function() return 59 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F2',function() return 60 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F3',function() return 61 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F4',function() return 62 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F5',function() return 63 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F6',function() return 64 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F7',function() return 65 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F8',function() return 66 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F9',function() return 67 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F10',function() return 68 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_NUMLOCK',function() return 69 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_SCRLOCK',function() return 70 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_HOME',function() return 71 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_UP',function() return 72 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_PGUP',function() return 73 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_GMINUS',function() return 74 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_LEFT',function() return 75 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_PAD_5',function() return 76 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_RIGHT',function() return 77 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_GPLUS',function() return 78 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_END',function() return 79 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_DOWN',function() return 80 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_PGDN',function() return 81 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_INSERT',function() return 82 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_DEL',function() return 83 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F11',function() return 87 end); \
+			"GLOBAL_NAMESPACE":___r('SCAN_F12',function() return 88 end); \
 			");
 
 		//other misc defines
 		grr |= luaL_dostring(L,"\
-			_G:___r('screen',function() return 1 end);  \
-			_G:___r('FILE_READ',function() return 1 end); \
-			_G:___r('FILE_WRITE_APPEND',function() return 3 end); \
-			_G:___r('SEEK_SET',function() return 0 end); \
-			_G:___r('SEEK_CUR',function() return 1 end); \
-			_G:___r('SEEK_END',function() return 2 end); \
-			_G:___r('CF_NONE',function() return 0 end); \
-			_G:___r('CF_GREY',function() return 1 end); \
-			_G:___r('CF_GREYINV',function() return 2 end); \
-			_G:___r('CF_INV',function() return 3 end); \
-			_G:___r('CF_RED',function() return 4 end); \
-			_G:___r('CF_GREEN',function() return 5 end); \
-			_G:___r('CF_BLUE',function() return 6 end); \
-			_G:___r('CF_CUSTOM',function() return 7 end); \
-			_G:___r('FIXED_PI',function() return 205887 end); \
+			"GLOBAL_NAMESPACE":___r('screen',function() return 1 end);  \
+			"GLOBAL_NAMESPACE":___r('FILE_READ',function() return 1 end); \
+			"GLOBAL_NAMESPACE":___r('FILE_WRITE_APPEND',function() return 3 end); \
+			"GLOBAL_NAMESPACE":___r('SEEK_SET',function() return 0 end); \
+			"GLOBAL_NAMESPACE":___r('SEEK_CUR',function() return 1 end); \
+			"GLOBAL_NAMESPACE":___r('SEEK_END',function() return 2 end); \
+			"GLOBAL_NAMESPACE":___r('CF_NONE',function() return 0 end); \
+			"GLOBAL_NAMESPACE":___r('CF_GREY',function() return 1 end); \
+			"GLOBAL_NAMESPACE":___r('CF_GREYINV',function() return 2 end); \
+			"GLOBAL_NAMESPACE":___r('CF_INV',function() return 3 end); \
+			"GLOBAL_NAMESPACE":___r('CF_RED',function() return 4 end); \
+			"GLOBAL_NAMESPACE":___r('CF_GREEN',function() return 5 end); \
+			"GLOBAL_NAMESPACE":___r('CF_BLUE',function() return 6 end); \
+			"GLOBAL_NAMESPACE":___r('CF_CUSTOM',function() return 7 end); \
+			"GLOBAL_NAMESPACE":___r('FIXED_PI',function() return 205887 end); \
 		");
 
 		if(grr) err("grr");
 
 
 		//cleanup some functions we were using for convenience
-		grr |= luaL_dostring(L,"_G.r = nil; _G.w = nil; _G.rw = nil");
-		grr |= luaL_dostring(L,"_G.xr = nil; _G.xw = nil; _G.xrw = nil");
+		grr |= luaL_dostring(L,""GLOBAL_NAMESPACE".r = nil; "GLOBAL_NAMESPACE".w = nil; "GLOBAL_NAMESPACE".rw = nil");
+		grr |= luaL_dostring(L,""GLOBAL_NAMESPACE".xr = nil; "GLOBAL_NAMESPACE".xw = nil; "GLOBAL_NAMESPACE".xrw = nil");
 
 
 	if(grr) err("grr");
