@@ -2,6 +2,42 @@
 Verge 3 Changelog
 ================================================
 
+revision ..110 (2007-09-02) (zeromus)
+========================
+* "Pretty much any Lua entity variable can't be set"
+  "In addition to not being writable, they return 0/1 instead of true/false"
+
+  fixed. some missing variables and some typos in bindings
+
+* "The following Lua entity variables need implementation for both read and write operations"
+  entity[e].chr
+  entity[e].lucent
+  entity[e].framew --zero: this is actually rdonly
+  entity[e].frameh --zero: this is actually rdonly
+  entity[e].description
+
+  fixed.
+
+* The following new functions don't exist in Lua:
+  bool SoundIsPlaying(int channel)
+  void RectVGrad(int x, int y, int x2, int y2, int c, int c2, int dest)
+  void RectHGrad(int x, int y, int x2, int y2, int c, int c2, int dest)
+  void RectRGrad(int x, int y, int x2, int y2, int c, int c2, int dest)
+  void Rect4Grad(int x, int y, int x2, int y2, int c, int c2, int c3, int c4, int dest)
+  string WrapText(int font, string s, int line_width)
+  int HSV(int h, int s, int v)
+  int GetH(int color)
+  int GetS(int color)
+  int GetV(int color)
+  HueReplace(int hue_to_find, int hue_tolerance, int hue_replacement, int image)
+  void ColorReplace(int color_to_find, int color_replacement, int image)
+
+  added.
+
+* .lua files couldnt load from packfiles. fixed.
+* removed speex from audiere and corrected some optimization settings
+* made fmod dependency optional
+
 Revision 103 (2007-08-25) (Overkill)
 ========================
 Thanks to Eldritch for pointing out the following bugs:
