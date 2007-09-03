@@ -12,6 +12,8 @@
 #define VFILE_H
 #define vscanf _vscanf
 
+#include <boost/shared_array.hpp>
+
 struct VFILE
 {
   FILE *fp;                           // real file pointer.
@@ -70,3 +72,4 @@ word vgetw(VFILE *f);
 void vgets(char *str, int len, VFILE *f);
 int vtell(VFILE* f);
 int veof(VFILE *f);
+boost::shared_array<byte> vreadfile(const char *fname);
