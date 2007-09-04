@@ -75,14 +75,15 @@ void LUA::loadFile(const char *fname) {
 	if(luaL_loadbuffer(L, (char*)buf.get()+4, *(int*)buf.get(), fname))
 		err("Error loading " + std::string(fname));
 
-	if(lua_pcall(L, 0,0,0)) 
+	if(lua_pcall(L, 0,0,0))
 		err("Error compiling " + std::string(fname));
 }
 
 void LUA::ExecAutoexec() {
-	lua_getglobal(L, "autoexec");
-	if(lua_pcall(L, 0,0,0)) 
-		err("Error calling autoexec");
+	ExecuteFunctionString("autoexec");
+	//lua_getglobal(L, "autoexec");
+	//if(lua_pcall(L, 0,0,0))
+	//	err("Error calling autoexec");
 }
 
 
@@ -117,6 +118,7 @@ std::string strtolower(std::string val) { std::transform(val.begin(), val.end(),
 	lua_settable(L,-3); \
 	lua_pop(L,1); }
 
+#define GLOBAL_NAMESPACE "LuaVergeRaw"
 #define LUA_FUNC(name) { module(L) [ def(#name, ___##name) ]; }
 #define LUA_BIND(name) { module(L) [ def(#name, ##name)]; }
 #define LUA_BIND_R(name)  { module(L) [ def("___get_"#name,___get_##name) ]; }
@@ -131,8 +133,8 @@ int ___get_lastpressed() { return lastpressed; }
 void ___set_lastpressed(int val) { lastpressed = val; }
 int ___get_lastkey() { return lastkey; }
 void ___set_lastkey(int val) { lastkey = val; }
-int ___get_key(int idx) { return keys[idx]; }
-void ___set_key(int idx, int val) { keys[idx] = val; }
+bool ___get_key(int idx) { return keys[idx]; }
+void ___set_key(int idx, bool val) { keys[idx] = val; }
 
 //VII.b. Mouse Variables
 int ___get_mx() { return mouse_x; }
@@ -165,7 +167,7 @@ int ___get_joy_button(int idx, int btn) { return sticks[idx].button[btn]; }
 int ___get_entities() { return entities; }
 
 int ___get_ent_x(int ofs) { return entity[ofs]->getx(); }
-void ___set_ent_x(int ofs, int value) { 
+void ___set_ent_x(int ofs, int value) {
 	entity[ofs]->setxy(value, entity[ofs]->gety());
 }
 int ___get_ent_y(int ofs) { return entity[ofs]->gety(); }
@@ -280,40 +282,112 @@ std::string ___get_version() { return DEF_VERSION; }
 std::string ___get_build() { return DEF_BUILD; }
 std::string ___get_os() { return DEF_OS; }
 
+// Error handler. Don't shove this in a package, since this is important to the Lua environment.
+int InitErrorHandler(lua_State *L)
+{
+	return luaL_dostring(L,"function __err(e)\n\
+		local level = 1 \n\
+		local s = \"\" \n\
+		\n\
+		local function explode(div, str) \n\
+			if (div=='') then return false end \n\
+			if (not div or not str) then return false end \n\
+			local pos,arr = 0,{} \n\
+			-- for each divider found \n\
+			for st,sp in function() return string.find(str,div,pos,true) end do \n\
+				table.insert(arr,string.sub(str,pos,st-1)) -- Attach chars left of current divider \n\
+				pos = sp + 1 -- Jump past current divider \n\
+			end \n\
+			table.insert(arr,string.sub(str,pos)) -- Attach chars right of last divider \n\
+			return arr \n\
+		end \n\
+		\n\
+		-- Start printing all trace after the offending line. We don't want to trace the error handler or the error() call if there was level modifiers. \n\
+		local match = false \n\
+		local t = explode(\":\", e) \n\
+		if not t then return \"Error was so bad the error handler failed too.\" end \n\
+		local filename, line, message = unpack(t) \n\
+		line = tonumber(line) \n\
+		if not message then \n\
+			filename = \"?\" \n\
+			line = 0 \n\
+			message = e \n\
+			match = true \n\
+		end \n\
+		\n\
+		s = s .. message .. \"\\n\" \n\
+		s = s .. \"  Traceback (most recent call first):\\n\" \n\
+		while true do \n\
+			local info = debug.getinfo(level, \"Sln\") \n\
+			if not info then \n\
+				break \n\
+			end \n\
+			\n\
+			if filename == info.short_src and line == info.currentline then \n\
+				match = true \n\
+			end \n\
+			if match then \n\
+				s = s .. \"    File '\" .. info.short_src .. \"', line \" .. tostring(info.currentline) \n\
+				if info.name or info.namewhat then \n\
+					s = s .. \", in\" \n\
+					if info.namewhat then \n\
+						if info.namewhat ~= \"\" then \n\
+							s = s .. \" \" .. info.namewhat \n\
+						else \n\
+							s = s .. \" (function)\" \n\
+						end \n\
+					end \n\
+					if info.name and info.name ~= \"\" then \n\
+						s = s .. \" \" .. info.name \n\
+					end \n\
+				end \n\
+				s = s .. \"\\n\" \n\
+			end \n\
+			level = level + 1 \n\
+		end \n\
+		return s \n\
+	end\n");
+}
+
 void LUA::bindApi() {
 	using namespace luabind;
 	open(L);
-	
-	
+
+
 
 	//TODO -- add logic to lua global arrays to perform bounds checking
 
+
 	//install the metatable and utility functions
 	int grr = 0;
+
+	// Error handler. Don't shove this in a package, since this is important to the Lua environment.
+	grr |= InitErrorHandler(L);
+
 	grr |= luaL_dostring(L,"function ___getmetatable(tbl) \
 				local meta = getmetatable(tbl) \
 				if(meta) then return meta else return {} end \
 			end");
 	grr |= luaL_dostring(L,"function ___set_fail_readonly(k,v) \
-			exit('builtin global variable `'..k..'` is readonly')\
+			error('builtin global variable `'..k..'` is readonly', 2)\
 			end");
 	grr |= luaL_dostring(L,"function ___set_fail_readonly_blah() \
-			exit('builtin global variable is readonly')\
+			error('builtin global variable is readonly', 2)\
 			end");
 	grr |= luaL_dostring(L,"function ___set_fail_needmember(k,v) \
-			exit('builtin global variable `'..k..'` must be accessed by member, i.e. `'..k..'`.something')\
+			error('builtin global variable `'..k..'` must be accessed by member, i.e. `'..k..'`.something', 2)\
 			end");
 	grr |= luaL_dostring(L,"function ___set_fail_systemvar(k,v) \
-			exit('builtin global variable `'..k..'` cannot be set directly. Please drilldown or index as appropriate.')\
+			error('builtin global variable `'..k..'` cannot be set directly. Please drilldown or index as appropriate.', 2)\
 			end");
 	grr |= luaL_dostring(L,"function ___set_fail_array(k,v) \
-			exit('builtin global array `'..k..'` cannot be accessed directly. Please index it.')\
+			error('builtin global array `'..k..'` cannot be accessed directly. Please index it.', 2)\
 			end");
 	grr |= luaL_dostring(L,"function ___get_fail_array(k) \
-			exit('builtin global array `'..k..'` cannot be accessed directly. Please index it.')\
+			error('builtin global array `'..k..'` cannot be accessed directly. Please index it.', 2)\
 			end");
 	grr |= luaL_dostring(L,"function ___set_fail_func(k) \
-			exit('`'..k..'` is a builtin global function. You are trying to overwrite it. Please do not.')\
+			error('`'..k..'` is a builtin global function. You are trying to overwrite it. Please do not.', 2)\
 			end");
 	grr |= luaL_dostring(L," function ___getname(self) \
 			if(self.___parent) then return ___getname(self.___parent)..self.___name; \
@@ -350,19 +424,19 @@ void LUA::bindApi() {
 				local tk = string.lower(k);\
 				if table.___getters[tk] then return table.___getters[tk]() \
 				elseif allowdefault then return rawget(t,k) \
-				else exit(k..' 1 does not exist error tbd'); end \
+				else error(k..' 1 does not exist error tbd', 2); end \
 			end \
 			function meta.__newindex(t, k, v) \
 				local tk = string.lower(k);\
 				if table.___setters[tk] then table.___setters[tk](v) \
 				elseif allowdefault then rawset(t, k, v) \
 				elseif(string.sub(k,1,3) == '___') then rawset(t, k, v)\
-				else exit(k..' 2 does not exist error tbd'); end \
+				else error(k..' 2 does not exist error tbd', 2); end \
 			end \
 			function table:___rw(name,getter,setter) \
 				name = string.lower(name);\
-				if(getter) then self.___getters[name] = getter; else self.___getters[name] = function() exit('3 writeonly error tbd') end; end \
-				if(setter) then self.___setters[name] = setter; else self.___setters[name] = function(v) exit('4 readonly error tbd') end; end \
+				if(getter) then self.___getters[name] = getter; else self.___getters[name] = function() error('3 \\'' .. name .. '\\' is writeonly error tbd', 2) end; end \
+				if(setter) then self.___setters[name] = setter; else self.___setters[name] = function(v) error('4 \\'' .. name .. '\\' is readonly error tbd', 2) end; end \
 			end \
 			function table:___r(name,getter) self:___rw(name,getter,nil) end \
 			function table:___w(name,setter) self:___rw(name,nil,setter) end \
@@ -391,9 +465,9 @@ void LUA::bindApi() {
 				local table = ___newtable(parent, '['..index..']'); \
 				___magic_table(table) \
 				table.___index = index; \
-				function table:___ir(name,rfunc) table:___rw(name, function() return rfunc(index) end, nil) end; \
-				function table:___iw(name,wfunc) table:___rw(name, nil, function() return wfunc(index) end) end; \
-				function table:___irw(name,rfunc,wfunc) table:___rw(name, function() return rfunc(index) end, function(val) return wfunc(index,val) end) end; \
+				function table:___ir(name,rfunc) table:___rw(name, function() if rfunc then return rfunc(index) else error('system array cannot be read. tbd better error message', 2) end end, nil) end; \
+				function table:___iw(name,wfunc) table:___rw(name, nil, function(val) if wfunc then return wfunc(index, val) else error('system array cannot be written to. tbd better error message', 2) end end) end; \
+				function table:___irw(name,rfunc,wfunc) table:___rw(name, function() if rfunc then return rfunc(index) else error('system array cannot be read. tbd better error message', 2) end end, function(val) if wfunc then return wfunc(index, val) else error('system array cannot be written. tbd better error message', 2) end end) end; \
 				makeitem(table); \
 				return table; \
 			end \
@@ -401,16 +475,16 @@ void LUA::bindApi() {
 				\
 				local meta = ___getmetatable(table); \
 				function meta.__index(t,k) return ___magic_collection_getindex(table, k, makeitem) end \
-				function meta.__newindex(t,k,v) exit('invalid attempt to set system array index. tbd better error message') end \
+				function meta.__newindex(t,k,v) error('invalid attempt to set system array index. tbd better error message', 2) end \
 				setmetatable(table,meta); \
 			end  \
 			function ___make_array_collection(table, getitem, setitem) \
 				\
 				local meta = ___getmetatable(table); \
 				if(getitem) then function meta.__index(t,k) return getitem(k) end \
-				else function meta.__index(t,k) exit('invalid attempt to get system array index. tbd better error message') end end \
+				else function meta.__index(t,k) error('invalid attempt to get system array index. tbd better error message', 2) end end \
 				if(setitem) then function meta.__newindex(t,k,v) setitem(k,v) end \
-				else function meta.__newindex(t,k,v) exit('invalid attempt to set system array index. tbd better error message') end end \
+				else function meta.__newindex(t,k,v) error('invalid attempt to set system array index. tbd better error message', 2) end end \
 				setmetatable(table,meta); \
 			end");
 
@@ -421,7 +495,6 @@ void LUA::bindApi() {
 		LuaVergeRaw = {}; \
 		___xmagic_table(LuaVergeRaw,true); \
 		");
-		#define GLOBAL_NAMESPACE "LuaVergeRaw"
 
 		//special setup for _G
 		//grr |= luaL_dostring(L,"\
@@ -429,10 +502,11 @@ void LUA::bindApi() {
 		//");
 		//#define GLOBAL_NAMESPACE "_G"
 
-		
+
 		#define SEFUNC(name) { { module(L) [ def("___"#name, ScriptEngine:: name) ]; }  grr |= luaL_dostring(L,GLOBAL_NAMESPACE":___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
 		#define FUNC(name) { { module(L) [ def("___"#name, ___##name) ]; }  grr |= luaL_dostring(L,GLOBAL_NAMESPACE":___rw('"#name"',function() return ___"#name" end,function(val) ___set_fail_func('"#name"') end);"); }
-		#define TODO(name) {  grr |= luaL_dostring(L,GLOBAL_NAMESPACE":___rw('"#name"',function() exit('`"#name"` is not implemented yet in lua. Post a bug or consider whether you need it') end,function(val) ___set_fail_func('"#name"') end);"); }
+		#define TODO(name) {  grr |= luaL_dostring(L,GLOBAL_NAMESPACE":___rw('"#name"',function() error('`"#name"` is not implemented yet in lua. Post a bug or consider whether you need it', 2) end,function(val) ___set_fail_func('"#name"') end);"); }
+
 		//VI.a. General Utility Functions
 		TODO(CallFunction);
 		SEFUNC(Exit);
@@ -692,14 +766,14 @@ void LUA::bindApi() {
 
 		//some handy functions
 		grr |= luaL_dostring(L,"\
-			function xr(table,name,funcname) table:___r(name,"GLOBAL_NAMESPACE"['___get_'..funcname]) end\
-			function xw(table,name,funcname) table:___w(name,"GLOBAL_NAMESPACE"['___set_'..funcname]) end\
-			function xrw(table,name,funcname) table:___r(name,"GLOBAL_NAMESPACE"['___get_'..funcname],"GLOBAL_NAMESPACE"['___set_'..funcname]) end\
-			function r(table,name) table:___r(name,"GLOBAL_NAMESPACE"['___get_'..name]) end\
-			function w(table,name) table:___w(name,"GLOBAL_NAMESPACE"['___set_'..name]) end\
-			function rw(table,name) table:___r(name,"GLOBAL_NAMESPACE"['___get_'..name],"GLOBAL_NAMESPACE"['___set_'..name]) end\
+			function xr(table,name,funcname) table:___r(name,_G['___get_'..funcname]) end\
+			function xw(table,name,funcname) table:___w(name,_G['___set_'..funcname]) end\
+			function xrw(table,name,funcname)table:___rw(name,_G['___get_'..funcname],_G['___set_'..funcname]) end\
+			function r(table,name) table:___r(name,_G['___get_'..name]) end\
+			function w(table,name) table:___w(name,_G['___set_'..name]) end\
+			function rw(table,name) table:___rw(name,_G['___get_'..name],_G['___set_'..name]) end\
 		");
-	
+
 		//VII.a. General System Variables
 		LUA_BIND_R(systemtime);
 		LUA_BIND_RW(timer);
@@ -718,16 +792,16 @@ void LUA::bindApi() {
 		LUA_BIND_RW(ml); LUA_BIND_RW(mm); LUA_BIND_RW(mr);
 		LUA_BIND_RW(mw);
 		grr |= luaL_dostring(L,"\
-			_G:___embed_magic_table('mouse'); \
-			xr(_G.mouse,'x','mx'); xr(_G.mouse,'y','my'); \
-			xr(_G.mouse,'l','ml'); xr(_G.mouse,'m','mm'); xr(_G.mouse,'r','mr'); \
-			xr(_G.mouse,'w','mw');  \
+			"GLOBAL_NAMESPACE":___embed_magic_table('mouse'); \
+			xrw("GLOBAL_NAMESPACE".mouse,'x','mx'); xrw("GLOBAL_NAMESPACE".mouse,'y','my'); \
+			xrw("GLOBAL_NAMESPACE".mouse,'l','ml'); xrw("GLOBAL_NAMESPACE".mouse,'m','mm'); xrw("GLOBAL_NAMESPACE".mouse,'r','mr'); \
+			xrw("GLOBAL_NAMESPACE".mouse,'w','mw'); \
 		");
 
 		//VII.c. Joystick Variables
 		LUA_BIND_R(joy_active);
 		LUA_BIND_R(joy_up); LUA_BIND_R(joy_down); LUA_BIND_R(joy_left); LUA_BIND_R(joy_right);
-		LUA_BIND_R(joy_analogx); LUA_BIND_R(joy_analogy); 
+		LUA_BIND_R(joy_analogx); LUA_BIND_R(joy_analogy);
 		LUA_BIND_R(joy_button);
 		grr |= luaL_dostring(L,"\
 			"GLOBAL_NAMESPACE":___embed_magic_collection('joy', function(table) \
@@ -753,7 +827,7 @@ void LUA::bindApi() {
 		LUA_BIND_RW(ent_face); LUA_BIND_RW(ent_speed); LUA_BIND_RW(ent_visible);
 		LUA_BIND_RW(ent_obstruct); LUA_BIND_RW(ent_obstructable);
 		LUA_BIND_R(ent_script);
-		LUA_BIND_R(ent_chr);
+		LUA_BIND_RW(ent_chr);
 		grr |= luaL_dostring(L,"\
 			"GLOBAL_NAMESPACE":___r('entities',___get_entities); \
 			"GLOBAL_NAMESPACE":___embed_magic_collection('entity', function(table) \
@@ -772,14 +846,14 @@ void LUA::bindApi() {
 				table:___irw('obstruct',___get_ent_obstruct,___set_ent_obstruct); \
 				table:___irw('obstructable',___get_ent_obstructable,___set_ent_obstructable); \
 				table:___ir('script',___get_ent_script); \
-				table:___irw('chr',___get_ent_chr); \
+				table:___irw('chr',___get_ent_chr, ___set_ent_chr); \
 				table:___irw('lucent',___get_ent_lucent,___set_ent_lucent); \
 				table:___ir('framew',___get_ent_framew); \
 				table:___ir('frameh',___get_ent_frameh); \
 				table:___irw('description',___get_ent_description,___set_ent_description); \
 			end);");
 
-		
+
 		//VII.e. Sprite Variables
 		LUA_BIND_RW(sprite_x); LUA_BIND_RW(sprite_y);
 		LUA_BIND_RW(sprite_sc);
@@ -797,21 +871,21 @@ void LUA::bindApi() {
 			end);");
 
 		//VII.f. Camera Variables
-		LUA_BIND_RW(xwin); LUA_BIND_RW(ywin); 
-		LUA_BIND_RW(cameratracking); LUA_BIND_RW(cameratracker); 
+		LUA_BIND_RW(xwin); LUA_BIND_RW(ywin);
+		LUA_BIND_RW(cameratracking); LUA_BIND_RW(cameratracker);
 		grr |= luaL_dostring(L,"\
-			r("GLOBAL_NAMESPACE",'xwin'); \
-			r("GLOBAL_NAMESPACE",'ywin'); \
-			r("GLOBAL_NAMESPACE",'cameratracking'); \
-			r("GLOBAL_NAMESPACE",'cameratracker'); \
+			"GLOBAL_NAMESPACE":___rw('xwin',___get_xwin,___set_xwin); \
+			"GLOBAL_NAMESPACE":___rw('ywin',___get_ywin,___set_ywin); \
+			"GLOBAL_NAMESPACE":___rw('cameratracking',___get_cameratracking,___set_cameratracking); \
+			"GLOBAL_NAMESPACE":___rw('cameratracker',___get_cameratracker,___set_cameratracker); \
 		");
 
 		//VII.g. Map Variables
-		LUA_BIND_R(curmap_w); LUA_BIND_R(curmap_h); 
-		LUA_BIND_R(curmap_startx); LUA_BIND_R(curmap_starty); 
-		LUA_BIND_R(curmap_tileset); 
-		LUA_BIND_R(curmap_name);  LUA_BIND_R(curmap_rstring); 
-		LUA_BIND_R(curmap_music);  LUA_BIND_R(curmap_path); 
+		LUA_BIND_R(curmap_w); LUA_BIND_R(curmap_h);
+		LUA_BIND_R(curmap_startx); LUA_BIND_R(curmap_starty);
+		LUA_BIND_R(curmap_tileset);
+		LUA_BIND_R(curmap_name);  LUA_BIND_R(curmap_rstring);
+		LUA_BIND_R(curmap_music);  LUA_BIND_R(curmap_path);
 		grr |= luaL_dostring(L,"\
 			"GLOBAL_NAMESPACE":___embed_magic_table('curmap'); \
 			xr("GLOBAL_NAMESPACE".curmap,'w','curmap_w'); xr("GLOBAL_NAMESPACE".curmap,'h','curmap_h'); \
@@ -837,19 +911,19 @@ void LUA::bindApi() {
 			end);");
 
 		//VII.i. Event Variables
-		LUA_BIND_R(event_tx); LUA_BIND_R(event_ty); LUA_BIND_R(event_zone); 
-		LUA_BIND_R(event_entity); LUA_BIND_R(event_param); 
+		LUA_BIND_R(event_tx); LUA_BIND_R(event_ty); LUA_BIND_R(event_zone);
+		LUA_BIND_R(event_entity); LUA_BIND_R(event_param);
 		grr |= luaL_dostring(L,"\
 			"GLOBAL_NAMESPACE":___embed_magic_table('event'); \
-			xr("GLOBAL_NAMESPACE".event,'tx','event_tx'); xr(_G.event,'ty','event_ty'); \
-			xr("GLOBAL_NAMESPACE".event,'zone','event_zone'); xr(_G.event,'entity','event_entity'); \
+			xr("GLOBAL_NAMESPACE".event,'tx','event_tx'); xr("GLOBAL_NAMESPACE".event,'ty','event_ty'); \
+			xr("GLOBAL_NAMESPACE".event,'zone','event_zone'); xr("GLOBAL_NAMESPACE".event,'entity','event_entity'); \
 			xr("GLOBAL_NAMESPACE".event,'param','event_param'); \
 		");
 
 		//VII.j. Date/Time Variables
-		LUA_BIND_R(sysdate_year); LUA_BIND_R(sysdate_month); 
-		LUA_BIND_R(sysdate_day); LUA_BIND_R(sysdate_dayofweek); 
-		LUA_BIND_R(sysdate_hour); LUA_BIND_R(sysdate_minute); LUA_BIND_R(sysdate_second); 
+		LUA_BIND_R(sysdate_year); LUA_BIND_R(sysdate_month);
+		LUA_BIND_R(sysdate_day); LUA_BIND_R(sysdate_dayofweek);
+		LUA_BIND_R(sysdate_hour); LUA_BIND_R(sysdate_minute); LUA_BIND_R(sysdate_second);
 		grr |= luaL_dostring(L,"\
 			"GLOBAL_NAMESPACE":___embed_magic_table('sysdate'); \
 			xr("GLOBAL_NAMESPACE".sysdate,'year','sysdate_year'); xr("GLOBAL_NAMESPACE".sysdate,'month','sysdate_month'); \
@@ -865,7 +939,7 @@ void LUA::bindApi() {
 		");
 
 		///VIII.a. Version
-		LUA_BIND_R(version); LUA_BIND_R(build); LUA_BIND_R(os); 
+		LUA_BIND_R(version); LUA_BIND_R(build); LUA_BIND_R(os);
 		grr |= luaL_dostring(L,"\
 			"GLOBAL_NAMESPACE":___embed_magic_table('clipboard'); \
 			r("GLOBAL_NAMESPACE",'_version','version'); \
@@ -997,5 +1071,5 @@ void LUA::bindApi() {
 	//joy.buttons[0]
 
 	int zzz=9;
-	
+
 }

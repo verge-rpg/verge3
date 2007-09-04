@@ -33,9 +33,14 @@ public:
 	virtual bool ExecuteFunctionString(const std::string &func) {
 		//the gettop/settop is to recover the stack from the user having returned a value from the callback function (we dont want one)
 		int temp = lua_gettop(L);
+
+		lua_getglobal(L, "__err"); // Lookup our error callback.
+		int errhandler = lua_gettop(L);
+
 		lua_getglobal(L, func.c_str());
 		bool ret = lua_isfunction(L,-1);
-		if(ret) if(lua_pcall(L,0,0,0)) err("couldnt ExecuteFunctionString");
+
+		if(ret) if(lua_pcall(L,0,0,errhandler)) err("Error when calling '" + func + "'");
 
 		lua_settop(L,temp);
 		return ret;

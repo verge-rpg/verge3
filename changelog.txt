@@ -2,6 +2,15 @@
 Verge 3 Changelog
 ================================================
 
+Revision 112 (2007-09-03) (Overkill)
+========================
+* Some problems with variables after the the binding was transferred to the LuaVergeRaw namespace. Fixed.
+* Slightly better error handler, which prints a full traceback.
+* Internal LuaVerge magic function will now call error() instead of exit() on read/write badness, meaning better information can be gotten about where the error occured.
+* key[] contain boolean values. This makes it easier lua-side (where any number is true). It is properly coerced (0/non-zero to false/true) in C++, so it won't introduce any oddness.
+* entity[].chr is now writable (like it should be, according to the docs)
+* The camera variables were read-only, when they should've been read/write.
+
 revision 111 (2007-09-02) (zeromus)
 ========================
 * setup lua global namespace control for overkill to play with.
