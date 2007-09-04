@@ -2,6 +2,11 @@
 Verge 3 Changelog
 ================================================
 
+Revision 113 (2007-09-04) (Overkill)
+========================
+* A few of the builtin LuaVerge arrays now have bounds checking, which is useful to make Verge not explode!
+* Added the zone variables zone[].name and zone[].event
+
 Revision 112 (2007-09-03) (Overkill)
 ========================
 * Some problems with variables after the the binding was transferred to the LuaVergeRaw namespace. Fixed.

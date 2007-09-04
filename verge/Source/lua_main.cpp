@@ -133,8 +133,8 @@ int ___get_lastpressed() { return lastpressed; }
 void ___set_lastpressed(int val) { lastpressed = val; }
 int ___get_lastkey() { return lastkey; }
 void ___set_lastkey(int val) { lastkey = val; }
-bool ___get_key(int idx) { return keys[idx]; }
-void ___set_key(int idx, bool val) { keys[idx] = val; }
+bool ___get_key(int ofs) { if (ofs>=0 && ofs<256) return keys[ofs]; else return 0; }
+void ___set_key(int ofs, bool val) { if (ofs>=0 && ofs<256) keys[ofs] = val; }
 
 //VII.b. Mouse Variables
 int ___get_mx() { return mouse_x; }
@@ -152,57 +152,55 @@ void ___set_mw(int val) { mwheel = (float)val; }
 
 //VII.c. Joystick Variables
 //todo - bounds
-int ___get_joy_active(int idx) { return sticks[idx].active; }
-int ___get_joy_up(int idx) {return sticks[idx].up; }
-int ___get_joy_down(int idx) { return sticks[idx].down; }
-int ___get_joy_left(int idx) { return sticks[idx].left; }
-int ___get_joy_right(int idx) { return sticks[idx].right; }
-int ___get_joy_analogx(int idx) { return sticks[idx].analog_x; }
-int ___get_joy_analogy(int idx) { return sticks[idx].analog_y; }
-int ___get_joy_button(int idx, int btn) { return sticks[idx].button[btn]; }
+int ___get_joy_active(int idx) { if (idx>=0 && idx<4) return sticks[idx].active; else return 0; }
+int ___get_joy_up(int idx) { if (idx>=0 && idx<4)return sticks[idx].up; else return 0; }
+int ___get_joy_down(int idx) { if (idx>=0 && idx<4) return sticks[idx].down; else return 0; }
+int ___get_joy_left(int idx) { if (idx>=0 && idx<4) return sticks[idx].left; else return 0; }
+int ___get_joy_right(int idx) { if (idx>=0 && idx<4) return sticks[idx].right; else return 0; }
+int ___get_joy_analogx(int idx) { if (idx>=0 && idx<4) return sticks[idx].analog_x; else return 0; }
+int ___get_joy_analogy(int idx) { if (idx>=0 && idx<4) return sticks[idx].analog_y; else return 0; }
+int ___get_joy_button(int idx, int btn) { if (idx>=0 && idx<4) return sticks[idx].button[btn]; else return 0; }
 
 //-----------------------------
 //VII.d. Entity Variables
 //todo - bounds
 int ___get_entities() { return entities; }
 
-int ___get_ent_x(int ofs) { return entity[ofs]->getx(); }
-void ___set_ent_x(int ofs, int value) {
-	entity[ofs]->setxy(value, entity[ofs]->gety());
-}
-int ___get_ent_y(int ofs) { return entity[ofs]->gety(); }
-void ___set_ent_y(int ofs, int value) { entity[ofs]->setxy(entity[ofs]->getx(), value); }
-int ___get_ent_specframe(int ofs) { return entity[ofs]->specframe; }
-void ___set_ent_specframe(int ofs, int value) { entity[ofs]->specframe = value; }
+int ___get_ent_x(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->getx(); else return 0; }
+void ___set_ent_x(int ofs, int value) { if (ofs>=0 && ofs<entities) entity[ofs]->setxy(value, entity[ofs]->gety()); }
+int ___get_ent_y(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->gety(); else return 0;}
+void ___set_ent_y(int ofs, int value) { if (ofs>=0 && ofs<entities) entity[ofs]->setxy(entity[ofs]->getx(), value); }
+int ___get_ent_specframe(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->specframe; else return 0; }
+void ___set_ent_specframe(int ofs, int value) { if (ofs>=0 && ofs<entities) entity[ofs]->specframe = value; }
 
-int ___get_ent_frame(int ofs) { return entity[ofs]->frame; }
-int ___get_ent_hotx(int ofs) { return entity[ofs]->chr->hx; }
-int ___get_ent_hoty(int ofs) { return entity[ofs]->chr->hy; }
-int ___get_ent_hotw(int ofs) { return entity[ofs]->chr->hw; }
-int ___get_ent_hoth(int ofs) { return entity[ofs]->chr->hh; }
-int ___get_ent_movecode(int ofs) { return entity[ofs]->movecode; }
+int ___get_ent_frame(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->frame; else return 0; }
+int ___get_ent_hotx(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->chr->hx; else return 0; }
+int ___get_ent_hoty(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->chr->hy; else return 0; }
+int ___get_ent_hotw(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->chr->hw; else return 0; }
+int ___get_ent_hoth(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->chr->hh; else return 0; }
+int ___get_ent_movecode(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->movecode; else return 0; }
 
-int ___get_ent_face(int ofs) { return entity[ofs]->face; }
-void ___set_ent_face(int ofs, int value) { entity[ofs]->setface(value); }
-int ___get_ent_speed(int ofs) { return entity[ofs]->speed; }
-void ___set_ent_speed(int ofs, int value) { entity[ofs]->setspeed(value); }
-bool ___get_ent_visible(int ofs) { return entity[ofs]->visible; }
-void ___set_ent_visible(int ofs, bool value) { entity[ofs]->visible = value; }
-bool ___get_ent_obstruct(int ofs) { return entity[ofs]->obstruction; }
-void ___set_ent_obstruct(int ofs, bool value) { entity[ofs]->obstruction = value; }
-bool ___get_ent_obstructable(int ofs) { return entity[ofs]->obstructable; }
-void ___set_ent_obstructable(int ofs, bool value) { entity[ofs]->obstructable = value; }
-int ___get_ent_lucent(int ofs) { return entity[ofs]->lucent; }
-void ___set_ent_lucent(int ofs, int value) { entity[ofs]->lucent = value; }
+int ___get_ent_face(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->face; else return 0; }
+void ___set_ent_face(int ofs, int value) { if (ofs>=0 && ofs<entities) entity[ofs]->setface(value); }
+int ___get_ent_speed(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->speed; else return 0; }
+void ___set_ent_speed(int ofs, int value) { if (ofs>=0 && ofs<entities) entity[ofs]->setspeed(value); }
+bool ___get_ent_visible(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->visible; else return 0; }
+void ___set_ent_visible(int ofs, bool value) { if (ofs>=0 && ofs<entities) entity[ofs]->visible = value; }
+bool ___get_ent_obstruct(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->obstruction; else return 0; }
+void ___set_ent_obstruct(int ofs, bool value) { if (ofs>=0 && ofs<entities) entity[ofs]->obstruction = value; }
+bool ___get_ent_obstructable(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->obstructable; else return 0; }
+void ___set_ent_obstructable(int ofs, bool value) { if (ofs>=0 && ofs<entities) entity[ofs]->obstructable = value; }
+int ___get_ent_lucent(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->lucent; else return 0; }
+void ___set_ent_lucent(int ofs, int value) { if (ofs>=0 && ofs<entities) entity[ofs]->lucent = value; }
 
-std::string ___get_ent_script(int ofs) { return entity[ofs]->script; }
+std::string ___get_ent_script(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->script; else return ""; }
 
-std::string ___get_ent_chr(int ofs) { return se->Get_EntityChr(ofs); }
-void ___set_ent_chr(int ofs, std::string chr) { se->Set_EntityChr(ofs,chr); }
-int ___get_ent_framew(int ofs) { return se->Get_EntityFrameW(ofs); }
-int ___get_ent_frameh(int ofs) { return se->Get_EntityFrameH(ofs); }
-std::string ___get_ent_description(int ofs) { return se->Get_EntityDescription(ofs); }
-void ___set_ent_description(int ofs, std::string val) { se->Set_EntityDescription(ofs, val); }
+std::string ___get_ent_chr(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityChr(ofs); else return ""; }
+void ___set_ent_chr(int ofs, std::string chr) { if (ofs>=0 && ofs<entities) se->Set_EntityChr(ofs,chr); }
+int ___get_ent_framew(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityFrameW(ofs); else return 0; }
+int ___get_ent_frameh(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityFrameH(ofs); else return 0; }
+std::string ___get_ent_description(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityDescription(ofs); else return 0; }
+void ___set_ent_description(int ofs, std::string val) { if (ofs>=0 && ofs<entities) se->Set_EntityDescription(ofs, val); }
 
 
 //------------------------------
@@ -248,23 +246,27 @@ std::string ___get_curmap_path() { return current_map ? current_map->mapfname : 
 //todo - bounds
 int ___get_layer_visible(int ofs) { err("layer.visible is not implemented. was it ever? post a bug"); return 0; }
 void ___set_layer_visible(int ofs, int value) { err("layer.visible is not implemented. was it ever? post a bug"); }
-int ___get_layer_lucent(int ofs) { return current_map->layers[ofs]->lucent; }
-void ___set_layer_lucent(int ofs, int value) { current_map->layers[ofs]->lucent = value; }
-double ___get_layer_parallaxx(int ofs) { return current_map->layers[ofs]->parallax_x; }
-void ___set_layer_parallaxx(int ofs, double value) { current_map->layers[ofs]->SetParallaxX(value); }
-double ___get_layer_parallaxy(int ofs) { return current_map->layers[ofs]->parallax_y; }
-void ___set_layer_parallaxy(int ofs, double value) { current_map->layers[ofs]->SetParallaxY(value); }
-int ___get_layer_w(int ofs) { return current_map->layers[ofs]->width; }
-int ___get_layer_h(int ofs) { return current_map->layers[ofs]->height; }
+int ___get_layer_lucent(int ofs) { if (current_map && ofs>=0 && ofs<current_map->numlayers) return current_map->layers[ofs]->lucent; else return 0; }
+void ___set_layer_lucent(int ofs, int value) { if (current_map && ofs>=0 && ofs<current_map->numlayers) current_map->layers[ofs]->lucent = value; }
+double ___get_layer_parallaxx(int ofs) { if (current_map && ofs>=0 && ofs<current_map->numlayers) return current_map->layers[ofs]->parallax_x; else return 0; }
+void ___set_layer_parallaxx(int ofs, double value) { if (current_map && ofs>=0 && ofs<current_map->numlayers) current_map->layers[ofs]->SetParallaxX(value); }
+double ___get_layer_parallaxy(int ofs) { if (current_map && ofs>=0 && ofs<current_map->numlayers) return current_map->layers[ofs]->parallax_y; else return 0; }
+void ___set_layer_parallaxy(int ofs, double value) { if (current_map && ofs>=0 && ofs<current_map->numlayers) current_map->layers[ofs]->SetParallaxY(value); }
+int ___get_layer_w(int ofs) { if (current_map && ofs>=0 && ofs<current_map->numlayers) return current_map->layers[ofs]->width; else return 0; }
+int ___get_layer_h(int ofs) { if (current_map && ofs>=0 && ofs<current_map->numlayers) return current_map->layers[ofs]->height; else return 0; }
 
-//VII.i. Event Variables
+//VII.i. Zone Variables -- Overkill(2007-09-04)
+std::string ___get_zone_name(int ofs) { if (current_map && ofs >= 0 && ofs < current_map->numzones) return current_map->zones[ofs]->name; else return ""; }
+std::string ___get_zone_event(int ofs) { if (current_map && ofs >= 0 && ofs < current_map->numzones) return current_map->zones[ofs]->script; else return ""; }
+
+//VII.j. Event Variables
 int ___get_event_tx() { return event_tx; }
 int ___get_event_ty() { return event_ty; }
 int ___get_event_zone() { return event_zone; }
 int ___get_event_entity() { return event_entity; }
 int ___get_event_param() { return event_param; }
 
-//VII.j. Date/Time Variables
+//VII.k. Date/Time Variables
 int ___get_sysdate_year() { return getYear(); }
 int ___get_sysdate_month() { return getMonth(); }
 int ___get_sysdate_day() { return getDay(); }
@@ -273,7 +275,7 @@ int ___get_sysdate_hour() { return getHour(); }
 int ___get_sysdate_minute() { return getMinute(); }
 int ___get_sysdate_second() { return getSecond(); }
 
-//VII.k. Clipboard Variables
+//VII.l. Clipboard Variables
 std::string ___get_clipboard_text() { return clipboard_getText(); }
 void ___set_clipboard_text(std::string str) { clipboard_setText(str.c_str()); }
 
@@ -559,7 +561,7 @@ void LUA::bindApi() {
 		TODO(DictSetString);
 		TODO(DictSize);
 		//VI.d. Map Functions
-		TODO(GetObs);
+		SEFUNC(GetObs);
 		SEFUNC(GetObsPixel);
 		SEFUNC(GetTile);
 		SEFUNC(GetZone);
@@ -910,7 +912,16 @@ void LUA::bindApi() {
 				table:___ir('h',___get_layer_h); \
 			end);");
 
-		//VII.i. Event Variables
+		//VII.i. Zone Variables -- Overkill (2007-09-04)
+		LUA_BIND_R(zone_name);
+		LUA_BIND_R(zone_event);
+		grr |= luaL_dostring(L,"\
+			"GLOBAL_NAMESPACE":___embed_magic_collection('zone', function(table) \
+				table:___ir('name',___get_zone_name); \
+				table:___ir('event',___get_zone_event); \
+			end);");
+
+		//VII.j. Event Variables
 		LUA_BIND_R(event_tx); LUA_BIND_R(event_ty); LUA_BIND_R(event_zone);
 		LUA_BIND_R(event_entity); LUA_BIND_R(event_param);
 		grr |= luaL_dostring(L,"\
@@ -920,7 +931,7 @@ void LUA::bindApi() {
 			xr("GLOBAL_NAMESPACE".event,'param','event_param'); \
 		");
 
-		//VII.j. Date/Time Variables
+		//VII.k. Date/Time Variables
 		LUA_BIND_R(sysdate_year); LUA_BIND_R(sysdate_month);
 		LUA_BIND_R(sysdate_day); LUA_BIND_R(sysdate_dayofweek);
 		LUA_BIND_R(sysdate_hour); LUA_BIND_R(sysdate_minute); LUA_BIND_R(sysdate_second);
@@ -931,7 +942,7 @@ void LUA::bindApi() {
 			xr("GLOBAL_NAMESPACE".sysdate,'hour','sysdate_hour'); xr("GLOBAL_NAMESPACE".sysdate,'minute','sysdate_minute'); xr("GLOBAL_NAMESPACE".sysdate,'second','sysdate_second'); \
 		");
 
-		//VII.k. Clipboard Variables
+		//VII.l. Clipboard Variables
 		LUA_BIND_RW(clipboard_text);
 		grr |= luaL_dostring(L,"\
 			"GLOBAL_NAMESPACE":___embed_magic_table('clipboard'); \
