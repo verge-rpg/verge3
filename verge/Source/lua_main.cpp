@@ -497,7 +497,7 @@ void LUA::bindApi() {
 		LuaVergeRaw = {}; \
 		___xmagic_table(LuaVergeRaw,true); \
 		");
-
+		
 		//special setup for _G
 		//grr |= luaL_dostring(L,"\
 		//___xmagic_table(_G,true); \
@@ -844,7 +844,7 @@ void LUA::bindApi() {
 				table:___ir('hoth',___get_ent_hoth); \
 				table:___ir('movecode',___get_ent_movecode); \
 				table:___irw('face',___get_ent_face,___set_ent_face); \
-				table:___irw('speed',___get_ent_face,___set_ent_face); \
+				table:___irw('speed',___get_ent_speed,___set_ent_speed); \
 				table:___irw('visible',___get_ent_visible,___set_ent_visible); \
 				table:___irw('obstruct',___get_ent_obstruct,___set_ent_obstruct); \
 				table:___irw('obstructable',___get_ent_obstructable,___set_ent_obstructable); \
