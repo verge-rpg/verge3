@@ -584,6 +584,7 @@ void LUA::bindApi() {
 		SEFUNC(PlayerMove);
 		SEFUNC(SetEntitiesPaused);
 		SEFUNC(SetPlayer);
+		SEFUNC(GetPlayer);  // Kildorf (2007-10-12)
 		//VI.f. Graphics Functions
 		SEFUNC(AdditiveBlit);
 		SEFUNC(AlphaBlit);

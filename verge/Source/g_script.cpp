@@ -342,6 +342,11 @@ void ScriptEngine::SetPlayer(int e) {
 	myself->obstructable = true;
 }
 
+int ScriptEngine::GetPlayer()
+{
+	return player;
+}
+
 //VI.f. Graphics Functions
 void ScriptEngine::AdditiveBlit(int x, int y, int src, int dst) {
 	image *s = ImageForHandle(src);

@@ -1069,6 +1069,7 @@ void vc_EntitySpawn() {
 }
 
 void vc_SetPlayer() { vc->SetPlayer(vc->ResolveOperand()); }
+void vc_GetPlayer() { vc->vcreturn = vc->GetPlayer(); }
 
 void vc_EntityStalk()
 {
@@ -1879,6 +1880,7 @@ void VCCore::HandleLibFunc()
 		case 265: vc_ListBuiltinFunctions(); break;
 		case 266: vc_ListBuiltinVariables(); break;
 		case 267: vc_ListBuiltinDefines(); break;
+		case 268: vc_GetPlayer(); break; // Kildorf (2007-10-13)
 		default:
 			vc->vcerr("VC Execution error: Invalid STDLIB index. (%d)", (int) c);
 	}

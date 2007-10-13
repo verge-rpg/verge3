@@ -103,6 +103,7 @@ public:
 	static void PlayerMove(std::string s);
 	static void SetEntitiesPaused(int i);
 	static void SetPlayer(int e);
+	static int GetPlayer();
 	//VI.f. Graphics Functions
 	static void AdditiveBlit(int x, int y, int src, int dst);
 	static void AlphaBlit(int x, int y, int src, int alpha, int dst);
