@@ -1379,7 +1379,7 @@ int ScriptEngine::Get_EntityFrameW(int ofs) {
 	if (ofs>=0 && ofs<entities) return entity[ofs]->chr->fxsize; else return 0;
 }
 int ScriptEngine::Get_EntityFrameH(int ofs) {
-	if (ofs>=0 && ofs<entities) return entity[ofs]->chr->fxsize; else return 0;
+	if (ofs>=0 && ofs<entities) return entity[ofs]->chr->fysize; else return 0;
 }
 
 std::string ScriptEngine::Get_EntityDescription(int arg) {

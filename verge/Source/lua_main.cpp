@@ -580,6 +580,8 @@ void LUA::bindApi() {
 		SEFUNC(EntitySpawn);
 		SEFUNC(EntityStalk);
 		SEFUNC(EntityStop);
+		SEFUNC(Get_EntityFrameW);
+		SEFUNC(Get_EntityFrameH);
 		SEFUNC(HookEntityRender);
 		SEFUNC(PlayerMove);
 		SEFUNC(SetEntitiesPaused);
@@ -851,8 +853,8 @@ void LUA::bindApi() {
 				table:___ir('script',___get_ent_script); \
 				table:___irw('chr',___get_ent_chr, ___set_ent_chr); \
 				table:___irw('lucent',___get_ent_lucent,___set_ent_lucent); \
-				table:___ir('framew',___get_ent_framew); \
-				table:___ir('frameh',___get_ent_frameh); \
+				table:___ir('framew',Get_EntityFrameW); \
+				table:___ir('frameh',Get_EntityFrameH); \
 				table:___irw('description',___get_ent_description,___set_ent_description); \
 			end);");
 

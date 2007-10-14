@@ -2,6 +2,11 @@
 Verge 3 Changelog
 ================================================
 
+Revision 116 (2007-10-14) (Kildorf)
+========================
+* Fixed entity.framew/frameh in lua (they were erroring out).
+* Fixed Get_EntityFrameH to actually return the height, not the width.
+
 Revision 115 (2007-10-13) (Kildorf)
 ========================
 * Fixed entity.speed in lua (it was trying to change facing instead).
