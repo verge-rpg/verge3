@@ -1435,6 +1435,7 @@ std::string ScriptEngine::strovr(std::string rep, std::string source, int offset
 
 // Overkill: 2005-12-19
 // Thank you, Zip.
+// Rewritten, Kildorf: 2007-10-16
 std::string ScriptEngine::WrapText(int wt_font, std::string wt_s, int wt_linelen)
 // Pass: The font to use, the string to wrap, the length in pixels to fit into
 // Return: The passed string with \n characters inserted as breaks
@@ -1442,41 +1443,36 @@ std::string ScriptEngine::WrapText(int wt_font, std::string wt_s, int wt_linelen
 // Note: Existing breaks will be respected, but adjacent \n characters will be
 //     replaced with a single \n so add a space for multiple line breaks
 {
-	std::string wt_tpara = "";
-	int curpara = 0;
-	int nextpara, lenpara, curchr, nextchr, width = 0;
-	int length = wt_s.length();
+	int lastbreak = 0; // beginning of the current line
+	int lastws = 0; // last whitespace character
+	int currloc = 0; // current character
+	int len = wt_s.length(); // length of string
 
-	while (curpara < length)
+	while (currloc < len)
 	{
-		nextpara = strpos(wt_s, "\n", curpara + 1);
-		if (nextpara > curpara + 1)
+		if (TextWidth(wt_font, vc_strmid(wt_s, lastbreak, currloc - lastbreak)) > wt_linelen && lastws != lastbreak)
 		{
-			lenpara = nextpara - curpara - 1;
-			wt_tpara = vc_strmid(wt_s,curpara + 1, lenpara);
-			if (TextWidth(wt_font, wt_tpara) > wt_linelen)
-			{
-				curchr = -1;
-				width = 0;
-				while (curchr < lenpara)
-				{
-					nextchr = strpos(wt_tpara, " ", curchr + 1);
-					width += TextWidth(wt_font, vc_strmid(wt_tpara, curchr, nextchr - curchr));
-					if (width > wt_linelen)
-					{
-						// Overkill (2006-07-23): D'oh.
-						// Forgot to set the string to the return value >__>
-						wt_s = strovr(wt_s, "\n", curpara + curchr + 1);
-						width = TextWidth(wt_font, vc_strmid(wt_tpara, curchr + 1, nextchr - curchr - 1));
-					}
-					curchr = nextchr;
-				}
-			}
+			wt_s[lastws] = '\n';
+			lastbreak = lastws;
 		}
-		curpara = nextpara;
+		else
+		{
+			if (wt_s[currloc] == ' ')
+			{
+				lastws = currloc;
+			}
+			if (wt_s[currloc] == '\n')
+			{
+				lastws = currloc;
+				lastbreak = currloc;
+			}
+			currloc++;
+		}
 	}
+
 	return wt_s;
 }
+
 int ScriptEngine::strpos(std::string sub, std::string source, int start) {
 	return ::strpos(source, sub, start);
 }

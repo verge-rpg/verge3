@@ -2,6 +2,10 @@
 Verge 3 Changelog
 ================================================
 
+Revision 117 (2007-10-16) (Kildorf)
+========================
+* Rewrote/fixed WrapText (it was dropping into an infinite loop.)
+
 Revision 116 (2007-10-14) (Kildorf)
 ========================
 * Fixed entity.framew/frameh in lua (they were erroring out).
