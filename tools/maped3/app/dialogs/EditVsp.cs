@@ -405,7 +405,6 @@ namespace winmaped2
 
 		Selection selection = new Selection();
 		Selection originalSelection;
-		int[,] selectedTiles;
 		Selection srcSelection = null;
 		int mx,my,mtx,mty;
 		int mx1,my1,mtx1,mty1;
@@ -427,8 +426,6 @@ namespace winmaped2
 		abstract class EditLayer
 		{
 			public abstract void render();
-			public int x,y;
-			public int w,h;
 		}
 
 		class TileEditLayer : EditLayer, Selection.IMaskReader

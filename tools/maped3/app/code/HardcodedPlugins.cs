@@ -134,7 +134,7 @@ namespace winmaped2.map_plugins
 			onTweak();
 		}
 
-		public void paintMap(MapEventInfo mi, pr2.Render.Image img)
+		public void paintMap(MapEventInfo mei, pr2.Render.Image img)
 		{
 			this.mei = mei;
 			this.img = img;
