@@ -66,6 +66,10 @@ namespace winmaped2 {
 
         class RenderCache {
             public int[][] tiles;
+
+            public int[] GetTile(int index) {
+                return tiles[index];
+            }
         }
 
         int counter = 0;
@@ -205,43 +209,23 @@ namespace winmaped2 {
             int xmin = -mtox;
             int xmax = xmin + tw * 16;
 
-            fixed (short* tileMap = ml.Data)
+            fixed (short* tileMap = ml.Data) {
                 for (int ty = 0; ty < th; ty++, cpy += 16) {
                     tp = (ty + mty) * layerWidth + mtx;
-                    if (Global.RenderOptions.bAnimate) {
-                        if (!drawzero)
-                            for (cpx = xmin; cpx < xmax; cpx += 16) {
-                                if ((tile = tileMap[tp++]) != 0)
-                                    if (tile < rc.tiles.Length)
-                                        fixed (int* tiledata = rc.tiles[Global.FrameCalc.getframe(tile)])
-                                            pr2.Render.renderTile32(img, cpx, cpy, tiledata, false);
-                            } else
-                            for (cpx = xmin; cpx < xmax; cpx += 16) {
-                                if (tileMap[tp] < rc.tiles.Length)
-                                    fixed (int* tiledata = rc.tiles[Global.FrameCalc.getframe(tileMap[tp++])])
-                                        pr2.Render.renderTile32(img, cpx, cpy, tiledata, true);
+                    for (cpx = xmin; cpx < xmax; cpx += 16) {
+                        tile = tileMap[tp++];
+                        if (Global.RenderOptions.bAnimate) {
+                            tile = Global.FrameCalc.getframe(tile);
+                        }
+
+                        if (drawzero || tile != 0 && tile < rc.tiles.Length) {
+                            fixed (int* tiledata = rc.GetTile(tile)) {
+                                pr2.Render.renderTile32(img, cpx, cpy, tiledata, false);
                             }
-                    } else {
-                        if (!drawzero)
-                            for (cpx = xmin; cpx < xmax; cpx += 16) {
-                                if ((tile = tileMap[tp++]) != 0) {
-                                    if (0 <= tile && tile < rc.tiles.Length) {
-                                        fixed (int* tiledata = rc.tiles[tile])
-                                            pr2.Render.renderTile32(img, cpx, cpy, tiledata, false);
-                                    }
-                                }
-                            } else
-                            for (cpx = xmin; cpx < xmax; cpx += 16) {
-                                if (tileMap[tp] < rc.tiles.Length) {
-                                    short tileIndex = tileMap[tp++];
-                                    if (0 <= tileIndex && tileIndex < rc.tiles.Length) {
-                                        fixed (int* tiledata = rc.tiles[tileIndex])
-                                            pr2.Render.renderTile32(img, cpx, cpy, tiledata, true);
-                                    }
-                                }
-                            }
+                        }
                     }
                 }
+            }
         }
 
         private void renderEntities(pr2.Render.Image img, MapLayer ml, int px, int py) {
