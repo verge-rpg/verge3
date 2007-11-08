@@ -19,7 +19,7 @@ namespace winmaped2.Tests {
             pr2.Render.Image destImage = pr2.Render.Image.create(16, 16);
             Renderer ren = new Renderer(destImage);
 
-            ren.drawImage(img, 0, 0, true);
+            ren.renderTile32(img, 0, 0, true);
 
             int[] resultPixels = ren.BackBuffer.getArray();
             Assert.AreEqual(pixels, resultPixels);
