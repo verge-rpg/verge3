@@ -136,16 +136,26 @@ namespace winmaped2
 									for(cpx=xmin;cpx<xmax;cpx+=16)
 									{
 										if((tile = tileMap[tp++]) != 0)
-											if(tile<rc.tiles.Length)
-												fixed(int *tiledata = rc.tiles[tile])
-													pr2.Render.renderTile32(img,cpx,cpy,tiledata,false);
+                                                                                {
+                                                                                    if (0 <= tile && tile < rc.tiles.Length)
+                                                                                    {
+                                                                                        fixed (int* tiledata = rc.tiles[tile])
+                                                                                            pr2.Render.renderTile32(img, cpx, cpy, tiledata, false);
+                                                                                    }
+                                                                                }
 									}
 								else
 									for(cpx=xmin;cpx<xmax;cpx+=16)
 									{
-										if(tileMap[tp]<rc.tiles.Length)
-											fixed(int *tiledata = rc.tiles[tileMap[tp++]])
-												pr2.Render.renderTile32(img,cpx,cpy,tiledata,true);
+                                                                            if (tileMap[tp] < rc.tiles.Length)
+                                                                            {
+                                                                                short tileIndex = tileMap[tp++];
+                                                                                if (0 <= tileIndex && tileIndex < rc.tiles.Length)
+                                                                                {
+                                                                                    fixed (int* tiledata = rc.tiles[tileIndex])
+                                                                                        pr2.Render.renderTile32(img, cpx, cpy, tiledata, true);
+                                                                                }
+                                                                            }
 									}
 							}
 						}

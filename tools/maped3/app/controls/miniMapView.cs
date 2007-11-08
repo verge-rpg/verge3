@@ -216,7 +216,10 @@ namespace winmaped2
 								if ( tx >= layer.Width || tx < 0 || ty >= layer.Height || ty < 0 )
 									continue;
 								int tidx = layer.Data[ty * layer.Width + tx];
-								if ( (l==0||tidx!=0) && tidx<mapVsp.Tiles.Count)imgptr[i * 200 + j] = ((Vsp24Tile)mapVsp.Tiles[tidx]).ColorAverage;
+                                                                if ((l == 0 || tidx != 0) && 0 < tidx && tidx < mapVsp.Tiles.Count)
+                                                                {
+                                                                    imgptr[i * 200 + j] = ((Vsp24Tile)mapVsp.Tiles[tidx]).ColorAverage;
+                                                                }
 							}
 						}
 					}
