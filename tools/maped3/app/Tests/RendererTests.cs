@@ -24,5 +24,15 @@ namespace winmaped2.Tests {
             int[] resultPixels = ren.BackBuffer.getArray();
             Assert.AreEqual(pixels, resultPixels);
         }
+
+        [Test]
+        public void RenderSizeIsImageSize() {
+            const int width = 42;
+            const int height = 99;
+            pr2.Render.Image backBuffer = pr2.Render.Image.create(width, height);
+            Renderer ren = new Renderer(backBuffer);
+            Assert.AreEqual(ren.Width, backBuffer.width);
+            Assert.AreEqual(ren.Height, backBuffer.height);
+        }
     }
 }

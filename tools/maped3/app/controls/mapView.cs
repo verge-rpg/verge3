@@ -86,10 +86,10 @@ namespace winmaped2 {
         }
 
         int counter = 0;
-        unsafe void renderLayer(pr2.Render.Image img, MapLayer ml, int px, int py, RenderCache rc, bool drawzero) {
+        unsafe void renderLayer(pr2.Render.Image img, MapLayer ml, int px, int py, RenderCache rc, bool drawzero, winmaped2.code.Renderer ren) {
             switch (ml.type) {
                 case LayerType.Tile:
-                    renderTileLayer(img, ml, px, py, rc, drawzero);
+                    renderTileLayer(ren, ml, px, py, rc, drawzero);
                     break;
                 case LayerType.Zone:
                     renderZoneLayer(img, ml, px, py, rc);
@@ -197,7 +197,7 @@ namespace winmaped2 {
                 }
         }
 
-        unsafe private static void renderTileLayer(pr2.Render.Image img, MapLayer ml, int px, int py, RenderCache rc, bool drawzero) {
+        unsafe private static void renderTileLayer(winmaped2.code.Renderer ren, MapLayer layer, int px, int py, RenderCache rc, bool drawZero) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -206,11 +206,11 @@ namespace winmaped2 {
             //we add 2; one for the case where we are scrolled a little bit
             //(and so parts of two tiles are drawn instead of one complete)
             //and one for the case where the screen is a funny size and a remainder bit is shown
-            int tw = img.width / 16 + 2;
-            int th = img.height / 16 + 2;
+            int tw = ren.Width / 16 + 2;
+            int th = ren.Height / 16 + 2;
 
-            int layerWidth = ml.Width;
-            int layerHeight = ml.Height;
+            int layerWidth = layer.Width;
+            int layerHeight = layer.Height;
             int cpx = -mtox;
             int cpy = -mtoy;
 
@@ -222,9 +222,7 @@ namespace winmaped2 {
             int xmin = -mtox;
             int xmax = xmin + tw * 16;
 
-            winmaped2.code.Renderer ren = new winmaped2.code.Renderer(img);
-
-            fixed (short* tileMap = ml.Data) {
+            fixed (short* tileMap = layer.Data) {
                 for (int ty = 0; ty < th; ty++, cpy += 16) {
                     tp = (ty + mty) * layerWidth + mtx;
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
@@ -233,9 +231,8 @@ namespace winmaped2 {
                             tile = Global.FrameCalc.getframe(tile);
                         }
 
-                        if (drawzero || tile != 0 && tile < rc.tiles.Length) {
-                            winmaped2.code.Image tileImage = rc.getTileImage(tile);
-                            ren.drawImage(tileImage, cpx, cpy, false);
+                        if (drawZero || tile != 0 && tile < rc.tiles.Length) {
+                            ren.drawImage(rc.getTileImage(tile), cpx, cpy, false);
                         }
                     }
                 }
@@ -301,6 +298,9 @@ namespace winmaped2 {
 
             bool bottomlayer = false;
             bool blayerfound = false;
+
+            winmaped2.code.Renderer ren = new winmaped2.code.Renderer(img);
+
             for (int c = 0; c < ParentMap.RenderManager.Layers.Count; c++) {
                 MapLayer mlCurr = (MapLayer)ParentMap.RenderManager.Layers[c];
 
@@ -326,11 +326,11 @@ namespace winmaped2 {
                         ((Plugins.IMapPainter)currMapTool).tweakLayer(currMapEventInfo);
                         currMapEventInfo.editedLayer = mlOld2;
                         currMapEventInfo.bTweak = false;
-                        renderLayer(img, mlTemp, xScroll, yScroll, rc, bottomlayer);
+                        renderLayer(img, mlTemp, xScroll, yScroll, rc, bottomlayer, ren);
 
                         ((Plugins.IMapPainter)currMapTool).paintMap(currMapEventInfo, img);
                     } else
-                        renderLayer(img, mlCurr, xScroll, yScroll, rc, bottomlayer);
+                        renderLayer(img, mlCurr, xScroll, yScroll, rc, bottomlayer, ren);
                     if (bottomlayer) bottomlayer = false;
                 }
             }
@@ -657,7 +657,7 @@ namespace winmaped2 {
 
         public Point CursorPosition {
             get {
-                //return new Point(((cursorX+scrollOffsetH)/16),(cursorY+scrollOffsetV)/16); 
+                //return new Point(((cursorX+scrollOffsetH)/16),(cursorY+scrollOffsetV)/16);
                 return new Point(0, 0);
             }
         }

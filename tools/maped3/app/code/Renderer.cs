@@ -20,6 +20,18 @@ namespace winmaped2.code {
             }
         }
 
+        public int Width {
+            get {
+                return BackBuffer.width;
+            }
+        }
+
+        public int Height {
+            get {
+                return BackBuffer.height;
+            }
+        }
+
         private pr2.Render.Image backBuffer;
     }
 }
