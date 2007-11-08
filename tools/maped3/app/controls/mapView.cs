@@ -66,9 +66,22 @@ namespace winmaped2 {
 
         class RenderCache {
             public int[][] tiles;
+            winmaped2.code.Image[] tileImages;
+
+            public void SetTileCount(int count) {
+                tiles = new int[count][];
+                tileImages = new winmaped2.code.Image[count];
+            }
 
             public int[] GetTile(int index) {
                 return tiles[index];
+            }
+
+            public winmaped2.code.Image getTileImage(int index) {
+                if (tileImages[index] == null) {
+                    tileImages[index] = new winmaped2.code.Image(GetTile(index));
+                }
+                return tileImages[index];
             }
         }
 
@@ -209,6 +222,8 @@ namespace winmaped2 {
             int xmin = -mtox;
             int xmax = xmin + tw * 16;
 
+            winmaped2.code.Renderer ren = new winmaped2.code.Renderer(img);
+
             fixed (short* tileMap = ml.Data) {
                 for (int ty = 0; ty < th; ty++, cpy += 16) {
                     tp = (ty + mty) * layerWidth + mtx;
@@ -219,9 +234,8 @@ namespace winmaped2 {
                         }
 
                         if (drawzero || tile != 0 && tile < rc.tiles.Length) {
-                            fixed (int* tiledata = rc.GetTile(tile)) {
-                                pr2.Render.renderTile32(img, cpx, cpy, tiledata, false);
-                            }
+                            winmaped2.code.Image tileImage = rc.getTileImage(tile);
+                            ren.drawImage(tileImage, cpx, cpy, false);
                         }
                     }
                 }
@@ -268,7 +282,7 @@ namespace winmaped2 {
 
             RenderCache rc = new RenderCache();
             int tileCount = ParentMap.vsp.tileCount;
-            rc.tiles = new int[tileCount][];
+            rc.SetTileCount(tileCount);
             for (int i = 0; i < tileCount; i++)
                 rc.tiles[i] = ParentMap.vsp.getPixels(i);
 

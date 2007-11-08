@@ -81,6 +81,10 @@
       <Name>MRU</Name>
       <HintPath>..\components\MRU.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework, Version=2.2.9.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\NUnit\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="RegisterFileType">
       <Name>RegisterFileType</Name>
       <HintPath>..\components\RegisterFileType.dll</HintPath>
@@ -130,6 +134,7 @@
     <Compile Include="code\HardcodedPlugins.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="code\Image.cs" />
     <Compile Include="code\InputOutput.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -145,6 +150,7 @@
     <Compile Include="code\PaintFunctions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="code\Renderer.cs" />
     <Compile Include="code\ThrottleBuffer.cs" />
     <Compile Include="code\UserPrefs.cs">
       <SubType>Code</SubType>
@@ -272,6 +278,8 @@
     <Compile Include="HardcodedPluginControlPanels\ZoneEditorForm.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Tests\ImageTest.cs" />
+    <Compile Include="Tests\RendererTests.cs" />
     <EmbeddedResource Include="controls\ColorPicker.resx">
       <DependentUpon>ColorPicker.cs</DependentUpon>
     </EmbeddedResource>
