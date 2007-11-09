@@ -65,7 +65,7 @@ namespace winmaped2.map_plugins
 		public void MouseMove(MapEventInfo mei) {}
 		public void MouseMoveTile(MapEventInfo mei)
 		{
-			pr2.Primitives.Line.defaultLine.draw(mei.previous.tx,mei.previous.ty,mei.current.tx,mei.current.ty,new pr2.Primitives.Callback(cb),mei);
+			winmaped2.PrimitiveDrawer.DrawLine(mei.previous.tx,mei.previous.ty,mei.current.tx,mei.current.ty,new pr2.Primitives.Callback(cb),mei);
 			//mei.invalidate();
 		}
 		public void MouseUp(MapEventInfo mei)
@@ -196,19 +196,19 @@ namespace winmaped2.map_plugins
 		//public Rectangle(BasicTools bt) : base(bt) {}
 		public override Guid guid { get { return new Guid("{50A6E862-93BF-4edd-9C97-5701D5D6D817}"); } }
 		public override string name { get { return "Rectangle"; } }
-		protected override void onSet() { pr2.Primitives.Rectangle.draw(mei.start.tx,mei.start.ty,mei.current.tx,mei.current.ty,new pr2.Primitives.Callback(cbSet),null); }
-		protected override void onPaint() { pr2.Primitives.Rectangle.draw(mei.start.tx,mei.start.ty,mei.current.tx,mei.current.ty,new pr2.Primitives.Callback(cbPaint),null); }
-		protected override void onTweak() { pr2.Primitives.Rectangle.draw(mei.start.tx,mei.start.ty,mei.current.tx,mei.current.ty,new pr2.Primitives.Callback(cbTweak),null); }
-	}
+                protected override void onSet() { winmaped2.PrimitiveDrawer.DrawRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbSet), null); }
+                protected override void onPaint() { winmaped2.PrimitiveDrawer.DrawRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbPaint), null); }
+                protected override void onTweak() { winmaped2.PrimitiveDrawer.DrawRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbTweak), null); }
+            }
 
 	class Line : BasicDragTool
 	{
 		//public Line(BasicTools bt) : base(bt) {}
 		public override Guid guid { get { return new Guid("{E2250EA3-0E7A-4977-ACD4-8913775D26D4}"); } }
-		public override string name { get { return "Line"; } }
-		protected override void onSet() { pr2.Primitives.Line.draw(mei.start.tx,mei.start.ty,mei.current.tx,mei.current.ty,new pr2.Primitives.Callback(cbSet),null); }
-		protected override void onPaint() { pr2.Primitives.Line.draw(mei.start.tx,mei.start.ty,mei.current.tx,mei.current.ty,new pr2.Primitives.Callback(cbPaint),null); }
-		protected override void onTweak() { pr2.Primitives.Line.draw(mei.start.tx,mei.start.ty,mei.current.tx,mei.current.ty,new pr2.Primitives.Callback(cbTweak),null); }
+                public override string name { get { return "Line"; } }
+                protected override void onSet() { winmaped2.PrimitiveDrawer.DrawLine(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbSet), null); }
+                protected override void onPaint() { winmaped2.PrimitiveDrawer.DrawLine(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbPaint), null); }
+                protected override void onTweak() { winmaped2.PrimitiveDrawer.DrawLine(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbTweak), null); }
 	}
 
 
