@@ -55,7 +55,7 @@ namespace winmaped2.map_plugins {
         }
         public void MouseMove(MapEventInfo mei) { }
         public void MouseMoveTile(MapEventInfo mei) {
-            winmaped2.PrimitiveDrawer.DrawLine(mei.previous.tx, mei.previous.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cb), mei);
+            winmaped2.PrimitiveDrawer.DrawLine(mei.previous.tx, mei.previous.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cb), mei);
             //mei.invalidate();
         }
         public void MouseUp(MapEventInfo mei) {
@@ -160,27 +160,27 @@ namespace winmaped2.map_plugins {
         //public RectFill(BasicTools bt) : base(bt) {}
         public override Guid guid { get { return new Guid("{8F12618D-332F-40e6-B667-9CA0F9311D6F}"); } }
         public override string name { get { return "RectFill"; } }
-        protected override void onSet() { pr2.Primitives.RectFill.draw(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbSet), null); }
-        protected override void onPaint() { pr2.Primitives.RectFill.draw(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbPaint), null); }
-        protected override void onTweak() { pr2.Primitives.RectFill.draw(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbTweak), null); }
+        protected override void onSet() { PrimitiveDrawer.DrawFilledRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cbSet), null); }
+        protected override void onPaint() { PrimitiveDrawer.DrawFilledRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cbPaint), null); }
+        protected override void onTweak() { PrimitiveDrawer.DrawFilledRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cbTweak), null); }
     }
 
     class Rectangle : BasicDragTool {
         //public Rectangle(BasicTools bt) : base(bt) {}
         public override Guid guid { get { return new Guid("{50A6E862-93BF-4edd-9C97-5701D5D6D817}"); } }
         public override string name { get { return "Rectangle"; } }
-        protected override void onSet() { winmaped2.PrimitiveDrawer.DrawRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbSet), null); }
-        protected override void onPaint() { winmaped2.PrimitiveDrawer.DrawRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbPaint), null); }
-        protected override void onTweak() { winmaped2.PrimitiveDrawer.DrawRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbTweak), null); }
+        protected override void onSet() { winmaped2.PrimitiveDrawer.DrawRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cbSet), null); }
+        protected override void onPaint() { winmaped2.PrimitiveDrawer.DrawRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cbPaint), null); }
+        protected override void onTweak() { winmaped2.PrimitiveDrawer.DrawRectangle(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cbTweak), null); }
     }
 
     class Line : BasicDragTool {
         //public Line(BasicTools bt) : base(bt) {}
         public override Guid guid { get { return new Guid("{E2250EA3-0E7A-4977-ACD4-8913775D26D4}"); } }
         public override string name { get { return "Line"; } }
-        protected override void onSet() { winmaped2.PrimitiveDrawer.DrawLine(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbSet), null); }
-        protected override void onPaint() { winmaped2.PrimitiveDrawer.DrawLine(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbPaint), null); }
-        protected override void onTweak() { winmaped2.PrimitiveDrawer.DrawLine(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new pr2.Primitives.Callback(cbTweak), null); }
+        protected override void onSet() { winmaped2.PrimitiveDrawer.DrawLine(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cbSet), null); }
+        protected override void onPaint() { winmaped2.PrimitiveDrawer.DrawLine(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cbPaint), null); }
+        protected override void onTweak() { winmaped2.PrimitiveDrawer.DrawLine(mei.start.tx, mei.start.ty, mei.current.tx, mei.current.ty, new PrimitiveDrawer.Callback(cbTweak), null); }
     }
 
 
@@ -338,7 +338,7 @@ namespace winmaped2.map_plugins {
             newvalue = mei.tile;
             if (oldvalue != newvalue) {
                 mei.opManager.beginGroup("Map: FloodFill");
-                pr2.Primitives.FloodFill.drawSafe(mei.start.tx, mei.start.ty, new pr2.Primitives.FloodFill.CheckCallback(ccb), new pr2.Primitives.Callback(cb), mei);
+                PrimitiveDrawer.FloodFill(mei.start.tx, mei.start.ty, new PrimitiveDrawer.CheckCallback(ccb), new PrimitiveDrawer.Callback(cb), mei);
                 mei.opManager.endGroup();
             }
         }

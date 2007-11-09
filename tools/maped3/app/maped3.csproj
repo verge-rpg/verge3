@@ -104,10 +104,6 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\pr2-common-cpp\pr2-common-cpp.vcproj">
-      <Project>{B4F47D0A-31B5-46AE-9F2F-DA4AB584353E}</Project>
-      <Name>pr2-common-cpp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Render\Render.vcproj">
       <Project>{1808FF4E-64E7-473E-A0BD-D9C36945E7CB}</Project>
       <Name>Render</Name>

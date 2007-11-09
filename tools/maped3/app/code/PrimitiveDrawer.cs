@@ -1,10 +1,63 @@
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 
 namespace winmaped2 {
     class PrimitiveDrawer {
-        public static void DrawRectangle(int x0, int y0, int x1, int y1, pr2.Primitives.Callback cb, object tag) {
+        public delegate void Callback(int x, int y, object tag);
+        public delegate bool CheckCallback(int x, int y, object tag);
+
+        public static void DrawEllipse(int x0, int y0, int x1, int y1, Callback cb, object tag) {
+            int ymin = Math.Min(y0, y1);
+            int ymax = Math.Max(y0, y1);
+            int xmin = Math.Min(x0, x1);
+            int xmax = Math.Max(x0, x1);
+
+            int xc = xmin + (xmax - xmin) / 2;
+            int yc = ymin + (ymax - ymin) / 2;
+
+            int a = (xmax - xmin) / 2;
+            int b = (ymax - ymin) / 2;
+            int a2 = a * a;
+            int b2 = b * b;
+            int fa2 = 4 * a2;
+
+            if (a == 0 || b == 0)
+                return;
+
+            int x, y;
+            int sigma;
+
+            for (x = 0, y = b, sigma = 2 * b2 + a2 * (1 - 2 * b); b2 * x <= a2 * y; x++) {
+                cb(xc + x, yc + y, tag);
+                cb(xc - x, yc + y, tag);
+                cb(xc + x, yc - y, tag);
+                cb(xc - x, yc - y, tag);
+
+                if (sigma >= 0) {
+                    sigma += fa2 * (1 - y);
+                    y--;
+                }
+                sigma += b2 * (4 * x + 6);
+            }
+
+            int fb2 = 4 * b2;
+
+            for (x = a, y = 0, sigma = 2 * a2 + b2 * (1 - 2 * a); a2 * y <= b2 * x; y++) {
+                cb(xc + x, yc + y, 1);
+                cb(xc - x, yc + y, 1);
+                cb(xc + x, yc - y, 1);
+                cb(xc - x, yc - y, 1);
+
+                if (sigma >= 0) {
+                    sigma += fb2 * (1 - x);
+                    x--;
+                }
+                sigma += a2 * (4 * y + 6);
+            }
+        }
+
+        public static void DrawRectangle(int x0, int y0, int x1, int y1, Callback cb, object tag) {
             int ymin = Math.Min(y0, y1);
             int ymax = Math.Max(y0, y1);
             int xmin = Math.Min(x0, x1);
@@ -22,8 +75,19 @@ namespace winmaped2 {
                 }
             }
         }
+        public static void DrawFilledRectangle(int x0, int y0, int x1, int y1, Callback cb, object tag) {
+            int ymin = Math.Min(y0, y1);
+            int ymax = Math.Max(y0, y1);
+            int xmin = Math.Min(x0, x1);
+            int xmax = Math.Max(x0, x1);
+            for (int y = ymin; y <= ymax; y++) {
+                for (int x = xmin; x <= xmax; x++) {
+                    cb(x, y, tag);
+                }
+            }
+        }
 
-        public static void DrawLine(int Ax, int Ay, int Bx, int By, pr2.Primitives.Callback cb, object tag) {
+        public static void DrawLine(int Ax, int Ay, int Bx, int By, Callback cb, object tag) {
             //------------------------------------------------------------------------
             // INITIALIZE THE COMPONENTS OF THE ALGORITHM THAT ARE NOT AFFECTED BY THE
             // SLOPE OR DIRECTION OF THE LINE
@@ -71,12 +135,42 @@ namespace winmaped2 {
                         Ay += Yincr;            // increment independent variable
                         P += dPru;              // increment decision (for up)
                     } else {                    // is the pixel just going up?
-                        Ay += Yincr;         // increment independent variable
-                        P += dPr;            // increment decision (for right)
+                        Ay += Yincr;            // increment independent variable
+                        P += dPr;               // increment decision (for right)
                     }
                 }
             }
         }
 
+        /*
+         * FIXME: this algorithm shouldn't be recursive. -- andy 8 November 2007
+         */
+        static void FloodFill(Hashtable hash, int x, int y, CheckCallback ccb, Callback cb, object tag) {
+            ArrayList al = hash[x] as ArrayList;
+            if (al == null) {
+                al = new ArrayList();
+                al.Add(y);
+                hash[x] = al;
+            } else {
+                if (al.Contains(y)) {
+                    return;
+                } else {
+                    al.Add(y);
+                }
+            }
+
+            if (ccb(x, y, tag)) {
+                cb(x, y, tag);
+                FloodFill(hash, x + 1, y, ccb, cb, tag);
+                FloodFill(hash, x - 1, y, ccb, cb, tag);
+                FloodFill(hash, x, y + 1, ccb, cb, tag);
+                FloodFill(hash, x, y - 1, ccb, cb, tag);
+            }
+        }
+
+        public static void FloodFill(int x, int y, CheckCallback ccb, Callback cb, object tag) {
+            Hashtable hash = new Hashtable();
+            FloodFill(hash, x, y, ccb, cb, tag);
+        }
     }
 }
