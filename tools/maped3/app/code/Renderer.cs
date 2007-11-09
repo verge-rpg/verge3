@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace winmaped2.code {
+namespace winmaped2 {
     class Renderer {
         public Renderer(pr2.Render.Image backBuffer) {
             this.backBuffer = backBuffer;

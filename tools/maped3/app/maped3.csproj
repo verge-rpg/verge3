@@ -150,6 +150,7 @@
     <Compile Include="code\PaintFunctions.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="code\RenderCache.cs" />
     <Compile Include="code\Renderer.cs" />
     <Compile Include="code\ThrottleBuffer.cs" />
     <Compile Include="code\UserPrefs.cs">
@@ -252,7 +253,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\mainWindow.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="dialogs\MapedPreferences.cs">
       <SubType>Form</SubType>

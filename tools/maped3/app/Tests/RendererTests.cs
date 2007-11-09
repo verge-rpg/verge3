@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 using NUnit.Framework;
-using winmaped2.code;
+using winmaped2;
 
 namespace winmaped2.Tests {
     [TestFixture]

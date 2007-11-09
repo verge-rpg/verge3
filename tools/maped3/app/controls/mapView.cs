@@ -5,8 +5,6 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 
-using winmaped2.code;
-
 namespace winmaped2 {
 
     public class mapView : Control {
@@ -66,56 +64,37 @@ namespace winmaped2 {
 
         }
 
-        class RenderCache {
-            public int[][] tiles;
-            winmaped2.code.Image[] tileImages;
-
-            public void SetTileCount(int count) {
-                tiles = new int[count][];
-                tileImages = new winmaped2.code.Image[count];
-            }
-
-            public int[] GetTile(int index) {
-                return tiles[index];
-            }
-
-            public winmaped2.code.Image getTileImage(int index) {
-                if (tileImages[index] == null) {
-                    tileImages[index] = new winmaped2.code.Image(GetTile(index));
-                }
-                return tileImages[index];
-            }
-        }
-
         int counter = 0;
-        unsafe void renderLayer(Renderer ren, MapLayer ml, int px, int py, RenderCache rc, bool drawzero) {
+        void renderLayer(Renderer ren, MapLayer ml, int px, int py, RenderCache rc, bool drawzero) {
             switch (ml.type) {
                 case LayerType.Tile:
-                    renderTileLayer(ren, ml, px, py, rc, drawzero);
+                    renderTileLayer(ren, ml, rc, px, py, drawzero);
                     break;
                 case LayerType.Zone:
-                    renderZoneLayer(ren, ml, px, py, rc);
+                    renderZoneLayer(ren, ml, rc, px, py);
                     break;
                 case LayerType.Obs:
-                    renderObstructionLayer(ren.BackBuffer, ml, px, py);
+                    renderObstructionLayer(ren, ml, rc, px, py);
                     break;
             }
         }
 
-        unsafe private void renderObstructionLayer(pr2.Render.Image img, MapLayer ml, int px, int py) {
+        private void renderObstructionLayer(Renderer ren, MapLayer mapLayer, RenderCache rc, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
             int mtoy = py & 15;
 
+            pr2.Render.Image img = ren.BackBuffer;
+
             //we add 2; one for the case where we are scrolled a little bit
             //(and so parts of two tiles are drawn instead of one complete)
             //and one for the case where the screen is a funny size and a remainder bit is shown
-            int tw = img.width / 16 + 2;
-            int th = img.height / 16 + 2;
+            int tw = ren.Width / 16 + 2;
+            int th = ren.Height / 16 + 2;
 
-            int layerWidth = ml.Width;
-            int layerHeight = ml.Height;
+            int layerWidth = mapLayer.Width;
+            int layerHeight = mapLayer.Height;
             int cpx = -mtox;
             int cpy = -mtoy;
 
@@ -127,34 +106,31 @@ namespace winmaped2 {
             int xmin = -mtox;
             int xmax = xmin + tw * 16;
 
-            fixed (short* tileMap = ml.Data)
-                if (Global.RenderOptions.bTranslucentEffects) {
-                    for (int ty = 0; ty < th; ty++, cpy += 16) {
-                        tp = (ty + mty) * layerWidth + mtx;
-                        for (cpx = xmin; cpx < xmax; cpx += 16) {
-                            if ((tile = tileMap[tp++]) != 0) {
-                                if (tile < ParentMap.vsp.ObstructionTiles.Count) {
-                                    fixed (int* tiledata = ((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Pixels) {
-                                        pr2.Render.renderObsTile(img, cpx, cpy, tiledata, false, UserPrefs.ObsColor);
-                                    }
-                                }
-                            }
+            short[] tileMap = mapLayer.Data;
+            if (Global.RenderOptions.bTranslucentEffects) {
+                for (int ty = 0; ty < th; ty++, cpy += 16) {
+                    tp = (ty + mty) * layerWidth + mtx;
+                    for (cpx = xmin; cpx < xmax; cpx += 16) {
+                        tile = tileMap[tp++];
+                        if (0 < tile && tile < ParentMap.vsp.ObstructionTiles.Count) {
+                            ren.renderObsTile(rc.GetObstructionTileImage(tile), cpx, cpy, false, UserPrefs.ObsColor);
                         }
                     }
-                } else {
-                    for (int ty = 0; ty < th; ty++, cpy += 16) {
-                        tp = (ty + mty) * layerWidth + mtx;
-                        for (cpx = xmin; cpx < xmax; cpx += 16)
-                            if ((tile = tileMap[tp++]) != 0)
-                                if (tile < ParentMap.vsp.ObstructionTiles.Count)
-                                    fixed (int* tiledata = ((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Pixels) {
-                                        pr2.Render.renderObsTileFast(img, cpx, cpy, tiledata, false);
-                                    }
+                }
+            } else {
+                for (int ty = 0; ty < th; ty++, cpy += 16) {
+                    tp = (ty + mty) * layerWidth + mtx;
+                    for (cpx = xmin; cpx < xmax; cpx += 16) {
+                        tile = tileMap[tp++];
+                        if (0 < tile && tile < ParentMap.vsp.ObstructionTiles.Count) {
+                            ren.renderObsTileFast(rc.GetObstructionTileImage(tile), cpx, cpy, false);
+                        }
                     }
                 }
+            }
         }
 
-        unsafe private static void renderZoneLayer(Renderer ren, MapLayer ml, int px, int py, RenderCache rc) {
+        private static void renderZoneLayer(Renderer ren, MapLayer ml, RenderCache rc, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -179,32 +155,32 @@ namespace winmaped2 {
             int xmin = -mtox;
             int xmax = xmin + tw * 16;
 
-            fixed (short* tileMap = ml.Data)
-                for (int ty = 0; ty < th; ty++, cpy += 16) {
-                    tp = (ty + mty) * layerWidth + mtx;
-                    if (Global.RenderOptions.bTranslucentEffects) {
-                        for (cpx = xmin; cpx < xmax; cpx += 16) {
-                            if ((tile = tileMap[tp++]) != 0) {
-                                if (tile < rc.tiles.Length) {
-                                    ren.renderColoredTile_50Alpha(cpx, cpy, UserPrefs.ZonesColor);
-                                    ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
-                                }
+            short[] tileMap = ml.Data;
+            for (int ty = 0; ty < th; ty++, cpy += 16) {
+                tp = (ty + mty) * layerWidth + mtx;
+                if (Global.RenderOptions.bTranslucentEffects) {
+                    for (cpx = xmin; cpx < xmax; cpx += 16) {
+                        if ((tile = tileMap[tp++]) != 0) {
+                            if (tile < rc.TileCount) {
+                                ren.renderColoredTile_50Alpha(cpx, cpy, UserPrefs.ZonesColor);
+                                ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
                             }
                         }
-                    } else {
-                        for (cpx = xmin; cpx < xmax; cpx += 16) {
-                            if ((tile = tileMap[tp++]) != 0) {
-                                if (tile < rc.tiles.Length) {
-                                    ren.renderColoredTile(cpx, cpy, UserPrefs.ZonesColor);
-                                    ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
-                                }
+                    }
+                } else {
+                    for (cpx = xmin; cpx < xmax; cpx += 16) {
+                        if ((tile = tileMap[tp++]) != 0) {
+                            if (tile < rc.TileCount) {
+                                ren.renderColoredTile(cpx, cpy, UserPrefs.ZonesColor);
+                                ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
                             }
                         }
                     }
                 }
+            }
         }
 
-        unsafe private static void renderTileLayer(Renderer ren, MapLayer layer, int px, int py, RenderCache rc, bool drawZero) {
+        private static void renderTileLayer(Renderer ren, MapLayer layer, RenderCache rc, int px, int py, bool drawZero) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -229,30 +205,30 @@ namespace winmaped2 {
             int xmin = -mtox;
             int xmax = xmin + tw * 16;
 
-            fixed (short* tileMap = layer.Data) {
-                for (int ty = 0; ty < th; ty++, cpy += 16) {
-                    tp = (ty + mty) * layerWidth + mtx;
-                    for (cpx = xmin; cpx < xmax; cpx += 16) {
-                        tile = tileMap[tp++];
-                        if (Global.RenderOptions.bAnimate) {
-                            tile = Global.FrameCalc.getframe(tile);
-                        }
+            short[] tileMap = layer.Data;
+            for (int ty = 0; ty < th; ty++, cpy += 16) {
+                tp = (ty + mty) * layerWidth + mtx;
+                for (cpx = xmin; cpx < xmax; cpx += 16) {
+                    tile = tileMap[tp++];
+                    if (Global.RenderOptions.bAnimate) {
+                        tile = Global.FrameCalc.getframe(tile);
+                    }
 
-                        if (drawZero || tile != 0 && tile < rc.tiles.Length) {
-                            ren.renderTile32(rc.getTileImage(tile), cpx, cpy, false);
-                        }
+                    if (drawZero || tile != 0 && tile < rc.TileCount) {
+                        ren.renderTile32(rc.GetTileImage(tile), cpx, cpy, false);
                     }
                 }
             }
         }
 
-        private void renderEntities(pr2.Render.Image img, MapLayer ml, int px, int py) {
+        private void renderEntities(Renderer ren, MapLayer ml, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
             int mtoy = py & 15;
-            int tw = img.width / 16 + 2;
-            int th = img.height / 16 + 2;
+            pr2.Render.Image img = ren.BackBuffer;
+            int tw = ren.Width / 16 + 2;
+            int th = ren.Height / 16 + 2;
 
             foreach (MapEntity me in ParentMap.Entities) {
                 int tx = me.TileX;
@@ -261,8 +237,8 @@ namespace winmaped2 {
                 if (tx >= mtx && tx <= mtx + tw && ty >= mty && ty <= mty + th) {
                     int cx = -mtox + (tx - mtx) * 16;
                     int cy = -mtoy + (ty - mty) * 16;
-                    pr2.Render.renderColoredTile_50Alpha(img, cx, cy, UserPrefs.EntsColor);
-                    pr2.Render.renderNumber(img, cx + 4, cy + 4, me.ID, unchecked((int)0xFFFFFFFF));
+                    ren.renderColoredTile_50Alpha(cx, cy, UserPrefs.EntsColor);
+                    ren.renderNumber(cx + 4, cy + 4, me.ID, unchecked((int)0xFFFFFFFF));
                 }
             }
         }
@@ -284,11 +260,8 @@ namespace winmaped2 {
             pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp);
             img.clear(unchecked((int)0xFF000000));
 
-            RenderCache rc = new RenderCache();
+            RenderCache rc = new RenderCache(ParentMap.vsp);
             int tileCount = ParentMap.vsp.tileCount;
-            rc.SetTileCount(tileCount);
-            for (int i = 0; i < tileCount; i++)
-                rc.tiles[i] = ParentMap.vsp.getPixels(i);
 
             Map mOld = null;
             MapLayer mlOld = null;
@@ -320,12 +293,11 @@ namespace winmaped2 {
                     if (!ParentMap.UIState[c].bRender) continue;
 
                 if (mlCurr.type == LayerType.Entity)
-                    renderEntities(img, mlCurr, xScroll, yScroll);
+                    renderEntities(ren, mlCurr, xScroll, yScroll);
 
                 if (mlCurr.type == LayerType.Tile || mlCurr.type == LayerType.Obs || mlCurr.type == LayerType.Zone) {
-                    if (bDragging && currMapEventInfo.editedLayerIndex == c && currMapTool is Plugins.IMapPainter)
-                    //if(Global.editedLayer == mlCurr && currMapTool is Plugins.IMapPainter)
-						{
+                    if (bDragging && currMapEventInfo.editedLayerIndex == c && currMapTool is Plugins.IMapPainter) {
+                    //if(Global.editedLayer == mlCurr && currMapTool is Plugins.IMapPainter) {
                         MapLayer mlOld2 = currMapEventInfo.editedLayer;
                         MapLayer mlTemp = mlOld2.copy();
                         currMapEventInfo.editedLayer = mlTemp;
@@ -336,8 +308,9 @@ namespace winmaped2 {
                         renderLayer(ren, mlTemp, xScroll, yScroll, rc, bottomlayer);
 
                         ((Plugins.IMapPainter)currMapTool).paintMap(currMapEventInfo, img);
-                    } else
+                    } else {
                         renderLayer(ren, mlCurr, xScroll, yScroll, rc, bottomlayer);
+                    }
                     if (bottomlayer) bottomlayer = false;
                 }
             }

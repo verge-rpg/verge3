@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace winmaped2.code {
+namespace winmaped2 {
     class Image {
         public Image(int[] pixels) {
             this.pixels = pixels;
