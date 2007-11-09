@@ -173,6 +173,10 @@
 	</References>
 	<Files>
 		<File
+			RelativePath=".\BiosFont.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Render.cpp"
 			>
 		</File>
