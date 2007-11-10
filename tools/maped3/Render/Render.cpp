@@ -20,13 +20,15 @@ __forceinline void handlePixel(int &src, int &dest, const int op, const int mixF
 
 namespace pr2
 {
-    public __gc class Render
+    public __sealed __gc class Render
     {
     public:
         static Bitmap __gc* createBitmap(int width, int height)
         {
             return __gc new Bitmap(width,height,PixelFormat::Format32bppArgb);
         }
+
+        Render() { }
 
     public:
         __gc class Image : public IDisposable
@@ -533,38 +535,8 @@ namespace pr2
                 ptr[pitch * 8 + x] = 0xFFFFFFFF;
         }
 
-        static void renderTile32(Image __gc* img, int x0, int y0, int __nogc* tiledata, bool drawZero)
-        {
-            int xlen=16;
-            int ylen=16;
-
-            int *s = tiledata;
-            int *d = img->buf;
-
-            const int spitch = 16;
-            int dpitch = img->pitch;
-
-            if(clip(x0,y0,xlen,ylen,s,d,spitch,dpitch,  0,img->width,0,img->height))
-                return;
-
-            if(drawZero)
-                for (; ylen; ylen--)
-                {
-                    for (int x=0; x<xlen; x++)
-                        handlePixel(s[x],d[x],0,0,0);
-
-                    s+=spitch;
-                    d+=dpitch;
-                }
-            else
-                for (; ylen; ylen--)
-                {
-                    for (int x=0; x<xlen; x++)
-                        handlePixel(s[x],d[x],0,0,1);
-
-                    s+=spitch;
-                    d+=dpitch;
-                }
+        static void renderTile32(Image __gc* img, int x0, int y0, int __nogc* tiledata, bool drawZero) {
+            render(img, x0, y0, 16, 16, tiledata, drawZero);
         }
 
         static void renderTile32_Mix(Image __gc* img, int x0, int y0, int __nogc* tiledata, bool drawZero, PixelOp op)
@@ -615,6 +587,7 @@ namespace pr2
                 Char c = nums[i];
                 cn = nums[i]-'0';
                 byte ba __gc[] = BiosFont::Number(cn);
+
                 int pxW = ba[0];
                 int pxH = (ba->Length - 1) / pxW;
 
@@ -634,135 +607,30 @@ namespace pr2
             }
         }	
 
+        static void render(Image __gc* dest, int x, int y, int xlen, int ylen, int __nogc* pixels, bool drawZero) {
+            int *s = pixels;
+            int *d = dest->buf;
 
-        //------------------------------------------------------------------------
-        //legacy functions
-        static void renderTile_Opaque(Image __gc* img, int x0, int y0, unsigned char __nogc* tiledata, int palette  __gc[], bool drawZero)
-        {
-            int *dst = img->buf + img->pitch*y0;
-            int srcidx = 0;
-            int pitch = img->pitch;
-            int cy=y0;
-            int height = img->height;
-            int width = img->width;
-            int xmax = x0+16;
+            const int spitch = xlen;
+            int dpitch = dest->pitch;
 
-            int __pin* paldata = &palette[0];
+            if(clip(x,y,xlen,ylen,s,d,spitch,dpitch,  0,dest->width,0,dest->height)) {
+                return;
+            }
 
-
-            if(drawZero)
-                for(int y=0;y<16;y++)
-                {
-                    if(cy>=0&&cy<height)
-                        for(int x=x0;x<xmax;x++)
-                        {
-                            if(x>=width)
-                            {
-                                srcidx += xmax-x;
-                                x=xmax;
-                                break;
-                            }
-                            else if(x>=0)
-                            {
-                                unsigned char c = tiledata[srcidx];
-                                dst[x] = paldata[c];
-                            } 
-                            srcidx++;
-                        }
-                    else srcidx+=16;
-                    dst += pitch;
-                    cy++;
-                }
-            else
-                for(int y=0;y<16;y++)
-                {
-                    if(cy>=0&&cy<height)
-                        for(int x=x0;x<xmax;x++)
-                        {
-                            if(x>=width)
-                            {
-                                srcidx += xmax-x;
-                                x=xmax;
-                                break;
-                            }
-                            else if(x>=0)
-                            {
-                                unsigned char c = tiledata[srcidx];
-                                if(c!=0)
-                                    dst[x] = paldata[c];
-                            } 
-                            srcidx++;
-                        }
-                    else srcidx+=16;
-                    dst += pitch;
-                    cy++;
+            for (; ylen; ylen--) {
+                for (int x=0; x<xlen; x++) {
+                    handlePixel(s[x],d[x],0,0,drawZero ? 0 : 1);
                 }
 
+                s+=spitch;
+                d+=dpitch;
+            }
         }
 
-        static void renderTile(Image __gc* img, int x0, int y0, unsigned char __nogc* tiledata, int palette  __gc[], bool drawZero, PixelOp op)
-        {
-            int *dst = img->buf + img->pitch*y0;
-            int srcidx = 0;
-            int pitch = img->pitch;
-            int cy=y0;
-            int height = img->height;
-            int width = img->width;
-            int xmax = x0+16;
-
-            int __pin* paldata = &palette[0];
-
-
-            if(drawZero)
-                for(int y=0;y<16;y++)
-                {
-                    if(cy>=0&&cy<height)
-                        for(int x=x0;x<xmax;x++)
-                        {
-                            if(x>=width)
-                            {
-                                srcidx += xmax-x;
-                                x=xmax;
-                                break;
-                            }
-                            else if(x>=0)
-                            {
-                                unsigned char c = tiledata[srcidx];
-                                dst[x] = mixPixel(paldata[c],dst[x],op);
-                            } 
-                            srcidx++;
-                        }
-                    else srcidx+=16;
-                    dst += pitch;
-                    cy++;
-                }
-            else
-                for(int y=0;y<16;y++)
-                {
-                    if(cy>=0&&cy<height)
-                        for(int x=x0;x<xmax;x++)
-                        {
-                            if(x>=width)
-                            {
-                                srcidx += xmax-x;
-                                x=xmax;
-                                break;
-                            }
-                            else if(x>=0)
-                            {
-                                unsigned char c = tiledata[srcidx];
-                                if(c!=0)
-                                    dst[x] = mixPixel(paldata[c],dst[x],op);
-                            } 
-                            srcidx++;
-                        }
-                    else srcidx+=16;
-                    dst += pitch;
-                    cy++;
-                }
-
+        static void render(Image __gc* dest, int x, int y, Image __gc* src, bool drawZero) {
+            render(dest, x, y, src->width, src->height, src->buf, drawZero);
         }
-
     };
 
 

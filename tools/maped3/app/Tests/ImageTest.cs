@@ -14,7 +14,7 @@ namespace winmaped2.Tests {
             for (int i = 0; i < 16 * 16; i++) {
                 pixels[i] = 1;
             }
-            Image img = new Image(pixels);
+            Image img = new Image(16, 16, pixels);
 
             pr2.Render.Image dest = pr2.Render.Image.create(16, 16);
             fixed (int* tiledata = img.Pixels)

@@ -17,14 +17,14 @@ namespace winmaped2 {
 
         public Image GetTileImage(int index) {
             if (tileImages[index] == null) {
-                tileImages[index] = new Image(vsp.getPixels(index));
+                tileImages[index] = new Image(16, 16, vsp.getPixels(index));
             }
             return tileImages[index];
         }
 
         public Image GetObstructionTileImage(int index) {
             if (obstructionImages[index] == null) {
-                obstructionImages[index] = new Image(GetObstructionPixels(index));
+                obstructionImages[index] = new Image(16, 16, GetObstructionPixels(index));
             }
             return obstructionImages[index];
         }

@@ -180,7 +180,7 @@ namespace winmaped2 {
             }
         }
 
-        private static void renderTileLayer(Renderer ren, MapLayer layer, RenderCache rc, int px, int py, bool drawZero) {
+        private void renderTileLayer(Renderer ren, MapLayer layer, RenderCache rc, int px, int py, bool drawZero) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -215,7 +215,7 @@ namespace winmaped2 {
                     }
 
                     if (drawZero || tile != 0 && tile < rc.TileCount) {
-                        ren.renderTile32(rc.GetTileImage(tile), cpx, cpy, false);
+                        ren.render(ParentMap.vsp.getTile(tile).Image, cpx, cpy, false);
                     }
                 }
             }

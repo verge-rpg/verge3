@@ -8,6 +8,12 @@ namespace winmaped2 {
             this.backBuffer = backBuffer;
         }
 
+        public unsafe void render(Image src, int x, int y, bool drawZero) {
+            fixed (int* pixels = src.Pixels) {
+                pr2.Render.render(backBuffer, x, y, src.Width, src.Height, pixels, drawZero);
+            }
+        }
+
         public unsafe void renderTile32(Image src, int x, int y, bool drawZero) {
             fixed (int* tiledata = src.Pixels) {
                 pr2.Render.renderTile32(backBuffer, x, y, tiledata, drawZero);

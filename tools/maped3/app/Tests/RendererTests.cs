@@ -14,7 +14,7 @@ namespace winmaped2.Tests {
             for (int i = 0; i < pixels.Length; i++) {
                 pixels[i] = 1;
             }
-            Image img = new Image(pixels);
+            Image img = new Image(16, 16, pixels);
 
             pr2.Render.Image destImage = pr2.Render.Image.create(16, 16);
             Renderer ren = new Renderer(destImage);
