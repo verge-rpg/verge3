@@ -411,7 +411,7 @@ namespace winmaped2 {
         }
     }
     public class VspObstructionTile {
-        public int[] Pixels;
+        int[] Pixels;
         public Vsp24 parent;
         Image image;
         public VspObstructionTile(Vsp24 Parent, int[] data) {

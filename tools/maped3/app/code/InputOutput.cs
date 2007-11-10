@@ -375,7 +375,7 @@ namespace winmaped2
 			byte[] odata = new byte[vsp.ObstructionTiles.Count * 256];
 			for(int i=0;i<vsp.ObstructionTiles.Count;i++)
 				for(int j=0;j<256;j++)
-					odata[i*256+j] = (byte)( (VspObstructionTile)vsp.ObstructionTiles[i] ).Pixels[j];
+					odata[i*256+j] = (byte)( (VspObstructionTile)vsp.ObstructionTiles[i] ).Image.Pixels[j];
 			byte[] ozdata = ZLIB.Encode(odata);
 			bw.Write((int)odata.Length);
 			bw.Write((int)ozdata.Length);
@@ -390,10 +390,6 @@ namespace winmaped2
 		{
 			byte[] map3_signature = new byte[] { (byte)'V', (byte)'3', (byte)'M', (byte)'A', (byte)'P', (byte)0 };
 			if(map==null)return -1;
-
-//			FileInfo vf = new FileInfo(map.FileOnDisk.Directory.FullName + "\\" + map.vsp.FileOnDisk.Name);
-//			map.vsp.FileOnDisk=vf;
-//			WriteVsp(vf,map.vsp);
 
 			string vspname = Helper.GetRelativePath(map.FileOnDisk.Directory.FullName, map.vsp.FileOnDisk.FullName);
 			if(vspname==null)

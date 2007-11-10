@@ -27,33 +27,36 @@ namespace winmaped2 {
         }
 
         private unsafe void paint(Graphics g) {
+            const int BLACK = unchecked((int)0xFF000000);
+
             g.PixelOffsetMode = PixelOffsetMode.Half;
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             Bitmap bmp = pr2.Render.createBitmap(16, 16);
-            pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp);
 
-            if (TileSourceType == SourceType.Vsp) {
-                if (active_tile != null) {
-                    if (!bAnimate)
-                        fixed (int* tiledata = active_tile.Pixels)
-                            pr2.Render.renderTile32(img, 0, 0, tiledata, true);
-                    else
-                        fixed (int* tiledata = ((Vsp24Tile)Global.ActiveMap.vsp.Tiles[Global.FrameCalc.getframe(atx)]).Pixels)
-                            pr2.Render.renderTile32(img, 0, 0, tiledata, true);
+            using (pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp)) {
+                Renderer ren = new Renderer(img);
+                if (TileSourceType == SourceType.Vsp) {
+                    if (active_tile != null) {
+                        if (!bAnimate) {
+                            ren.render(active_tile.Image, 0, 0, true);
+                        } else {
+                            int frame = Global.FrameCalc.getframe(atx);
+                            ren.render(((Vsp24Tile)Global.ActiveMap.vsp.Tiles[frame]).Image, 0, 0, true);
+                        }
+                    } else {
+                        img.clear(BLACK);
+                    }
                 } else {
-                    img.clear(unchecked((int)0xFF000000));
+                    if (active_obstile != null) {
+                        fixed (int* obsdata = active_obstile.Image.Pixels) {
+                            pr2.Render.renderObsTile(img, 0, 0, obsdata, true, UserPrefs.ObsColor);
+                        }
+                    } else {
+                        img.clear(BLACK);
+                    }
                 }
-            } else {
-                if (active_obstile != null) {
-                    fixed (int* obsdata = active_obstile.Pixels)
-                        pr2.Render.renderObsTile(img, 0, 0, obsdata, true, UserPrefs.ObsColor);
-                } else
-                    img.clear(unchecked((int)0xFF000000));
             }
-
-            img.Dispose();
             g.DrawImage(bmp, 0, 0, Width, Height);
-            //PaintFunctions.PaintFrame(g,0,0,Width,Height);
             bmp.Dispose();
         }
 
