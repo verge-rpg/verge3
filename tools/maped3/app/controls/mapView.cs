@@ -65,21 +65,23 @@ namespace winmaped2 {
         }
 
         int counter = 0;
-        void renderLayer(Renderer ren, MapLayer ml, int px, int py, RenderCache rc, bool drawzero) {
-            switch (ml.type) {
+        void renderLayer(Renderer ren, MapLayer mapLayer, int px, int py, bool drawZero) {
+            switch (mapLayer.type) {
                 case LayerType.Tile:
-                    renderTileLayer(ren, ml, rc, px, py, drawzero);
+                    renderTileLayer(ren, mapLayer, ParentMap.vsp, px, py, drawZero);
                     break;
                 case LayerType.Zone:
-                    renderZoneLayer(ren, ml, rc, px, py);
+                    renderZoneLayer(ren, mapLayer, px, py);
                     break;
                 case LayerType.Obs:
-                    renderObstructionLayer(ren, ml, rc, px, py);
+                    renderObstructionLayer(ren, mapLayer, px, py);
+                    break;
+                default:
                     break;
             }
         }
 
-        private void renderObstructionLayer(Renderer ren, MapLayer mapLayer, RenderCache rc, int px, int py) {
+        private void renderObstructionLayer(Renderer ren, MapLayer mapLayer, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -113,7 +115,7 @@ namespace winmaped2 {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         tile = tileMap[tp++];
                         if (0 < tile && tile < ParentMap.vsp.ObstructionTiles.Count) {
-                            ren.renderObsTile(rc.GetObstructionTileImage(tile), cpx, cpy, false, UserPrefs.ObsColor);
+                            ren.renderObsTile(((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Image, cpx, cpy, false, UserPrefs.ObsColor);
                         }
                     }
                 }
@@ -123,14 +125,14 @@ namespace winmaped2 {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         tile = tileMap[tp++];
                         if (0 < tile && tile < ParentMap.vsp.ObstructionTiles.Count) {
-                            ren.renderObsTileFast(rc.GetObstructionTileImage(tile), cpx, cpy, false);
+                            ren.renderObsTileFast(((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Image, cpx, cpy, false);
                         }
                     }
                 }
             }
         }
 
-        private static void renderZoneLayer(Renderer ren, MapLayer ml, RenderCache rc, int px, int py) {
+        private void renderZoneLayer(Renderer ren, MapLayer mapLayer, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -142,8 +144,8 @@ namespace winmaped2 {
             int tw = ren.Width / 16 + 2;
             int th = ren.Height / 16 + 2;
 
-            int layerWidth = ml.Width;
-            int layerHeight = ml.Height;
+            int layerWidth = mapLayer.Width;
+            int layerHeight = mapLayer.Height;
             int cpx = -mtox;
             int cpy = -mtoy;
 
@@ -155,32 +157,28 @@ namespace winmaped2 {
             int xmin = -mtox;
             int xmax = xmin + tw * 16;
 
-            short[] tileMap = ml.Data;
+            short[] tileMap = mapLayer.Data;
             for (int ty = 0; ty < th; ty++, cpy += 16) {
                 tp = (ty + mty) * layerWidth + mtx;
                 if (Global.RenderOptions.bTranslucentEffects) {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         if ((tile = tileMap[tp++]) != 0) {
-                            if (tile < rc.TileCount) {
-                                ren.renderColoredTile_50Alpha(cpx, cpy, UserPrefs.ZonesColor);
-                                ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
-                            }
+                            ren.renderColoredTile_50Alpha(cpx, cpy, UserPrefs.ZonesColor);
+                            ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
                         }
                     }
                 } else {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         if ((tile = tileMap[tp++]) != 0) {
-                            if (tile < rc.TileCount) {
-                                ren.renderColoredTile(cpx, cpy, UserPrefs.ZonesColor);
-                                ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
-                            }
+                            ren.renderColoredTile(cpx, cpy, UserPrefs.ZonesColor);
+                            ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
                         }
                     }
                 }
             }
         }
 
-        private void renderTileLayer(Renderer ren, MapLayer layer, RenderCache rc, int px, int py, bool drawZero) {
+        private void renderTileLayer(Renderer ren, MapLayer layer, Vsp24 vsp, int px, int py, bool drawZero) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -214,8 +212,8 @@ namespace winmaped2 {
                         tile = Global.FrameCalc.getframe(tile);
                     }
 
-                    if (drawZero || tile != 0 && tile < rc.TileCount) {
-                        ren.render(ParentMap.vsp.getTile(tile).Image, cpx, cpy, false);
+                    if (drawZero || tile != 0 && tile < vsp.tileCount) {
+                        ren.render(vsp.getTile(tile).Image, cpx, cpy, false);
                     }
                 }
             }
@@ -305,11 +303,11 @@ namespace winmaped2 {
                         ((Plugins.IMapPainter)currMapTool).tweakLayer(currMapEventInfo);
                         currMapEventInfo.editedLayer = mlOld2;
                         currMapEventInfo.bTweak = false;
-                        renderLayer(ren, mlTemp, xScroll, yScroll, rc, bottomlayer);
+                        renderLayer(ren, mlTemp, xScroll, yScroll, bottomlayer);
 
                         ((Plugins.IMapPainter)currMapTool).paintMap(currMapEventInfo, img);
                     } else {
-                        renderLayer(ren, mlCurr, xScroll, yScroll, rc, bottomlayer);
+                        renderLayer(ren, mlCurr, xScroll, yScroll, bottomlayer);
                     }
                     if (bottomlayer) bottomlayer = false;
                 }

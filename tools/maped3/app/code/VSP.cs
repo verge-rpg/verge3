@@ -413,15 +413,25 @@ namespace winmaped2 {
     public class VspObstructionTile {
         public int[] Pixels;
         public Vsp24 parent;
+        Image image;
         public VspObstructionTile(Vsp24 Parent, int[] data) {
             parent = Parent;
             Pixels = data;
+            image = new Image(16, 16, data);
         }
+
         public VspObstructionTile Clone() {
             VspObstructionTile vot = new VspObstructionTile(parent, (int[])Pixels.Clone());
             return vot;
         }
+
+        public Image Image {
+            get {
+                return image;
+            }
+        }
     }
+
     public class Vsp24Tile {
         public int[] Pixels;
         Image image;
