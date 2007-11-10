@@ -163,13 +163,13 @@ namespace winmaped2 {
             return (Vsp24Tile)Tiles[i];
         }
         public int[] GetTilePixels(int i) {
-            return GetTile(i).Pixels;
+            return GetTile(i).Image.Pixels;
         }
         public void setPixels(int i, int[] arr, int x, int y, int w) {
             Vsp24Tile t = GetTile(i);
             for (int yy = 0; yy < 16; yy++)
                 for (int xx = 0; xx < 16; xx++)
-                    t.Pixels[yy * 16 + xx] = arr[(yy + y) * w + xx + x];
+                    t.Image.Pixels[yy * 16 + xx] = arr[(yy + y) * w + xx + x];
         }
         public static Vsp24 FromVsp8(Vsp8 src) {
             Vsp24 v24 = new Vsp24();
@@ -369,7 +369,7 @@ namespace winmaped2 {
             // render stuffs
             for (int y = 0; y < th; y++)
                 for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
-                    fixed (int* ptr = ((Vsp24Tile)Tiles[y * 20 + x]).Pixels)
+                    fixed (int* ptr = ((Vsp24Tile)Tiles[y * 20 + x]).Image.Pixels)
                         pr2.Render.renderTile32(img, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), ptr, true);
                 }
 
@@ -401,7 +401,7 @@ namespace winmaped2 {
             // render stuffs
             for (int y = 0; y < th; y++)
                 for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
-                    fixed (int* ptr = ((Vsp24Tile)Tiles[y * 20 + x]).Pixels)
+                    fixed (int* ptr = ((Vsp24Tile)Tiles[y * 20 + x]).Image.Pixels)
                         pr2.Render.renderTile32(img, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), ptr, true);
                 }
 

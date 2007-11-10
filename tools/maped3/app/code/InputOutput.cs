@@ -342,7 +342,7 @@ namespace winmaped2
 			BinaryWriter bw_tiles = new BinaryWriter(ms_tiles);
 			foreach(Vsp24Tile tile in vsp.Tiles)
 			{
-				fixed(int* iptr = tile.Pixels)
+				fixed(int* iptr = tile.Image.Pixels)
 				{
 					byte* ptr = (byte*)iptr;
 						for(int i=0;i<256;i++)
