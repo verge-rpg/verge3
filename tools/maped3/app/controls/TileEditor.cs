@@ -81,7 +81,7 @@ namespace winmaped2
 					//sourceLeft.colorInfo.
 					Point destCoord = TranslateToTileCoords(e.Location);
 					Console.WriteLine("Draggin left.. ({0},{1})", destCoord.X, destCoord.Y);
-					fixed (int* tiledata = active_tile.Pixels)
+					fixed (int* tiledata = active_tile.Image.Pixels)
 					{
 						*(tiledata + destCoord.Y * 16 + destCoord.X) = pr2.Render.makeColor(sourceLeft.colorInfo.R, sourceLeft.colorInfo.G, sourceLeft.colorInfo.B);
 					}

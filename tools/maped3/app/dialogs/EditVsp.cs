@@ -474,7 +474,7 @@ namespace winmaped2
 
 					if(ts>=vsp.Tiles.Count||ts<0) continue;
 
-					stdg.addRecord(td,((Vsp24Tile)vsp.Tiles[ts]).Pixels);
+					stdg.addRecord(td,((Vsp24Tile)vsp.Tiles[ts]).Image.Pixels);
 
 					for(int l=0;l<map.Layers.Count;l++)
 					{
@@ -756,7 +756,7 @@ namespace winmaped2
 				for (int i = scrollOffset; i < parent.vsp.Tiles.Count; i++ )
 				{
 
-					fixed(int *tiledata = ((Vsp24Tile)parent.vsp.Tiles[i]).Pixels)
+					fixed(int *tiledata = ((Vsp24Tile)parent.vsp.Tiles[i]).Image.Pixels)
 						pr2.Render.renderTile32(qimg,col*16,row*16,tiledata,true);
 					
 					if(bSelection)
@@ -767,7 +767,7 @@ namespace winmaped2
 						{
 							int tile = originalSelection.getPointIntegerValue(xx - selection.x + originalSelection.x, yy-selection.y + originalSelection.y,this);
 							if(tile != -1)
-								fixed(int *tiledata = ((Vsp24Tile)parent.vsp.Tiles[tile]).Pixels)
+								fixed(int *tiledata = ((Vsp24Tile)parent.vsp.Tiles[tile]).Image.Pixels)
 									pr2.Render.renderTile32(qimg,col*16,row*16,tiledata,true);
 						}
 					}
