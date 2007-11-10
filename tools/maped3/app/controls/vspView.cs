@@ -30,7 +30,7 @@ namespace winmaped2 {
         }
         int st0, st1;
         int scrollOffset;
-        Vsp24 parent_vsp;
+        Vsp24 vsp;
 
         /**************************************************/
         /* public properties                              */
@@ -48,7 +48,7 @@ namespace winmaped2 {
                 if (viewer_a == null) {
                     return;
                 }
-                viewer_a.ActiveTile = (Vsp24Tile)parent_vsp.Tiles[st0];
+                viewer_a.ActiveTile = (Vsp24Tile)vsp.Tiles[st0];
                 if (SelectionChanged != null) {
                     SelectionChanged();
                 }
@@ -67,7 +67,7 @@ namespace winmaped2 {
                 if (viewer_b == null) {
                     return;
                 }
-                viewer_b.ActiveTile = (Vsp24Tile)parent_vsp.Tiles[st1];
+                viewer_b.ActiveTile = (Vsp24Tile)vsp.Tiles[st1];
                 if (SelectionChanged != null) {
                     SelectionChanged();
                 }
@@ -112,10 +112,10 @@ namespace winmaped2 {
         }
         public Vsp24 ActiveVsp {
             get {
-                return parent_vsp;
+                return vsp;
             }
             set {
-                parent_vsp = value;
+                vsp = value;
             }
         }
 
@@ -150,68 +150,70 @@ namespace winmaped2 {
             scrollOffset = 0;
             Invalidate();
         }
-        protected unsafe override void OnPaint(PaintEventArgs e) {
+        protected override void OnPaint(PaintEventArgs e) {
+            if (vsp == null) {
+                return;
+            }
+
+            const int WHITE = unchecked((int)0xFFFFFFFF);
+
             e.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
             CalculateScrollValues();
 
-            if (parent_vsp != null) {
-                Bitmap bmp = new Bitmap(TilesWide * 16, TilesHigh * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-                pr2.Render.Image qimg = pr2.Render.Image.lockBitmap(bmp);
-                unchecked {
-                    if (ControllerType == VSPController.ControllerType.VSP) {
-                        int row = 0, col = 0;
-                        for (int i = scrollOffset / 16 * 20; i < parent_vsp.Tiles.Count; i++) {
-                            fixed (int* tiledata = ((Vsp24Tile)parent_vsp.Tiles[i]).Pixels)
-                                pr2.Render.renderTile32(qimg, col * 16, row * 16, tiledata, true);
-                            if (i == st0) {
-                                if (controller_mode != VSPController.ControllerMode.ViewOnly) {
-                                    pr2.Render.renderBox(qimg, col * 16, row * 16, 16, 16, (int)0xFFFFFFFF, pr2.Render.PixelOp.Src);
-                                    pr2.Render.renderBox(qimg, col * 16 + 1, row * 16 + 1, 14, 14, (int)0xFFFFFFFF, pr2.Render.PixelOp.Src);
-                                }
-                            }
-                            if (i == st1) {
-                                if (controller_mode == VSPController.ControllerMode.SelectorDual) {
-                                    pr2.Render.renderBox(qimg, col * 16 + 2, row * 16 + 2, 12, 12, (int)0xFFFFFFFF, pr2.Render.PixelOp.Src);
-                                    pr2.Render.renderBox(qimg, col * 16 + 3, row * 16 + 3, 10, 10, (int)0xFFFFFFFF, pr2.Render.PixelOp.Src);
-                                }
-                            }
-                            col++;
-                            if (col == TilesWide) {
-                                col = 0;
-                                row++;
-                                if (row == TilesHigh)
-                                    break;
+            Bitmap bmp = new Bitmap(TilesWide * 16, TilesHigh * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (pr2.Render.Image qimg = pr2.Render.Image.lockBitmap(bmp)) {
+                Renderer ren = new Renderer(qimg);
+
+                if (ControllerType == VSPController.ControllerType.VSP) {
+                    int row = 0, col = 0;
+                    for (int i = scrollOffset / 16 * 20; i < vsp.Tiles.Count; i++) {
+                        ren.render(vsp.GetTile(i).Image, col * 16, row * 16, true);
+                        if (i == st0) {
+                            if (controller_mode != VSPController.ControllerMode.ViewOnly) {
+                                ren.renderBox(col * 16, row * 16, 16, 16, WHITE, pr2.Render.PixelOp.Src);
+                                ren.renderBox(col * 16 + 1, row * 16 + 1, 14, 14, WHITE, pr2.Render.PixelOp.Src);
                             }
                         }
-                    } else if (ControllerType == VSPController.ControllerType.Obstruction) {
-                        // render obs tiles
-                        int row = 0, col = 0;
-                        for (int i = scrollOffset / 16 * 20; i < parent_vsp.ObstructionTiles.Count; i++) {
-                            VspObstructionTile vot = ((VspObstructionTile)parent_vsp.ObstructionTiles[i]);
-                            fixed (int* tiledata = vot.Pixels)
-                                pr2.Render.renderObsTile(qimg, col * 16, row * 16, tiledata, true, UserPrefs.ObsColor);
-                            if (i == st0) {
-                                if (controller_mode != VSPController.ControllerMode.ViewOnly) {
-                                    pr2.Render.renderBox(qimg, col * 16, row * 16, 16, 16, (int)0xFFFF0000, pr2.Render.PixelOp.Src);
-                                    pr2.Render.renderBox(qimg, col * 16 + 1, row * 16 + 1, 14, 14, (int)0xFFFF0000, pr2.Render.PixelOp.Src);
-                                }
+                        if (i == st1) {
+                            if (controller_mode == VSPController.ControllerMode.SelectorDual) {
+                                ren.renderBox(col * 16 + 2, row * 16 + 2, 12, 12, WHITE, pr2.Render.PixelOp.Src);
+                                ren.renderBox(col * 16 + 3, row * 16 + 3, 10, 10, WHITE, pr2.Render.PixelOp.Src);
                             }
-                            col++;
-                            if (col == TilesWide) {
-                                col = 0;
-                                row++;
-                                if (row == TilesHigh)
-                                    break;
+                        }
+                        col++;
+                        if (col == TilesWide) {
+                            col = 0;
+                            row++;
+                            if (row == TilesHigh)
+                                break;
+                        }
+                    }
+                } else if (ControllerType == VSPController.ControllerType.Obstruction) {
+                    // render obs tiles
+                    int row = 0, col = 0;
+                    for (int i = scrollOffset / 16 * 20; i < vsp.ObstructionTiles.Count; i++) {
+                        VspObstructionTile vot = ((VspObstructionTile)vsp.ObstructionTiles[i]);
+                        ren.renderObsTile(vot.Image, col * 16, row * 16, true, UserPrefs.ObsColor);
+                        if (i == st0) {
+                            if (controller_mode != VSPController.ControllerMode.ViewOnly) {
+                                pr2.Render.renderBox(qimg, col * 16, row * 16, 16, 16, WHITE, pr2.Render.PixelOp.Src);
+                                pr2.Render.renderBox(qimg, col * 16 + 1, row * 16 + 1, 14, 14, WHITE, pr2.Render.PixelOp.Src);
                             }
+                        }
+                        col++;
+                        if (col == TilesWide) {
+                            col = 0;
+                            row++;
+                            if (row == TilesHigh)
+                                break;
                         }
                     }
                 }
-                qimg.Dispose();
-                e.Graphics.DrawImage(bmp, 0, 0, Size.Width, Size.Height);
-                bmp.Dispose();
-            } //if
+            }
+            e.Graphics.DrawImage(bmp, 0, 0, Size.Width, Size.Height);
+            bmp.Dispose();
         }
 
         protected override void OnMouseWheel(MouseEventArgs e) {
@@ -235,8 +237,8 @@ namespace winmaped2 {
             if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right) {
                 if (ControllerType == VSPController.ControllerType.VSP) {
                     int tile = ((scrollOffset / 16) + (my / 16)) * TilesWide + (mx / 16);
-                    if (tile >= parent_vsp.tileCount) return;
-                    Vsp24Tile vtile = (Vsp24Tile)parent_vsp.Tiles[tile];
+                    if (tile >= vsp.tileCount) return;
+                    Vsp24Tile vtile = (Vsp24Tile)vsp.Tiles[tile];
                     if (e.Button == MouseButtons.Left) {
                         if (viewer_a != null) {
                             viewer_a.ActiveTile = vtile;
@@ -250,13 +252,13 @@ namespace winmaped2 {
                     }
                 } else if (ControllerType == VSPController.ControllerType.Obstruction) {
                     int tile = ((scrollOffset / 16) + (my / 16)) * TilesWide + (mx / 16);
-                    if (tile >= parent_vsp.ObstructionTiles.Count) {
+                    if (tile >= vsp.ObstructionTiles.Count) {
                         return;
                     }
                     if (e.Button == MouseButtons.Left) {
                         st0 = tile;
                         if (viewer_a != null) {
-                            viewer_a.ActiveObsTile = (VspObstructionTile)parent_vsp.ObstructionTiles[tile];
+                            viewer_a.ActiveObsTile = (VspObstructionTile)vsp.ObstructionTiles[tile];
                         }
                     }
                     if (e.Button == MouseButtons.Right) st1 = tile;
@@ -270,7 +272,7 @@ namespace winmaped2 {
         }
 
         protected override void OnMouseMove(MouseEventArgs e) {
-            if (parent_vsp == null) {
+            if (vsp == null) {
                 return;
             }
             if (trackingMouse) {
@@ -279,7 +281,7 @@ namespace winmaped2 {
         }
 
         protected override void OnMouseDown(MouseEventArgs e) {
-            if (parent_vsp == null) {
+            if (vsp == null) {
                 return;
             }
             activateMouse(e);
@@ -292,7 +294,7 @@ namespace winmaped2 {
         }
 
         public void CalculateScrollValues() {
-            if (parent_vsp == null) {
+            if (vsp == null) {
                 if (scrollbar != null) {
                     scrollbar.Enabled = false;
                     return;
@@ -304,16 +306,16 @@ namespace winmaped2 {
             scrollbar.LargeChange = Height - 4;
             scrollbar.SmallChange = 16;
             if (ControllerType == VSPController.ControllerType.VSP) {
-                if (parent_vsp.Tiles.Count / TilesWide * 16 + 16 > Height) {
-                    scrollbar.Maximum = parent_vsp.Tiles.Count / TilesWide * 16 + 16;
+                if (vsp.Tiles.Count / TilesWide * 16 + 16 > Height) {
+                    scrollbar.Maximum = vsp.Tiles.Count / TilesWide * 16 + 16;
                     scrollbar.Enabled = true;
                 } else {
                     scrollbar.Enabled = false;
                 }
             } else if (ControllerType == VSPController.ControllerType.Obstruction) {
-                if (parent_vsp.ObstructionTiles.Count / TilesWide * 16 + 16 > Height) {
+                if (vsp.ObstructionTiles.Count / TilesWide * 16 + 16 > Height) {
                     scrollbar.Enabled = true;
-                    scrollbar.Maximum = parent_vsp.ObstructionTiles.Count / TilesWide * 16 + 16;
+                    scrollbar.Maximum = vsp.ObstructionTiles.Count / TilesWide * 16 + 16;
                 } else {
                     scrollbar.Enabled = false;
                 }

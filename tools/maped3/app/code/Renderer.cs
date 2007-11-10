@@ -44,6 +44,10 @@ namespace winmaped2 {
             }
         }
 
+        public void renderBox(int x0, int y0, int w, int h, int color, pr2.Render.PixelOp op) {
+            pr2.Render.renderBox(backBuffer, x0, y0, w, h, color, op);
+        }
+
         public pr2.Render.Image BackBuffer {
             get {
                 return backBuffer;
