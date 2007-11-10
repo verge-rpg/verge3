@@ -258,7 +258,6 @@ namespace winmaped2 {
             pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp);
             img.clear(unchecked((int)0xFF000000));
 
-            RenderCache rc = new RenderCache(ParentMap.vsp);
             int tileCount = ParentMap.vsp.tileCount;
 
             Map mOld = null;
