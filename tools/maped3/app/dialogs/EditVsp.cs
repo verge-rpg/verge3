@@ -550,7 +550,7 @@ namespace winmaped2
 						if(!s.getPoint(x0+x,y0+y))
 							continue;
 						int t = (y0+y)*TilesWide+x+x0;
-						int[] p = Global.ActiveVsp.getPixels(t);
+						int[] p = Global.ActiveVsp.GetTilePixels(t);
 						fixed(int *data = p)
 							pr2.Render.renderTile32(img,x*16,y*16,data,true);
 					}

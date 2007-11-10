@@ -185,10 +185,10 @@ namespace winmaped2
 
 			public int ltile { get { return Global.getSelectedTileF(editedLayer.type); } set { Global.setSelectedTileF(editedLayer.type,value); } }
 			public int rtile { get { return Global.getSelectedTileB(editedLayer.type); } set { Global.setSelectedTileB(editedLayer.type,value); } }
-			public Vsp24Tile ltileRec { get { return Global.ActiveVsp.getTile(ltile); } }
-			public Vsp24Tile rtileRec { get { return Global.ActiveVsp.getTile(rtile); } }
+			public Vsp24Tile ltileRec { get { return Global.ActiveVsp.GetTile(ltile); } }
+			public Vsp24Tile rtileRec { get { return Global.ActiveVsp.GetTile(rtile); } }
 			public int tile { get { if(lb) return ltile; else return rtile; } }
-			public Vsp24Tile tileRec { get { return Global.ActiveVsp.getTile(tile); } }
+			public Vsp24Tile tileRec { get { return Global.ActiveVsp.GetTile(tile); } }
 
 			public void setTile(string layer, int x, int y, int val)
 			{

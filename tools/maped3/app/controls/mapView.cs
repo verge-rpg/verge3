@@ -213,7 +213,7 @@ namespace winmaped2 {
                     }
 
                     if (drawZero || tile != 0 && tile < vsp.tileCount) {
-                        ren.render(vsp.getTile(tile).Image, cpx, cpy, false);
+                        ren.render(vsp.GetTile(tile).Image, cpx, cpy, false);
                     }
                 }
             }
@@ -258,7 +258,7 @@ namespace winmaped2 {
             pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp);
             img.clear(unchecked((int)0xFF000000));
 
-            int tileCount = ParentMap.vsp.tileCount;
+            Renderer ren = new Renderer(img);
 
             Map mOld = null;
             MapLayer mlOld = null;
@@ -275,8 +275,6 @@ namespace winmaped2 {
 
             bool bottomlayer = false;
             bool blayerfound = false;
-
-            Renderer ren = new Renderer(img);
 
             for (int c = 0; c < ParentMap.RenderManager.Layers.Count; c++) {
                 MapLayer mlCurr = (MapLayer)ParentMap.RenderManager.Layers[c];

@@ -159,14 +159,14 @@ namespace winmaped2 {
             FileOnDisk = new FileInfo(fname);
             Write();
         }
-        public Vsp24Tile getTile(int i) {
+        public Vsp24Tile GetTile(int i) {
             return (Vsp24Tile)Tiles[i];
         }
-        public int[] getPixels(int i) {
-            return getTile(i).Pixels;
+        public int[] GetTilePixels(int i) {
+            return GetTile(i).Pixels;
         }
         public void setPixels(int i, int[] arr, int x, int y, int w) {
-            Vsp24Tile t = getTile(i);
+            Vsp24Tile t = GetTile(i);
             for (int yy = 0; yy < 16; yy++)
                 for (int xx = 0; xx < 16; xx++)
                     t.Pixels[yy * 16 + xx] = arr[(yy + y) * w + xx + x];
