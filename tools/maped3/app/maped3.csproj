@@ -274,6 +274,7 @@
     <Compile Include="pr2\Render.cs" />
     <Compile Include="Tests\ImageTest.cs" />
     <Compile Include="Tests\RendererTests.cs" />
+    <Compile Include="Tests\RenderFixture.cs" />
     <EmbeddedResource Include="controls\ColorPicker.resx">
       <DependentUpon>ColorPicker.cs</DependentUpon>
     </EmbeddedResource>

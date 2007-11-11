@@ -7,7 +7,7 @@ using winmaped2;
 
 namespace winmaped2.Tests {
     [TestFixture]
-    public class RendererTests {
+    public class RendererTests : RenderFixture {
         [Test]
         public void TestDrawImage() {
             int[] pixels = new int[16 * 16];
@@ -33,6 +33,27 @@ namespace winmaped2.Tests {
             Renderer ren = new Renderer(backBuffer);
             Assert.AreEqual(ren.Width, backBuffer.width);
             Assert.AreEqual(ren.Height, backBuffer.height);
+        }
+
+        [Test]
+        public void RenderDrawsDeathMagenta() {
+            Image src = new Image(16, 16, CreatePixels(16, 16, MAGENTA));
+            pr2.Render.Image dest = pr2.Render.Image.create(16, 16);
+
+            Renderer ren = new Renderer(dest);
+            ren.render(src, 0, 0, true);
+            Assert.AreEqual(dest.getArray(), src.Pixels);
+        }
+
+        [Test]
+        public void RenderSkipsDeathMagenta() {
+            Image src = new Image(16, 16, CreatePixels(16, 16, MAGENTA));
+            pr2.Render.Image dest = pr2.Render.Image.create(16, 16);
+            dest.clear(BLACK);
+
+            Renderer ren = new Renderer(dest);
+            ren.render(src, 0, 0, false);
+            Assert.AreEqual(dest.getArray(), CreatePixels(16, 16, BLACK));
         }
     }
 }

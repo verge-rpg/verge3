@@ -7,19 +7,7 @@ using winmaped2;
 
 namespace winmaped2.Tests {
     [TestFixture]
-    public class ImageTest {
-        const int BLACK = unchecked((int)0xFF000000);
-        const int WHITE = unchecked((int)0xFFFFFFFF);
-        const int GREEN = unchecked((int)0xFF00FF00);
-
-        static int[] CreatePixels(int width, int height, int color) {
-            int[] pixels = new int[width * height];
-            for (int i = 0; i < width * height; i++) {
-                pixels[i] = color;
-            }
-            return pixels;
-        }
-
+    public class ImageTest : RenderFixture {
         int[] pixels;
         [SetUp]
         public void SetUp() {

@@ -74,7 +74,7 @@ namespace winmaped2 {
             return false;
         }
 
-        private static void handlePixel(ref int src, ref int dest, int op, bool mixFlag, bool tflag) {
+        private static void handlePixel(int src, ref int dest, int op, bool mixFlag, bool tflag) {
             if (mixFlag) {
                 if (tflag) {
                     if ((src & 0x00FFFFFF) != 0x00FF00FF) {
@@ -134,7 +134,7 @@ namespace winmaped2 {
 
             for (; ylen != 0; ylen--) {
                 for (int xx = 0; xx < xlen; xx++) {
-                    handlePixel(ref s[xx], ref d[xx], 0, false, !drawZero);
+                    handlePixel(s[xx], ref d[xx], 0, false, !drawZero);
                 }
 
                 s += spitch;
@@ -143,7 +143,10 @@ namespace winmaped2 {
         }
 
         public static void renderBox(pr2.Render.Image img, int x0, int y0, int w, int h, int color, pr2.Render.PixelOp op) {
-            pr2.Render.renderBox(img, x0, y0, w, h, color, op);
+            renderSolid(img, x0, y0, w, 1, color, op);
+            renderSolid(img, x0, y0 + h - 1, w, 1, color, op);
+            renderSolid(img, x0, y0, 1, h, color, op);
+            renderSolid(img, x0 + w - 1, y0, 1, h, color, op);
         }
 
         public static unsafe void renderChrFrame(pr2.Render.Image img, int x0, int y0, int w, int h, byte* framedata, int[] palette) {
@@ -174,13 +177,24 @@ namespace winmaped2 {
             pr2.Render.renderObsTile(img, x0, y0, obsdata, clearbuf, color);
         }
 
-        //*
         public unsafe static void renderObsTileFast(pr2.Render.Image img, int x0, int y0, int* obsdata, bool clearbuf) {
             pr2.Render.renderObsTileFast(img, x0, y0, obsdata, clearbuf);
         }
 
-        public static void renderSolid(pr2.Render.Image img, int x0, int y0, int w, int h, int color, pr2.Render.PixelOp op) {
-            pr2.Render.renderSolid(img, x0, y0, w, h, color, op);
+        public unsafe static void renderSolid(pr2.Render.Image img, int x0, int y0, int w, int h, int color, pr2.Render.PixelOp op) {
+            int bw = img.width;
+            int bh = img.height;
+            int bp = img.pitch;
+
+            for (int y = 0; y < h; y++) {
+                if (y + y0 >= 0 && y + y0 < bh) {
+                    for (int x = 0; x < w; x++) {
+                        if (x + x0 >= 0 && x + x0 < bw) {
+                            handlePixel(color, ref img.buf[(y0 + y) * bp + x0 + x], (int)op, true, false);
+                        }
+                    }
+                }
+            }
         }
 
         public unsafe static void renderTile32(pr2.Render.Image img, int x0, int y0, int* tiledata, bool drawZero) {
@@ -198,8 +212,6 @@ namespace winmaped2 {
         public static void setPixel(pr2.Render.Image img, int x0, int y0, int color) {
             pr2.Render.setPixel(img, x0, y0, color);
         }
-
-        //*/
 
         public enum PixelOp {
             Src = 1,
