@@ -134,7 +134,7 @@ namespace winmaped2 {
 
             for (; ylen != 0; ylen--) {
                 for (int xx = 0; xx < xlen; xx++) {
-                    handlePixel(ref s[xx], ref d[xx], 0, false, drawZero);
+                    handlePixel(ref s[xx], ref d[xx], 0, false, !drawZero);
                 }
 
                 s += spitch;
