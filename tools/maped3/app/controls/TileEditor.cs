@@ -4,115 +4,102 @@ using System.Text;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace winmaped2
-{
-	public class TileEditor : TileViewer
-	{
-		ColorPicker sourceLeft;
-		ColorPicker sourceRight;
+namespace winmaped2 {
+    public class TileEditor : TileViewer {
+        ColorPicker sourceLeft;
+        ColorPicker sourceRight;
 
-		public delegate void TileDataChangedEventHandler(int TileIndex);
-		
-		public event TileDataChangedEventHandler TileDataChanged;
+        public delegate void TileDataChangedEventHandler(int TileIndex);
 
-		public ColorPicker SourceLeft
-		{
-			get { return sourceLeft; }
-			set { sourceLeft = value; }
-		}
+        public event TileDataChangedEventHandler TileDataChanged;
 
-		public ColorPicker SourceRight
-		{
-			get { return SourceRight; }
-			set { sourceRight = value; }
-		}
+        public ColorPicker SourceLeft {
+            get { return sourceLeft; }
+            set { sourceLeft = value; }
+        }
 
-		public TileEditor()
-			: base()
-		{
-			//this.BorderStyle = BorderStyle.Fixed3D;
-		}
+        public ColorPicker SourceRight {
+            get { return SourceRight; }
+            set { sourceRight = value; }
+        }
 
-		protected Point TranslateToTileCoords(Point controlPoint)
-		{
-			int x = 0, y = 0;
+        public TileEditor()
+            : base() {
+            //this.BorderStyle = BorderStyle.Fixed3D;
+        }
 
-			x = (int)((controlPoint.X / (float)Width) * 16);
-			y = (int)((controlPoint.Y / (float)Height) * 16);
+        protected Point TranslateToTileCoords(Point controlPoint) {
+            int x = 0, y = 0;
 
-			if (x < 0) x = 0;
-			if (y < 0) y = 0;
-			if (x > 15) x = 15;
-			if (y > 15) y = 15;
+            x = (int)((controlPoint.X / (float)Width) * 16);
+            y = (int)((controlPoint.Y / (float)Height) * 16);
 
-			return new Point(x, y);
-		}
+            if (x < 0) x = 0;
+            if (y < 0) y = 0;
+            if (x > 15) x = 15;
+            if (y > 15) y = 15;
 
-		bool bLMousePressed = false,
-			bRMousePressed = false;
-		protected override void OnMouseDown(MouseEventArgs e)
-		{
-			Console.WriteLine("Mouse down...");
-			//base.OnMouseDown(e);
-			if (e.Button == MouseButtons.Left)
-				bLMousePressed = true;
-			else if (e.Button == MouseButtons.Right)
-				bRMousePressed = true;
-		}
+            return new Point(x, y);
+        }
 
-		protected override void OnMouseUp(MouseEventArgs e)
-		{
-			Console.WriteLine("Mouse up...");
-			//base.OnMouseUp(e);
-			if (e.Button == MouseButtons.Left)
-				bLMousePressed = false;
-			else if (e.Button == MouseButtons.Right)
-				bRMousePressed = false;
-		}
+        bool bLMousePressed = false,
+                bRMousePressed = false;
+        protected override void OnMouseDown(MouseEventArgs e) {
+            Console.WriteLine("Mouse down...");
+            //base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left)
+                bLMousePressed = true;
+            else if (e.Button == MouseButtons.Right)
+                bRMousePressed = true;
+        }
 
-		protected unsafe override void OnMouseMove(MouseEventArgs e)
-		{
-			//base.OnMouseMove(e);
-			if (bLMousePressed)
-			{
-				if (sourceLeft != null)
-				{
+        protected override void OnMouseUp(MouseEventArgs e) {
+            Console.WriteLine("Mouse up...");
+            //base.OnMouseUp(e);
+            if (e.Button == MouseButtons.Left)
+                bLMousePressed = false;
+            else if (e.Button == MouseButtons.Right)
+                bRMousePressed = false;
+        }
 
-					//sourceLeft.colorInfo.
-					Point destCoord = TranslateToTileCoords(e.Location);
-					Console.WriteLine("Draggin left.. ({0},{1})", destCoord.X, destCoord.Y);
-                                    active_tile.Image.SetPixel(destCoord.X, destCoord.Y, pr2.Render.makeColor(SourceLeft.colorInfo.R, SourceLeft.colorInfo.G, SourceLeft.colorInfo.B));
-					Invalidate(true);
+        protected unsafe override void OnMouseMove(MouseEventArgs e) {
+            //base.OnMouseMove(e);
+            if (bLMousePressed) {
+                if (sourceLeft != null) {
 
-					if (TileDataChanged != null)
-						TileDataChanged(ActiveTileIndex);
+                    //sourceLeft.colorInfo.
+                    Point destCoord = TranslateToTileCoords(e.Location);
+                    Console.WriteLine("Draggin left.. ({0},{1})", destCoord.X, destCoord.Y);
+                    active_tile.Image.SetPixel(destCoord.X, destCoord.Y, pr2.Render.makeColor(SourceLeft.colorInfo.R, SourceLeft.colorInfo.G, SourceLeft.colorInfo.B));
+                    Invalidate(true);
 
-					
-				}
-			}
-			else if (bRMousePressed)
-			{
+                    if (TileDataChanged != null)
+                        TileDataChanged(ActiveTileIndex);
 
-			}
-		}
 
-		/*
-		bool mdown=false;
-		protected override void OnMouseDown(MouseEventArgs e)
-		{
-			// m-down
-			mdown=true;
+                }
+            } else if (bRMousePressed) {
+
+            }
+        }
+
+        /*
+        bool mdown=false;
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+                // m-down
+                mdown=true;
 			
-		}
-		protected override void OnMouseUp(MouseEventArgs e)
-		{
-			// m-up
-			mdown=false;
-		}
-		protected override void OnMouseMove(MouseEventArgs e)
-		{
-			// m-move
+        }
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+                // m-up
+                mdown=false;
+        }
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+                // m-move
 
-		}*/
-	}
+        }*/
+    }
 }
