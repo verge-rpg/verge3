@@ -195,14 +195,6 @@ namespace winmaped2 {
             return v24;
         }
 
-
-        int reorder(int c) {
-            int r, g, b;
-            r = c & 0xFF;
-            g = (c & 0xFF00) >> 8;
-            b = (c & 0xFF0000) >> 16;
-            return unchecked((int)0xFF000000 | (r << 16) | (g << 8) | b);
-        }
         public void AddBasicObstructionTiles() {
 
 
@@ -284,7 +276,7 @@ namespace winmaped2 {
                     int[] t = new int[16 * 16];
                     for (int yy = 0; yy < 16; yy++)
                         for (int xx = 0; xx < 16; xx++)
-                            t[yy * 16 + xx] = reorder(ptr[gridsize + (x * xofs) + yy * pitch + xx]);
+                            t[yy * 16 + xx] = ptr[gridsize + (x * xofs) + yy * pitch + xx];
                     Vsp24Tile vt = new Vsp24Tile(this, new Image(16, 16, t));
                     tiles.Add(vt);
                     count++;
@@ -294,7 +286,46 @@ namespace winmaped2 {
             return tiles;
         }
 
-        public ArrayList GetObstructionTiles(int count) {
+        public unsafe ArrayList ImportTiles(Bitmap bmp, int gridsize) {
+            ArrayList tiles = new ArrayList();
+            BitmapData bd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            int* ptr = (int*)bd.Scan0;
+            int pitch = bd.Stride / sizeof(int*);
+            int tw, th;
+
+            try {
+                tw = (bmp.Width - gridsize) / (16 + gridsize);
+                th = (bmp.Height - gridsize) / (16 + gridsize);
+
+                int xofs = 16 + gridsize;
+                int yofs = 16 + gridsize;
+
+                ptr += pitch * gridsize;
+
+                int count = 0;
+
+                for (int y = 0; y < th; y++) {
+                    for (int x = 0; x < tw; x++) {
+                        int[] t = new int[16 * 16];
+                        for (int yy = 0; yy < 16; yy++) {
+                            for (int xx = 0; xx < 16; xx++) {
+                                t[yy * 16 + xx] = ptr[gridsize + (x * xofs) + yy * pitch + xx];
+                            }
+                        }
+                        Vsp24Tile vt = new Vsp24Tile(this, new Image(16, 16, t));
+                        tiles.Add(vt);
+                        count++;
+                    }
+                    ptr += yofs * pitch;
+                }
+                return tiles;
+
+            } finally {
+                bmp.UnlockBits(bd);
+            }
+        }
+
+        public ArrayList AddBlankObstructionTiles(int count) {
             ArrayList tiles = new ArrayList();
             // add count blank tiles
             for (int i = 0; i < count; i++) {
@@ -303,7 +334,7 @@ namespace winmaped2 {
             }
             return tiles;
         }
-        public ArrayList GetObstructionTiles(Vsp24 vsp) {
+        public ArrayList ImportObstructionTiles(Vsp24 vsp) {
             ArrayList tiles = new ArrayList();
             foreach (VspObstructionTile vt in vsp.ObstructionTiles) {
                 VspObstructionTile vot = vt.Clone();
@@ -312,47 +343,49 @@ namespace winmaped2 {
             }
             return tiles;
         }
-        public unsafe ArrayList GetObstructionTiles(Corona.Image img) {
-            return GetObstructionTiles(img, 0);
-        }
         private bool nonZero(int _c) {
             Color c = Color.FromArgb(_c);
             if (c.R == 0 && c.G == 0 && c.B == 0)
                 return false;
             return true;
         }
-        public unsafe ArrayList GetObstructionTiles(Corona.Image img, int gridsize) {
-            ArrayList tiles = new ArrayList();
-            int* ptr = (int*)img.Pixels;
-            int pitch = img.Width;
-            int tw, th;
 
-            tw = (img.Width - gridsize) / (16 + gridsize);
-            th = (img.Height - gridsize) / (16 + gridsize);
+        public unsafe ArrayList ImportObstructionTiles(Bitmap bmp, int gridsize) {
+            ArrayList tiles = new ArrayList();
+            BitmapData bd = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            int* ptr = (int*)bd.Scan0;
+            int pitch = bd.Stride / sizeof(int*);
+
+            int tw = (bmp.Width - gridsize) / (16 + gridsize);
+            int th = (bmp.Height - gridsize) / (16 + gridsize);
 
             int xofs = 16 + gridsize;
             int yofs = 16 + gridsize;
 
-            ptr += pitch * gridsize;
+            try {
+                ptr += pitch * gridsize;
 
-            int count = 0;
+                int count = 0;
 
-            for (int y = 0; y < th; y++) {
-                for (int x = 0; x < tw; x++) {
-                    int[] t = new int[16 * 16];
-                    for (int yy = 0; yy < 16; yy++)
-                        for (int xx = 0; xx < 16; xx++) {
-                            int c = reorder(ptr[gridsize + (x * xofs) + yy * pitch + xx]);
-                            if (nonZero(c))
-                                t[yy * 16 + xx] = c;
-                        }
-                    VspObstructionTile vt = new VspObstructionTile(this, t);
-                    tiles.Add(vt);
-                    count++;
+                for (int y = 0; y < th; y++) {
+                    for (int x = 0; x < tw; x++) {
+                        int[] t = new int[16 * 16];
+                        for (int yy = 0; yy < 16; yy++)
+                            for (int xx = 0; xx < 16; xx++) {
+                                int c = ptr[gridsize + (x * xofs) + yy * pitch + xx];
+                                if (nonZero(c))
+                                    t[yy * 16 + xx] = c;
+                            }
+                        VspObstructionTile vt = new VspObstructionTile(this, t);
+                        tiles.Add(vt);
+                        count++;
+                    }
+                    ptr += yofs * pitch;
                 }
-                ptr += yofs * pitch;
+                return tiles;
+            } finally {
+                bmp.UnlockBits(bd);
             }
-            return tiles;
         }
 
         public Bitmap ExportToBitmap() {

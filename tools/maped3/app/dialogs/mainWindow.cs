@@ -2514,10 +2514,11 @@ namespace winmaped2 {
         private void mapController1_Paint(object sender, System.Windows.Forms.PaintEventArgs e) {
         }
 
-        private void doimport(bool repeat) {
+        private unsafe void ImportTiles(bool repeat) {
             Vsp24 v = Global.ActiveMap.vsp;
             Vsp24 vsp = null;
-            Corona.Image img = null;
+            Bitmap bmp = null;
+
             int ic = 0;
             if (id.ISource == ImportSource.VSP) {
                 if (!repeat)
@@ -2530,34 +2531,20 @@ namespace winmaped2 {
             } else if (id.ISource == ImportSource.Image) {
                 if (!repeat)
                     if (openImageDialog.ShowDialog() != DialogResult.OK) return;
-                img = InputOutput.LoadImage(openImageDialog.FileName);
-                if (img == null) {
-                    Errors.Error("Image Load Error", "Corona::Image::Open: Failed");
-                    return;
-                }
+                bmp = new Bitmap(openImageDialog.FileName);
             } else if (id.ISource == ImportSource.Clipboard) {
                 if (!WindowsClipboard.IsImage) {
                     Errors.Error("There is no image in the clipboard.");
                     return;
                 }
-                pr2.Render.Image pi = WindowsClipboard.getImage();
-                if (pi == null) {
-                    Errors.Error("Unable to grab pr2 image from clipboard.");
-                    return;
-                }
-                img = pi.getCoronaImage();
-                if (img == null) {
-                    Errors.Error("pr2 image -> corona failed.  This is an internal error. Please report this!");
-                    return;
-                }
+                bmp = WindowsClipboard.getBitmap();
             }
-
 
             ArrayList tiles = new ArrayList();
             if (id.IDest == ImportDest.Tiles) {
                 int tstart = 0;
                 if (id.ISource == ImportSource.Image || id.ISource == ImportSource.Clipboard) {
-                    tiles = v.GetTiles(img, id.bPadding ? 1 : 0);
+                    tiles = v.ImportTiles(bmp, id.bPadding ? 1 : 0);
                 } else {
                     tiles = v.GetTiles(vsp);
                 }
@@ -2576,8 +2563,8 @@ namespace winmaped2 {
                     tstart = 0;
                 }
                 if (id.bAddLayer && (id.ISource == ImportSource.Image || id.ISource == ImportSource.Clipboard)) {
-                    int tw = img.Width / 16;
-                    int th = img.Height / 16;
+                    int tw = bmp.Width / 16;
+                    int th = bmp.Height / 16;
 
                     MapLayer mlz = new MapLayer(Global.ActiveMap);
                     mlz.type = LayerType.Tile;
@@ -2594,9 +2581,9 @@ namespace winmaped2 {
                 }
             } else if (id.IDest == ImportDest.Obs) {
                 if (id.ISource == ImportSource.Image || id.ISource == ImportSource.Clipboard)
-                    tiles = v.GetObstructionTiles(img, id.bPadding ? 1 : 0);
+                    tiles = v.ImportObstructionTiles(bmp, id.bPadding ? 1 : 0);
                 else
-                    tiles = v.GetObstructionTiles(vsp);
+                    tiles = v.ImportObstructionTiles(vsp);
                 if (id.IMethod == ImportMethod.Append)
                     v.ObstructionTiles.AddRange(tiles);
                 else if (id.IMethod == ImportMethod.Insert) {
@@ -2625,11 +2612,11 @@ namespace winmaped2 {
         private void miImport_Click(object sender, System.EventArgs e) {
             id.init();
             if (id.ShowDialog() != DialogResult.OK) return;
-            doimport(false);
+            ImportTiles(false);
         }
 
         private void miImportAgain_Click(object sender, System.EventArgs e) {
-            doimport(true);
+            ImportTiles(true);
         }
 
         private void miEditAnims_Click(object sender, System.EventArgs e) {
