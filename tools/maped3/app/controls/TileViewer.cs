@@ -48,11 +48,9 @@ namespace winmaped2 {
                     }
                 } else {
                     if (active_obstile != null) {
-                        fixed (int* obsdata = active_obstile.Image.Pixels) {
-                            pr2.Render.renderObsTile(img, 0, 0, obsdata, true, UserPrefs.ObsColor);
-                        }
+                        ren.renderObsTile(active_obstile.Image, 0, 0, true, UserPrefs.ObsColor);
                     } else {
-                        img.clear(BLACK);
+                        ren.clear(BLACK);
                     }
                 }
             }

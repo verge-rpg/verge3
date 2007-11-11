@@ -48,6 +48,10 @@ namespace winmaped2 {
             pr2.Render.renderBox(backBuffer, x0, y0, w, h, color, op);
         }
 
+        public void clear(int color) {
+            backBuffer.clear(color);
+        }
+
         public pr2.Render.Image BackBuffer {
             get {
                 return backBuffer;
