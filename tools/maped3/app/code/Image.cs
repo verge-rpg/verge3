@@ -42,5 +42,15 @@ namespace winmaped2 {
         public Image Clone() {
             return new Image(width, height, (int[])pixels.Clone());
         }
+
+        public void SetPixel(int x, int y, int color) {
+            if (!(0 <= x && x < width) ||
+                !(0 <= y && y < height)) {
+                throw new Exception(string.Format("SetPixel to invalid point {0},{1}", x, y));
+            }
+
+            int offset = y * width + x;
+            pixels[offset] = color;
+        }
     }
 }

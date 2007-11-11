@@ -310,12 +310,11 @@ namespace winmaped2 {
             MemoryStream ms_tiles = new MemoryStream();
             BinaryWriter bw_tiles = new BinaryWriter(ms_tiles);
             foreach (Vsp24Tile tile in vsp.Tiles) {
-                fixed (int* iptr = tile.Image.Pixels) {
-                    byte* ptr = (byte*)iptr;
-                    for (int i = 0; i < 256; i++) {
-                        bw_tiles.Write(new byte[] { ptr[2], ptr[1], ptr[0] });
-                        ptr += 4;
-                    }
+                int[] pixels = tile.Image.Pixels;
+                foreach (int p in pixels) {
+                    bw_tiles.Write((byte)((p & 0x00FF0000) >> 16));
+                    bw_tiles.Write((byte)((p & 0x0000FF00) >> 8));
+                    bw_tiles.Write((byte)((p & 0x000000FF)));
                 }
             }
             bw_tiles.Close();

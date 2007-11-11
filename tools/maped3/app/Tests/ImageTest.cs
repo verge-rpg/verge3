@@ -53,6 +53,8 @@ namespace winmaped2.Tests {
             try {
                 img.UpdatePixels(whitePixels);
                 Assert.Fail("Expected img.UpdatePixels(whitePixels) to fail");
+            } catch (AssertionException) {
+                throw;
             } catch (Exception) {
             }
         }
@@ -67,6 +69,37 @@ namespace winmaped2.Tests {
             Assert.AreEqual(img.Width, clone.Width);
             Assert.AreEqual(img.Height, clone.Height);
             Assert.AreEqual(img.Pixels, clone.Pixels);
+        }
+
+        [Test]
+        public void SetPixel() {
+            Image img = new Image(16, 16, CreatePixels(16, 16, BLACK));
+            int x = 1;
+            int y = 1;
+            img.SetPixel(x, y, WHITE);
+
+            Assert.AreEqual(WHITE, img.Pixels[y * 16 + x]);
+        }
+
+        [Test]
+        public void SetPixelChecksBounds() {
+            Image img = new Image(16, 16, CreatePixels(16, 16, BLACK));
+
+            try {
+                img.SetPixel(17, 0, WHITE);
+                Assert.Fail();
+            } catch (AssertionException) {
+                throw;
+            } catch (Exception) {
+            }
+
+            try {
+                img.SetPixel(10, -1, WHITE);
+                Assert.Fail();
+            } catch (AssertionException) {
+                throw;
+            } catch (Exception) {
+            }
         }
     }
 }

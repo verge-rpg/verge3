@@ -391,16 +391,16 @@ namespace winmaped2 {
             int w = 320 + (GridSize * 21);
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp);
+            using (pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp)) {
+                Renderer ren = new Renderer(img);
 
-            // render stuffs
-            for (int y = 0; y < th; y++)
-                for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
-                    fixed (int* ptr = ((Vsp24Tile)Tiles[y * 20 + x]).Image.Pixels)
-                        pr2.Render.renderTile32(img, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), ptr, true);
+                // render stuffs
+                for (int y = 0; y < th; y++) {
+                    for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
+                        ren.renderTile32(((Vsp24Tile)Tiles[y * 20 + x]).Image, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), true);
+                    }
                 }
-
-            img.Dispose();
+            }
 
             WindowsClipboard.setBitmap(bmp);
         }
