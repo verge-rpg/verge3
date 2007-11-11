@@ -73,10 +73,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="corona">
-      <Name>corona</Name>
-      <HintPath>..\components\corona.dll</HintPath>
-    </Reference>
     <Reference Include="MRU">
       <Name>MRU</Name>
       <HintPath>..\components\MRU.dll</HintPath>

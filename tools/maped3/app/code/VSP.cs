@@ -252,39 +252,6 @@ namespace winmaped2 {
             }
             return tiles;
         }
-        public unsafe ArrayList GetTiles(Corona.Image img) {
-            return GetTiles(img, 0);
-        }
-        public unsafe ArrayList GetTiles(Corona.Image img, int gridsize) {
-            ArrayList tiles = new ArrayList();
-            int* ptr = (int*)img.Pixels;
-            int pitch = img.Width;
-            int tw, th;
-
-            tw = (img.Width - gridsize) / (16 + gridsize);
-            th = (img.Height - gridsize) / (16 + gridsize);
-
-            int xofs = 16 + gridsize;
-            int yofs = 16 + gridsize;
-
-            ptr += pitch * gridsize;
-
-            int count = 0;
-
-            for (int y = 0; y < th; y++) {
-                for (int x = 0; x < tw; x++) {
-                    int[] t = new int[16 * 16];
-                    for (int yy = 0; yy < 16; yy++)
-                        for (int xx = 0; xx < 16; xx++)
-                            t[yy * 16 + xx] = ptr[gridsize + (x * xofs) + yy * pitch + xx];
-                    Vsp24Tile vt = new Vsp24Tile(this, new Image(16, 16, t));
-                    tiles.Add(vt);
-                    count++;
-                }
-                ptr += yofs * pitch;
-            }
-            return tiles;
-        }
 
         public unsafe ArrayList ImportTiles(Bitmap bmp, int gridsize) {
             ArrayList tiles = new ArrayList();

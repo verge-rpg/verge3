@@ -9,11 +9,6 @@ namespace winmaped2
 {
 	public class InputOutput
 	{
-		public static Corona.Image LoadImage(string fname)
-		{
-			Corona.Image img = Corona.Image.Open(fname, Corona.PixelFormat.R8G8B8A8, Corona.FileFormat.Auto);
-			return img;
-		}
 		public unsafe static Map ReadMap3(FileInfo fi)
 		{
 			byte[] m3s = new byte[] { (byte)'V', (byte)'3', (byte)'M', (byte)'A', (byte)'P', (byte)0 };

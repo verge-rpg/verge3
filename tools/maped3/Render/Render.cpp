@@ -2,7 +2,6 @@
 
 #using <mscorlib.dll>
 #using <system.dll>
-#using "../components/corona.dll"
 #using <system.drawing.dll>
 #include <stdlib.h>
 
@@ -94,33 +93,6 @@ namespace pr2
                 return bmp;	
             }
 
-            Corona::Image __gc* getCoronaImage()
-            {
-                Corona::Image __gc* corimg = Corona::Image::Create(width,height,Corona::PixelFormat::R8G8B8A8);
-
-                char *dest = (char *)corimg->Pixels;
-
-                char *data = (char *)buf;
-                int xadd = stride - width*4;
-                for(int y=0;y<height;y++)
-                {
-                    for(int x=0;x<width;x++)
-                    {
-                        dest[2] = *data++;
-                        dest[1] = *data++;
-                        dest[0] = *data++;
-                        dest[3] = *data++;
-                        dest += 4;
-                    }
-
-
-                    data = (char *)((char *)data + xadd);
-                }
-
-                return corimg;
-            }
-
-
             void clear(int color)
             {
                 int *data = buf;
@@ -134,66 +106,6 @@ namespace pr2
 
             }
 
-            static Image __gc* loadCorona(String __gc* fname)
-            {
-                System::IO::FileStream __gc* fs = new System::IO::FileStream(fname,System::IO::FileMode::Open,System::IO::FileAccess::Read);
-                Image __gc* img = loadCorona(fs);
-                fs->Close();
-                return img;
-            }
-
-            static Image __gc* loadCorona(System::IO::Stream __gc* stream)
-            {
-                Corona::Image __gc* corimg = Corona::Image::Open(stream,Corona::PixelFormat::R8G8B8A8,Corona::FileFormat::Auto);
-                if(!corimg)
-                    return 0;
-
-                Render::Image __gc* img = Render::Image::create(corimg);
-                corimg->Dispose();
-                return img;
-            }
-
-            void saveCorona(String __gc* fname, Corona::FileFormat format)
-            {
-                System::IO::FileStream __gc* fs = new System::IO::FileStream(fname,System::IO::FileMode::OpenOrCreate,System::IO::FileAccess::Write);
-                saveCorona(fs,format);
-                fs->Close();
-            }
-
-            void saveCorona(System::IO::Stream __gc* stream, Corona::FileFormat format)
-            {
-                Corona::Image __gc* corimg = getCoronaImage();
-                corimg->Save(stream,format);
-            }
-
-            static Image __gc* create(Corona::Image __gc* corimg)
-            {
-                int w = corimg->Width;
-                int h = corimg->Height;
-
-                Render::Image __gc* img = Render::Image::create(w,h);
-
-                char *data = (char *)corimg->Pixels;
-
-                char *dest = (char *)img->buf;
-                int xadd = img->stride - w*4;
-                for(int y=0;y<img->height;y++)
-                {
-                    for(int x=0;x<img->width;x++)
-                    {
-                        dest[2] = *data++;
-                        dest[1] = *data++;
-                        dest[0] = *data++;
-                        dest[3] = *data++;
-                        dest += 4;
-                    }
-
-                    data = (char *)((char *)data + xadd);
-                }
-
-                return img;
-
-            }
 
             static Image __gc* create(Bitmap __gc* bmp)
             {
