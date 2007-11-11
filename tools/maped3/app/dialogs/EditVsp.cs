@@ -499,24 +499,25 @@ namespace winmaped2 {
 
             Selection s = originalSelection;
 
-
-
             if (s.height > 0 && s.width > 0) {
-                pr2.Render.Image img = pr2.Render.Image.create(s.width * 16, s.height * 16);
-                int y0 = s.y;
-                int x0 = s.x;
-                for (int y = 0; y < s.height; y++)
-                    for (int x = 0; x < s.width; x++) {
-                        if (!s.getPoint(x0 + x, y0 + y))
-                            continue;
-                        int t = (y0 + y) * TilesWide + x + x0;
-                        int[] p = Global.ActiveVsp.GetTilePixels(t);
-                        fixed (int* data = p)
-                            pr2.Render.renderTile32(img, x * 16, y * 16, data, true);
+                using (pr2.Render.Image img = pr2.Render.Image.create(s.width * 16, s.height * 16)) {
+                    Renderer ren = new Renderer(img);
+
+                    int y0 = s.y;
+                    int x0 = s.x;
+                    for (int y = 0; y < s.height; y++) {
+                        for (int x = 0; x < s.width; x++) {
+                            if (!s.getPoint(x0 + x, y0 + y)) {
+                                continue;
+                            }
+                            int t = (y0 + y) * TilesWide + x + x0;
+                            int[] p = Global.ActiveVsp.GetTilePixels(t);
+                            ren.renderTile32(Global.ActiveVsp.GetTile(t).Image, x * 16, y * 16, true);
+                        }
                     }
 
-                WindowsClipboard.setImage(img);
-                img.Dispose();
+                    WindowsClipboard.setImage(img);
+                }
             }
         }
 
@@ -683,35 +684,30 @@ namespace winmaped2 {
 
             Bitmap bmp = new Bitmap(TilesWide * 16, (TilesHigh + 1) * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             pr2.Render.Image qimg = pr2.Render.Image.lockBitmap(bmp);
+            Renderer ren = new Renderer(qimg);
 
             int row = 0, col = 0;
-            unchecked {
+            for (int i = scrollOffset; i < parent.vsp.Tiles.Count; i++) {
+                ren.renderTile32(((Vsp24Tile)parent.vsp.Tiles[i]).Image, col * 16, row * 16, true);
 
-                for (int i = scrollOffset; i < parent.vsp.Tiles.Count; i++) {
-
-                    fixed (int* tiledata = ((Vsp24Tile)parent.vsp.Tiles[i]).Image.Pixels)
-                        pr2.Render.renderTile32(qimg, col * 16, row * 16, tiledata, true);
-
-                    if (bSelection) {
-                        int xx = col;
-                        int yy = row + logicalRow;
-                        if (selection.getPoint(xx, yy)) {
-                            int tile = originalSelection.getPointIntegerValue(xx - selection.x + originalSelection.x, yy - selection.y + originalSelection.y, this);
-                            if (tile != -1)
-                                fixed (int* tiledata = ((Vsp24Tile)parent.vsp.Tiles[tile]).Image.Pixels)
-                                    pr2.Render.renderTile32(qimg, col * 16, row * 16, tiledata, true);
+                if (bSelection) {
+                    int xx = col;
+                    int yy = row + logicalRow;
+                    if (selection.getPoint(xx, yy)) {
+                        int tile = originalSelection.getPointIntegerValue(xx - selection.x + originalSelection.x, yy - selection.y + originalSelection.y, this);
+                        if (tile != -1) {
+                            ren.renderTile32(((Vsp24Tile)parent.vsp.Tiles[tile]).Image, col * 16, row * 16, true);
                         }
-                    }
-
-                    col++;
-                    if (col == TilesWide) {
-                        col = 0;
-                        row++;
-                        if (row == TilesHigh)
-                            break;
                     }
                 }
 
+                col++;
+                if (col == TilesWide) {
+                    col = 0;
+                    row++;
+                    if (row == TilesHigh)
+                        break;
+                }
             }
 
             //render the empty area

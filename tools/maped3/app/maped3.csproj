@@ -271,6 +271,7 @@
     <Compile Include="HardcodedPluginControlPanels\ZoneEditorForm.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="pr2\Render.cs" />
     <Compile Include="Tests\ImageTest.cs" />
     <Compile Include="Tests\RendererTests.cs" />
     <EmbeddedResource Include="controls\ColorPicker.resx">
