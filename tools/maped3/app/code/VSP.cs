@@ -354,26 +354,12 @@ namespace winmaped2 {
             }
             return tiles;
         }
-        public unsafe Corona.Image ExportToImage() {
-            return ExportToImage(1);
-        }
-        public unsafe Corona.Image ExportToImage(int GridSize) {
-            int th = tileCount / 20 + 1;
 
-            Bitmap bmp = ExportToBitmap(GridSize);
-            int w = bmp.Width;
-            int h = bmp.Height;
-
-            Corona.Image ci = Corona.Image.Create(w, h, Corona.PixelFormat.R8G8B8A8);
-
-            int* pixels = (int*)ci.Pixels;
-            for (int y = 0; y < h; y++)
-                for (int x = 0; x < w; x++)
-                    pixels[y * w + x] = m_rgba(bmp.GetPixel(x, y));
-            return ci;
+        public Bitmap ExportToBitmap() {
+            return ExportToBitmap(0);
         }
 
-        public unsafe Bitmap ExportToBitmap(int GridSize) {
+        public Bitmap ExportToBitmap(int GridSize) {
             int th = tileCount / 20 + 1;
             int h = th * (16 + GridSize) + (GridSize);
             int w = 320 + (GridSize * 21);
