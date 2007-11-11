@@ -459,7 +459,7 @@ namespace winmaped2
 			om.beginGroup("VSP Manager: Smart Tile Move");
 
 			Ops.SetTileGroup stg = new Ops.SetTileGroup(0);
-			Ops.SetTiledataGroup stdg = new Ops.SetTiledataGroup(0);
+			Ops.SetTiledataGroup stdg = new Ops.SetTiledataGroup(Global.ActiveVsp);
 
 			//move tiles
 			for(int y=0;y<originalSelection.height;y++)
@@ -505,7 +505,7 @@ namespace winmaped2
 
 			Operations.OperationManager om = Global.opManager;
 			om.beginGroup("VSP Manager: Cut Tiledata");
-			Ops.SetTiledataGroup stdg = new Ops.SetTiledataGroup(0);
+			Ops.SetTiledataGroup stdg = new Ops.SetTiledataGroup(Global.ActiveVsp);
 
 			Selection s  = originalSelection;
 			if (s.width>0&&s.height>0)
@@ -584,7 +584,7 @@ namespace winmaped2
 			Operations.OperationManager om = Global.opManager;
 			om.beginGroup("VSP Manager: Paste Tiledata");
 
-			Ops.SetTiledataGroup stdg = new Ops.SetTiledataGroup(0);
+			Ops.SetTiledataGroup stdg = new Ops.SetTiledataGroup(Global.ActiveVsp);
 			
 			int y0 = s.y;
 			int x0 = s.x;

@@ -441,29 +441,30 @@ namespace winmaped2 {
                 public Rec(int index, int[] newData) { this.index = index; this.newData = newData; }
             }
 
-            int which;
-
             ArrayList recs = new ArrayList();
+            Vsp24 vsp;
 
-            public SetTiledataGroup(int which) { this.which = which; }
+            public SetTiledataGroup(Vsp24 vsp) {
+                this.vsp = vsp;
+            }
 
             public void exec() {
                 foreach (Rec r in recs) {
                     if (Global.ActiveVsp.Tiles.Count > r.index && r.index >= 0) {
-                        r.oldData = (int[])((Vsp24Tile)Global.ActiveVsp.Tiles[r.index]).Image.Pixels.Clone();
-                        ((Vsp24Tile)Global.ActiveVsp.Tiles[r.index]).Pixels = (int[])r.newData.Clone();
+                        r.oldData = (int[])((Vsp24Tile)vsp.Tiles[r.index]).Image.Pixels.Clone();
+                        ((Vsp24Tile)vsp.Tiles[r.index]).Image.UpdatePixels((int[])r.newData.Clone());
                     }
                 }
-                Global.ActiveVsp.touch();
+                vsp.touch();
             }
 
             public void undo() {
                 for (int i = 0; i < recs.Count; i++) {
                     Rec r = (Rec)recs[recs.Count - i - 1];
 
-                    ((Vsp24Tile)Global.ActiveVsp.Tiles[r.index]).Pixels = (int[])r.oldData.Clone();
+                    ((Vsp24Tile)vsp.Tiles[r.index]).Image.UpdatePixels((int[])r.oldData.Clone());
                 }
-                Global.ActiveVsp.touch();
+                vsp.touch();
             }
 
             public void addRecord(int index, int[] newData) {

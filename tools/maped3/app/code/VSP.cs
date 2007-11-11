@@ -138,7 +138,7 @@ namespace winmaped2 {
         public const int ANIMATION_RANDOM = 2;
         public const int ANIMATION_PINGPONG = 3;
 
-        public override object newTile() { return new Vsp24Tile(this, new int[16 * 16]); }
+        public override object newTile() { return new Vsp24Tile(this); }
 
         public string fname;
         private bool _bAltered;
@@ -187,7 +187,7 @@ namespace winmaped2 {
                     }
                 }
 
-                Vsp24Tile v24t = new Vsp24Tile(v24, data);
+                Vsp24Tile v24t = new Vsp24Tile(v24, new Image(16, 16, data));
                 v24.Tiles.Add(v24t);
             }
             v24.FileOnDisk = src.FileOnDisk;
@@ -246,7 +246,7 @@ namespace winmaped2 {
             // add count blank tiles
             ArrayList tiles = new ArrayList();
             for (int i = 0; i < count; i++) {
-                Vsp24Tile vt = new Vsp24Tile(this, new int[16 * 16]);
+                Vsp24Tile vt = new Vsp24Tile(this);
                 tiles.Add(vt);
             }
             return tiles;
@@ -285,7 +285,7 @@ namespace winmaped2 {
                     for (int yy = 0; yy < 16; yy++)
                         for (int xx = 0; xx < 16; xx++)
                             t[yy * 16 + xx] = reorder(ptr[gridsize + (x * xofs) + yy * pitch + xx]);
-                    Vsp24Tile vt = new Vsp24Tile(this, t);
+                    Vsp24Tile vt = new Vsp24Tile(this, new Image(16, 16, t));
                     tiles.Add(vt);
                     count++;
                 }
@@ -359,24 +359,12 @@ namespace winmaped2 {
         }
         public unsafe Corona.Image ExportToImage(int GridSize) {
             int th = tileCount / 20 + 1;
-            int h = th * (16 + GridSize) + (GridSize);
-            int w = 320 + (GridSize * 21);
 
-            Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
-
-            pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp);
-
-            // render stuffs
-            for (int y = 0; y < th; y++)
-                for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
-                    fixed (int* ptr = ((Vsp24Tile)Tiles[y * 20 + x]).Image.Pixels)
-                        pr2.Render.renderTile32(img, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), ptr, true);
-                }
-
-            img.Dispose();
+            Bitmap bmp = ExportToBitmap(GridSize);
+            int w = bmp.Width;
+            int h = bmp.Height;
 
             Corona.Image ci = Corona.Image.Create(w, h, Corona.PixelFormat.R8G8B8A8);
-
 
             int* pixels = (int*)ci.Pixels;
             for (int y = 0; y < h; y++)
@@ -384,6 +372,27 @@ namespace winmaped2 {
                     pixels[y * w + x] = m_rgba(bmp.GetPixel(x, y));
             return ci;
         }
+
+        public unsafe Bitmap ExportToBitmap(int GridSize) {
+            int th = tileCount / 20 + 1;
+            int h = th * (16 + GridSize) + (GridSize);
+            int w = 320 + (GridSize * 21);
+
+            Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+
+            using (pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp)) {
+                Renderer ren = new Renderer(img);
+                // render stuffs
+                for (int y = 0; y < th; y++) {
+                    for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
+                        ren.renderTile32(((Vsp24Tile)Tiles[y * 20 + x]).Image, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), true);
+                    }
+                }
+            }
+
+            return bmp;
+        }
+
         private int m_rgba(Color c) {
             return unchecked(((int)(0xFF000000) | (c.R) | (c.G << 8) | (c.B << 16)));
         }
@@ -433,25 +442,29 @@ namespace winmaped2 {
     }
 
     public class Vsp24Tile {
-        public int[] Pixels;
+        int[] Pixels;
         Image image;
         public Vsp24 parent;
         int avg;
 
-        public Vsp24Tile(Vsp24 Parent, int[] data) {
-            parent = Parent;
-            Pixels = data;
-            image = new Image(16, 16, data);
-            doAvg();
+        public Vsp24Tile(Vsp24 parent)
+            : this(parent, new Image(16, 16, new int[16 * 16])) {
+        }
+
+        public Vsp24Tile(Vsp24 parent, Image image) {
+            this.parent = parent;
+            this.image = image;
+            this.Pixels = image.Pixels;
+            this.avg = GetAverageColor();
         }
 
         public Vsp24Tile Clone() {
-            Vsp24Tile vt = new Vsp24Tile(parent, (int[])Pixels.Clone());
+            Vsp24Tile vt = new Vsp24Tile(parent, image.Clone());
             vt.avg = avg;
             return vt;
         }
 
-        public void doAvg() {
+        int GetAverageColor() {
             int cr = 0, cg = 0, cb = 0;
             for (int i = 0; i < 16; i++) {
                 for (int j = 0; j < 16; j++) {
@@ -463,7 +476,7 @@ namespace winmaped2 {
 
                 }
             }
-            unchecked { avg = ((int)0xFF000000 | ((cr >> 8) << 16) | ((cg >> 8) << 8) | ((cb >> 8))); }
+            return unchecked((int)0xFF000000 | ((cr >> 8) << 16) | ((cg >> 8) << 8) | ((cb >> 8)));
         }
 
         public int ColorAverage {

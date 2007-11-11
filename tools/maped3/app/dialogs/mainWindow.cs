@@ -2960,30 +2960,11 @@ namespace winmaped2
 		{
 			if (Global.ActiveMap == null) return;
 			if (saveImageDialog.ShowDialog() != DialogResult.OK) return;
-			Corona.Image i = Global.ActiveMap.vsp.ExportToImage(0);
-			Corona.FileFormat cff = Corona.FileFormat.PNG;
-
-			// ensure extension
-			string fname = saveImageDialog.FileName;
-
-			switch (saveImageDialog.FilterIndex)
-			{
-				case 1:
-					// png
-					cff = Corona.FileFormat.PNG;
-					if (!saveImageDialog.FileName.ToLower().EndsWith(".png"))
-						fname += ".png";
-					break;
-				/*				case 2:
-									// tga
-									cff = Corona.FileFormat.TGA;
-									if(!fname.EndsWith(".tga"))
-										fname += ".tga";
-									break;*/
-				default: break;
-			}
-			i.Save(fname, cff);
-		}
+			//Corona.Image i = Global.ActiveMap.vsp.ExportToImage(0);
+			//Corona.FileFormat cff = Corona.FileFormat.PNG;
+                        Bitmap bmp = Global.ActiveMap.vsp.ExportToBitmap(0);
+                        bmp.Save(saveImageDialog.FileName);
+                }
 
 		private void miExportClipboardGridless_Click(object sender, EventArgs e)
 		{
