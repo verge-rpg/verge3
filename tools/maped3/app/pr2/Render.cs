@@ -149,10 +149,6 @@ namespace winmaped2 {
             renderSolid(img, x0 + w - 1, y0, 1, h, color, op);
         }
 
-        public static unsafe void renderChrFrame(pr2.Render.Image img, int x0, int y0, int w, int h, byte* framedata, int[] palette) {
-            pr2.Render.renderChrFrame(img, x0, y0, w, h, framedata, palette);
-        }
-
         public unsafe static void renderColoredStippleTile(pr2.Render.Image img, int x0, int y0, int color1, int color2) {
             int xlen = 16;
             int ylen = 16;
@@ -219,7 +215,7 @@ namespace winmaped2 {
         }
 
         public unsafe static void renderTile32(pr2.Render.Image img, int x0, int y0, int* tiledata, bool drawZero) {
-            pr2.Render.renderTile32(img, x0, y0, tiledata, drawZero);
+            render(img, x0, y0, 16, 16, tiledata, drawZero);
         }
 
         public unsafe static void renderTile32_Mix(pr2.Render.Image img, int x0, int y0, int* tiledata, bool drawZero, pr2.Render.PixelOp op) {
@@ -228,10 +224,6 @@ namespace winmaped2 {
 
         public static void renderTileCross(pr2.Render.Image img, int x0, int y0) {
             pr2.Render.renderTileCross(img, x0, y0);
-        }
-
-        public static void setPixel(pr2.Render.Image img, int x0, int y0, int color) {
-            pr2.Render.setPixel(img, x0, y0, color);
         }
 
         public enum PixelOp {

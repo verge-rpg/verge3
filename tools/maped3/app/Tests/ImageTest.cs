@@ -20,7 +20,7 @@ namespace winmaped2.Tests {
 
             pr2.Render.Image dest = pr2.Render.Image.create(16, 16);
             fixed (int* tiledata = img.Pixels)
-                pr2.Render.renderTile32(dest, 0, 0, tiledata, true);
+                Render.renderTile32(dest, 0, 0, tiledata, true);
 
             int[] resultPixels = dest.getArray();
             Assert.AreEqual(pixels, resultPixels);

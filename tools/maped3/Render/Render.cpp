@@ -243,47 +243,6 @@ namespace pr2
         }
 
         // tatsumi
-        static void renderChrFrame(Image __gc* img, int x0, int y0, int w, int h, unsigned char __nogc* framedata, int palette __gc[])
-        {
-            int* dst = img->buf + img->pitch * y0;
-            int pitch = img->pitch;
-            int srcofs = 0;
-            int __pin* paldata = &palette[0];
-            int cy=y0;
-            int xmax=x0+w;
-            int iw=img->width,ih=img->height;
-            //renderBox(img, x0,y0,w,h,0xFFFFFFFF, PixelOp::Src);
-
-            for(int y = 0; y < h; y++)
-            {
-                if (cy>=0&&cy<ih)
-                    for(int x=x0; x<xmax; x++)
-                    {
-                        if(x>=ih)
-                        {
-                            srcofs += xmax-x;
-                            x=xmax;
-                            break;
-                        }
-                        else if(x>=0)
-                        {
-                            unsigned char px = framedata[srcofs];
-                            if (px!=0) dst[x] = paldata[px];
-                        }
-                        srcofs++;
-                    }
-                    dst += pitch;
-                    cy++;
-            }
-        }
-
-        static void setPixel(Image __gc* img, int x0, int y0, int color)
-        {
-            if(x0<0 || x0 >= img->width || y0<0 || y0 >= img->height)
-                return;
-            img->buf[(y0)*img->pitch+x0] = color;	
-        }
-
         static void renderSolid(Image __gc* img, int x0, int y0, int w, int h, int color, PixelOp op)
         {
             int bw = img->width;
@@ -343,30 +302,6 @@ namespace pr2
             {
                 for (int x=0; x<xlen; x++)
                     d[x] = color;
-                d+=dpitch;
-            }
-        }
-
-        static void renderColoredStippleTile(Image __gc* img, int x0, int y0, int color1, int color2)
-        {
-            int xlen=16;
-            int ylen=16;
-
-            int *s = 0;
-            int *d = img->buf;
-
-            int dpitch = img->pitch;
-
-            if(clip(x0,y0,xlen,ylen,s,d,0,dpitch,  0,img->width,0,img->height))
-                return;
-
-            for (; ylen; ylen--)
-            {
-                for (int x=0; x<xlen; x++)
-                    if((ylen^x)&1)
-                        d[x] = color1;
-                    else
-                        d[x] = color2;
                 d+=dpitch;
             }
         }
@@ -451,10 +386,6 @@ namespace pr2
                 ptr[pitch * 8 + x] = 0xFFFFFFFF;
         }
 
-        static void renderTile32(Image __gc* img, int x0, int y0, int __nogc* tiledata, bool drawZero) {
-            render(img, x0, y0, 16, 16, tiledata, drawZero);
-        }
-
         static void renderTile32_Mix(Image __gc* img, int x0, int y0, int __nogc* tiledata, bool drawZero, PixelOp op)
         {
             int xlen=16;
@@ -523,30 +454,6 @@ namespace pr2
             }
         }	
 
-        static void render(Image __gc* dest, int x, int y, int xlen, int ylen, int __nogc* pixels, bool drawZero) {
-            int *s = pixels;
-            int *d = dest->buf;
-
-            const int spitch = xlen;
-            int dpitch = dest->pitch;
-
-            if(clip(x,y,xlen,ylen,s,d,spitch,dpitch,  0,dest->width,0,dest->height)) {
-                return;
-            }
-
-            for (; ylen; ylen--) {
-                for (int x=0; x<xlen; x++) {
-                    handlePixel(s[x],d[x],0,0,drawZero ? 0 : 1);
-                }
-
-                s+=spitch;
-                d+=dpitch;
-            }
-        }
-
-        static void render(Image __gc* dest, int x, int y, Image __gc* src, bool drawZero) {
-            render(dest, x, y, src->width, src->height, src->buf, drawZero);
-        }
     };
 
 
