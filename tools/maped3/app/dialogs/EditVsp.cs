@@ -476,7 +476,7 @@ namespace winmaped2 {
             if (s.width > 0 && s.height > 0) {
                 int y0 = s.y;
                 int x0 = s.x;
-                int magenta = pr2.Render.makeColor(255, 0, 255);
+                int magenta = Render.makeColor(255, 0, 255);
                 for (int y = 0; y < s.height; y++)
                     for (int x = 0; x < s.width; x++) {
                         int t = (s.y + y) * TilesWide + s.x + x;
@@ -713,7 +713,7 @@ namespace winmaped2 {
             //render the empty area
             while (row != TilesHigh + 1) {
                 while (col != TilesWide) {
-                    Render.renderColoredStippleTile(qimg, col * 16, row * 16, pr2.Render.makeColor(0, 0, 0), pr2.Render.makeColor(192, 192, 192));
+                    Render.renderColoredStippleTile(qimg, col * 16, row * 16, Render.makeColor(0, 0, 0), Render.makeColor(192, 192, 192));
                     col++;
                 }
                 col = 0;

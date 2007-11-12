@@ -174,16 +174,63 @@ namespace winmaped2 {
             }
         }
 
-        public static void renderColoredTile(pr2.Render.Image img, int x0, int y0, int color) {
-            pr2.Render.renderColoredTile(img, x0, y0, color);
+        public unsafe static void renderColoredTile(pr2.Render.Image img, int x0, int y0, int color) {
+            //pr2.Render.renderColoredTile(img, x0, y0, color);
+            //return;
+
+            int xlen = 16;
+            int ylen = 16;
+
+            int* s = null;
+            int* d = img.buf;
+
+            int dpitch = img.pitch;
+
+            if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, 0, dpitch, 0, img.width, 0, img.height))
+                return;
+
+            for (; ylen > 0; ylen--) {
+                for (int x = 0; x < xlen; x++) {
+                    d[x] = color;
+                }
+                d += dpitch;
+            }
         }
 
-        public static void renderColoredTile_50Alpha(pr2.Render.Image img, int x0, int y0, int color) {
-            pr2.Render.renderColoredTile_50Alpha(img, x0, y0, color);
+        public unsafe static void renderColoredTile_50Alpha(pr2.Render.Image img, int x0, int y0, int color) {
+            int xlen = 16;
+            int ylen = 16;
+
+            int* s = null;
+            int* d = img.buf;
+
+            int dpitch = img.pitch;
+
+            if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, 0, dpitch, 0, img.width, 0, img.height)) {
+                return;
+            }
+
+            for (; ylen > 0; ylen--) {
+                for (int x = 0; x < xlen; x++) {
+                    handlePixel(color, ref d[x], (int)pr2.Render.PixelOp.Alpha50, true, false);
+                }
+
+                d += dpitch;
+            }
+
         }
 
-        public static void renderColorPicker(pr2.Render.Image img, float h) {
-            pr2.Render.renderColorPicker(img, h);
+        public unsafe static void renderColorPicker(pr2.Render.Image img, float h) {
+            //pr2.Render.renderColorPicker(img, h);
+            //return;
+
+            int* dst = img.buf;
+            for (int y = 0; y < 256; y++) {
+                for (int x = 0; x < 256; x++) {
+                    *dst = HsbToColor(h, (float)x / 256, (float)y / 256);
+                    dst++;
+                }
+            }
         }
 
         public unsafe static void renderNumber(pr2.Render.Image img, int x0, int y0, int number, int color) {

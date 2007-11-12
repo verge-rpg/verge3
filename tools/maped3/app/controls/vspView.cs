@@ -198,8 +198,8 @@ namespace winmaped2 {
                         ren.renderObsTile(vot.Image, col * 16, row * 16, true, UserPrefs.ObsColor);
                         if (i == st0) {
                             if (controller_mode != VSPController.ControllerMode.ViewOnly) {
-                                pr2.Render.renderBox(qimg, col * 16, row * 16, 16, 16, WHITE, pr2.Render.PixelOp.Src);
-                                pr2.Render.renderBox(qimg, col * 16 + 1, row * 16 + 1, 14, 14, WHITE, pr2.Render.PixelOp.Src);
+                                Render.renderBox(qimg, col * 16, row * 16, 16, 16, WHITE, pr2.Render.PixelOp.Src);
+                                Render.renderBox(qimg, col * 16 + 1, row * 16 + 1, 14, 14, WHITE, pr2.Render.PixelOp.Src);
                             }
                         }
                         col++;

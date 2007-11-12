@@ -70,7 +70,7 @@ namespace winmaped2 {
                     //sourceLeft.colorInfo.
                     Point destCoord = TranslateToTileCoords(e.Location);
                     Console.WriteLine("Draggin left.. ({0},{1})", destCoord.X, destCoord.Y);
-                    active_tile.Image.SetPixel(destCoord.X, destCoord.Y, pr2.Render.makeColor(SourceLeft.colorInfo.R, SourceLeft.colorInfo.G, SourceLeft.colorInfo.B));
+                    active_tile.Image.SetPixel(destCoord.X, destCoord.Y, Render.makeColor(SourceLeft.colorInfo.R, SourceLeft.colorInfo.G, SourceLeft.colorInfo.B));
                     Invalidate(true);
 
                     if (TileDataChanged != null)
