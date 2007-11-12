@@ -5,7 +5,7 @@ using System.Text;
 namespace winmaped2 {
     class Renderer {
         public Renderer(pr2.Render.Image backBuffer) {
-            this.backBuffer = backBuffer;
+            this.backBuffer = (Render.Image)backBuffer;
         }
 
         public unsafe void render(Image src, int x, int y, bool drawZero) {
@@ -44,7 +44,7 @@ namespace winmaped2 {
             }
         }
 
-        public void renderBox(int x0, int y0, int w, int h, int color, pr2.Render.PixelOp op) {
+        public void renderBox(int x0, int y0, int w, int h, int color, Render.PixelOp op) {
             Render.renderBox(backBuffer, x0, y0, w, h, color, op);
         }
 
@@ -56,7 +56,7 @@ namespace winmaped2 {
             backBuffer.clear(color);
         }
 
-        public pr2.Render.Image BackBuffer {
+        public Render.Image BackBuffer {
             get {
                 return backBuffer;
             }
@@ -64,16 +64,16 @@ namespace winmaped2 {
 
         public int Width {
             get {
-                return BackBuffer.width;
+                return BackBuffer.Width;
             }
         }
 
         public int Height {
             get {
-                return BackBuffer.height;
+                return BackBuffer.Height;
             }
         }
 
-        private pr2.Render.Image backBuffer;
+        private Render.Image backBuffer;
     }
 }

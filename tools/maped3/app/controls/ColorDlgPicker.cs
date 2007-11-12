@@ -44,7 +44,7 @@ namespace winmaped2
 			SetStyle(ControlStyles.UserPaint,true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint,true);
 			SetStyle(ControlStyles.DoubleBuffer,true);
-			bmpDisplay = pr2.Render.createBitmap(256,256);
+			bmpDisplay = Render.createBitmap(256,256);
 			Cursor = Cursors.Cross;
 		}
 
@@ -65,7 +65,7 @@ namespace winmaped2
 			if(cdlg!=null)cdlg.update();
 			if(redraw_image)
 			{
-				pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmpDisplay);
+				pr2.Render.Image img = Render.Image.lockBitmap(bmpDisplay);
 				Render.renderColorPicker(img, _bhue);
 				img.Dispose();
 				redraw_image=false;

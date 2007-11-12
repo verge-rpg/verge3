@@ -31,9 +31,9 @@ namespace winmaped2 {
 
             g.PixelOffsetMode = PixelOffsetMode.Half;
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-            Bitmap bmp = pr2.Render.createBitmap(16, 16);
+            Bitmap bmp = Render.createBitmap(16, 16);
 
-            using (pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp)) {
+            using (pr2.Render.Image img = Render.Image.lockBitmap(bmp)) {
                 Renderer ren = new Renderer(img);
                 if (TileSourceType == SourceType.Vsp) {
                     if (active_tile != null) {

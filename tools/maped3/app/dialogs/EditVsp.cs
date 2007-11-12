@@ -500,7 +500,7 @@ namespace winmaped2 {
             Selection s = originalSelection;
 
             if (s.height > 0 && s.width > 0) {
-                using (pr2.Render.Image img = pr2.Render.Image.create(s.width * 16, s.height * 16)) {
+                using (pr2.Render.Image img = Render.Image.create(s.width * 16, s.height * 16)) {
                     Renderer ren = new Renderer(img);
 
                     int y0 = s.y;
@@ -530,8 +530,8 @@ namespace winmaped2 {
 
             pr2.Render.Image img = WindowsClipboard.getImage();
 
-            int tx = img.width / 16;
-            int ty = img.height / 16;
+            int tx = img.Width / 16;
+            int ty = img.Height / 16;
 
             Selection s = originalSelection;
             this.selection = originalSelection.copy();
@@ -552,7 +552,7 @@ namespace winmaped2 {
             for (int y = 0; y < s.height; y++)
                 for (int x = 0; x < s.width; x++) {
                     int t = (s.y + y) * TilesWide + s.x + x;
-                    stdg.addRecord(t, Global.Misc.sliceIntArrayImage(arrImg, img.width, x * 16, y * 16, 16, 16));
+                    stdg.addRecord(t, Global.Misc.sliceIntArrayImage(arrImg, img.Width, x * 16, y * 16, 16, 16));
                 }
 
             om.add(stdg);
@@ -683,7 +683,7 @@ namespace winmaped2 {
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
             Bitmap bmp = new Bitmap(TilesWide * 16, (TilesHigh + 1) * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            pr2.Render.Image qimg = pr2.Render.Image.lockBitmap(bmp);
+            pr2.Render.Image qimg = Render.Image.lockBitmap(bmp);
             Renderer ren = new Renderer(qimg);
 
             int row = 0, col = 0;

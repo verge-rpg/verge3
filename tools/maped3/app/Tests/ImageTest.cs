@@ -18,7 +18,7 @@ namespace winmaped2.Tests {
         public unsafe void CanDrawOnPr2Image() {
             Image img = new Image(16, 16, pixels);
 
-            pr2.Render.Image dest = pr2.Render.Image.create(16, 16);
+            pr2.Render.Image dest = Render.Image.create(16, 16);
             fixed (int* tiledata = img.Pixels)
                 Render.renderTile32(dest, 0, 0, tiledata, true);
 

@@ -163,7 +163,7 @@ namespace winmaped2 {
             CalculateScrollValues();
 
             Bitmap bmp = new Bitmap(TilesWide * 16, TilesHigh * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            using (pr2.Render.Image qimg = pr2.Render.Image.lockBitmap(bmp)) {
+            using (pr2.Render.Image qimg = Render.Image.lockBitmap(bmp)) {
                 Renderer ren = new Renderer(qimg);
 
                 if (ControllerType == VSPController.ControllerType.VSP) {
@@ -172,14 +172,14 @@ namespace winmaped2 {
                         ren.render(vsp.GetTile(i).Image, col * 16, row * 16, true);
                         if (i == st0) {
                             if (controller_mode != VSPController.ControllerMode.ViewOnly) {
-                                ren.renderBox(col * 16, row * 16, 16, 16, WHITE, pr2.Render.PixelOp.Src);
-                                ren.renderBox(col * 16 + 1, row * 16 + 1, 14, 14, WHITE, pr2.Render.PixelOp.Src);
+                                ren.renderBox(col * 16, row * 16, 16, 16, WHITE, Render.PixelOp.Src);
+                                ren.renderBox(col * 16 + 1, row * 16 + 1, 14, 14, WHITE, Render.PixelOp.Src);
                             }
                         }
                         if (i == st1) {
                             if (controller_mode == VSPController.ControllerMode.SelectorDual) {
-                                ren.renderBox(col * 16 + 2, row * 16 + 2, 12, 12, WHITE, pr2.Render.PixelOp.Src);
-                                ren.renderBox(col * 16 + 3, row * 16 + 3, 10, 10, WHITE, pr2.Render.PixelOp.Src);
+                                ren.renderBox(col * 16 + 2, row * 16 + 2, 12, 12, WHITE, Render.PixelOp.Src);
+                                ren.renderBox(col * 16 + 3, row * 16 + 3, 10, 10, WHITE, Render.PixelOp.Src);
                             }
                         }
                         col++;
@@ -198,8 +198,8 @@ namespace winmaped2 {
                         ren.renderObsTile(vot.Image, col * 16, row * 16, true, UserPrefs.ObsColor);
                         if (i == st0) {
                             if (controller_mode != VSPController.ControllerMode.ViewOnly) {
-                                Render.renderBox(qimg, col * 16, row * 16, 16, 16, WHITE, pr2.Render.PixelOp.Src);
-                                Render.renderBox(qimg, col * 16 + 1, row * 16 + 1, 14, 14, WHITE, pr2.Render.PixelOp.Src);
+                                Render.renderBox(qimg, col * 16, row * 16, 16, 16, WHITE, Render.PixelOp.Src);
+                                Render.renderBox(qimg, col * 16 + 1, row * 16 + 1, 14, 14, WHITE, Render.PixelOp.Src);
                             }
                         }
                         col++;

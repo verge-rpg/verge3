@@ -255,7 +255,7 @@ namespace winmaped2 {
 
             Map currMap = ParentMap;
 
-            pr2.Render.Image img = pr2.Render.Image.lockBitmap(bmp);
+            pr2.Render.Image img = Render.Image.lockBitmap(bmp);
             img.clear(unchecked((int)0xFF000000));
 
             Renderer ren = new Renderer(img);

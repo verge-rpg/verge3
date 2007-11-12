@@ -39,7 +39,7 @@ namespace winmaped2
 			if(bmp == null)
 				return null;
 			else
-				return pr2.Render.Image.create(bmp);
+				return Render.Image.create(bmp);
 			
 		}
 
