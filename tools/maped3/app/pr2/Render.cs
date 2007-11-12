@@ -4,7 +4,8 @@ using System.Drawing.Imaging;
 
 namespace winmaped2 {
     public sealed class Render {
-        public unsafe class Image : IDisposable {
+#if false
+        public unsafe class pr2.RenderImage : IDisposable {
             enum Variety {
                 _Buffer, _Bitmap
             };
@@ -20,7 +21,7 @@ namespace winmaped2 {
             int pitch;
             int stride;
 
-            public Image() {
+            public pr2.RenderImage() {
                 bDisposed = false;
             }
 
@@ -109,10 +110,10 @@ namespace winmaped2 {
                 return buf[y * pitch + x];
             }
 
-            public unsafe static Image create(Bitmap bmp) {
+            public unsafe static pr2.RenderImage create(Bitmap bmp) {
                 int w = bmp.Width;
                 int h = bmp.Height;
-                Image img = create(w, h);
+                pr2.RenderImage img = create(w, h);
 
                 BitmapData bmpd = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
 
@@ -132,8 +133,8 @@ namespace winmaped2 {
                 return img;
             }
 
-            public unsafe static Image create(int width, int height) {
-                Image img = new Image();
+            public unsafe static pr2.RenderImage create(int width, int height) {
+                pr2.RenderImage img = new pr2.RenderImage();
                 img.variety = Variety._Buffer;
                 img.width = width;
                 img.height = height;
@@ -143,9 +144,9 @@ namespace winmaped2 {
                 return img;
             }
 
-            public unsafe static Image lockBitmap(Bitmap bmp) {
+            public unsafe static pr2.RenderImage lockBitmap(Bitmap bmp) {
                 ImageLockMode imageLockMode = ImageLockMode.ReadWrite;
-                Image img = new Image();
+                pr2.RenderImage img = new pr2.RenderImage();
                 img.variety = Variety._Bitmap;
                 img.bmp = bmp;
                 img.bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), imageLockMode, PixelFormat.Format32bppArgb);
@@ -160,6 +161,7 @@ namespace winmaped2 {
             }
 
         }
+#endif
 
         private Render() { }
 
@@ -199,11 +201,11 @@ namespace winmaped2 {
             return (int)((0xFF000000) | ((uint)r << 16) | ((uint)g << 8) | ((uint)b));
         }
 
-        public static void render(Render.Image dest, int x, int y, winmaped2.Image src, bool drawZero) {
+        public static void render(pr2.RenderImage dest, int x, int y, winmaped2.Canvas src, bool drawZero) {
             render(dest, x, y, src.Width, src.Height, src.Pixels, drawZero);
         }
 
-        public unsafe static void render(Render.Image dest, int x, int y, Render.Image src, bool drawZero) {
+        public unsafe static void render(pr2.RenderImage dest, int x, int y, pr2.RenderImage src, bool drawZero) {
             render(dest, x, y, src.Width, src.Height, src.Pixels, drawZero);
         }
 
@@ -282,13 +284,13 @@ namespace winmaped2 {
             }
         }
 
-        public static unsafe void render(Render.Image dest, int x, int y, int xlen, int ylen, int[] pixels, bool drawZero) {
+        public static unsafe void render(pr2.RenderImage dest, int x, int y, int xlen, int ylen, int[] pixels, bool drawZero) {
             fixed (int* p = pixels) {
                 render(dest, x, y, xlen, ylen, p, drawZero);
             }
         }
 
-        public static unsafe void render(Render.Image dest, int x, int y, int xlen, int ylen, int* pixels, bool drawZero) {
+        public static unsafe void render(pr2.RenderImage dest, int x, int y, int xlen, int ylen, int* pixels, bool drawZero) {
             int* s = pixels;
             int* d = dest.Pixels;
 
@@ -309,14 +311,14 @@ namespace winmaped2 {
             }
         }
 
-        public static void renderBox(Render.Image img, int x0, int y0, int w, int h, int color, Render.PixelOp op) {
+        public static void renderBox(pr2.RenderImage img, int x0, int y0, int w, int h, int color, Render.PixelOp op) {
             renderSolid(img, x0, y0, w, 1, color, op);
             renderSolid(img, x0, y0 + h - 1, w, 1, color, op);
             renderSolid(img, x0, y0, 1, h, color, op);
             renderSolid(img, x0 + w - 1, y0, 1, h, color, op);
         }
 
-        public unsafe static void renderColoredStippleTile(Render.Image img, int x0, int y0, int color1, int color2) {
+        public unsafe static void renderColoredStippleTile(pr2.RenderImage img, int x0, int y0, int color1, int color2) {
             int xlen = 16;
             int ylen = 16;
 
@@ -341,7 +343,7 @@ namespace winmaped2 {
             }
         }
 
-        public unsafe static void renderColoredTile(Render.Image img, int x0, int y0, int color) {
+        public unsafe static void renderColoredTile(pr2.RenderImage img, int x0, int y0, int color) {
             //pr2.Render.renderColoredTile(img, x0, y0, color);
             //return;
 
@@ -364,7 +366,7 @@ namespace winmaped2 {
             }
         }
 
-        public unsafe static void renderColoredTile_50Alpha(Render.Image img, int x0, int y0, int color) {
+        public unsafe static void renderColoredTile_50Alpha(pr2.RenderImage img, int x0, int y0, int color) {
             int xlen = 16;
             int ylen = 16;
 
@@ -387,7 +389,7 @@ namespace winmaped2 {
 
         }
 
-        public unsafe static void renderColorPicker(Render.Image img, float h) {
+        public unsafe static void renderColorPicker(pr2.RenderImage img, float h) {
             //pr2.Render.renderColorPicker(img, h);
             //return;
 
@@ -400,7 +402,7 @@ namespace winmaped2 {
             }
         }
 
-        public unsafe static void renderNumber(Render.Image img, int x0, int y0, int number, int color) {
+        public unsafe static void renderNumber(pr2.RenderImage img, int x0, int y0, int number, int color) {
             int height = img.Height;
             int width = img.Width;
             int* pixels = img.Pixels;
@@ -426,17 +428,17 @@ namespace winmaped2 {
             }
         }
 
-        public unsafe static void renderObsTile(Render.Image img, int x0, int y0, winmaped2.Image src, bool clearbuf, int color) {
+        public unsafe static void renderObsTile(pr2.RenderImage img, int x0, int y0, winmaped2.Canvas src, bool clearbuf, int color) {
             renderObsTile(img, x0, y0, src.Pixels, clearbuf, color);
         }
 
-        public unsafe static void renderObsTile(Render.Image img, int x0, int y0, int[] obsdata, bool clearbuf, int color) {
+        public unsafe static void renderObsTile(pr2.RenderImage img, int x0, int y0, int[] obsdata, bool clearbuf, int color) {
             fixed (int* p = obsdata) {
                 renderObsTile(img, x0, y0, p, clearbuf, color);
             }
         }
 
-        public unsafe static void renderObsTile(Render.Image img, int x0, int y0, int* obsdata, bool clearbuf, int color) {
+        public unsafe static void renderObsTile(pr2.RenderImage img, int x0, int y0, int* obsdata, bool clearbuf, int color) {
             int xlen = 16;
             int ylen = 16;
 
@@ -475,17 +477,17 @@ namespace winmaped2 {
             }
         }
 
-        public unsafe static void renderObsTileFast(Render.Image img, int x0, int y0, winmaped2.Image src, bool clearbuf) {
+        public unsafe static void renderObsTileFast(pr2.RenderImage img, int x0, int y0, winmaped2.Canvas src, bool clearbuf) {
             renderObsTileFast(img, x0, y0, src.Pixels, clearbuf);
         }
 
-        public unsafe static void renderObsTileFast(Render.Image img, int x0, int y0, int[] obsdata, bool clearbuf) {
+        public unsafe static void renderObsTileFast(pr2.RenderImage img, int x0, int y0, int[] obsdata, bool clearbuf) {
             fixed (int* p = obsdata) {
                 renderObsTileFast(img, x0, y0, p, clearbuf);
             }
         }
 
-        public unsafe static void renderObsTileFast(Render.Image img, int x0, int y0, int* obsdata, bool clearbuf) {
+        public unsafe static void renderObsTileFast(pr2.RenderImage img, int x0, int y0, int* obsdata, bool clearbuf) {
             int xlen = 16;
             int ylen = 16;
 
@@ -522,7 +524,7 @@ namespace winmaped2 {
 
         }
 
-        public unsafe static void renderSolid(Render.Image img, int x0, int y0, int w, int h, int color, Render.PixelOp op) {
+        public unsafe static void renderSolid(pr2.RenderImage img, int x0, int y0, int w, int h, int color, Render.PixelOp op) {
             int bw = img.Width;
             int bh = img.Height;
             int bp = img.Pitch;
@@ -538,7 +540,7 @@ namespace winmaped2 {
             }
         }
 
-        public unsafe static void renderTile32(Render.Image img, int x0, int y0, int* tiledata, bool drawZero) {
+        public unsafe static void renderTile32(pr2.RenderImage img, int x0, int y0, int* tiledata, bool drawZero) {
             render(img, x0, y0, 16, 16, tiledata, drawZero);
         }
 
@@ -561,12 +563,12 @@ namespace winmaped2 {
             public Image();
 
             public void clear(int color);
-            public static Render.Image create(Bitmap bmp);
-            public static Render.Image create(int width, int height);
+            public static pr2.RenderImage create(Bitmap bmp);
+            public static pr2.RenderImage create(int width, int height);
             public override void Dispose();
             public int[] getArray();
             public Bitmap getBitmap();
-            public static Render.Image lockBitmap(Bitmap bmp);
+            public static pr2.RenderImage lockBitmap(Bitmap bmp);
         }
         */
     }

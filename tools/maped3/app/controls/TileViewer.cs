@@ -33,7 +33,7 @@ namespace winmaped2 {
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             Bitmap bmp = Render.createBitmap(16, 16);
 
-            using (Render.Image img = Render.Image.lockBitmap(bmp)) {
+            using (pr2.RenderImage img = pr2.RenderImage.lockBitmap(bmp)) {
                 if (TileSourceType == SourceType.Vsp) {
                     if (active_tile != null) {
                         if (!bAnimate) {

@@ -16,9 +16,9 @@ namespace winmaped2.Tests {
 
         [Test]
         public unsafe void CanDrawOnPr2Image() {
-            Image img = new Image(16, 16, pixels);
+            Canvas img = new Canvas(16, 16, pixels);
 
-            Render.Image dest = Render.Image.create(16, 16);
+            pr2.RenderImage dest = pr2.RenderImage.create(16, 16);
             fixed (int* tiledata = img.Pixels)
                 Render.renderTile32(dest, 0, 0, tiledata, true);
 
@@ -30,7 +30,7 @@ namespace winmaped2.Tests {
 
         [Test]
         public void UpdatePixels() {
-            Image img = new Image(16, 16, pixels);
+            Canvas img = new Canvas(16, 16, pixels);
             int[] blackPixels = CreatePixels(16, 16, BLACK);
 
             img.UpdatePixels(blackPixels);
@@ -49,8 +49,8 @@ namespace winmaped2.Tests {
 
         [Test]
         public void Clone() {
-            Image img = new Image(16, 16, CreatePixels(16, 16, BLACK));
-            Image clone = img.Clone();
+            Canvas img = new Canvas(16, 16, CreatePixels(16, 16, BLACK));
+            Canvas clone = img.Clone();
 
             Assert.AreNotSame(img, clone);
             Assert.AreNotSame(img.Pixels, clone.Pixels);
@@ -61,7 +61,7 @@ namespace winmaped2.Tests {
 
         [Test]
         public void SetPixel() {
-            Image img = new Image(16, 16, CreatePixels(16, 16, BLACK));
+            Canvas img = new Canvas(16, 16, CreatePixels(16, 16, BLACK));
             int x = 1;
             int y = 1;
             img.SetPixel(x, y, WHITE);
@@ -71,7 +71,7 @@ namespace winmaped2.Tests {
 
         [Test]
         public void SetPixelChecksBounds() {
-            Image img = new Image(16, 16, CreatePixels(16, 16, BLACK));
+            Canvas img = new Canvas(16, 16, CreatePixels(16, 16, BLACK));
 
             try {
                 img.SetPixel(17, 0, WHITE);

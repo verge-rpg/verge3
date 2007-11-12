@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace winmaped2 {
-    public class Image {
+    public class Canvas {
         int[] pixels;
         int width;
         int height;
 
-        public Image(int width, int height, int[] pixels) {
+        public Canvas(int width, int height, int[] pixels) {
             this.pixels = pixels;
             this.width = width;
             this.height = height;
@@ -39,8 +39,8 @@ namespace winmaped2 {
             pixels = newPixels;
         }
 
-        public Image Clone() {
-            return new Image(width, height, (int[])pixels.Clone());
+        public Canvas Clone() {
+            return new Canvas(width, height, (int[])pixels.Clone());
         }
 
         public void SetPixel(int x, int y, int color) {

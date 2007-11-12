@@ -65,7 +65,7 @@ namespace winmaped2
 			if(cdlg!=null)cdlg.update();
 			if(redraw_image)
 			{
-				Render.Image img = Render.Image.lockBitmap(bmpDisplay);
+				pr2.RenderImage img = pr2.RenderImage.lockBitmap(bmpDisplay);
 				Render.renderColorPicker(img, _bhue);
 				img.Dispose();
 				redraw_image=false;

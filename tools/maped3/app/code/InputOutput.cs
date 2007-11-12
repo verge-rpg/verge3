@@ -257,7 +257,7 @@ namespace winmaped2 {
                     c = c | data[idx * 3 + 2];
                     px[i] = c;
                 }
-                vsp.Tiles.Add(new Vsp24Tile(vsp, new Image(16, 16, px)));
+                vsp.Tiles.Add(new Vsp24Tile(vsp, new Canvas(16, 16, px)));
             }
 
             int animcount = br.ReadInt32();

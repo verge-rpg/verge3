@@ -187,7 +187,7 @@ namespace winmaped2 {
                     }
                 }
 
-                Vsp24Tile v24t = new Vsp24Tile(v24, new Image(16, 16, data));
+                Vsp24Tile v24t = new Vsp24Tile(v24, new Canvas(16, 16, data));
                 v24.Tiles.Add(v24t);
             }
             v24.FileOnDisk = src.FileOnDisk;
@@ -279,7 +279,7 @@ namespace winmaped2 {
                                 t[yy * 16 + xx] = ptr[gridsize + (x * xofs) + yy * pitch + xx];
                             }
                         }
-                        Vsp24Tile vt = new Vsp24Tile(this, new Image(16, 16, t));
+                        Vsp24Tile vt = new Vsp24Tile(this, new Canvas(16, 16, t));
                         tiles.Add(vt);
                         count++;
                     }
@@ -366,7 +366,7 @@ namespace winmaped2 {
 
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            using (Render.Image img = Render.Image.lockBitmap(bmp)) {
+            using (pr2.RenderImage img = pr2.RenderImage.lockBitmap(bmp)) {
                 // render stuffs
                 for (int y = 0; y < th; y++) {
                     for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
@@ -390,7 +390,7 @@ namespace winmaped2 {
             int w = 320 + (GridSize * 21);
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            using (Render.Image img = Render.Image.lockBitmap(bmp)) {
+            using (pr2.RenderImage img = pr2.RenderImage.lockBitmap(bmp)) {
                 // render stuffs
                 for (int y = 0; y < th; y++) {
                     for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
@@ -405,11 +405,11 @@ namespace winmaped2 {
     public class VspObstructionTile {
         int[] Pixels;
         public Vsp24 parent;
-        Image image;
+        Canvas image;
         public VspObstructionTile(Vsp24 Parent, int[] data) {
             parent = Parent;
             Pixels = data;
-            image = new Image(16, 16, data);
+            image = new Canvas(16, 16, data);
         }
 
         public VspObstructionTile Clone() {
@@ -417,7 +417,7 @@ namespace winmaped2 {
             return vot;
         }
 
-        public Image Image {
+        public Canvas Image {
             get {
                 return image;
             }
@@ -426,15 +426,15 @@ namespace winmaped2 {
 
     public class Vsp24Tile {
         int[] Pixels;
-        Image image;
+        Canvas image;
         public Vsp24 parent;
         int avg;
 
         public Vsp24Tile(Vsp24 parent)
-            : this(parent, new Image(16, 16, new int[16 * 16])) {
+            : this(parent, new Canvas(16, 16, new int[16 * 16])) {
         }
 
-        public Vsp24Tile(Vsp24 parent, Image image) {
+        public Vsp24Tile(Vsp24 parent, Canvas image) {
             this.parent = parent;
             this.image = image;
             this.Pixels = image.Pixels;
@@ -468,7 +468,7 @@ namespace winmaped2 {
             }
         }
 
-        public Image Image {
+        public Canvas Image {
             get {
                 return image;
             }

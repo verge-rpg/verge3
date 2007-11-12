@@ -14,9 +14,9 @@ namespace winmaped2.Tests {
             for (int i = 0; i < pixels.Length; i++) {
                 pixels[i] = 1;
             }
-            Image img = new Image(16, 16, pixels);
+            Canvas img = new Canvas(16, 16, pixels);
 
-            Render.Image destImage = Render.Image.create(16, 16);
+            pr2.RenderImage destImage = pr2.RenderImage.create(16, 16);
 
             Render.render(destImage, 0, 0, img, true);
 
@@ -26,8 +26,8 @@ namespace winmaped2.Tests {
 
         [Test]
         public void RenderDrawsDeathMagenta() {
-            Image src = new Image(16, 16, CreatePixels(16, 16, MAGENTA));
-            Render.Image dest = Render.Image.create(16, 16);
+            Canvas src = new Canvas(16, 16, CreatePixels(16, 16, MAGENTA));
+            pr2.RenderImage dest = pr2.RenderImage.create(16, 16);
 
             Render.render(dest, 0, 0, src, true);
             Assert.AreEqual(dest.getArray(), src.Pixels);
@@ -35,8 +35,8 @@ namespace winmaped2.Tests {
 
         [Test]
         public void RenderSkipsDeathMagenta() {
-            Image src = new Image(16, 16, CreatePixels(16, 16, MAGENTA));
-            Render.Image dest = Render.Image.create(16, 16);
+            Canvas src = new Canvas(16, 16, CreatePixels(16, 16, MAGENTA));
+            pr2.RenderImage dest = pr2.RenderImage.create(16, 16);
             dest.clear(BLACK);
 
             Render.render(dest, 0, 0, src, false);
@@ -45,7 +45,7 @@ namespace winmaped2.Tests {
 
         [Test]
         public void RenderStipple() {
-            Render.Image dest = Render.Image.create(16, 16);
+            pr2.RenderImage dest = pr2.RenderImage.create(16, 16);
 
             Render.renderColoredStippleTile(dest, 0, 0, GREEN, WHITE);
             Assert.AreEqual(WHITE, dest.getPixel(0, 0));
@@ -59,7 +59,7 @@ namespace winmaped2.Tests {
 
         [Test]
         public void RenderStippleClipping() {
-            Render.Image dest = Render.Image.create(14, 14);
+            pr2.RenderImage dest = pr2.RenderImage.create(14, 14);
             dest.clear(BLACK);
 
             Render.renderColoredStippleTile(dest, 4, 4, GREEN, WHITE);

@@ -65,7 +65,7 @@ namespace winmaped2 {
         }
 
         int counter = 0;
-        void renderLayer(Render.Image backBuffer, MapLayer mapLayer, int px, int py, bool drawZero) {
+        void renderLayer(pr2.RenderImage backBuffer, MapLayer mapLayer, int px, int py, bool drawZero) {
             switch (mapLayer.type) {
                 case LayerType.Tile:
                     renderTileLayer(backBuffer, mapLayer, ParentMap.vsp, px, py, drawZero);
@@ -81,7 +81,7 @@ namespace winmaped2 {
             }
         }
 
-        private void renderObstructionLayer(Render.Image backBuffer, MapLayer mapLayer, int px, int py) {
+        private void renderObstructionLayer(pr2.RenderImage backBuffer, MapLayer mapLayer, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -132,7 +132,7 @@ namespace winmaped2 {
             }
         }
 
-        private void renderZoneLayer(Render.Image backBuffer, MapLayer mapLayer, int px, int py) {
+        private void renderZoneLayer(pr2.RenderImage backBuffer, MapLayer mapLayer, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -180,7 +180,7 @@ namespace winmaped2 {
             }
         }
 
-        private void renderTileLayer(Render.Image backBuffer, MapLayer layer, Vsp24 vsp, int px, int py, bool drawZero) {
+        private void renderTileLayer(pr2.RenderImage backBuffer, MapLayer layer, Vsp24 vsp, int px, int py, bool drawZero) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -221,7 +221,7 @@ namespace winmaped2 {
             }
         }
 
-        private void renderEntities(Render.Image backBuffer, MapLayer ml, int px, int py) {
+        private void renderEntities(pr2.RenderImage backBuffer, MapLayer ml, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -256,7 +256,7 @@ namespace winmaped2 {
 
             Map currMap = ParentMap;
 
-            Render.Image img = Render.Image.lockBitmap(bmp);
+            pr2.RenderImage img = pr2.RenderImage.lockBitmap(bmp);
             img.clear(unchecked((int)0xFF000000));
 
             Map mOld = null;

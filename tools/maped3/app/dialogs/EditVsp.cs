@@ -500,7 +500,7 @@ namespace winmaped2 {
             Selection s = originalSelection;
 
             if (s.height > 0 && s.width > 0) {
-                using (Render.Image img = Render.Image.create(s.width * 16, s.height * 16)) {
+                using (pr2.RenderImage img = pr2.RenderImage.create(s.width * 16, s.height * 16)) {
                     int y0 = s.y;
                     int x0 = s.x;
                     for (int y = 0; y < s.height; y++) {
@@ -526,7 +526,7 @@ namespace winmaped2 {
             if (!bSelection)
                 return;
 
-            Render.Image img = WindowsClipboard.getImage();
+            pr2.RenderImage img = WindowsClipboard.getImage();
 
             int tx = img.Width / 16;
             int ty = img.Height / 16;
@@ -681,7 +681,7 @@ namespace winmaped2 {
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
             Bitmap bmp = new Bitmap(TilesWide * 16, (TilesHigh + 1) * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Render.Image qimg = Render.Image.lockBitmap(bmp);
+            pr2.RenderImage qimg = pr2.RenderImage.lockBitmap(bmp);
 
             int row = 0, col = 0;
             for (int i = scrollOffset; i < parent.vsp.Tiles.Count; i++) {
