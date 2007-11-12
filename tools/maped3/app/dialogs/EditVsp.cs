@@ -713,7 +713,7 @@ namespace winmaped2 {
             //render the empty area
             while (row != TilesHigh + 1) {
                 while (col != TilesWide) {
-                    pr2.Render.renderColoredStippleTile(qimg, col * 16, row * 16, pr2.Render.makeColor(0, 0, 0), pr2.Render.makeColor(192, 192, 192));
+                    Render.renderColoredStippleTile(qimg, col * 16, row * 16, pr2.Render.makeColor(0, 0, 0), pr2.Render.makeColor(192, 192, 192));
                     col++;
                 }
                 col = 0;

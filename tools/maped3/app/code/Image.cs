@@ -52,5 +52,15 @@ namespace winmaped2 {
             int offset = y * width + x;
             pixels[offset] = color;
         }
+
+        public int GetPixel(int x, int y) {
+            if (!(0 <= x && x < width) ||
+                            !(0 <= y && y < height)) {
+                throw new Exception(string.Format("SetPixel to invalid point {0},{1}", x, y));
+            }
+
+            int offset = y * width + x;
+            return pixels[offset];
+        }
     }
 }

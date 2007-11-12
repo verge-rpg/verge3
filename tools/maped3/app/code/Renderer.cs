@@ -48,6 +48,10 @@ namespace winmaped2 {
             Render.renderBox(backBuffer, x0, y0, w, h, color, op);
         }
 
+        public void renderColoredStippleTile(int x0, int y0, int color1, int color2) {
+            Render.renderColoredStippleTile(backBuffer, x0, y0, color1, color2);
+        }
+
         public void clear(int color) {
             backBuffer.clear(color);
         }
