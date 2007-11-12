@@ -512,7 +512,7 @@ namespace winmaped2 {
                             }
                             int t = (y0 + y) * TilesWide + x + x0;
                             int[] p = Global.ActiveVsp.GetTilePixels(t);
-                            ren.renderTile32(Global.ActiveVsp.GetTile(t).Image, x * 16, y * 16, true);
+                            ren.render(Global.ActiveVsp.GetTile(t).Image, x * 16, y * 16, true);
                         }
                     }
 
@@ -688,7 +688,7 @@ namespace winmaped2 {
 
             int row = 0, col = 0;
             for (int i = scrollOffset; i < parent.vsp.Tiles.Count; i++) {
-                ren.renderTile32(((Vsp24Tile)parent.vsp.Tiles[i]).Image, col * 16, row * 16, true);
+                ren.render(((Vsp24Tile)parent.vsp.Tiles[i]).Image, col * 16, row * 16, true);
 
                 if (bSelection) {
                     int xx = col;
@@ -696,7 +696,7 @@ namespace winmaped2 {
                     if (selection.getPoint(xx, yy)) {
                         int tile = originalSelection.getPointIntegerValue(xx - selection.x + originalSelection.x, yy - selection.y + originalSelection.y, this);
                         if (tile != -1) {
-                            ren.renderTile32(((Vsp24Tile)parent.vsp.Tiles[tile]).Image, col * 16, row * 16, true);
+                            ren.render(((Vsp24Tile)parent.vsp.Tiles[tile]).Image, col * 16, row * 16, true);
                         }
                     }
                 }

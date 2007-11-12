@@ -167,7 +167,7 @@ namespace winmaped2 {
             return new Bitmap(width, height, PixelFormat.Format32bppArgb);
         }
 
-        public static int HsbIntermediateValuesToRgbComponent(float m1, float m2, float h) {
+        private static int HsbIntermediateValuesToRgbComponent(float m1, float m2, float h) {
             if (h < 0) {
                 h++;
             } else if (h > 1) {
@@ -180,7 +180,7 @@ namespace winmaped2 {
             return (int)(255 * m1);
         }
 
-        public static int HsbToColor(float h, float s, float b) {
+        private static int HsbToColor(float h, float s, float b) {
             float m1;
             float m2;
 
@@ -200,8 +200,7 @@ namespace winmaped2 {
         }
 
         public unsafe static void render(Render.Image dest, int x, int y, Render.Image src, bool drawZero) {
-            Render.Image s = (Render.Image)src;
-            render(dest, x, y, src.Width, src.Height, s.Pixels, drawZero);
+            render(dest, x, y, src.Width, src.Height, src.Pixels, drawZero);
         }
 
         private unsafe static bool clip(ref int x0, ref int y0, ref int xlen, ref int ylen, ref int* s, ref int* d, int spitch, int dpitch, int cx1, int cx2, int cy1, int cy2) {
@@ -276,6 +275,12 @@ namespace winmaped2 {
 
                 default:
                     return 0;
+            }
+        }
+
+        public static unsafe void render(Render.Image dest, int x, int y, int xlen, int ylen, int[] pixels, bool drawZero) {
+            fixed (int* p = pixels) {
+                render(dest, x, y, xlen, ylen, p, drawZero);
             }
         }
 
@@ -417,6 +422,12 @@ namespace winmaped2 {
             }
         }
 
+        public unsafe static void renderObsTile(Render.Image img, int x0, int y0, int[] obsdata, bool clearbuf, int color) {
+            fixed (int* p = obsdata) {
+                renderObsTile(img, x0, y0, p, clearbuf, color);
+            }
+        }
+
         public unsafe static void renderObsTile(Render.Image img, int x0, int y0, int* obsdata, bool clearbuf, int color) {
             int xlen = 16;
             int ylen = 16;
@@ -453,6 +464,12 @@ namespace winmaped2 {
                     s += spitch;
                     d += dpitch;
                 }
+            }
+        }
+
+        public unsafe static void renderObsTileFast(Render.Image img, int x0, int y0, int[] obsdata, bool clearbuf) {
+            fixed (int* p = obsdata) {
+                renderObsTileFast(img, x0, y0, p, clearbuf);
             }
         }
 
