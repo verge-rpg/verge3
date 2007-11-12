@@ -501,8 +501,6 @@ namespace winmaped2 {
 
             if (s.height > 0 && s.width > 0) {
                 using (Render.Image img = Render.Image.create(s.width * 16, s.height * 16)) {
-                    Renderer ren = new Renderer(img);
-
                     int y0 = s.y;
                     int x0 = s.x;
                     for (int y = 0; y < s.height; y++) {
@@ -512,7 +510,7 @@ namespace winmaped2 {
                             }
                             int t = (y0 + y) * TilesWide + x + x0;
                             int[] p = Global.ActiveVsp.GetTilePixels(t);
-                            ren.render(Global.ActiveVsp.GetTile(t).Image, x * 16, y * 16, true);
+                            Render.render(img, x * 16, y * 16, Global.ActiveVsp.GetTile(t).Image, true);
                         }
                     }
 
@@ -684,11 +682,10 @@ namespace winmaped2 {
 
             Bitmap bmp = new Bitmap(TilesWide * 16, (TilesHigh + 1) * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             Render.Image qimg = Render.Image.lockBitmap(bmp);
-            Renderer ren = new Renderer(qimg);
 
             int row = 0, col = 0;
             for (int i = scrollOffset; i < parent.vsp.Tiles.Count; i++) {
-                ren.render(((Vsp24Tile)parent.vsp.Tiles[i]).Image, col * 16, row * 16, true);
+                Render.render(qimg, col * 16, row * 16, parent.vsp.GetTile(i).Image, true);
 
                 if (bSelection) {
                     int xx = col;
@@ -696,7 +693,7 @@ namespace winmaped2 {
                     if (selection.getPoint(xx, yy)) {
                         int tile = originalSelection.getPointIntegerValue(xx - selection.x + originalSelection.x, yy - selection.y + originalSelection.y, this);
                         if (tile != -1) {
-                            ren.render(((Vsp24Tile)parent.vsp.Tiles[tile]).Image, col * 16, row * 16, true);
+                            Render.render(qimg, col * 16, row * 16, parent.vsp.GetTile(tile).Image, true);
                         }
                     }
                 }
@@ -719,7 +716,6 @@ namespace winmaped2 {
                 col = 0;
                 row++;
             }
-
 
             qimg.Dispose();
             e.Graphics.DrawImage(bmp, 0, 0, TilesWide * 16, (TilesHigh + 1) * 16);

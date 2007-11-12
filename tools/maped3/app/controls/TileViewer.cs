@@ -34,23 +34,22 @@ namespace winmaped2 {
             Bitmap bmp = Render.createBitmap(16, 16);
 
             using (Render.Image img = Render.Image.lockBitmap(bmp)) {
-                Renderer ren = new Renderer(img);
                 if (TileSourceType == SourceType.Vsp) {
                     if (active_tile != null) {
                         if (!bAnimate) {
-                            ren.render(active_tile.Image, 0, 0, true);
+                            Render.render(img, 0, 0, active_tile.Image, true);
                         } else {
                             int frame = Global.FrameCalc.getframe(atx);
-                            ren.render(((Vsp24Tile)Global.ActiveMap.vsp.Tiles[frame]).Image, 0, 0, true);
+                            Render.render(img, 0, 0, Global.ActiveMap.vsp.GetTile(frame).Image, true);
                         }
                     } else {
                         img.clear(BLACK);
                     }
                 } else {
                     if (active_obstile != null) {
-                        ren.renderObsTile(active_obstile.Image, 0, 0, true, UserPrefs.ObsColor);
+                        Render.renderObsTile(img, 0, 0, active_obstile.Image, true, UserPrefs.ObsColor);
                     } else {
-                        ren.clear(BLACK);
+                        img.clear(BLACK);
                     }
                 }
             }

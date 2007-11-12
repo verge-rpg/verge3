@@ -65,35 +65,35 @@ namespace winmaped2 {
         }
 
         int counter = 0;
-        void renderLayer(Renderer ren, MapLayer mapLayer, int px, int py, bool drawZero) {
+        void renderLayer(Render.Image backBuffer, MapLayer mapLayer, int px, int py, bool drawZero) {
             switch (mapLayer.type) {
                 case LayerType.Tile:
-                    renderTileLayer(ren, mapLayer, ParentMap.vsp, px, py, drawZero);
+                    renderTileLayer(backBuffer, mapLayer, ParentMap.vsp, px, py, drawZero);
                     break;
                 case LayerType.Zone:
-                    renderZoneLayer(ren, mapLayer, px, py);
+                    renderZoneLayer(backBuffer, mapLayer, px, py);
                     break;
                 case LayerType.Obs:
-                    renderObstructionLayer(ren, mapLayer, px, py);
+                    renderObstructionLayer(backBuffer, mapLayer, px, py);
                     break;
                 default:
                     break;
             }
         }
 
-        private void renderObstructionLayer(Renderer ren, MapLayer mapLayer, int px, int py) {
+        private void renderObstructionLayer(Render.Image backBuffer, MapLayer mapLayer, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
             int mtoy = py & 15;
 
-            Render.Image img = ren.BackBuffer;
+
 
             //we add 2; one for the case where we are scrolled a little bit
             //(and so parts of two tiles are drawn instead of one complete)
             //and one for the case where the screen is a funny size and a remainder bit is shown
-            int tw = ren.Width / 16 + 2;
-            int th = ren.Height / 16 + 2;
+            int tw = backBuffer.Width / 16 + 2;
+            int th = backBuffer.Height / 16 + 2;
 
             int layerWidth = mapLayer.Width;
             int layerHeight = mapLayer.Height;
@@ -115,7 +115,7 @@ namespace winmaped2 {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         tile = tileMap[tp++];
                         if (0 < tile && tile < ParentMap.vsp.ObstructionTiles.Count) {
-                            ren.renderObsTile(((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Image, cpx, cpy, false, UserPrefs.ObsColor);
+                            Render.renderObsTile(backBuffer, cpx, cpy, ((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Image, false, UserPrefs.ObsColor);
                         }
                     }
                 }
@@ -125,14 +125,14 @@ namespace winmaped2 {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         tile = tileMap[tp++];
                         if (0 < tile && tile < ParentMap.vsp.ObstructionTiles.Count) {
-                            ren.renderObsTileFast(((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Image, cpx, cpy, false);
+                            Render.renderObsTileFast(backBuffer, cpx, cpy, ((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Image, false);
                         }
                     }
                 }
             }
         }
 
-        private void renderZoneLayer(Renderer ren, MapLayer mapLayer, int px, int py) {
+        private void renderZoneLayer(Render.Image backBuffer, MapLayer mapLayer, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -141,8 +141,8 @@ namespace winmaped2 {
             //we add 2; one for the case where we are scrolled a little bit
             //(and so parts of two tiles are drawn instead of one complete)
             //and one for the case where the screen is a funny size and a remainder bit is shown
-            int tw = ren.Width / 16 + 2;
-            int th = ren.Height / 16 + 2;
+            int tw = backBuffer.Width / 16 + 2;
+            int th = backBuffer.Height / 16 + 2;
 
             int layerWidth = mapLayer.Width;
             int layerHeight = mapLayer.Height;
@@ -157,28 +157,30 @@ namespace winmaped2 {
             int xmin = -mtox;
             int xmax = xmin + tw * 16;
 
+            const int WHITE = unchecked((int)0xFFFFFFFF);
+
             short[] tileMap = mapLayer.Data;
             for (int ty = 0; ty < th; ty++, cpy += 16) {
                 tp = (ty + mty) * layerWidth + mtx;
                 if (Global.RenderOptions.bTranslucentEffects) {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         if ((tile = tileMap[tp++]) != 0) {
-                            ren.renderColoredTile_50Alpha(cpx, cpy, UserPrefs.ZonesColor);
-                            ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
+                            Render.renderColoredTile_50Alpha(backBuffer, cpx, cpy, UserPrefs.ZonesColor);
+                            Render.renderNumber(backBuffer, cpx, cpy, tile, WHITE);
                         }
                     }
                 } else {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         if ((tile = tileMap[tp++]) != 0) {
-                            ren.renderColoredTile(cpx, cpy, UserPrefs.ZonesColor);
-                            ren.renderNumber(cpx, cpy, tile, unchecked((int)0xFFFFFFFF));
+                            Render.renderColoredTile(backBuffer, cpx, cpy, UserPrefs.ZonesColor);
+                            Render.renderNumber(backBuffer, cpx, cpy, tile, WHITE);
                         }
                     }
                 }
             }
         }
 
-        private void renderTileLayer(Renderer ren, MapLayer layer, Vsp24 vsp, int px, int py, bool drawZero) {
+        private void renderTileLayer(Render.Image backBuffer, MapLayer layer, Vsp24 vsp, int px, int py, bool drawZero) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -187,8 +189,8 @@ namespace winmaped2 {
             //we add 2; one for the case where we are scrolled a little bit
             //(and so parts of two tiles are drawn instead of one complete)
             //and one for the case where the screen is a funny size and a remainder bit is shown
-            int tw = ren.Width / 16 + 2;
-            int th = ren.Height / 16 + 2;
+            int tw = backBuffer.Width / 16 + 2;
+            int th = backBuffer.Height / 16 + 2;
 
             int layerWidth = layer.Width;
             int layerHeight = layer.Height;
@@ -213,20 +215,19 @@ namespace winmaped2 {
                     }
 
                     if (drawZero || tile != 0 && tile < vsp.tileCount) {
-                        ren.render(vsp.GetTile(tile).Image, cpx, cpy, false);
+                        Render.render(backBuffer, cpx, cpy, vsp.GetTile(tile).Image, false);
                     }
                 }
             }
         }
 
-        private void renderEntities(Renderer ren, MapLayer ml, int px, int py) {
+        private void renderEntities(Render.Image backBuffer, MapLayer ml, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
             int mtoy = py & 15;
-            Render.Image img = ren.BackBuffer;
-            int tw = ren.Width / 16 + 2;
-            int th = ren.Height / 16 + 2;
+            int tw = backBuffer.Width / 16 + 2;
+            int th = backBuffer.Height / 16 + 2;
 
             foreach (MapEntity me in ParentMap.Entities) {
                 int tx = me.TileX;
@@ -235,8 +236,8 @@ namespace winmaped2 {
                 if (tx >= mtx && tx <= mtx + tw && ty >= mty && ty <= mty + th) {
                     int cx = -mtox + (tx - mtx) * 16;
                     int cy = -mtoy + (ty - mty) * 16;
-                    ren.renderColoredTile_50Alpha(cx, cy, UserPrefs.EntsColor);
-                    ren.renderNumber(cx + 4, cy + 4, me.ID, unchecked((int)0xFFFFFFFF));
+                    Render.renderColoredTile_50Alpha(backBuffer, cx, cy, UserPrefs.EntsColor);
+                    Render.renderNumber(backBuffer, cx + 4, cy + 4, me.ID, unchecked((int)0xFFFFFFFF));
                 }
             }
         }
@@ -257,8 +258,6 @@ namespace winmaped2 {
 
             Render.Image img = Render.Image.lockBitmap(bmp);
             img.clear(unchecked((int)0xFF000000));
-
-            Renderer ren = new Renderer(img);
 
             Map mOld = null;
             MapLayer mlOld = null;
@@ -288,7 +287,7 @@ namespace winmaped2 {
                     if (!ParentMap.UIState[c].bRender) continue;
 
                 if (mlCurr.type == LayerType.Entity)
-                    renderEntities(ren, mlCurr, xScroll, yScroll);
+                    renderEntities(img, mlCurr, xScroll, yScroll);
 
                 if (mlCurr.type == LayerType.Tile || mlCurr.type == LayerType.Obs || mlCurr.type == LayerType.Zone) {
                     if (bDragging && currMapEventInfo.editedLayerIndex == c && currMapTool is Plugins.IMapPainter) {
@@ -300,11 +299,11 @@ namespace winmaped2 {
                         ((Plugins.IMapPainter)currMapTool).tweakLayer(currMapEventInfo);
                         currMapEventInfo.editedLayer = mlOld2;
                         currMapEventInfo.bTweak = false;
-                        renderLayer(ren, mlTemp, xScroll, yScroll, bottomlayer);
+                        renderLayer(img, mlTemp, xScroll, yScroll, bottomlayer);
 
                         ((Plugins.IMapPainter)currMapTool).paintMap(currMapEventInfo, img);
                     } else {
-                        renderLayer(ren, mlCurr, xScroll, yScroll, bottomlayer);
+                        renderLayer(img, mlCurr, xScroll, yScroll, bottomlayer);
                     }
                     if (bottomlayer) bottomlayer = false;
                 }

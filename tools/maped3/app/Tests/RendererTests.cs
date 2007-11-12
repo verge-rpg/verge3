@@ -17,22 +17,11 @@ namespace winmaped2.Tests {
             Image img = new Image(16, 16, pixels);
 
             Render.Image destImage = Render.Image.create(16, 16);
-            Renderer ren = new Renderer(destImage);
 
-            ren.render(img, 0, 0, true);
+            Render.render(destImage, 0, 0, img, true);
 
-            int[] resultPixels = ren.BackBuffer.getArray();
+            int[] resultPixels = destImage.getArray();
             Assert.AreEqual(pixels, resultPixels);
-        }
-
-        [Test]
-        public void RenderSizeIsImageSize() {
-            const int width = 42;
-            const int height = 99;
-            Render.Image backBuffer = Render.Image.create(width, height);
-            Renderer ren = new Renderer(backBuffer);
-            Assert.AreEqual(ren.Width, backBuffer.Width);
-            Assert.AreEqual(ren.Height, backBuffer.Height);
         }
 
         [Test]
@@ -40,8 +29,7 @@ namespace winmaped2.Tests {
             Image src = new Image(16, 16, CreatePixels(16, 16, MAGENTA));
             Render.Image dest = Render.Image.create(16, 16);
 
-            Renderer ren = new Renderer(dest);
-            ren.render(src, 0, 0, true);
+            Render.render(dest, 0, 0, src, true);
             Assert.AreEqual(dest.getArray(), src.Pixels);
         }
 
@@ -51,17 +39,15 @@ namespace winmaped2.Tests {
             Render.Image dest = Render.Image.create(16, 16);
             dest.clear(BLACK);
 
-            Renderer ren = new Renderer(dest);
-            ren.render(src, 0, 0, false);
+            Render.render(dest, 0, 0, src, false);
             Assert.AreEqual(dest.getArray(), CreatePixels(16, 16, BLACK));
         }
 
         [Test]
         public void RenderStipple() {
             Render.Image dest = Render.Image.create(16, 16);
-            Renderer ren = new Renderer(dest);
 
-            ren.renderColoredStippleTile(0, 0, GREEN, WHITE);
+            Render.renderColoredStippleTile(dest, 0, 0, GREEN, WHITE);
             Assert.AreEqual(WHITE, dest.getPixel(0, 0));
             Assert.AreEqual(GREEN, dest.getPixel(1, 0));
             Assert.AreEqual(WHITE, dest.getPixel(2, 0));
@@ -74,10 +60,9 @@ namespace winmaped2.Tests {
         [Test]
         public void RenderStippleClipping() {
             Render.Image dest = Render.Image.create(14, 14);
-            Renderer ren = new Renderer(dest);
-            ren.clear(BLACK);
+            dest.clear(BLACK);
 
-            ren.renderColoredStippleTile(4, 4, GREEN, WHITE);
+            Render.renderColoredStippleTile(dest, 4, 4, GREEN, WHITE);
             Assert.AreEqual(BLACK, dest.getPixel(0, 0));
             Assert.AreEqual(BLACK, dest.getPixel(1, 1));
             Assert.AreEqual(BLACK, dest.getPixel(2, 2));

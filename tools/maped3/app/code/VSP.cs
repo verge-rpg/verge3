@@ -367,11 +367,10 @@ namespace winmaped2 {
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
             using (Render.Image img = Render.Image.lockBitmap(bmp)) {
-                Renderer ren = new Renderer(img);
                 // render stuffs
                 for (int y = 0; y < th; y++) {
                     for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
-                        ren.render(((Vsp24Tile)Tiles[y * 20 + x]).Image, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), true);
+                        Render.render(img, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), GetTile(y * 20 + x).Image, true);
                     }
                 }
             }
@@ -392,12 +391,10 @@ namespace winmaped2 {
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
             using (Render.Image img = Render.Image.lockBitmap(bmp)) {
-                Renderer ren = new Renderer(img);
-
                 // render stuffs
                 for (int y = 0; y < th; y++) {
                     for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
-                        ren.render(((Vsp24Tile)Tiles[y * 20 + x]).Image, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), true);
+                        Render.render(img, GridSize + x * (16 + GridSize), GridSize + y * (16 + GridSize), GetTile(y * 20 + x).Image, true);
                     }
                 }
             }

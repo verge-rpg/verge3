@@ -199,6 +199,10 @@ namespace winmaped2 {
             return (int)((0xFF000000) | ((uint)r << 16) | ((uint)g << 8) | ((uint)b));
         }
 
+        public static void render(Render.Image dest, int x, int y, winmaped2.Image src, bool drawZero) {
+            render(dest, x, y, src.Width, src.Height, src.Pixels, drawZero);
+        }
+
         public unsafe static void render(Render.Image dest, int x, int y, Render.Image src, bool drawZero) {
             render(dest, x, y, src.Width, src.Height, src.Pixels, drawZero);
         }
@@ -422,6 +426,10 @@ namespace winmaped2 {
             }
         }
 
+        public unsafe static void renderObsTile(Render.Image img, int x0, int y0, winmaped2.Image src, bool clearbuf, int color) {
+            renderObsTile(img, x0, y0, src.Pixels, clearbuf, color);
+        }
+
         public unsafe static void renderObsTile(Render.Image img, int x0, int y0, int[] obsdata, bool clearbuf, int color) {
             fixed (int* p = obsdata) {
                 renderObsTile(img, x0, y0, p, clearbuf, color);
@@ -465,6 +473,10 @@ namespace winmaped2 {
                     d += dpitch;
                 }
             }
+        }
+
+        public unsafe static void renderObsTileFast(Render.Image img, int x0, int y0, winmaped2.Image src, bool clearbuf) {
+            renderObsTileFast(img, x0, y0, src.Pixels, clearbuf);
         }
 
         public unsafe static void renderObsTileFast(Render.Image img, int x0, int y0, int[] obsdata, bool clearbuf) {

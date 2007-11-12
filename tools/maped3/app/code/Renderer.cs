@@ -4,7 +4,7 @@ using System.Text;
 
 namespace winmaped2 {
     class Renderer {
-        public Renderer(Render.Image backBuffer) {
+        private Renderer(Render.Image backBuffer) {
             this.backBuffer = backBuffer;
         }
 

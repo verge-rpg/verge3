@@ -164,22 +164,20 @@ namespace winmaped2 {
 
             Bitmap bmp = new Bitmap(TilesWide * 16, TilesHigh * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             using (Render.Image qimg = Render.Image.lockBitmap(bmp)) {
-                Renderer ren = new Renderer(qimg);
-
                 if (ControllerType == VSPController.ControllerType.VSP) {
                     int row = 0, col = 0;
                     for (int i = scrollOffset / 16 * 20; i < vsp.Tiles.Count; i++) {
-                        ren.render(vsp.GetTile(i).Image, col * 16, row * 16, true);
+                        Render.render(qimg, col * 16, row * 16, vsp.GetTile(i).Image, true);
                         if (i == st0) {
                             if (controller_mode != VSPController.ControllerMode.ViewOnly) {
-                                ren.renderBox(col * 16, row * 16, 16, 16, WHITE, Render.PixelOp.Src);
-                                ren.renderBox(col * 16 + 1, row * 16 + 1, 14, 14, WHITE, Render.PixelOp.Src);
+                                Render.renderBox(qimg, col * 16, row * 16, 16, 16, WHITE, Render.PixelOp.Src);
+                                Render.renderBox(qimg, col * 16 + 1, row * 16 + 1, 14, 14, WHITE, Render.PixelOp.Src);
                             }
                         }
                         if (i == st1) {
                             if (controller_mode == VSPController.ControllerMode.SelectorDual) {
-                                ren.renderBox(col * 16 + 2, row * 16 + 2, 12, 12, WHITE, Render.PixelOp.Src);
-                                ren.renderBox(col * 16 + 3, row * 16 + 3, 10, 10, WHITE, Render.PixelOp.Src);
+                                Render.renderBox(qimg, col * 16 + 2, row * 16 + 2, 12, 12, WHITE, Render.PixelOp.Src);
+                                Render.renderBox(qimg, col * 16 + 3, row * 16 + 3, 10, 10, WHITE, Render.PixelOp.Src);
                             }
                         }
                         col++;
@@ -195,7 +193,7 @@ namespace winmaped2 {
                     int row = 0, col = 0;
                     for (int i = scrollOffset / 16 * 20; i < vsp.ObstructionTiles.Count; i++) {
                         VspObstructionTile vot = ((VspObstructionTile)vsp.ObstructionTiles[i]);
-                        ren.renderObsTile(vot.Image, col * 16, row * 16, true, UserPrefs.ObsColor);
+                        Render.renderObsTile(qimg, col * 16, row * 16, vot.Image, true, UserPrefs.ObsColor);
                         if (i == st0) {
                             if (controller_mode != VSPController.ControllerMode.ViewOnly) {
                                 Render.renderBox(qimg, col * 16, row * 16, 16, 16, WHITE, Render.PixelOp.Src);
