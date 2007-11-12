@@ -153,8 +153,29 @@ namespace winmaped2 {
             pr2.Render.renderChrFrame(img, x0, y0, w, h, framedata, palette);
         }
 
-        public static void renderColoredStippleTile(pr2.Render.Image img, int x0, int y0, int color1, int color2) {
-            pr2.Render.renderColoredStippleTile(img, x0, y0, color1, color2);
+        public unsafe static void renderColoredStippleTile(pr2.Render.Image img, int x0, int y0, int color1, int color2) {
+            int xlen = 16;
+            int ylen = 16;
+
+            int* s = null;
+            int* d = img.buf;
+
+            int dpitch = img.pitch;
+
+            if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, 0, dpitch, 0, img.width, 0, img.height)) {
+                return;
+            }
+
+            for (; ylen > 0; ylen--) {
+                for (int x = 0; x < xlen; x++) {
+                    if (((ylen ^ x) & 1) != 0) {
+                        d[x] = color1;
+                    } else {
+                        d[x] = color2;
+                    }
+                }
+                d += dpitch;
+            }
         }
 
         public static void renderColoredTile(pr2.Render.Image img, int x0, int y0, int color) {

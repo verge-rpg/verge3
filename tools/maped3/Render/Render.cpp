@@ -107,6 +107,10 @@ namespace pr2
             }
 
 
+            int getPixel(int x, int y) {
+                return buf[y * pitch + x];
+            }
+
             static Image __gc* create(Bitmap __gc* bmp)
             {
                 int w = bmp->Width;
