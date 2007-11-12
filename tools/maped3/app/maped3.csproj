@@ -139,7 +139,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="code\PrimitiveDrawer.cs" />
-    <Compile Include="code\Renderer.cs" />
     <Compile Include="code\ThrottleBuffer.cs" />
     <Compile Include="code\UserPrefs.cs">
       <SubType>Code</SubType>
