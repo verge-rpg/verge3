@@ -2,7 +2,7 @@
 
 namespace pr2
 {
-	__gc class BiosFont
+	public __gc class BiosFont
 	{
 	public:
 		static const byte xx = 1, zz = 0;

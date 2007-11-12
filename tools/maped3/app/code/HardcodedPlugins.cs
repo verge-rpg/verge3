@@ -137,15 +137,8 @@ namespace winmaped2.map_plugins {
                     mei.setTile(x, y, 0);
             }
         }
-        protected unsafe void cbPaint(int x, int y, object tag) {
-            return;
-            //			if(bt.lucent)
-            //				fixed(int *tiledata = mei.tileRec.Pixels)
-            //					pr2.Render.renderTile32_Mix(img,x*16 - mei.xScroll,y*16 - mei.yScroll,tiledata,false,pr2.Render.PixelOp.Alpha50);
-            //			else
-            //				fixed(int *tiledata = mei.tileRec.Pixels)
-            //					pr2.Render.renderTile32(img,x*16 - mei.xScroll,y*16 - mei.yScroll,tiledata,false);
 
+        protected void cbPaint(int x, int y, object tag) {
         }
 
         protected void cbTweak(int x, int y, object tag) {

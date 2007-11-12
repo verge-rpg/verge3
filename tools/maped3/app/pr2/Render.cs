@@ -186,16 +186,106 @@ namespace winmaped2 {
             pr2.Render.renderColorPicker(img, h);
         }
 
-        public static void renderNumber(pr2.Render.Image img, int x0, int y0, int number, int color) {
-            pr2.Render.renderNumber(img, x0, y0, number, color);
+        public unsafe static void renderNumber(pr2.Render.Image img, int x0, int y0, int number, int color) {
+            int height = img.height;
+            int width = img.width;
+            int* pixels = img.buf;
+
+            char[] digits = number.ToString().ToCharArray();
+            foreach (char c in digits) {
+                int cn = c - '0';
+                byte[] ba = pr2.BiosFont.Number(cn);
+
+                int glyphWidth = ba[0];
+                int glyphHeight = (ba.Length - 1) / glyphWidth;
+
+                for (int y = 0; y < glyphHeight; y++) {
+                    if (y0 + y < 0 || y0 + y >= height) continue;
+                    for (int x = 0; x < glyphWidth; x++) {
+                        if (x0 + x < 0 || x0 + x >= width) continue;
+                        if (ba[1 + (y * glyphWidth) + x] == 1) {
+                            pixels[(y0 + y) * width + (x0 + x)] = color;
+                        }
+                    }
+                }
+                x0 += glyphWidth + 1;
+            }
         }
 
         public unsafe static void renderObsTile(pr2.Render.Image img, int x0, int y0, int* obsdata, bool clearbuf, int color) {
-            pr2.Render.renderObsTile(img, x0, y0, obsdata, clearbuf, color);
+            int xlen = 16;
+            int ylen = 16;
+
+            const int WHITE = unchecked((int)0xFFFFFFFF);
+            const int BLACK = unchecked((int)0xFF000000);
+
+            int* s = obsdata;
+            int* d = img.buf;
+
+            const int spitch = 16;
+            int dpitch = img.pitch;
+
+            if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, img.width, 0, img.height)) {
+                return;
+            }
+
+            if (clearbuf) {
+                for (; ylen > 0; ylen--) {
+                    for (int x = 0; x < xlen; x++) {
+                        d[x] = (s[x] != 0) ? WHITE : BLACK;
+                    }
+                    s += spitch;
+                    d += dpitch;
+                }
+            } else {
+                for (; ylen > 0; ylen--) {
+                    for (int x = 0; x < xlen; x++) {
+                        if (s[x] != 0) {
+                            handlePixel(color, ref d[x], (int)pr2.Render.PixelOp.Alpha50, true, false);
+                        }
+                    }
+
+                    s += spitch;
+                    d += dpitch;
+                }
+            }
         }
 
         public unsafe static void renderObsTileFast(pr2.Render.Image img, int x0, int y0, int* obsdata, bool clearbuf) {
-            pr2.Render.renderObsTileFast(img, x0, y0, obsdata, clearbuf);
+            int xlen = 16;
+            int ylen = 16;
+
+            const int WHITE = unchecked((int)0xFFFFFFFF);
+            const int BLACK = unchecked((int)0xFF000000);
+
+            int* s = obsdata;
+            int* d = img.buf;
+
+            const int spitch = 16;
+            int dpitch = img.pitch;
+
+            if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, img.width, 0, img.height)) {
+                return;
+            }
+
+            if (clearbuf) {
+                for (; ylen > 0; ylen--) {
+                    for (int x = 0; x < xlen; x++) {
+                        d[x] = (s[x] != 0) ? WHITE : BLACK;
+                    }
+                    s += spitch;
+                    d += dpitch;
+                }
+            } else {
+                for (; ylen > 0; ylen--) {
+                    for (int x = 0; x < xlen; x++) {
+                        if (s[x] != 0) d[x] = WHITE;
+                    }
+                    s += spitch;
+                    d += dpitch;
+                }
+            }
+
         }
 
         public unsafe static void renderSolid(pr2.Render.Image img, int x0, int y0, int w, int h, int color, pr2.Render.PixelOp op) {
@@ -216,14 +306,6 @@ namespace winmaped2 {
 
         public unsafe static void renderTile32(pr2.Render.Image img, int x0, int y0, int* tiledata, bool drawZero) {
             render(img, x0, y0, 16, 16, tiledata, drawZero);
-        }
-
-        public unsafe static void renderTile32_Mix(pr2.Render.Image img, int x0, int y0, int* tiledata, bool drawZero, pr2.Render.PixelOp op) {
-            pr2.Render.renderTile32_Mix(img, x0, y0, tiledata, drawZero, op);
-        }
-
-        public static void renderTileCross(pr2.Render.Image img, int x0, int y0) {
-            pr2.Render.renderTileCross(img, x0, y0);
         }
 
         public enum PixelOp {
