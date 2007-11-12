@@ -33,7 +33,7 @@ namespace winmaped2
 			return bmp;
 		}
 
-		public static pr2.Render.Image getImage()
+		public static Render.Image getImage()
 		{
 			Bitmap bmp = getBitmap();
 			if(bmp == null)
@@ -50,7 +50,7 @@ namespace winmaped2
 			System.Windows.Forms.Clipboard.SetDataObject(dobj,true);
 		}
 
-		public static void setImage(pr2.Render.Image img)
+		public static void setImage(Render.Image img)
 		{
 			Bitmap bmp = img.getBitmap();
 			setBitmap(bmp);

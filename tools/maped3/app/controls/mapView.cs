@@ -87,7 +87,7 @@ namespace winmaped2 {
             int mtox = px & 15;
             int mtoy = py & 15;
 
-            pr2.Render.Image img = ren.BackBuffer;
+            Render.Image img = ren.BackBuffer;
 
             //we add 2; one for the case where we are scrolled a little bit
             //(and so parts of two tiles are drawn instead of one complete)
@@ -224,7 +224,7 @@ namespace winmaped2 {
             int mty = py / 16;
             int mtox = px & 15;
             int mtoy = py & 15;
-            pr2.Render.Image img = ren.BackBuffer;
+            Render.Image img = ren.BackBuffer;
             int tw = ren.Width / 16 + 2;
             int th = ren.Height / 16 + 2;
 
@@ -255,7 +255,7 @@ namespace winmaped2 {
 
             Map currMap = ParentMap;
 
-            pr2.Render.Image img = Render.Image.lockBitmap(bmp);
+            Render.Image img = Render.Image.lockBitmap(bmp);
             img.clear(unchecked((int)0xFF000000));
 
             Renderer ren = new Renderer(img);

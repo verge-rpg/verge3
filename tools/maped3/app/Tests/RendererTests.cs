@@ -16,7 +16,7 @@ namespace winmaped2.Tests {
             }
             Image img = new Image(16, 16, pixels);
 
-            pr2.Render.Image destImage = Render.Image.create(16, 16);
+            Render.Image destImage = Render.Image.create(16, 16);
             Renderer ren = new Renderer(destImage);
 
             ren.renderTile32(img, 0, 0, true);
@@ -29,7 +29,7 @@ namespace winmaped2.Tests {
         public void RenderSizeIsImageSize() {
             const int width = 42;
             const int height = 99;
-            pr2.Render.Image backBuffer = Render.Image.create(width, height);
+            Render.Image backBuffer = Render.Image.create(width, height);
             Renderer ren = new Renderer(backBuffer);
             Assert.AreEqual(ren.Width, backBuffer.Width);
             Assert.AreEqual(ren.Height, backBuffer.Height);
@@ -38,7 +38,7 @@ namespace winmaped2.Tests {
         [Test]
         public void RenderDrawsDeathMagenta() {
             Image src = new Image(16, 16, CreatePixels(16, 16, MAGENTA));
-            pr2.Render.Image dest = Render.Image.create(16, 16);
+            Render.Image dest = Render.Image.create(16, 16);
 
             Renderer ren = new Renderer(dest);
             ren.render(src, 0, 0, true);
@@ -48,7 +48,7 @@ namespace winmaped2.Tests {
         [Test]
         public void RenderSkipsDeathMagenta() {
             Image src = new Image(16, 16, CreatePixels(16, 16, MAGENTA));
-            pr2.Render.Image dest = Render.Image.create(16, 16);
+            Render.Image dest = Render.Image.create(16, 16);
             dest.clear(BLACK);
 
             Renderer ren = new Renderer(dest);
@@ -58,7 +58,7 @@ namespace winmaped2.Tests {
 
         [Test]
         public void RenderStipple() {
-            pr2.Render.Image dest = Render.Image.create(16, 16);
+            Render.Image dest = Render.Image.create(16, 16);
             Renderer ren = new Renderer(dest);
 
             ren.renderColoredStippleTile(0, 0, GREEN, WHITE);
@@ -73,7 +73,7 @@ namespace winmaped2.Tests {
 
         [Test]
         public void RenderStippleClipping() {
-            pr2.Render.Image dest = Render.Image.create(14, 14);
+            Render.Image dest = Render.Image.create(14, 14);
             Renderer ren = new Renderer(dest);
             ren.clear(BLACK);
 

@@ -366,7 +366,7 @@ namespace winmaped2 {
 
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            using (pr2.Render.Image img = Render.Image.lockBitmap(bmp)) {
+            using (Render.Image img = Render.Image.lockBitmap(bmp)) {
                 Renderer ren = new Renderer(img);
                 // render stuffs
                 for (int y = 0; y < th; y++) {
@@ -391,7 +391,7 @@ namespace winmaped2 {
             int w = 320 + (GridSize * 21);
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            using (pr2.Render.Image img = Render.Image.lockBitmap(bmp)) {
+            using (Render.Image img = Render.Image.lockBitmap(bmp)) {
                 Renderer ren = new Renderer(img);
 
                 // render stuffs

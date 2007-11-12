@@ -91,7 +91,7 @@ namespace winmaped2
 		public interface IMapPainter
 		{
 			void tweakLayer(MapEventInfo mei);
-			void paintMap(MapEventInfo mei, pr2.Render.Image img);
+			void paintMap(MapEventInfo mei, Render.Image img);
 			void paintWindow(MapEventInfo mei, Graphics g);
 		}
 

@@ -100,10 +100,6 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\Render\Render.vcproj">
-      <Project>{1808FF4E-64E7-473E-A0BD-D9C36945E7CB}</Project>
-      <Name>Render</Name>
-    </ProjectReference>
     <ProjectReference Include="..\zlib\zlib.net.vcproj">
       <Name>zlib.net</Name>
       <Project>{1C1C2264-1C1F-4CC2-8747-FE3781AA1BF0}</Project>
@@ -271,6 +267,7 @@
     <Compile Include="HardcodedPluginControlPanels\ZoneEditorForm.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="pr2\BiosFont.cs" />
     <Compile Include="pr2\Render.cs" />
     <Compile Include="Tests\ImageTest.cs" />
     <Compile Include="Tests\RendererTests.cs" />

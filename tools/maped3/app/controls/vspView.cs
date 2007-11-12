@@ -163,7 +163,7 @@ namespace winmaped2 {
             CalculateScrollValues();
 
             Bitmap bmp = new Bitmap(TilesWide * 16, TilesHigh * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            using (pr2.Render.Image qimg = Render.Image.lockBitmap(bmp)) {
+            using (Render.Image qimg = Render.Image.lockBitmap(bmp)) {
                 Renderer ren = new Renderer(qimg);
 
                 if (ControllerType == VSPController.ControllerType.VSP) {
