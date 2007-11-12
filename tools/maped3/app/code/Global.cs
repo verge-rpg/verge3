@@ -173,6 +173,7 @@ namespace winmaped2 {
             get {
                 return m_zoom;
             }
+
             set {
                 m_zoom = value;
                 if (mapViewer == null) return;
@@ -182,8 +183,11 @@ namespace winmaped2 {
                 ClipboardMapController.MapView.UpdateSize();
                 ClipboardMapController.MapView.CalculateScrollValues();
 
-                if (zoomChanged != null)
+                if( zoomChanged != null )
+                {
                     zoomChanged();
+                    MiniMap.repaint();
+                }
             }
         }
 
