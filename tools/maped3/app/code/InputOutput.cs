@@ -716,10 +716,24 @@ namespace winmaped2 {
             for (int i = 0; i < chrCount; i++) {
                 MapChr mc = new MapChr();
 
-                mc.Name = Helper.BytesToString(br.ReadBytes(60));
+                try
+                {
+                    mc.Name = Helper.BytesToFileString(br.ReadBytes(60));
+                }
+                catch (Exception e)
+                {
+                    mc.Name = "";
+
+                    /// there's no error log in maped3 yet.  I'll discuss this with the boys.  For now, ANNOYING MESSAGE BOX!
+                    /// -gru
+
+                    Errors.Error( "I/O", "Bad filename for MapChr("+i+"): " + e.Message +"\nDefaulting to empty string for file name." );
+                }
+
                 mc.ID = i;
 
-                if (mc.Name.Length > 0) {
+                if( mc.Name.Length > 0 ) 
+                {
                     FileInfo mcfi = new FileInfo(mc.Name);
                     if (ReadCHR(mcfi, mc) == 0) mc.bImageAvailable = true;
                 }
@@ -733,9 +747,9 @@ namespace winmaped2 {
             int entCount = (int)br.ReadByte();
             //Errors.Error(entCount.ToString() + ", "+br.BaseStream.Position.ToString());
 
-            for (int i = 0; i < entCount; i++) {
+            for (int i = 0; i < entCount; i++) 
+            {
                 MapEntity me = new MapEntity();
-
 
                 me.TileX = (int)br.ReadInt32();
                 me.TileY = (int)br.ReadInt32();
@@ -746,8 +760,6 @@ namespace winmaped2 {
                 //Errors.Error(""+ me.TileX+","+me.TileY+":"+xx+","+xy);
                 // ignore
                 //br.ReadBytes(4);
-
-
 
                 me.Facing = (int)br.ReadByte();
                 if (me.Facing == 0)

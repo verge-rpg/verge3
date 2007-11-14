@@ -350,15 +350,53 @@ namespace winmaped2 {
             }
             return sb.ToString();
         }
-        public static string BytesToString(byte[] ba) {
+
+
+        /// @deprecated
+        /// 
+        public static string BytesToString(byte[] ba)
+        {
             StringBuilder sb = new StringBuilder();
-            foreach (byte b in ba) {
+
+            foreach (byte b in ba)
+            {
                 if (b != 0)
                     sb.Append((char)b);
                 else break;
             }
+
             return sb.ToString();
         }
+
+        public static string BytesToFileString( byte[] ba )
+        {
+            StringBuilder sb = new StringBuilder();
+
+            foreach (byte b in ba)
+            {
+                if( b != 0 )
+                {
+                    if (b >= 33 && b <= 127)
+                    {
+                        sb.Append((char)b);
+                    }
+                    else
+                    {
+                        throw new System.InvalidOperationException( "Found an invalid byte ("+((int)b)+")." );
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return sb.ToString();
+        }
+
+
+
+
         public static ushort[] BytesToWords(byte[] ba) {
             if ((ba.Length & 0x01) == 0x01) { Errors.Error("INTERNAL ERROR", "Unaligned byte array can not be converted!"); return null; }
             ushort[] words = new ushort[ba.Length / 2];
