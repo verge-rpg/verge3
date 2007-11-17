@@ -26,7 +26,8 @@ namespace winmaped2 {
 
         private bool live { get { return ParentMap != null; } }
 
-        int last_cursorX = -1, last_cursorY = -1;
+        int last_cursorX = -1;
+        int last_cursorY = -1;
 
 
         private int cursorX, cursorY;
@@ -64,8 +65,7 @@ namespace winmaped2 {
 
         }
 
-        int counter = 0;
-        void renderLayer(pr2.RenderImage backBuffer, MapLayer mapLayer, int px, int py, bool drawZero) {
+        void renderLayer(pr2.IRenderImage backBuffer, MapLayer mapLayer, int px, int py, bool drawZero) {
             switch (mapLayer.type) {
                 case LayerType.Tile:
                     renderTileLayer(backBuffer, mapLayer, ParentMap.vsp, px, py, drawZero);
@@ -81,7 +81,7 @@ namespace winmaped2 {
             }
         }
 
-        private void renderObstructionLayer(pr2.RenderImage backBuffer, MapLayer mapLayer, int px, int py) {
+        private void renderObstructionLayer(pr2.IRenderImage backBuffer, MapLayer mapLayer, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -132,7 +132,7 @@ namespace winmaped2 {
             }
         }
 
-        private void renderZoneLayer(pr2.RenderImage backBuffer, MapLayer mapLayer, int px, int py) {
+        private void renderZoneLayer(pr2.IRenderImage backBuffer, MapLayer mapLayer, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -180,7 +180,7 @@ namespace winmaped2 {
             }
         }
 
-        private void renderTileLayer(pr2.RenderImage backBuffer, MapLayer layer, Vsp24 vsp, int px, int py, bool drawZero) {
+        private void renderTileLayer(pr2.IRenderImage backBuffer, MapLayer layer, Vsp24 vsp, int px, int py, bool drawZero) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -221,7 +221,7 @@ namespace winmaped2 {
             }
         }
 
-        private void renderEntities(pr2.RenderImage backBuffer, MapLayer ml, int px, int py) {
+        private void renderEntities(pr2.IRenderImage backBuffer, MapLayer ml, int px, int py) {
             int mtx = px / 16;
             int mty = py / 16;
             int mtox = px & 15;
@@ -246,18 +246,17 @@ namespace winmaped2 {
 
 
         protected override void OnPaint(PaintEventArgs e) {
-            if (!live)
+            if (!live) {
                 return;
-
-            counter++;
+            }
 
             int xScroll = hscrollbar.Value;
             int yScroll = vscrollbar.Value;
 
             Map currMap = ParentMap;
 
-            pr2.RenderImage img = pr2.RenderImage.lockBitmap(bmp);
-            img.clear(unchecked((int)0xFF000000));
+            pr2.IRenderImage img = pr2.RenderImage.LockBitmap(bmp);
+            img.Clear(unchecked((int)0xFF000000));
 
             Map mOld = null;
             MapLayer mlOld = null;

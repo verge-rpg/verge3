@@ -219,7 +219,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\EditVsp.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="dialogs\EditZoneWnd.cs">
       <SubType>Form</SubType>
@@ -267,6 +267,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="pr2\BiosFont.cs" />
+    <Compile Include="pr2\BufferImage.cs" />
+    <Compile Include="pr2\IRenderImage.cs" />
+    <Compile Include="pr2\LockedBitmap.cs" />
     <Compile Include="pr2\Render.cs" />
     <Compile Include="pr2\RenderImage.cs" />
     <Compile Include="Tests\ImageTest.cs" />

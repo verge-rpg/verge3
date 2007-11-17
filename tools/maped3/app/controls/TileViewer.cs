@@ -33,7 +33,7 @@ namespace winmaped2 {
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             Bitmap bmp = Render.createBitmap(16, 16);
 
-            using (pr2.RenderImage img = pr2.RenderImage.lockBitmap(bmp)) {
+            using (pr2.IRenderImage img = pr2.RenderImage.LockBitmap(bmp)) {
                 if (TileSourceType == SourceType.Vsp) {
                     if (active_tile != null) {
                         if (!bAnimate) {
@@ -43,13 +43,13 @@ namespace winmaped2 {
                             Render.render(img, 0, 0, Global.ActiveMap.vsp.GetTile(frame).Image, true);
                         }
                     } else {
-                        img.clear(BLACK);
+                        img.Clear(BLACK);
                     }
                 } else {
                     if (active_obstile != null) {
                         Render.renderObsTile(img, 0, 0, active_obstile.Image, true, UserPrefs.ObsColor);
                     } else {
-                        img.clear(BLACK);
+                        img.Clear(BLACK);
                     }
                 }
             }

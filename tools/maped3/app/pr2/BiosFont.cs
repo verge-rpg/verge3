@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace winmaped2 {
     static class BiosFont {
-        const byte xx = 1, zz = 0;
         public static byte[] Number(int num) {
             switch (num) {
                 case 0: return s0;
@@ -21,29 +17,31 @@ namespace winmaped2 {
             }
         }
 
+        const byte xx = 1;
+        const byte __ = 0;
 
         /** everything below this line is (c) vecna **/
         static byte[] s1 =
         {
                     3,
-            zz,xx,zz,
-            xx,xx,zz,
-            zz,xx,zz,
-            zz,xx,zz,
-            zz,xx,zz,
-            zz,xx,zz,
+            __,xx,__,
+            xx,xx,__,
+            __,xx,__,
+            __,xx,__,
+            __,xx,__,
+            __,xx,__,
             xx,xx,xx
         };
 
         static byte[] s2 =
         {
             4,
-            zz,xx,xx,zz,
-            xx,zz,zz,xx,
-            zz,zz,zz,xx,
-            zz,zz,zz,xx,
-            zz,zz,xx,zz,
-            zz,xx,zz,zz,
+            __,xx,xx,__,
+            xx,__,__,xx,
+            __,__,__,xx,
+            __,__,__,xx,
+            __,__,xx,__,
+            __,xx,__,__,
             xx,xx,xx,xx
         };
 
@@ -51,83 +49,83 @@ namespace winmaped2 {
         {
                 4,
             xx,xx,xx,xx,
-            zz,zz,zz,xx,
-            zz,zz,zz,xx,
-            zz,xx,xx,xx,
-            zz,zz,zz,xx,
-            zz,zz,zz,xx,
+            __,__,__,xx,
+            __,__,__,xx,
+            __,xx,xx,xx,
+            __,__,__,xx,
+            __,__,__,xx,
             xx,xx,xx,xx
         };
 
         static byte[] s4 =
         {
                 4,
-            xx,zz,xx,zz,
-            xx,zz,xx,zz,
-            xx,zz,xx,zz,
+            xx,__,xx,__,
+            xx,__,xx,__,
+            xx,__,xx,__,
             xx,xx,xx,xx,
-            zz,zz,xx,zz,
-            zz,zz,xx,zz,
-            zz,zz,xx,zz
+            __,__,xx,__,
+            __,__,xx,__,
+            __,__,xx,__
         };
 
         static byte[] s5 =
         {
                 4,
             xx,xx,xx,xx,
-            xx,zz,zz,zz,
-            xx,zz,zz,zz,
-            xx,xx,xx,zz,
-            zz,zz,zz,xx,
-            zz,zz,zz,xx,
-            xx,xx,xx,zz
+            xx,__,__,__,
+            xx,__,__,__,
+            xx,xx,xx,__,
+            __,__,__,xx,
+            __,__,__,xx,
+            xx,xx,xx,__
         };
 
         static byte[] s6 =
         {
                 4,
-            zz,xx,xx,zz,
-            xx,zz,zz,xx,
-            xx,zz,zz,zz,
-            xx,xx,xx,zz,
-            xx,zz,zz,xx,
-            xx,zz,zz,xx,
-            zz,xx,xx,zz
+            __,xx,xx,__,
+            xx,__,__,xx,
+            xx,__,__,__,
+            xx,xx,xx,__,
+            xx,__,__,xx,
+            xx,__,__,xx,
+            __,xx,xx,__
         };
 
         static byte[] s7 =
         {
                 3,
             xx,xx,xx,
-            zz,zz,xx,
-            zz,zz,xx,
-            zz,xx,zz,
-            zz,xx,zz,
-            zz,xx,zz,
-            zz,xx,zz
+            __,__,xx,
+            __,__,xx,
+            __,xx,__,
+            __,xx,__,
+            __,xx,__,
+            __,xx,__
         };
 
         static byte[] s8 =
         {
                 4,
-            zz,xx,xx,zz,
-            xx,zz,zz,xx,
-            xx,zz,zz,xx,
-            zz,xx,xx,zz,
-            xx,zz,zz,xx,
-            xx,zz,zz,xx,
-            zz,xx,xx,zz
+            __,xx,xx,__,
+            xx,__,__,xx,
+            xx,__,__,xx,
+            __,xx,xx,__,
+            xx,__,__,xx,
+            xx,__,__,xx,
+            __,xx,xx,__
         };
 
         static byte[] s9 = 
         {
                 3,
             xx,xx,xx,
-            xx,zz,xx,
-            xx,zz,xx,
+            xx,__,xx,
+            xx,__,xx,
             xx,xx,xx,
-            zz,zz,xx,
-            zz,zz,xx,
+            __,__,xx,
+            __,__,xx,
             xx,xx,xx
         };
 
@@ -135,11 +133,11 @@ namespace winmaped2 {
         {
                 3,
             xx,xx,xx,
-            xx,zz,xx,
-            xx,zz,xx,
-            xx,zz,xx,
-            xx,zz,xx,
-            xx,zz,xx,
+            xx,__,xx,
+            xx,__,xx,
+            xx,__,xx,
+            xx,__,xx,
+            xx,__,xx,
             xx,xx,xx
         };
 

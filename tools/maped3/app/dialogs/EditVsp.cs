@@ -446,14 +446,17 @@ namespace winmaped2 {
 
                     for (int l = 0; l < map.Layers.Count; l++) {
                         MapLayer ml = (MapLayer)map.Layers[l];
-                        if (ml.type != LayerType.Tile)
+                        if (ml.type != LayerType.Tile) {
                             continue;
-                        for (int yi = 0; yi < ml.Height; yi++)
+                        }
+                        for (int yi = 0; yi < ml.Height; yi++) {
                             for (int xi = 0; xi < ml.Width; xi++) {
                                 int t = ml.getTile(xi, yi);
-                                if (t == ts)
+                                if (t == ts) {
                                     stg.addRecord(l, xi, yi, td);
+                                }
                             }
+                        }
                     }
                 }
 
@@ -477,15 +480,16 @@ namespace winmaped2 {
                 int y0 = s.y;
                 int x0 = s.x;
                 int magenta = Render.makeColor(255, 0, 255);
-                for (int y = 0; y < s.height; y++)
+                for (int y = 0; y < s.height; y++) {
                     for (int x = 0; x < s.width; x++) {
                         int t = (s.y + y) * TilesWide + s.x + x;
                         int[] newData = new int[16 * 16];
-                        for (int i = 0; i < 256; i++)
+                        for (int i = 0; i < 256; i++) {
                             newData[i] = magenta;
+                        }
                         stdg.addRecord(t, newData);
                     }
-
+                }
                 om.add(stdg);
             }
             om.endGroupExec();
@@ -500,7 +504,7 @@ namespace winmaped2 {
             Selection s = originalSelection;
 
             if (s.height > 0 && s.width > 0) {
-                using (pr2.RenderImage img = pr2.RenderImage.create(s.width * 16, s.height * 16)) {
+                using (pr2.IRenderImage img = pr2.RenderImage.Create(s.width * 16, s.height * 16)) {
                     int y0 = s.y;
                     int x0 = s.x;
                     for (int y = 0; y < s.height; y++) {
@@ -526,7 +530,7 @@ namespace winmaped2 {
             if (!bSelection)
                 return;
 
-            pr2.RenderImage img = WindowsClipboard.getImage();
+            pr2.IRenderImage img = WindowsClipboard.getImage();
 
             int tx = img.Width / 16;
             int ty = img.Height / 16;
@@ -546,7 +550,7 @@ namespace winmaped2 {
 
             int y0 = s.y;
             int x0 = s.x;
-            int[] arrImg = img.getArray();
+            int[] arrImg = img.GetArray();
             for (int y = 0; y < s.height; y++)
                 for (int x = 0; x < s.width; x++) {
                     int t = (s.y + y) * TilesWide + s.x + x;
@@ -681,7 +685,7 @@ namespace winmaped2 {
             e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
             Bitmap bmp = new Bitmap(TilesWide * 16, (TilesHigh + 1) * 16, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            pr2.RenderImage qimg = pr2.RenderImage.lockBitmap(bmp);
+            pr2.IRenderImage qimg = pr2.RenderImage.LockBitmap(bmp);
 
             int row = 0, col = 0;
             for (int i = scrollOffset; i < parent.vsp.Tiles.Count; i++) {

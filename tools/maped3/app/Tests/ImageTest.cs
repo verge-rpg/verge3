@@ -18,11 +18,10 @@ namespace winmaped2.Tests {
         public unsafe void CanDrawOnPr2Image() {
             Canvas img = new Canvas(16, 16, pixels);
 
-            pr2.RenderImage dest = pr2.RenderImage.create(16, 16);
-            fixed (int* tiledata = img.Pixels)
-                Render.renderTile32(dest, 0, 0, tiledata, true);
+            pr2.IRenderImage dest = pr2.RenderImage.Create(16, 16);
+            Render.render(dest, 0, 0, img, true);
 
-            int[] resultPixels = dest.getArray();
+            int[] resultPixels = dest.GetArray();
             Assert.AreEqual(pixels, resultPixels);
 
             dest.Dispose();

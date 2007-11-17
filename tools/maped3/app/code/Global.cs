@@ -493,7 +493,7 @@ namespace winmaped2 {
             public void exec() {
                 foreach (Rec r in recs) {
                     if (Global.ActiveVsp.Tiles.Count > r.index && r.index >= 0) {
-                        r.oldData = (int[])((Vsp24Tile)vsp.Tiles[r.index]).Image.Pixels.Clone();
+                        r.oldData = ((Vsp24Tile)vsp.Tiles[r.index]).Image.GetArray();
                         ((Vsp24Tile)vsp.Tiles[r.index]).Image.UpdatePixels((int[])r.newData.Clone());
                     }
                 }

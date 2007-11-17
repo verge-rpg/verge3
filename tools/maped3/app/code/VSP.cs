@@ -366,7 +366,7 @@ namespace winmaped2 {
 
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            using (pr2.RenderImage img = pr2.RenderImage.lockBitmap(bmp)) {
+            using (pr2.IRenderImage img = pr2.RenderImage.LockBitmap(bmp)) {
                 // render stuffs
                 for (int y = 0; y < th; y++) {
                     for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
@@ -390,7 +390,7 @@ namespace winmaped2 {
             int w = 320 + (GridSize * 21);
             Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
 
-            using (pr2.RenderImage img = pr2.RenderImage.lockBitmap(bmp)) {
+            using (pr2.IRenderImage img = pr2.RenderImage.LockBitmap(bmp)) {
                 // render stuffs
                 for (int y = 0; y < th; y++) {
                     for (int x = 0; x < 20 && y * 20 + x < tileCount; x++) {
@@ -403,17 +403,15 @@ namespace winmaped2 {
         }
     }
     public class VspObstructionTile {
-        int[] Pixels;
         public Vsp24 parent;
         Canvas image;
         public VspObstructionTile(Vsp24 Parent, int[] data) {
             parent = Parent;
-            Pixels = data;
             image = new Canvas(16, 16, data);
         }
 
         public VspObstructionTile Clone() {
-            VspObstructionTile vot = new VspObstructionTile(parent, (int[])Pixels.Clone());
+            VspObstructionTile vot = new VspObstructionTile(parent, image.GetArray());
             return vot;
         }
 

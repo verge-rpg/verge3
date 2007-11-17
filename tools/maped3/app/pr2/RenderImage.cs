@@ -7,25 +7,12 @@ using System.Drawing.Imaging;
 namespace winmaped2.pr2 {
     // TODO: come up with a better name for this class.
     // ALSO TODO: Unify with winmaped2.Canvas
-    public unsafe class RenderImage : IDisposable {
-        enum Variety {
-            _Buffer, _Bitmap
-        };
-
-        Variety variety;
-
-        BitmapData bitmapData;
-        Bitmap bmp;
-        bool bDisposed;
-        int* buf;
-        int width;
-        int height;
-        int pitch;
-        int stride;
-
-        public RenderImage() {
-            bDisposed = false;
-        }
+    public unsafe abstract class RenderImage : winmaped2.pr2.IRenderImage {
+        protected int* buf;
+        protected int width;
+        protected int height;
+        protected int pitch;
+        protected int stride;
 
         public int* Pixels {
             get {
@@ -57,18 +44,20 @@ namespace winmaped2.pr2 {
             }
         }
 
-        public unsafe void Dispose() {
-            if (!bDisposed) {
-                bDisposed = true;
-                if (variety == Variety._Bitmap) {
-                    bmp.UnlockBits(bitmapData);
-                } else if (variety == Variety._Buffer) {
-                    System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)buf);
+        public abstract void Dispose();
+
+        public unsafe void UpdatePixels(int[] newPixels) {
+            if (newPixels.Length != width * height) {
+                throw new Exception("RenderImage.UpdatePixels got incorrectly sized array");
+            }
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    buf[y * pitch + x] = newPixels[y * width + x];
                 }
             }
         }
 
-        public unsafe int[] getArray() {
+        public unsafe int[] GetArray() {
             int[] ret = new int[width * height];
 
             for (int y = 0; y < height; y++) {
@@ -80,7 +69,7 @@ namespace winmaped2.pr2 {
             return ret;
         }
 
-        public unsafe Bitmap getBitmap() {
+        public unsafe Bitmap ConvertToBitmap() {
             int w = width;
             int h = height;
             int p = pitch;
@@ -98,7 +87,7 @@ namespace winmaped2.pr2 {
             return bmp;
         }
 
-        public unsafe void clear(int color) {
+        public unsafe void Clear(int color) {
             int* data = buf;
             int xadd = pitch - width;
             for (int y = 0; y < height; y++) {
@@ -108,59 +97,20 @@ namespace winmaped2.pr2 {
             }
         }
 
-        public unsafe int getPixel(int x, int y) {
+        public unsafe int GetPixel(int x, int y) {
             return buf[y * pitch + x];
         }
 
-        public unsafe static RenderImage create(Bitmap bmp) {
-            int w = bmp.Width;
-            int h = bmp.Height;
-            RenderImage img = create(w, h);
-
-            BitmapData bmpd = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-
-            int dp = img.pitch;
-            int sp = bmpd.Stride / 4;
-
-            int* srcdata = (int*)bmpd.Scan0.ToPointer();
-            int* destdata = (int*)img.Pixels;
-
-            for (int y = 0; y < h; y++) {
-                for (int x = 0; x < w; x++) {
-                    destdata[y * dp + x] = srcdata[y * sp + x];
-                }
-            }
-            bmp.UnlockBits(bmpd);
-
-            return img;
+        public static IRenderImage Create(Bitmap bmp) {
+            return new BufferImage(bmp);
         }
 
-        public unsafe static RenderImage create(int width, int height) {
-            RenderImage img = new RenderImage();
-            img.variety = Variety._Buffer;
-            img.width = width;
-            img.height = height;
-            img.buf = (int*)System.Runtime.InteropServices.Marshal.AllocHGlobal(width * height * 4);
-            img.stride = width * 4;
-            img.pitch = width;
-            return img;
+        public static RenderImage Create(int width, int height) {
+            return new BufferImage(width, height);
         }
 
-        public unsafe static RenderImage lockBitmap(Bitmap bmp) {
-            ImageLockMode imageLockMode = ImageLockMode.ReadWrite;
-            RenderImage img = new RenderImage();
-            img.variety = Variety._Bitmap;
-            img.bmp = bmp;
-            img.bitmapData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), imageLockMode, PixelFormat.Format32bppArgb);
-
-            img.buf = (int*)img.bitmapData.Scan0.ToPointer();
-            img.width = img.bitmapData.Width;
-            img.height = img.bitmapData.Height;
-            img.stride = img.bitmapData.Stride;
-            img.pitch = img.stride / 4;
-
-            return img;
+        public static IRenderImage LockBitmap(Bitmap bmp) {
+            return new LockedBitmap(bmp);
         }
-
     }
 }

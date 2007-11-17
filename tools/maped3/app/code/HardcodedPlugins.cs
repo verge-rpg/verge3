@@ -81,7 +81,7 @@ namespace winmaped2.map_plugins {
 
     public abstract class DragToolBase : IMapDragTileTool, IMapPainter, IMapPlugin {
         protected MapEventInfo mei;
-        protected pr2.RenderImage img;
+        protected pr2.IRenderImage img;
         public abstract Guid guid { get; }
 
 
@@ -115,7 +115,7 @@ namespace winmaped2.map_plugins {
             onTweak();
         }
 
-        public void paintMap(MapEventInfo mei, pr2.RenderImage img) {
+        public void paintMap(MapEventInfo mei, pr2.IRenderImage img) {
             this.mei = mei;
             this.img = img;
             onPaint();
@@ -196,7 +196,7 @@ namespace winmaped2.map_plugins {
             }
 
             public void tweakLayer(MapEventInfo mei) { }
-            public void paintMap(MapEventInfo mei, pr2.RenderImage img) { }
+            public void paintMap(MapEventInfo mei, pr2.IRenderImage img) { }
             public void paintWindow(MapEventInfo mei, Graphics g) { }
 
             void work(MapCursorLocation loc) {
@@ -274,7 +274,7 @@ namespace winmaped2.map_plugins {
             }
 
             public void tweakLayer(MapEventInfo mei) { }
-            public void paintMap(MapEventInfo mei, pr2.RenderImage img) {
+            public void paintMap(MapEventInfo mei, pr2.IRenderImage img) {
 
             }
             public void paintWindow(MapEventInfo mei, Graphics g) {

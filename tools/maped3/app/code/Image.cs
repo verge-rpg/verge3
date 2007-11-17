@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace winmaped2 {
+#if true
     public class Canvas {
         int[] pixels;
         int width;
@@ -20,6 +21,18 @@ namespace winmaped2 {
             }
         }
 
+        public int Pitch {
+            get {
+                return width;
+            }
+        }
+
+        public int Stride {
+            get {
+                return width * 4;
+            }
+        }
+
         public int Width {
             get {
                 return width;
@@ -30,6 +43,10 @@ namespace winmaped2 {
             get {
                 return height;
             }
+        }
+
+        public int[] GetArray() {
+            return (int[])pixels.Clone();
         }
 
         public void UpdatePixels(int[] newPixels) {
@@ -55,7 +72,8 @@ namespace winmaped2 {
 
         public int GetPixel(int x, int y) {
             if (!(0 <= x && x < width) ||
-                            !(0 <= y && y < height)) {
+                !(0 <= y && y < height)
+            ) {
                 throw new Exception(string.Format("SetPixel to invalid point {0},{1}", x, y));
             }
 
@@ -63,4 +81,8 @@ namespace winmaped2 {
             return pixels[offset];
         }
     }
+#else
+    public class Canvas : pr2.BufferImage {
+    }
+#endif
 }
