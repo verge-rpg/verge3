@@ -127,12 +127,12 @@ namespace winmaped2 {
         }
 
         public unsafe static void render(pr2.IRenderImage dest, int x, int y, pr2.IRenderImage src, bool drawZero) {
-            render(dest, x, y, src.Width, src.Height, src.Pixels, drawZero);
+            render(dest, x, y, src.Width, src.Height, src.Buffer, drawZero);
         }
 
-        static unsafe void render(pr2.IRenderImage dest, int x, int y, int xlen, int ylen, int* pixels, bool drawZero) {
+        private static unsafe void render(pr2.IRenderImage dest, int x, int y, int xlen, int ylen, int* pixels, bool drawZero) {
             int* s = pixels;
-            int* d = dest.Pixels;
+            int* d = dest.Buffer;
 
             int spitch = xlen;
             int dpitch = dest.Pitch;
@@ -163,7 +163,7 @@ namespace winmaped2 {
             int ylen = 16;
 
             int* s = null;
-            int* d = img.Pixels;
+            int* d = img.Buffer;
 
             int dpitch = img.Pitch;
 
@@ -188,7 +188,7 @@ namespace winmaped2 {
             int ylen = 16;
 
             int* s = null;
-            int* d = img.Pixels;
+            int* d = img.Buffer;
 
             int dpitch = img.Pitch;
 
@@ -208,7 +208,7 @@ namespace winmaped2 {
             int ylen = 16;
 
             int* s = null;
-            int* d = img.Pixels;
+            int* d = img.Buffer;
 
             int dpitch = img.Pitch;
 
@@ -227,7 +227,7 @@ namespace winmaped2 {
         }
 
         public unsafe static void renderColorPicker(pr2.IRenderImage img, float h) {
-            int* dst = img.Pixels;
+            int* dst = img.Buffer;
             for (int y = 0; y < 256; y++) {
                 for (int x = 0; x < 256; x++) {
                     *dst = HsbToColor(h, (float)x / 256, (float)y / 256);
@@ -239,7 +239,7 @@ namespace winmaped2 {
         public unsafe static void renderNumber(pr2.IRenderImage img, int x0, int y0, int number, int color) {
             int height = img.Height;
             int width = img.Width;
-            int* pixels = img.Pixels;
+            int* pixels = img.Buffer;
 
             char[] digits = number.ToString().ToCharArray();
             foreach (char c in digits) {
@@ -278,7 +278,7 @@ namespace winmaped2 {
 
             fixed (int* ptr = obsdata) {
                 int* s = ptr;
-                int* d = img.Pixels;
+                int* d = img.Buffer;
 
                 if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, img.Width, 0, img.Height)) {
                     return;
@@ -308,43 +308,39 @@ namespace winmaped2 {
         }
 
         public unsafe static void renderObsTileFast(pr2.IRenderImage img, int x0, int y0, winmaped2.Canvas src, bool clearbuf) {
-            fixed (int* p = src.Pixels) {
-                renderObsTileFast(img, x0, y0, p, clearbuf);
-            }
-        }
-
-        unsafe static void renderObsTileFast(pr2.IRenderImage img, int x0, int y0, int* obsdata, bool clearbuf) {
             int xlen = 16;
             int ylen = 16;
 
             const int WHITE = unchecked((int)0xFFFFFFFF);
             const int BLACK = unchecked((int)0xFF000000);
 
-            int* s = obsdata;
-            int* d = img.Pixels;
+            fixed (int* pixels = src.Pixels) {
+                int* s = pixels;
+                int* d = img.Buffer;
 
-            const int spitch = 16;
-            int dpitch = img.Pitch;
+                const int spitch = 16;
+                int dpitch = img.Pitch;
 
-            if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, img.Width, 0, img.Height)) {
-                return;
-            }
-
-            if (clearbuf) {
-                for (; ylen > 0; ylen--) {
-                    for (int x = 0; x < xlen; x++) {
-                        d[x] = (s[x] != 0) ? WHITE : BLACK;
-                    }
-                    s += spitch;
-                    d += dpitch;
+                if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, img.Width, 0, img.Height)) {
+                    return;
                 }
-            } else {
-                for (; ylen > 0; ylen--) {
-                    for (int x = 0; x < xlen; x++) {
-                        if (s[x] != 0) d[x] = WHITE;
+
+                if (clearbuf) {
+                    for (; ylen > 0; ylen--) {
+                        for (int x = 0; x < xlen; x++) {
+                            d[x] = (s[x] != 0) ? WHITE : BLACK;
+                        }
+                        s += spitch;
+                        d += dpitch;
                     }
-                    s += spitch;
-                    d += dpitch;
+                } else {
+                    for (; ylen > 0; ylen--) {
+                        for (int x = 0; x < xlen; x++) {
+                            if (s[x] != 0) d[x] = WHITE;
+                        }
+                        s += spitch;
+                        d += dpitch;
+                    }
                 }
             }
         }
@@ -358,7 +354,7 @@ namespace winmaped2 {
                 if (y + y0 >= 0 && y + y0 < bh) {
                     for (int x = 0; x < w; x++) {
                         if (x + x0 >= 0 && x + x0 < bw) {
-                            handlePixel(color, ref img.Pixels[(y0 + y) * bp + x0 + x], (int)op, true, true);
+                            handlePixel(color, ref img.Buffer[(y0 + y) * bp + x0 + x], (int)op, true, true);
                         }
                     }
                 }

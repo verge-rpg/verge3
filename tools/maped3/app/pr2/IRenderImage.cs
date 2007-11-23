@@ -7,7 +7,7 @@ namespace winmaped2.pr2 {
         int GetPixel(int x, int y);
         int Height { get; }
         int Pitch { get; }
-        unsafe int* Pixels { get; }
+        unsafe int* Buffer { get; }
         int Stride { get; }
         int Width { get; }
     }

@@ -498,8 +498,9 @@ namespace winmaped2 {
         }
 
         public void copy() {
-            if (!bSelection)
+            if (!bSelection) {
                 return;
+            }
 
             Selection s = originalSelection;
 
@@ -512,9 +513,8 @@ namespace winmaped2 {
                             if (!s.getPoint(x0 + x, y0 + y)) {
                                 continue;
                             }
-                            int t = (y0 + y) * TilesWide + x + x0;
-                            int[] p = Global.ActiveVsp.GetTilePixels(t);
-                            Render.render(img, x * 16, y * 16, Global.ActiveVsp.GetTile(t).Image, true);
+                            int tileIndex = (y0 + y) * TilesWide + x + x0;
+                            Render.render(img, x * 16, y * 16, Global.ActiveVsp.GetTile(tileIndex).Image, true);
                         }
                     }
 

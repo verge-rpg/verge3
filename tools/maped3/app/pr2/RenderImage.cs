@@ -14,7 +14,7 @@ namespace winmaped2.pr2 {
         protected int pitch;
         protected int stride;
 
-        public int* Pixels {
+        public int* Buffer {
             get {
                 return buf;
             }

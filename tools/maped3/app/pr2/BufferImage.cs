@@ -26,7 +26,7 @@ namespace winmaped2.pr2 {
             int sp = bmpd.Stride / 4;
 
             int* srcdata = (int*)bmpd.Scan0.ToPointer();
-            int* destdata = (int*)Pixels;
+            int* destdata = (int*)Buffer;
 
             for (int y = 0; y < h; y++) {
                 for (int x = 0; x < w; x++) {
@@ -34,6 +34,12 @@ namespace winmaped2.pr2 {
                 }
             }
             bmp.UnlockBits(bmpd);
+        }
+
+        public BufferImage(Canvas c)
+            : this(c.Width, c.Height)
+        {
+            UpdatePixels(c.Pixels);
         }
 
         public override void Dispose() {

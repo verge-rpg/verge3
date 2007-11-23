@@ -4,6 +4,7 @@ using System.Text;
 
 using NUnit.Framework;
 using winmaped2;
+using winmaped2.pr2;
 
 namespace winmaped2.Tests {
     [TestFixture]
@@ -16,7 +17,7 @@ namespace winmaped2.Tests {
             }
             Canvas img = new Canvas(16, 16, pixels);
 
-            pr2.IRenderImage destImage = pr2.RenderImage.Create(16, 16);
+            IRenderImage destImage = RenderImage.Create(16, 16);
 
             Render.render(destImage, 0, 0, img, true);
 
@@ -27,7 +28,7 @@ namespace winmaped2.Tests {
         [Test]
         public void RenderDrawsDeathMagenta() {
             Canvas src = new Canvas(16, 16, CreatePixels(16, 16, MAGENTA));
-            pr2.IRenderImage dest = pr2.RenderImage.Create(16, 16);
+            IRenderImage dest = RenderImage.Create(16, 16);
 
             Render.render(dest, 0, 0, src, true);
             Assert.AreEqual(dest.GetArray(), src.Pixels);
@@ -36,7 +37,7 @@ namespace winmaped2.Tests {
         [Test]
         public void RenderSkipsDeathMagenta() {
             Canvas src = new Canvas(16, 16, CreatePixels(16, 16, MAGENTA));
-            pr2.IRenderImage dest = pr2.RenderImage.Create(16, 16);
+            IRenderImage dest = RenderImage.Create(16, 16);
             dest.Clear(BLACK);
 
             Render.render(dest, 0, 0, src, false);
@@ -45,7 +46,7 @@ namespace winmaped2.Tests {
 
         [Test]
         public void RenderStipple() {
-            pr2.IRenderImage dest = pr2.RenderImage.Create(16, 16);
+            IRenderImage dest = RenderImage.Create(16, 16);
 
             Render.renderColoredStippleTile(dest, 0, 0, GREEN, WHITE);
             Assert.AreEqual(WHITE, dest.GetPixel(0, 0));
@@ -59,7 +60,7 @@ namespace winmaped2.Tests {
 
         [Test]
         public void RenderStippleClipping() {
-            pr2.IRenderImage dest = pr2.RenderImage.Create(14, 14);
+            IRenderImage dest = RenderImage.Create(14, 14);
             dest.Clear(BLACK);
 
             Render.renderColoredStippleTile(dest, 4, 4, GREEN, WHITE);
@@ -77,6 +78,16 @@ namespace winmaped2.Tests {
             Assert.AreEqual(WHITE, dest.GetPixel(5, 5));
             Assert.AreEqual(GREEN, dest.GetPixel(6, 5));
             Assert.AreEqual(WHITE, dest.GetPixel(7, 5));
+        }
+
+        [Test]
+        public void CreateBufferImageFromCanvas() {
+            Canvas c = new Canvas(16, 16, CreatePixels(16, 16, GREEN));
+
+            BufferImage img = new BufferImage(c);
+            Assert.AreEqual(img.Width, c.Width);
+            Assert.AreEqual(img.Height, c.Height);
+            Assert.AreEqual(img.GetArray(), c.Pixels);
         }
     }
 }
