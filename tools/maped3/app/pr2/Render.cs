@@ -121,11 +121,9 @@ namespace winmaped2 {
         }
 
         public unsafe static void render(pr2.IRenderImage dest, int x, int y, pr2.IRenderImage src, bool drawZero) {
-            render(dest, x, y, src.Width, src.Height, src.Buffer, drawZero);
-        }
-
-        private static unsafe void render(pr2.IRenderImage dest, int x, int y, int xlen, int ylen, int* pixels, bool drawZero) {
-            int* s = pixels;
+            int xlen = src.Width;
+            int ylen = src.Height;
+            int* s = src.Buffer;
             int* d = dest.Buffer;
 
             int spitch = xlen;
