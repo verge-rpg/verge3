@@ -49,9 +49,14 @@ namespace winmaped2.pr2 {
 
         public override void Dispose() {
             if (!isDisposed) {
-                isDisposed = true;
                 System.Runtime.InteropServices.Marshal.FreeHGlobal((IntPtr)buf);
+                buf = null;
+                isDisposed = true;
             }
+        }
+
+        ~BufferImage() {
+            Dispose();
         }
 
         private bool isDisposed = false;
