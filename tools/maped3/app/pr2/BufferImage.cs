@@ -36,12 +36,6 @@ namespace winmaped2.pr2 {
             bmp.UnlockBits(bmpd);
         }
 
-        public BufferImage(Canvas c)
-            : this(c.Width, c.Height)
-        {
-            UpdatePixels(c.Pixels);
-        }
-
         public BufferImage(int width, int height, int[] pixels)
             : this(width, height)
         {

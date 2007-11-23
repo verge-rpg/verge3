@@ -15,7 +15,7 @@ namespace winmaped2.Tests {
             for (int i = 0; i < pixels.Length; i++) {
                 pixels[i] = 1;
             }
-            Canvas img = new Canvas(16, 16, pixels);
+            IRenderImage img = new BufferImage(16, 16, pixels);
 
             IRenderImage destImage = RenderImage.Create(16, 16);
 
@@ -27,16 +27,16 @@ namespace winmaped2.Tests {
 
         [Test]
         public void RenderDrawsDeathMagenta() {
-            Canvas src = new Canvas(16, 16, CreatePixels(16, 16, MAGENTA));
+            IRenderImage src = new BufferImage(16, 16, CreatePixels(16, 16, MAGENTA));
             IRenderImage dest = RenderImage.Create(16, 16);
 
             Render.render(dest, 0, 0, src, true);
-            Assert.AreEqual(dest.GetArray(), src.Pixels);
+            Assert.AreEqual(dest.GetArray(), src.GetArray());
         }
 
         [Test]
         public void RenderSkipsDeathMagenta() {
-            Canvas src = new Canvas(16, 16, CreatePixels(16, 16, MAGENTA));
+            IRenderImage src = new BufferImage(16, 16, CreatePixels(16, 16, MAGENTA));
             IRenderImage dest = RenderImage.Create(16, 16);
             dest.Clear(BLACK);
 
@@ -78,16 +78,6 @@ namespace winmaped2.Tests {
             Assert.AreEqual(WHITE, dest.GetPixel(5, 5));
             Assert.AreEqual(GREEN, dest.GetPixel(6, 5));
             Assert.AreEqual(WHITE, dest.GetPixel(7, 5));
-        }
-
-        [Test]
-        public void CreateBufferImageFromCanvas() {
-            Canvas c = new Canvas(16, 16, CreatePixels(16, 16, GREEN));
-
-            BufferImage img = new BufferImage(c);
-            Assert.AreEqual(img.Width, c.Width);
-            Assert.AreEqual(img.Height, c.Height);
-            Assert.AreEqual(img.GetArray(), c.Pixels);
         }
 
         [Test]

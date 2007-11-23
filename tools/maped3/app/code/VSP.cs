@@ -395,12 +395,14 @@ namespace winmaped2 {
             WindowsClipboard.setBitmap(bmp);
         }
     }
+
     public class VspObstructionTile {
         public Vsp24 parent;
-        Canvas image;
-        public VspObstructionTile(Vsp24 Parent, int[] data) {
-            parent = Parent;
-            image = new Canvas(16, 16, data);
+        private pr2.IRenderImage image;
+
+        public VspObstructionTile(Vsp24 parent, int[] data) {
+            this.parent = parent;
+            this.image = new pr2.BufferImage(16, 16, data);
         }
 
         public VspObstructionTile Clone() {
@@ -408,18 +410,18 @@ namespace winmaped2 {
             return vot;
         }
 
-        public Canvas Image {
+        public pr2.IRenderImage Image {
             get {
                 return image;
             }
         }
     }
 
-    // TODO: implement IDisposable -- andy 23 November 2007
+    // TODO: maybe implement IDisposable -- andy 23 November 2007
     public class Vsp24Tile {
-        pr2.IRenderImage image;
         public Vsp24 parent;
-        int avg;
+        private pr2.IRenderImage image;
+        private int avg;
 
         public Vsp24Tile(Vsp24 parent)
             : this(parent, new pr2.BufferImage(16, 16)) {

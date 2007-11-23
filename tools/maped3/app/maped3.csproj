@@ -122,7 +122,6 @@
     <Compile Include="code\HardcodedPlugins.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="code\Image.cs" />
     <Compile Include="code\InputOutput.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -272,7 +271,6 @@
     <Compile Include="pr2\LockedBitmap.cs" />
     <Compile Include="pr2\Render.cs" />
     <Compile Include="pr2\RenderImage.cs" />
-    <Compile Include="Tests\ImageTest.cs" />
     <Compile Include="Tests\RendererTests.cs" />
     <Compile Include="Tests\RenderFixture.cs" />
     <Compile Include="Tests\VspTest.cs" />

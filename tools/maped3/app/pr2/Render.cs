@@ -120,12 +120,6 @@ namespace winmaped2 {
             }
         }
 
-        public unsafe static void render(pr2.IRenderImage dest, int x, int y, winmaped2.Canvas src, bool drawZero) {
-            fixed (int* p = src.Pixels) {
-                render(dest, x, y, src.Width, src.Height, p, drawZero);
-            }
-        }
-
         public unsafe static void render(pr2.IRenderImage dest, int x, int y, pr2.IRenderImage src, bool drawZero) {
             render(dest, x, y, src.Width, src.Height, src.Buffer, drawZero);
         }
@@ -262,11 +256,7 @@ namespace winmaped2 {
             }
         }
 
-        public unsafe static void renderObsTile(pr2.IRenderImage img, int x0, int y0, winmaped2.Canvas src, bool clearbuf, int color) {
-            renderObsTile(img, x0, y0, src.Pixels, clearbuf, color);
-        }
-
-        unsafe static void renderObsTile(pr2.IRenderImage img, int x0, int y0, int[] obsdata, bool clearbuf, int color) {
+        public unsafe static void renderObsTile(pr2.IRenderImage img, int x0, int y0, pr2.IRenderImage src, bool clearbuf, int color) {
             int xlen = 16;
             int ylen = 16;
 
@@ -276,71 +266,69 @@ namespace winmaped2 {
             const int spitch = 16;
             int dpitch = img.Pitch;
 
-            fixed (int* ptr = obsdata) {
-                int* s = ptr;
-                int* d = img.Buffer;
+            int* ptr = src.Buffer;
+            int* s = ptr;
+            int* d = img.Buffer;
 
-                if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, img.Width, 0, img.Height)) {
-                    return;
+            if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, img.Width, 0, img.Height)) {
+                return;
+            }
+
+            if (clearbuf) {
+                for (; ylen > 0; ylen--) {
+                    for (int x = 0; x < xlen; x++) {
+                        d[x] = (s[x] != 0) ? WHITE : BLACK;
+                    }
+                    s += spitch;
+                    d += dpitch;
                 }
-
-                if (clearbuf) {
-                    for (; ylen > 0; ylen--) {
-                        for (int x = 0; x < xlen; x++) {
-                            d[x] = (s[x] != 0) ? WHITE : BLACK;
+            } else {
+                for (; ylen > 0; ylen--) {
+                    for (int x = 0; x < xlen; x++) {
+                        if (s[x] != 0) {
+                            handlePixel(color, ref d[x], (int)Render.PixelOp.Alpha50, true, true);
                         }
-                        s += spitch;
-                        d += dpitch;
                     }
-                } else {
-                    for (; ylen > 0; ylen--) {
-                        for (int x = 0; x < xlen; x++) {
-                            if (s[x] != 0) {
-                                handlePixel(color, ref d[x], (int)Render.PixelOp.Alpha50, true, true);
-                            }
-                        }
 
-                        s += spitch;
-                        d += dpitch;
-                    }
+                    s += spitch;
+                    d += dpitch;
                 }
             }
         }
 
-        public unsafe static void renderObsTileFast(pr2.IRenderImage img, int x0, int y0, winmaped2.Canvas src, bool clearbuf) {
+        public unsafe static void renderObsTileFast(pr2.IRenderImage img, int x0, int y0, pr2.IRenderImage src, bool clearbuf) {
             int xlen = 16;
             int ylen = 16;
 
             const int WHITE = unchecked((int)0xFFFFFFFF);
             const int BLACK = unchecked((int)0xFF000000);
 
-            fixed (int* pixels = src.Pixels) {
-                int* s = pixels;
-                int* d = img.Buffer;
+            int* pixels = src.Buffer;
+            int* s = pixels;
+            int* d = img.Buffer;
 
-                const int spitch = 16;
-                int dpitch = img.Pitch;
+            const int spitch = 16;
+            int dpitch = img.Pitch;
 
-                if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, img.Width, 0, img.Height)) {
-                    return;
+            if (clip(ref x0, ref y0, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, img.Width, 0, img.Height)) {
+                return;
+            }
+
+            if (clearbuf) {
+                for (; ylen > 0; ylen--) {
+                    for (int x = 0; x < xlen; x++) {
+                        d[x] = (s[x] != 0) ? WHITE : BLACK;
+                    }
+                    s += spitch;
+                    d += dpitch;
                 }
-
-                if (clearbuf) {
-                    for (; ylen > 0; ylen--) {
-                        for (int x = 0; x < xlen; x++) {
-                            d[x] = (s[x] != 0) ? WHITE : BLACK;
-                        }
-                        s += spitch;
-                        d += dpitch;
+            } else {
+                for (; ylen > 0; ylen--) {
+                    for (int x = 0; x < xlen; x++) {
+                        if (s[x] != 0) d[x] = WHITE;
                     }
-                } else {
-                    for (; ylen > 0; ylen--) {
-                        for (int x = 0; x < xlen; x++) {
-                            if (s[x] != 0) d[x] = WHITE;
-                        }
-                        s += spitch;
-                        d += dpitch;
-                    }
+                    s += spitch;
+                    d += dpitch;
                 }
             }
         }

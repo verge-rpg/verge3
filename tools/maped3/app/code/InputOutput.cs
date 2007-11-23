@@ -339,9 +339,12 @@ namespace winmaped2 {
             bw.Write(vsp.ObstructionTiles.Count);
 
             byte[] odata = new byte[vsp.ObstructionTiles.Count * 256];
-            for (int i = 0; i < vsp.ObstructionTiles.Count; i++)
-                for (int j = 0; j < 256; j++)
-                    odata[i * 256 + j] = (byte)((VspObstructionTile)vsp.ObstructionTiles[i]).Image.Pixels[j];
+            for (int i = 0; i < vsp.ObstructionTiles.Count; i++) {
+                int[] pixels = ((VspObstructionTile)vsp.ObstructionTiles[i]).Image.GetArray();
+                for (int j = 0; j < 256; j++) {
+                    odata[i * 256 + j] = (byte)pixels[j];
+                }
+            }
             byte[] ozdata = ZLIB.Encode(odata);
             bw.Write((int)odata.Length);
             bw.Write((int)ozdata.Length);
