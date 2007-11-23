@@ -510,7 +510,7 @@ namespace winmaped2 {
             }
 
             public void addRecord(int index, int[] newData) {
-                recs.Add(new Rec(index, (int[])newData.Clone()));
+                recs.Add(new Rec(index, newData));
             }
         }
 

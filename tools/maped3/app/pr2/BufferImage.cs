@@ -42,6 +42,17 @@ namespace winmaped2.pr2 {
             UpdatePixels(c.Pixels);
         }
 
+        public BufferImage(int width, int height, int[] pixels)
+            : this(width, height)
+        {
+            if (width * height != pixels.Length) {
+                throw new InvalidOperationException("Bad number of pixels passed to BufferImage(width, height, pixels)");
+            }
+            for (int i = 0; i < pixels.Length; i++ ) {
+                this.buf[i] = pixels[i];
+            }
+        }
+
         public override void Dispose() {
             if (!isDisposed) {
                 isDisposed = true;

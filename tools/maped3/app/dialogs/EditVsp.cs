@@ -442,7 +442,7 @@ namespace winmaped2 {
 
                     if (ts >= vsp.Tiles.Count || ts < 0) continue;
 
-                    stdg.addRecord(td, ((Vsp24Tile)vsp.Tiles[ts]).Image.Pixels);
+                    stdg.addRecord(td, ((Vsp24Tile)vsp.Tiles[ts]).Image.GetArray());
 
                     for (int l = 0; l < map.Layers.Count; l++) {
                         MapLayer ml = (MapLayer)map.Layers[l];

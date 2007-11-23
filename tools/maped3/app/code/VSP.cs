@@ -15,12 +15,12 @@ namespace winmaped2 {
         public int tileCount { get { return Tiles.Count; } }
         public ArrayList Animations;
         public FileInfo FileOnDisk;
-        public abstract object newTile();
+        public abstract object CreateTile();
         public void removeAt(int index) {
             Tiles.RemoveAt(index);
         }
         public void insertAt(int index) {
-            Tiles.Insert(index, newTile());
+            Tiles.Insert(index, CreateTile());
         }
     }
 
@@ -50,7 +50,7 @@ namespace winmaped2 {
     /* 8-bit VSP Classes                              */
     /**************************************************/
     public class Vsp8 : VspBase {
-        public override object newTile() { return new Vsp8Tile(this, new byte[16 * 16]); }
+        public override object CreateTile() { return new Vsp8Tile(this, new byte[16 * 16]); }
         public Vsp8Palette Palette;
         public Vsp8() {
             Tiles = new ArrayList();
@@ -138,7 +138,9 @@ namespace winmaped2 {
         public const int ANIMATION_RANDOM = 2;
         public const int ANIMATION_PINGPONG = 3;
 
-        public override object newTile() { return new Vsp24Tile(this); }
+        public override object CreateTile() {
+            return new Vsp24Tile(this);
+        }
 
         public string fname;
         private bool _bAltered;
@@ -162,15 +164,6 @@ namespace winmaped2 {
         public Vsp24Tile GetTile(int i) {
             return (Vsp24Tile)Tiles[i];
         }
-        public int[] GetTilePixels(int i) {
-            return GetTile(i).Image.Pixels;
-        }
-        public void setPixels(int i, int[] arr, int x, int y, int w) {
-            Vsp24Tile t = GetTile(i);
-            for (int yy = 0; yy < 16; yy++)
-                for (int xx = 0; xx < 16; xx++)
-                    t.Image.Pixels[yy * 16 + xx] = arr[(yy + y) * w + xx + x];
-        }
         public static Vsp24 FromVsp8(Vsp8 src) {
             Vsp24 v24 = new Vsp24();
             foreach (Vsp8Tile v8t in src.Tiles) {
@@ -187,7 +180,7 @@ namespace winmaped2 {
                     }
                 }
 
-                Vsp24Tile v24t = new Vsp24Tile(v24, new Canvas(16, 16, data));
+                Vsp24Tile v24t = new Vsp24Tile(v24, new pr2.BufferImage(16, 16, data));
                 v24.Tiles.Add(v24t);
             }
             v24.FileOnDisk = src.FileOnDisk;
@@ -279,7 +272,7 @@ namespace winmaped2 {
                                 t[yy * 16 + xx] = ptr[gridsize + (x * xofs) + yy * pitch + xx];
                             }
                         }
-                        Vsp24Tile vt = new Vsp24Tile(this, new Canvas(16, 16, t));
+                        Vsp24Tile vt = new Vsp24Tile(this, new pr2.BufferImage(16, 16, t));
                         tiles.Add(vt);
                         count++;
                     }
@@ -422,39 +415,36 @@ namespace winmaped2 {
         }
     }
 
+    // TODO: implement IDisposable -- andy 23 November 2007
     public class Vsp24Tile {
-        int[] Pixels;
-        Canvas image;
+        pr2.IRenderImage image;
         public Vsp24 parent;
         int avg;
 
         public Vsp24Tile(Vsp24 parent)
-            : this(parent, new Canvas(16, 16, new int[16 * 16])) {
+            : this(parent, new pr2.BufferImage(16, 16)) {
         }
 
-        public Vsp24Tile(Vsp24 parent, Canvas image) {
+        public Vsp24Tile(Vsp24 parent, pr2.IRenderImage image) {
             this.parent = parent;
             this.image = image;
-            this.Pixels = image.Pixels;
             this.avg = GetAverageColor();
         }
 
         public Vsp24Tile Clone() {
             Vsp24Tile vt = new Vsp24Tile(parent, image.Clone());
-            vt.avg = avg;
             return vt;
         }
 
         int GetAverageColor() {
             int cr = 0, cg = 0, cb = 0;
-            for (int i = 0; i < 16; i++) {
-                for (int j = 0; j < 16; j++) {
-                    int px = Pixels[i * 16 + j];
+            for (int y = 0; y < 16; y++) {
+                for (int x = 0; x < 16; x++) {
+                    int px = image.GetPixel(y, x);
                     if ((px & 0x00FFFFFF) == 0x00FF00FF) continue;
                     cr += (px & 0x00FF0000) >> 16;
                     cg += (px & 0x0000FF00) >> 8;
                     cb += (px & 0x000000FF);
-
                 }
             }
             return unchecked((int)0xFF000000 | ((cr >> 8) << 16) | ((cg >> 8) << 8) | ((cb >> 8)));
@@ -466,7 +456,7 @@ namespace winmaped2 {
             }
         }
 
-        public Canvas Image {
+        public pr2.IRenderImage Image {
             get {
                 return image;
             }

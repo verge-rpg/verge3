@@ -257,7 +257,7 @@ namespace winmaped2 {
                     c = c | data[idx * 3 + 2];
                     px[i] = c;
                 }
-                vsp.Tiles.Add(new Vsp24Tile(vsp, new Canvas(16, 16, px)));
+                vsp.Tiles.Add(new Vsp24Tile(vsp, new pr2.BufferImage(16, 16, px)));
             }
 
             int animcount = br.ReadInt32();
@@ -310,11 +310,13 @@ namespace winmaped2 {
             MemoryStream ms_tiles = new MemoryStream();
             BinaryWriter bw_tiles = new BinaryWriter(ms_tiles);
             foreach (Vsp24Tile tile in vsp.Tiles) {
-                int[] pixels = tile.Image.Pixels;
-                foreach (int p in pixels) {
-                    bw_tiles.Write((byte)((p & 0x00FF0000) >> 16));
-                    bw_tiles.Write((byte)((p & 0x0000FF00) >> 8));
-                    bw_tiles.Write((byte)((p & 0x000000FF)));
+                for (int y = 0; y < 16; y++) {
+                    for (int x = 0; x < 16; x++) {
+                        int p = tile.Image.GetPixel(x, y);
+                        bw_tiles.Write((byte)((p & 0x00FF0000) >> 16));
+                        bw_tiles.Write((byte)((p & 0x0000FF00) >> 8));
+                        bw_tiles.Write((byte)((p & 0x000000FF)));
+                    }
                 }
             }
             bw_tiles.Close();

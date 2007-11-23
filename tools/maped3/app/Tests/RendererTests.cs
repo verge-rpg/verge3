@@ -89,5 +89,29 @@ namespace winmaped2.Tests {
             Assert.AreEqual(img.Height, c.Height);
             Assert.AreEqual(img.GetArray(), c.Pixels);
         }
+
+        [Test]
+        public void CreateBufferImageFromArray() {
+            BufferImage img = new BufferImage(16, 16, CreatePixels(16, 16, GREEN));
+            Assert.AreEqual(16, img.Width);
+            Assert.AreEqual(16, img.Height);
+            Assert.AreEqual(CreatePixels(16, 16, GREEN), img.GetArray());
+        }
+
+        [Test]
+        public void SetPixel() {
+            BufferImage img = new BufferImage(16, 16);
+            img.SetPixel(3, 3, GREEN);
+            Assert.AreEqual(GREEN, img.GetPixel(3, 3));
+        }
+
+        [Test]
+        public void Clone() {
+            BufferImage img = new BufferImage(16, 16);
+            img.UpdatePixels(CreateStippledPixels(16, 16, WHITE, GREEN));
+
+            IRenderImage i2 = img.Clone();
+            Assert.AreEqual(i2.GetArray(), img.GetArray());
+        }
     }
 }

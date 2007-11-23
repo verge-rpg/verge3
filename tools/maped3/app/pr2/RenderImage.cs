@@ -97,8 +97,23 @@ namespace winmaped2.pr2 {
             }
         }
 
+        public IRenderImage Clone() {
+            IRenderImage img = new BufferImage(width, height);
+            img.UpdatePixels(GetArray());
+            return img;
+        }
+
         public unsafe int GetPixel(int x, int y) {
             return buf[y * pitch + x];
+        }
+
+        public unsafe void SetPixel(int x, int y, int color) {
+            if (!(0 <= x && x < Width) ||
+                !(0 <= y && y < Height)
+            ) {
+                throw new InvalidOperationException(String.Format("Bad arguments to SetPixel: {0},{1}", x, y));
+            }
+            buf[y * pitch + x] = color;
         }
 
         public static IRenderImage Create(Bitmap bmp) {

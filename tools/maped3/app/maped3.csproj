@@ -240,7 +240,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\mainWindow.cs">
-      <SubType>Component</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\MapedPreferences.cs">
       <SubType>Form</SubType>
@@ -275,6 +275,7 @@
     <Compile Include="Tests\ImageTest.cs" />
     <Compile Include="Tests\RendererTests.cs" />
     <Compile Include="Tests\RenderFixture.cs" />
+    <Compile Include="Tests\VspTest.cs" />
     <EmbeddedResource Include="controls\ColorPicker.resx">
       <DependentUpon>ColorPicker.cs</DependentUpon>
     </EmbeddedResource>
