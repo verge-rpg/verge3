@@ -4,10 +4,12 @@ using System.Text;
 using System.Collections;
 
 
-
-namespace winmaped2 {
-    public class InputOutput {
-        public unsafe static Map ReadMap3(FileInfo fi) {
+namespace winmaped2
+{
+    public class InputOutput
+    {
+        public unsafe static Map ReadMap3(FileInfo fi)
+        {
             byte[] m3s = new byte[] { (byte)'V', (byte)'3', (byte)'M', (byte)'A', (byte)'P', (byte)0 };
 
             FileStream fs = fi.OpenRead();
@@ -35,20 +37,26 @@ namespace winmaped2 {
 
             string vspf = Helper.BytesToString(vspname);
             FileInfo vspfile;
-            try {
+            try
+            {
 
                 vspfile = new FileInfo(vspf);
-            } catch (ArgumentException) {
+            }
+            catch (ArgumentException)
+            {
                 throw new Exception("VSP file is inaccessible. Requested file was '" + vspf + "'");
             }
-            if (!vspfile.Exists) {
+            if (!vspfile.Exists)
+            {
                 System.Windows.Forms.DialogResult dr = System.Windows.Forms.MessageBox.Show("Unable to load requested VSP file.  Create a blank vsp?", "Load Error", System.Windows.Forms.MessageBoxButtons.YesNoCancel, System.Windows.Forms.MessageBoxIcon.Information);
                 if (dr == System.Windows.Forms.DialogResult.OK)
                     map.vsp = new Vsp24();
                 else if (dr == System.Windows.Forms.DialogResult.Cancel)
                     return null;
                 else return null;
-            } else {
+            }
+            else
+            {
                 map.vsp = ReadVsp(vspfile.FullName);
             }
 
@@ -63,7 +71,8 @@ namespace winmaped2 {
 
             int layercount = br.ReadInt32();
 
-            for (int i = 0; i < layercount; i++) {
+            for (int i = 0; i < layercount; i++)
+            {
                 MapLayer ml = new MapLayer(map);
                 ml.name = Helper.BytesToString(br.ReadBytes(256));
                 ml.type = LayerType.Tile;
@@ -76,7 +85,8 @@ namespace winmaped2 {
                 ml.Translucency = br.ReadByte();
                 int len = br.ReadInt32();
                 int zlen = br.ReadInt32();
-                ml.Data = ZLIB.DecodeShorts(br.ReadBytes(zlen), len);
+                byte[] data = Compression.Inflate(br.ReadBytes(zlen));
+                Buffer.BlockCopy(data, 0, ml.Data, 0, data.Length);
 
                 map.Layers.Add(ml);
             }
@@ -90,7 +100,7 @@ namespace winmaped2 {
             ol.size(((MapLayer)map.Layers[0]).Width, ((MapLayer)map.Layers[0]).Height);
             int ol_lenn = br.ReadInt32();
             int ol_len = br.ReadInt32();
-            byte[] obsdata = ZLIB.Decode(br.ReadBytes(ol_len), ol_lenn);
+            byte[] obsdata = Compression.Inflate(br.ReadBytes(ol_len));
             for (int i = 0; i < obsdata.Length; i++)
                 ol.Data[i] = obsdata[i];
             map.ObsLayer = ol;
@@ -102,7 +112,10 @@ namespace winmaped2 {
             zl.type = LayerType.Zone;
             zl.name = "Zones";
             zl.size(((MapLayer)map.Layers[0]).Width, ((MapLayer)map.Layers[0]).Height);
-            zl.Data = ZLIB.DecodeShorts(br.ReadBytes(zl_len), zl_lenn);
+
+            byte[] zonedata = Compression.Inflate(br.ReadBytes(zl_len));
+            Buffer.BlockCopy(zonedata, 0, zl.Data, 0, zonedata.Length);
+
             map.ZoneLayer = zl;
 
 
@@ -122,7 +135,8 @@ namespace winmaped2 {
 
 
             int zonecount = br.ReadInt32();
-            for (int i = 0; i < zonecount; i++) {
+            for (int i = 0; i < zonecount; i++)
+            {
                 MapZone mz = new MapZone();
                 byte[] zname = br.ReadBytes(256);
                 byte[] pscript = br.ReadBytes(256);
@@ -136,7 +150,8 @@ namespace winmaped2 {
                 mz.ID = i;
                 map.Zones.Add(mz);
             }
-            if (zonecount == 0) {
+            if (zonecount == 0)
+            {
                 MapZone mz = new MapZone();
                 mz.ID = 0;
                 mz.Name = "NULL_ZONE";
@@ -144,7 +159,8 @@ namespace winmaped2 {
             }
 
             int entcount = br.ReadInt32();
-            for (int i = 0; i < entcount; i++) {
+            for (int i = 0; i < entcount; i++)
+            {
                 MapEntity me = new MapEntity();
                 me.TileX = br.ReadInt16();
                 me.TileY = br.ReadInt16();
@@ -174,19 +190,23 @@ namespace winmaped2 {
             }
             br.Close();
             string rs2 = "";
-            if (version == 1) {
-                foreach (char c in rs) {
+            if (version == 1)
+            {
+                foreach (char c in rs)
+                {
                     if (rs2.Length != 0)
                         rs2 += ",";
                     rs2 += c;
                 }
                 map.RenderString = rs2;
-            } else
+            }
+            else
                 map.RenderString = rs;
             return map;
         }
 
-        public unsafe static Vsp24 ReadVsp(string filename) {
+        public unsafe static Vsp24 ReadVsp(string filename)
+        {
             FileInfo fi = new FileInfo(filename);
             if (!fi.Exists) return null;
             if (fi.Length < 8) return null;
@@ -195,13 +215,16 @@ namespace winmaped2 {
             BinaryReader br = new BinaryReader(fs);
             int sig = br.ReadInt32();
             if (sig == VSP_SIGNATURE) // vsp24
-			{
+            {
                 br.Close();
                 return ReadVsp24(fi);
-            } else {
+            }
+            else
+            {
                 fs.Seek(0, SeekOrigin.Begin);
                 ushort version = br.ReadUInt16();
-                if (version < 5) {
+                if (version < 5)
+                {
                     br.Close();
                     return ReadVsp8(fi);
                 }
@@ -214,7 +237,8 @@ namespace winmaped2 {
         const int VSP_COMPRESSION = 1;
         const int VSP_TILESIZE = 16;
 
-        public unsafe static Vsp24 ReadVsp24(FileInfo fi) {
+        public unsafe static Vsp24 ReadVsp24(FileInfo fi)
+        {
             //Errors.Error("loading vsp");
             Vsp24 vsp = new Vsp24();
 
@@ -245,11 +269,13 @@ namespace winmaped2 {
 
             byte[] zdata = br.ReadBytes(zdatalen);
 
-            byte[] data = ZLIB.Decode(zdata, datalen);
+            byte[] data = Compression.Inflate(zdata);
 
-            for (int tile = 0; tile < tilecount; tile++) {
+            for (int tile = 0; tile < tilecount; tile++)
+            {
                 int[] px = new int[256];
-                for (int i = 0; i < 256; i++) {
+                for (int i = 0; i < 256; i++)
+                {
                     int idx = tile * 256 + i;
                     int c = unchecked((int)0xFF000000);
                     c = c | (data[idx * 3] << 16);
@@ -261,7 +287,8 @@ namespace winmaped2 {
             }
 
             int animcount = br.ReadInt32();
-            for (int i = 0; i < animcount; i++) {
+            for (int i = 0; i < animcount; i++)
+            {
                 VspAnimation va = new VspAnimation();
                 va.Name = Helper.BytesToString(br.ReadBytes(256));
                 va.Start = br.ReadInt32();
@@ -276,9 +303,10 @@ namespace winmaped2 {
             int od_len = br.ReadInt32();
             int od_zlen = br.ReadInt32();
             byte[] zd = br.ReadBytes(od_zlen);
-            byte[] od = ZLIB.Decode(zd, od_len);
+            byte[] od = Compression.Inflate(zd);
 
-            for (int i = 0; i < obscount; i++) {
+            for (int i = 0; i < obscount; i++)
+            {
                 int[] tile = new int[256];
                 for (int j = 0; j < 256; j++)
                     tile[j] = od[i * 256 + j];
@@ -289,7 +317,8 @@ namespace winmaped2 {
 
             return vsp;
         }
-        public unsafe static int WriteVsp(FileInfo fi, Vsp24 vsp) {
+        public unsafe static int WriteVsp(FileInfo fi, Vsp24 vsp)
+        {
             if (fi.Exists) fi.Delete();
             FileStream fs = fi.OpenWrite();
             BinaryWriter bw = new BinaryWriter(fs);
@@ -309,9 +338,12 @@ namespace winmaped2 {
             // build byte array of all tiles in our vsp
             MemoryStream ms_tiles = new MemoryStream();
             BinaryWriter bw_tiles = new BinaryWriter(ms_tiles);
-            foreach (Vsp24Tile tile in vsp.Tiles) {
-                for (int y = 0; y < 16; y++) {
-                    for (int x = 0; x < 16; x++) {
+            foreach (Vsp24Tile tile in vsp.Tiles)
+            {
+                for (int y = 0; y < 16; y++)
+                {
+                    for (int x = 0; x < 16; x++)
+                    {
                         int p = tile.Image.GetPixel(x, y);
                         bw_tiles.Write((byte)((p & 0x00FF0000) >> 16));
                         bw_tiles.Write((byte)((p & 0x0000FF00) >> 8));
@@ -320,7 +352,7 @@ namespace winmaped2 {
                 }
             }
             bw_tiles.Close();
-            byte[] zdata = ZLIB.Encode(ms_tiles.ToArray());
+            byte[] zdata = Compression.Deflate(ms_tiles.ToArray());
             bw.Write((int)16 * 16 * 3 * vsp.Tiles.Count);
 
             bw.Write(zdata.Length);
@@ -328,7 +360,8 @@ namespace winmaped2 {
 
             bw.Write(vsp.Animations.Count);
 
-            foreach (VspAnimation va in vsp.Animations) {
+            foreach (VspAnimation va in vsp.Animations)
+            {
                 bw.Write(Helper.StringToPaddedByteArray(va.Name, 256));
                 bw.Write(va.Start);
                 bw.Write(va.End);
@@ -339,13 +372,15 @@ namespace winmaped2 {
             bw.Write(vsp.ObstructionTiles.Count);
 
             byte[] odata = new byte[vsp.ObstructionTiles.Count * 256];
-            for (int i = 0; i < vsp.ObstructionTiles.Count; i++) {
+            for (int i = 0; i < vsp.ObstructionTiles.Count; i++)
+            {
                 int[] pixels = ((VspObstructionTile)vsp.ObstructionTiles[i]).Image.GetArray();
-                for (int j = 0; j < 256; j++) {
+                for (int j = 0; j < 256; j++)
+                {
                     odata[i * 256 + j] = (byte)pixels[j];
                 }
             }
-            byte[] ozdata = ZLIB.Encode(odata);
+            byte[] ozdata = Compression.Deflate(odata);
             bw.Write((int)odata.Length);
             bw.Write((int)ozdata.Length);
             bw.Write(ozdata);
@@ -355,7 +390,8 @@ namespace winmaped2 {
             bw.Close();
             return 0;
         }
-        public unsafe static int WriteMap(FileInfo fi, Map map) {
+        public unsafe static int WriteMap(FileInfo fi, Map map)
+        {
             byte[] map3_signature = new byte[] { (byte)'V', (byte)'3', (byte)'M', (byte)'A', (byte)'P', (byte)0 };
             if (map == null) return -1;
 
@@ -394,7 +430,8 @@ namespace winmaped2 {
                     special_count++;
             bw.Write(map.Layers.Count - special_count);
 
-            foreach (MapLayer ml in map.Layers) {
+            foreach (MapLayer ml in map.Layers)
+            {
                 if (ml.type != LayerType.Tile) continue;
                 bw.Write(Helper.StringToPaddedByteArray(ml.name, 256));
                 bw.Write(ml.parallaxInfo.MultipleX);
@@ -403,36 +440,42 @@ namespace winmaped2 {
                 bw.Write((short)ml.Height);
                 bw.Write((byte)ml.Translucency);
 
-                fixed (short* ptr = ml.Data) {
-                    byte[] zdata = ZLIB.Encode((byte*)ptr, ml.Data.Length * 2);
-                    bw.Write(ml.Data.Length * 2);
-                    bw.Write(zdata.Length);
-                    bw.Write(zdata);
-                }
+                byte[] layerData = new byte[Buffer.ByteLength(ml.Data)];
+                Buffer.BlockCopy(ml.Data, 0, layerData, 0, layerData.Length);
+
+                byte[] zdata = Compression.Deflate(layerData);
+                bw.Write(layerData.Length);
+                bw.Write(zdata.Length);
+                bw.Write(zdata);
+
             }
 
             MapLayer zl = map.ZoneLayer, ol = map.ObsLayer;
 
             byte[] obsdata = new byte[ol.Data.Length];
-            for (int j = 0; j < ol.Data.Length; j++)
-                obsdata[j] = (byte)ol.Data[j];
+            for (int i = 0; i < obsdata.Length; i++)
+            {
+                obsdata[i] = (byte)ol.Data[i];
+            }
+            
+            byte[] obsZData = Compression.Deflate(obsdata);
+            bw.Write(obsdata.Length);
+            bw.Write(obsZData.Length);
+            bw.Write(obsZData);
 
 
-            fixed (byte* ptr = obsdata) {
-                byte[] zdata = ZLIB.Encode(ptr, obsdata.Length);
-                bw.Write(obsdata.Length);
-                bw.Write(zdata.Length);
-                bw.Write(zdata);
-            }
-            fixed (short* ptr = zl.Data) {
-                byte[] zdata = ZLIB.Encode((byte*)ptr, zl.Data.Length * 2);
-                bw.Write(zl.Data.Length * 2);
-                bw.Write(zdata.Length);
-                bw.Write(zdata);
-            }
+
+            byte[] zoneData = new byte[Buffer.ByteLength(zl.Data)];
+            Buffer.BlockCopy(zl.Data, 0, zoneData, 0, zoneData.Length);
+            byte[] zoneZData = Compression.Deflate(zoneData);
+            bw.Write(zoneData.Length);
+            bw.Write(zoneZData.Length);
+            bw.Write(zoneZData);
+
 
             bw.Write(map.Zones.Count);
-            foreach (MapZone mz in map.Zones) {
+            foreach (MapZone mz in map.Zones)
+            {
                 bw.Write(Helper.StringToPaddedByteArray(mz.Name, 256));
                 bw.Write(Helper.StringToPaddedByteArray(mz.PlayerScript, 256));
                 //				bw.Write(Helper.StringToPaddedByteArray(mz.EntityScript,256));
@@ -443,7 +486,8 @@ namespace winmaped2 {
 
 
             bw.Write(map.Entities.Count);
-            foreach (MapEntity me in map.Entities) {
+            foreach (MapEntity me in map.Entities)
+            {
                 bw.Write((short)me.TileX);
                 bw.Write((short)me.TileY);
                 bw.Write((byte)me.Facing);
@@ -480,7 +524,8 @@ namespace winmaped2 {
             return 0;
 
         }
-        public static Map ReadMap(string filename) {
+        public static Map ReadMap(string filename)
+        {
             // open file and examine it to determine if we support this format
             byte[] m3s = new byte[] { (byte)'V', (byte)'3', (byte)'M', (byte)'A', (byte)'P', (byte)0 };
             byte[] m2s = new byte[] { (byte)77, (byte)65, (byte)80, (byte)249, (byte)53, (byte)0 };
@@ -500,24 +545,32 @@ namespace winmaped2 {
 
             br.Close();
 
-            for (int i = 0; i < 6; i++) {
-                if (sig[i] != m2s[i]) {
+            for (int i = 0; i < 6; i++)
+            {
+                if (sig[i] != m2s[i])
+                {
                     mtype = 0;
                     break;
-                } else mtype = 1;
+                }
+                else mtype = 1;
             }
             if (mtype == 0)
-                for (int i = 0; i < 6; i++) {
-                    if (sig[i] != m3s[i]) {
+                for (int i = 0; i < 6; i++)
+                {
+                    if (sig[i] != m3s[i])
+                    {
                         mtype = 0;
                         break;
-                    } else mtype = 2;
+                    }
+                    else mtype = 2;
                 }
             //			map.FileOnDisk=fi;
             System.IO.Directory.SetCurrentDirectory(fi.Directory.FullName);
             Map m = null;
-            try {
-                switch (mtype) {
+            try
+            {
+                switch (mtype)
+                {
                     case 1:
                         m = ReadMap2(fi);
                         break;
@@ -526,7 +579,9 @@ namespace winmaped2 {
                         break;
                     default: Errors.Error("I/O", "Unsupported file format."); return null;
                 }
-            } catch (System.IO.EndOfStreamException) {
+            }
+            catch (System.IO.EndOfStreamException)
+            {
                 Errors.Error("I/O Error", "Unable to load map: Unexpected end of file");
                 return null;
             }
@@ -542,7 +597,8 @@ namespace winmaped2 {
         /// </summary>
         /// <param name="fi"></param>
         /// <param name="map"></param>
-        public static Map ReadMap2(FileInfo fi) {
+        public static Map ReadMap2(FileInfo fi)
+        {
             FileStream fs = fi.OpenRead();
             BinaryReader br = new BinaryReader(fs);
 
@@ -557,7 +613,8 @@ namespace winmaped2 {
             MemoryStream ms = new MemoryStream(Buffer);
             br = new BinaryReader(ms);
 
-            if (Buffer[0] != 77 || Buffer[1] != 65 || Buffer[2] != 80 || Buffer[3] != 249 || Buffer[4] != 53 || Buffer[5] != 0) {
+            if (Buffer[0] != 77 || Buffer[1] != 65 || Buffer[2] != 80 || Buffer[3] != 249 || Buffer[4] != 53 || Buffer[5] != 0)
+            {
                 Errors.Error("InputOutput", "File is not a VERGE2 Map");
                 return null;
             }
@@ -572,11 +629,14 @@ namespace winmaped2 {
 
             // 60 bytes VSP FileName
             FileInfo vspfile = new FileInfo(Helper.BytesToString(br.ReadBytes(60)));
-            if (!vspfile.Exists) {
+            if (!vspfile.Exists)
+            {
                 // TODO:  give the option to create a vsp in this case
                 Errors.Error("InputOutput", "VSP was not found. New VSP created.");
                 map.vsp = new Vsp24();
-            } else {
+            }
+            else
+            {
                 map.vsp = ReadVsp(vspfile.FullName);
             }
 
@@ -598,7 +658,8 @@ namespace winmaped2 {
             int layerCount = (int)br.ReadByte();
 
 
-            for (int i = 0; i < layerCount; i++) {
+            for (int i = 0; i < layerCount; i++)
+            {
                 // 12 bytes per layer discriptor
                 MapLayer ml = new MapLayer(map);
                 ml.type = LayerType.Tile;
@@ -636,7 +697,8 @@ namespace winmaped2 {
                 map.Layers.Add(ml);
             }
 
-            for (int i = 0; i < layerCount; i++) {
+            for (int i = 0; i < layerCount; i++)
+            {
                 int rleLength = br.ReadInt32();
 
                 ushort[] layerdata = InputOutput.DecompressData16(Helper.BytesToWords(br.ReadBytes(rleLength)));
@@ -687,7 +749,8 @@ namespace winmaped2 {
             int zoneCount = br.ReadInt32();
 
             // 50 bytes per zone
-            for (int i = 0; i < zoneCount; i++) {
+            for (int i = 0; i < zoneCount; i++)
+            {
                 MapZone mz = new MapZone();
 
                 mz.ID = i;
@@ -707,7 +770,8 @@ namespace winmaped2 {
 
                 map.Zones.Add(mz);
             }
-            if (zoneCount == 0) {
+            if (zoneCount == 0)
+            {
                 MapZone mz = new MapZone();
                 mz.ID = 0;
                 mz.Name = "NULL_ZONE";
@@ -718,7 +782,8 @@ namespace winmaped2 {
             int chrCount = (int)br.ReadByte();
             ArrayList al_chrs = new ArrayList();
 
-            for (int i = 0; i < chrCount; i++) {
+            for (int i = 0; i < chrCount; i++)
+            {
                 MapChr mc = new MapChr();
 
                 try
@@ -732,12 +797,12 @@ namespace winmaped2 {
                     /// there's no error log in maped3 yet.  I'll discuss this with the boys.  For now, ANNOYING MESSAGE BOX!
                     /// -gru
 
-                    Errors.Error( "I/O", "Bad filename for MapChr("+i+"): " + e.Message +"\nDefaulting to empty string for file name." );
+                    Errors.Error("I/O", "Bad filename for MapChr(" + i + "): " + e.Message + "\nDefaulting to empty string for file name.");
                 }
 
                 mc.ID = i;
 
-                if( mc.Name.Length > 0 ) 
+                if (mc.Name.Length > 0)
                 {
                     FileInfo mcfi = new FileInfo(mc.Name);
                     if (ReadCHR(mcfi, mc) == 0) mc.bImageAvailable = true;
@@ -752,7 +817,7 @@ namespace winmaped2 {
             int entCount = (int)br.ReadByte();
             //Errors.Error(entCount.ToString() + ", "+br.BaseStream.Position.ToString());
 
-            for (int i = 0; i < entCount; i++) 
+            for (int i = 0; i < entCount; i++)
             {
                 MapEntity me = new MapEntity();
 
@@ -786,7 +851,8 @@ namespace winmaped2 {
                 me.ObeyObstruction = (int)br.ReadByte();
                 me.IsObstruction = (int)br.ReadByte();
                 me.Speed = (int)br.ReadByte();
-                switch (me.Speed) {
+                switch (me.Speed)
+                {
                     case 1: me.Speed = 25; break;
                     case 2: me.Speed = 33; break;
                     case 3: me.Speed = 50; break;
@@ -820,7 +886,8 @@ namespace winmaped2 {
 
                 br.ReadBytes(2); // WTF IS THIS!!
 
-                for (int j = 0; j < 6; j++) {
+                for (int j = 0; j < 6; j++)
+                {
                     me.UserData[j] = br.ReadInt16();
                 }
 
@@ -851,25 +918,30 @@ namespace winmaped2 {
             br.ReadBytes(4 * movescriptCount);
 
             string script = "";
-            while (movescriptBuffersize > 0) {
+            while (movescriptBuffersize > 0)
+            {
                 char c = br.ReadChar();
 
-                if (c == (char)0) {
+                if (c == (char)0)
+                {
                     al_scripts.Add(string.Copy(script));
                     script = "";
-                } else script += c;
+                }
+                else script += c;
                 movescriptBuffersize--;
             }
             // add all the scripts to their respective entities and trash the movescript array
 
-            foreach (MapEntity me in map.Entities) {
+            foreach (MapEntity me in map.Entities)
+            {
                 me.MoveScript = (string)al_scripts[me.__movescript];
             }
 
             br.Close();
 
             string rs2 = "";
-            foreach (char c in dontcare) {
+            foreach (char c in dontcare)
+            {
                 if (rs2.Length != 0)
                     rs2 += ",";
                 rs2 += c;
@@ -883,7 +955,8 @@ namespace winmaped2 {
         /// </summary>
         /// <param name="fi">FileInfo of the file to be opened</param>
         /// <param name="vsp">Vsp structure to load into</param>
-        public static Vsp24 ReadVsp8(FileInfo fi) {
+        public static Vsp24 ReadVsp8(FileInfo fi)
+        {
             if (!fi.Exists) return null;
             FileStream fs = fi.OpenRead();
             BinaryReader br = new BinaryReader(fs);
@@ -896,7 +969,8 @@ namespace winmaped2 {
             byte[] pal = br.ReadBytes(768);
             ushort tilecount = br.ReadUInt16();
 
-            for (int i = 0; i < 256; i++) {
+            for (int i = 0; i < 256; i++)
+            {
                 vsp.Palette[i] = new Vsp8PaletteEntry();
                 vsp.Palette[i].r = pal[i * 3];
                 vsp.Palette[i].g = pal[i * 3 + 1];
@@ -904,9 +978,12 @@ namespace winmaped2 {
             }
             byte[] tiles;
 
-            if (version == 2) {
+            if (version == 2)
+            {
                 tiles = br.ReadBytes(tilecount * 256);
-            } else {
+            }
+            else
+            {
                 // tile data is rle compressed
                 int compressedlength = br.ReadInt32();
                 tiles = DecompressData8(br.ReadBytes(compressedlength));
@@ -918,7 +995,8 @@ namespace winmaped2 {
 
             ms = new MemoryStream(tiles);
             br = new BinaryReader(ms);
-            for (int i = 0; i < tilecount; i++) {
+            for (int i = 0; i < tilecount; i++)
+            {
                 Vsp8Tile vt = new Vsp8Tile(vsp, br.ReadBytes(256));
                 vt.doAvg();
                 vsp.Tiles.Add(vt);
@@ -928,7 +1006,8 @@ namespace winmaped2 {
             ms = new MemoryStream(animations);
 
             br = new BinaryReader(ms);
-            for (int i = 0; i < 100; i++) {
+            for (int i = 0; i < 100; i++)
+            {
                 VspAnimation va = new VspAnimation();
 
                 va.Start = (int)br.ReadUInt16();
@@ -953,7 +1032,8 @@ namespace winmaped2 {
         /// <param name="fi"></param>
         /// <param name="chr"></param>
         /// <returns>-1 on failure, 0 on success</returns>
-        public static int ReadCHR(FileInfo fi, MapChr chr) {
+        public static int ReadCHR(FileInfo fi, MapChr chr)
+        {
             if (!fi.Exists) return -1;
 
             FileStream fs = fi.OpenRead();
@@ -969,7 +1049,8 @@ namespace winmaped2 {
 
             byte version = br.ReadByte();
 
-            if (version != 2) {
+            if (version != 2)
+            {
                 Errors.Error("ReadChr", "INPUTOUTPUT::READCHR(): INCORRECT FILE VERSION");
                 return -1;
             }
@@ -993,7 +1074,8 @@ namespace winmaped2 {
             chr.IdleFrameUp = (int)br.ReadInt32();
             chr.IdleFrameDown = (int)br.ReadInt32();
 
-            for (int i = 0; i < 4; i++) {
+            for (int i = 0; i < 4; i++)
+            {
                 int msLength = br.ReadInt32();
                 chr.MoveScripts[i] = Helper.BytesToString(br.ReadBytes(msLength));
             }
@@ -1009,20 +1091,29 @@ namespace winmaped2 {
         /// </summary>
         /// <param name="compressed"></param>
         /// <returns></returns>
-        public static byte[] DecompressData8(byte[] compressed) {
+        public static byte[] DecompressData8(byte[] compressed)
+        {
             MemoryStream mstream = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(mstream);
 
             int run = 0;
-            for (int i = 0; i < compressed.Length; i++) {
-                if (run == 0) {
-                    if (compressed[i] < 255) {
+            for (int i = 0; i < compressed.Length; i++)
+            {
+                if (run == 0)
+                {
+                    if (compressed[i] < 255)
+                    {
                         bw.Write(compressed[i]);
-                    } else if (compressed[i] == 255) {
+                    }
+                    else if (compressed[i] == 255)
+                    {
                         run = compressed[++i];
                     }
-                } else {
-                    while (run > 0) {
+                }
+                else
+                {
+                    while (run > 0)
+                    {
                         bw.Write(compressed[i]);
                         run--;
                     }
@@ -1037,19 +1128,25 @@ namespace winmaped2 {
         /// </summary>
         /// <param name="compressed"></param>
         /// <returns></returns>
-        public static ushort[] DecompressData16(ushort[] compressed) {
+        public static ushort[] DecompressData16(ushort[] compressed)
+        {
             MemoryStream ms = new MemoryStream();
             BinaryWriter bw = new BinaryWriter(ms);
 
             int run = 0;
-            for (int i = 0; i < compressed.Length; i++) {
-                if (run == 0) {
+            for (int i = 0; i < compressed.Length; i++)
+            {
+                if (run == 0)
+                {
                     if ((compressed[i] & 0xFF00) == 0xFF00)
                         run = (compressed[i] & 0x00FF);
                     else
                         bw.Write(compressed[i]);
-                } else {
-                    while (run > 0) {
+                }
+                else
+                {
+                    while (run > 0)
+                    {
                         bw.Write(compressed[i]);
                         run--;
                     }

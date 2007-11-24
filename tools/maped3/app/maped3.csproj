@@ -100,11 +100,6 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <ProjectReference Include="..\zlib\zlib.net.vcproj">
-      <Name>zlib.net</Name>
-      <Project>{1C1C2264-1C1F-4CC2-8747-FE3781AA1BF0}</Project>
-      <Package>{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}</Package>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="code\App.cs">
@@ -239,7 +234,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\mainWindow.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="dialogs\MapedPreferences.cs">
       <SubType>Form</SubType>
