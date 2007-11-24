@@ -100,6 +100,10 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
+    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\components\zlib.net.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="code\App.cs">
@@ -213,7 +217,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\EditVsp.cs">
-      <SubType>Component</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\EditZoneWnd.cs">
       <SubType>Form</SubType>
