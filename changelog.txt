@@ -2,6 +2,11 @@
 Verge 3 Changelog
 ================================================
 
+Revision 189 (2007-12-16) (Kildorf
+=========================
+* Fixed off-by-one in WrapText. (durrr)
+* Corrected comments in WrapText.
+
 Revision 117 (2007-10-16) (Kildorf)
 ========================
 * Rewrote/fixed WrapText (it was dropping into an infinite loop.)

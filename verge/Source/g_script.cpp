@@ -1450,7 +1450,7 @@ std::string ScriptEngine::WrapText(int wt_font, std::string wt_s, int wt_linelen
 
 	while (currloc < len)
 	{
-		if (TextWidth(wt_font, vc_strmid(wt_s, lastbreak, currloc - lastbreak)) > wt_linelen && lastws != lastbreak)
+		if (TextWidth(wt_font, vc_strmid(wt_s, lastbreak+1, currloc - (lastbreak+1))) > wt_linelen && lastws != lastbreak)
 		{
 			wt_s[lastws] = '\n';
 			lastbreak = lastws;
