@@ -47,7 +47,7 @@ namespace winmaped2 {
                     }
                 } else {
                     if (active_obstile != null) {
-                        Render.renderObsTile(img, 0, 0, active_obstile.Image, true, UserPrefs.ObsColor);
+                        Render.renderObsTile(img, 0, 0, active_obstile.Image, true, Preferences.Current.ObsColor);
                     } else {
                         img.Clear(BLACK);
                     }

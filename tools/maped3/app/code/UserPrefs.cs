@@ -2,114 +2,109 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.IO;
+using System.Xml.Serialization;
 using System.Xml;
 
 namespace winmaped2
 {
-	public class UserPrefs
-	{
-		public static int		DefaultZoomLevel	= 2;
-		public static bool		AutoSave			= true;
-		public static int		AutoSaveDelay		= 5; // 5 minutes
-		public static int		AutoSaveLimit		= 20; // 20 backup maps
-		public static int		ObsColor			= Color.White.ToArgb();
-		public static int		ZonesColor			= Color.Blue.ToArgb();
-		public static int		EntsColor			= Color.Yellow.ToArgb();
+    public class Preferences
+    {
+        public int DefaultZoomLevel;
+        public bool AutoSave;
+
+        public int AutoSaveDelay;
+        public int AutoSaveLimit;
+
+        public int ObsColor;
+        public int ZonesColor;
+        public int EntsColor;
+
+        public string WorkingDirectory;
+
+        private static Preferences current;
+        /// <summary>
+        /// Gets or sets the current preference set
+        /// </summary>
+        public static Preferences Current
+        {
+            get
+            {
+                if (current == null)
+                    current = new Preferences();
+                return current;
+            }
+            set
+            {
+                current = value;
+            }
+        }
+
+        /// <summary>
+        /// Creates a Preferences object with the default values
+        /// </summary>
+        public Preferences()
+        {
+
+            this.DefaultZoomLevel = 2;
+            this.AutoSave = true;
+            this.AutoSaveDelay = 5; // 5 minutes
+            this.AutoSaveLimit = 20; // 20 backup maps
+            this.ObsColor = Color.White.ToArgb();
+            this.ZonesColor = Color.Blue.ToArgb();
+            this.EntsColor = Color.Yellow.ToArgb();
+            this.WorkingDirectory = Environment.CurrentDirectory;
+
+        }
+
+        private static string PrefFile
+        {
+            get
+            {
+                return "MapedPreferences.xml";
+            }
+        }
+
+        public static void LoadAsCurrent()
+        {
+            current = Load();
+        }
+        public static Preferences Load()
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(Preferences));
+            Preferences loadedPref;
+
+            try
+            {
+
+                using (StreamReader prefReader = new StreamReader(PrefFile))
+                {
+                    loadedPref = (Preferences)serializer.Deserialize(prefReader);
 
 
 
-		private static string PrefFile = "MapedPreferences.xml";
-		public static void Load()
-		{
+                }
+            }
+            catch (IOException)
+            {
+                Errors.Error("Couldn't load preferences file, using defaults");
+                loadedPref = new Preferences();
+            }
+            catch (InvalidOperationException)
+            {
+                Errors.Error("Invalid preferences file, loading defaults");
+                loadedPref = new Preferences();
+            }
 
-			XmlTextReader xtr = null;
-			try
-			{
-				xtr = new XmlTextReader(PrefFile);
+            return loadedPref;
+        }
+        public void Save()
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(Preferences));
+            StreamWriter prefWriter = new StreamWriter(PrefFile);
 
-				xtr.ReadStartElement();
+            serializer.Serialize(prefWriter, current);
 
-				xtr.ReadStartElement("DefaultZoomLevel");
-				DefaultZoomLevel = int.Parse(xtr.ReadString());
-				xtr.ReadEndElement();
-
-				xtr.ReadStartElement("AutoSave");
-				AutoSave = bool.Parse(xtr.ReadString());
-				xtr.ReadEndElement();
-			
-				xtr.ReadStartElement("AutoSaveDelay");
-				AutoSaveDelay = int.Parse(xtr.ReadString());
-				xtr.ReadEndElement();
-
-				xtr.ReadStartElement("AutoSaveLimit");
-				AutoSaveLimit = int.Parse(xtr.ReadString());
-				xtr.ReadEndElement();
-
-				xtr.ReadStartElement("ObsColor");
-				ObsColor = int.Parse(xtr.ReadString());
-				xtr.ReadEndElement();
-
-				xtr.ReadStartElement("ZonesColor");
-				ZonesColor = int.Parse(xtr.ReadString());
-				xtr.ReadEndElement();
-
-				xtr.ReadStartElement("EntsColor");
-				EntsColor = int.Parse(xtr.ReadString());
-				xtr.ReadEndElement();
-
-				xtr.ReadEndElement();
-		
-				xtr.Close();
-			}
-			catch
-			{
-				Errors.Error("Load", "There was an error loading your maped preferences. Using default settings.");
-				xtr.Close();
-			}
-
-
-		}
-		public static void Save()
-		{
-            XmlTextWriter xtw = new XmlTextWriter(PrefFile,null);
-
-			xtw.WriteStartDocument();
-			xtw.WriteStartElement("MapedPreferences");
-
-			xtw.WriteStartElement("DefaultZoomLevel");
-			xtw.WriteString(DefaultZoomLevel.ToString());
-			xtw.WriteEndElement();
-
-			xtw.WriteStartElement("AutoSave");
-			xtw.WriteString(AutoSave.ToString());
-			xtw.WriteEndElement();
-
-			xtw.WriteStartElement("AutoSaveDelay");
-			xtw.WriteString(AutoSaveDelay.ToString());
-			xtw.WriteEndElement();
-
-			xtw.WriteStartElement("AutoSaveLimit");
-			xtw.WriteString(AutoSaveLimit.ToString());
-			xtw.WriteEndElement();
-
-			xtw.WriteStartElement("ObsColor");
-			xtw.WriteString(ObsColor.ToString());
-			xtw.WriteEndElement();
-
-			xtw.WriteStartElement("ZonesColor");
-			xtw.WriteString(ZonesColor.ToString());
-			xtw.WriteEndElement();
-
-			xtw.WriteStartElement("EntsColor");
-			xtw.WriteString(EntsColor.ToString());
-			xtw.WriteEndElement();
-
-			
-			xtw.WriteEndElement();
-			xtw.WriteEndDocument();
-
-			xtw.Close();
-
-		}
-	}
+            prefWriter.Close();
+        }
+    }
 }

@@ -52,13 +52,13 @@ namespace winmaped2
 			// TODO: Add any constructor code after InitializeComponent call
 			//
 
-			cb_zoomlevel.Text = zoomlevels[UserPrefs.DefaultZoomLevel-1];
-			cb_autosave.Checked = UserPrefs.AutoSave;
-			n_asint.Value = UserPrefs.AutoSaveDelay;
-			n_asbackups.Value = UserPrefs.AutoSaveLimit;
-			p_obs.BackColor = Color.FromArgb(UserPrefs.ObsColor);
-			p_zones.BackColor = Color.FromArgb(UserPrefs.ZonesColor);
-			p_ents.BackColor = Color.FromArgb(UserPrefs.EntsColor);
+			cb_zoomlevel.Text = zoomlevels[Preferences.Current.DefaultZoomLevel-1];
+			cb_autosave.Checked = Preferences.Current.AutoSave;
+			n_asint.Value = Preferences.Current.AutoSaveDelay;
+			n_asbackups.Value = Preferences.Current.AutoSaveLimit;
+			p_obs.BackColor = Color.FromArgb(Preferences.Current.ObsColor);
+			p_zones.BackColor = Color.FromArgb(Preferences.Current.ZonesColor);
+			p_ents.BackColor = Color.FromArgb(Preferences.Current.EntsColor);
 
 
 		}
@@ -411,13 +411,13 @@ namespace winmaped2
 		{
 			// save prefs
 
-			UserPrefs.DefaultZoomLevel = cb_zoomlevel.SelectedIndex + 1;
-			UserPrefs.ObsColor = p_obs.BackColor.ToArgb();
-			UserPrefs.ZonesColor = p_zones.BackColor.ToArgb();
-			UserPrefs.EntsColor = p_ents.BackColor.ToArgb();
-			UserPrefs.AutoSave = cb_autosave.Checked;
-			UserPrefs.AutoSaveDelay = (int)n_asint.Value;
-			UserPrefs.AutoSaveLimit = (int)n_asbackups.Value;
+			Preferences.Current.DefaultZoomLevel = cb_zoomlevel.SelectedIndex + 1;
+			Preferences.Current.ObsColor = p_obs.BackColor.ToArgb();
+			Preferences.Current.ZonesColor = p_zones.BackColor.ToArgb();
+			Preferences.Current.EntsColor = p_ents.BackColor.ToArgb();
+			Preferences.Current.AutoSave = cb_autosave.Checked;
+			Preferences.Current.AutoSaveDelay = (int)n_asint.Value;
+			Preferences.Current.AutoSaveLimit = (int)n_asbackups.Value;
 
 			DialogResult = DialogResult.OK;
 			Close();

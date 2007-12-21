@@ -217,7 +217,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\EditVsp.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="dialogs\EditZoneWnd.cs">
       <SubType>Form</SubType>

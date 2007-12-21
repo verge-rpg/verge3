@@ -159,7 +159,7 @@ namespace winmaped2 {
 
             Global.FrameCalc.init();
 
-            UserPrefs.Load();
+            Preferences.LoadAsCurrent();
 
             Plugins.IMapPlugin brush, rectfill, line, rectangle, floodfill, clipboard;
             Global.pluginManager.addPlugin(brush = new winmaped2.map_plugins.BrushTool());
@@ -225,7 +225,7 @@ namespace winmaped2 {
             mapController.AssociateMinimap(miniMap);
             mcClipboard.ZoomLevel = 1;
 
-            Global.zoom = UserPrefs.DefaultZoomLevel;
+            Global.zoom = Preferences.Current.DefaultZoomLevel;
             Global.FrameCalc.OnTick += new winmaped2.Global.SimpleEventHandler(FrameCalc_OnTick);
 
 
@@ -249,7 +249,7 @@ namespace winmaped2 {
             throttleDisplay = new ThrottleBuffer(500, new EventHandler(postRedisplay));
 
             // test
-            //UserPrefs.Save();
+            //Preferences.Current.Save();
 
             radioButton1.Checked = true;
         }
@@ -2192,7 +2192,7 @@ namespace winmaped2 {
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             e.Cancel = CloseCheck();
             if (e.Cancel == false)
-                UserPrefs.Save();
+                Preferences.Current.Save();
         }
 
         private void mainpanel_Paint(object sender, System.Windows.Forms.PaintEventArgs e) {

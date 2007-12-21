@@ -193,7 +193,7 @@ namespace winmaped2 {
                     int row = 0, col = 0;
                     for (int i = scrollOffset / 16 * 20; i < vsp.ObstructionTiles.Count; i++) {
                         VspObstructionTile vot = ((VspObstructionTile)vsp.ObstructionTiles[i]);
-                        Render.renderObsTile(qimg, col * 16, row * 16, vot.Image, true, UserPrefs.ObsColor);
+                        Render.renderObsTile(qimg, col * 16, row * 16, vot.Image, true, Preferences.Current.ObsColor);
                         if (i == st0) {
                             if (controller_mode != VSPController.ControllerMode.ViewOnly) {
                                 Render.renderBox(qimg, col * 16, row * 16, 16, 16, WHITE, Render.PixelOp.Src);

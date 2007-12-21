@@ -115,7 +115,7 @@ namespace winmaped2 {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         tile = tileMap[tp++];
                         if (0 < tile && tile < ParentMap.vsp.ObstructionTiles.Count) {
-                            Render.renderObsTile(backBuffer, cpx, cpy, ((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Image, false, UserPrefs.ObsColor);
+                            Render.renderObsTile(backBuffer, cpx, cpy, ((VspObstructionTile)ParentMap.vsp.ObstructionTiles[tile]).Image, false, Preferences.Current.ObsColor);
                         }
                     }
                 }
@@ -165,14 +165,14 @@ namespace winmaped2 {
                 if (Global.RenderOptions.bTranslucentEffects) {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         if ((tile = tileMap[tp++]) != 0) {
-                            Render.renderColoredTile_50Alpha(backBuffer, cpx, cpy, UserPrefs.ZonesColor);
+                            Render.renderColoredTile_50Alpha(backBuffer, cpx, cpy, Preferences.Current.ZonesColor);
                             Render.renderNumber(backBuffer, cpx, cpy, tile, WHITE);
                         }
                     }
                 } else {
                     for (cpx = xmin; cpx < xmax; cpx += 16) {
                         if ((tile = tileMap[tp++]) != 0) {
-                            Render.renderColoredTile(backBuffer, cpx, cpy, UserPrefs.ZonesColor);
+                            Render.renderColoredTile(backBuffer, cpx, cpy, Preferences.Current.ZonesColor);
                             Render.renderNumber(backBuffer, cpx, cpy, tile, WHITE);
                         }
                     }
@@ -236,7 +236,7 @@ namespace winmaped2 {
                 if (tx >= mtx && tx <= mtx + tw && ty >= mty && ty <= mty + th) {
                     int cx = -mtox + (tx - mtx) * 16;
                     int cy = -mtoy + (ty - mty) * 16;
-                    Render.renderColoredTile_50Alpha(backBuffer, cx, cy, UserPrefs.EntsColor);
+                    Render.renderColoredTile_50Alpha(backBuffer, cx, cy, Preferences.Current.EntsColor);
                     Render.renderNumber(backBuffer, cx + 4, cy + 4, me.ID, unchecked((int)0xFFFFFFFF));
                 }
             }
