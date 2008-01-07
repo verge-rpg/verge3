@@ -12,7 +12,6 @@ namespace winmaped2
 		HScrollBar	c_hscroll;
 		VScrollBar	c_vscroll;
 		mapView		c_viewer;
-		SizeGrip	c_sizegrip;
 		MiniMapControl c_mmc;
 
 		public HScrollBar hScrollBar { get { return c_hscroll; } }
@@ -38,12 +37,9 @@ namespace winmaped2
 			c_viewer.Size = Size;
 			c_viewer.Location = new Point(0,0);
 
-			c_sizegrip = new SizeGrip();
-
 			Controls.Add(c_viewer);
 			Controls.Add(c_hscroll);
 			Controls.Add(c_vscroll);
-			Controls.Add(c_sizegrip);
 		}
 		protected override void OnSizeChanged(EventArgs e)
 		{
@@ -59,8 +55,7 @@ namespace winmaped2
 			c_hscroll.Width = p.ClientRectangle.Width - SystemInformation.VerticalScrollBarWidth;
 			c_hscroll.Height = SystemInformation.HorizontalScrollBarHeight;
 			c_vscroll.Height = p.ClientRectangle.Height - SystemInformation.HorizontalScrollBarHeight;
-			c_vscroll.Width = SystemInformation.VerticalScrollBarWidth;
-			c_sizegrip.Location = new Point(p.ClientRectangle.Width-SystemInformation.VerticalScrollBarWidth,p.ClientRectangle.Height-SystemInformation.HorizontalScrollBarHeight);
+			c_vscroll.Width = SystemInformation.VerticalScrollBarWidth;			
 			c_viewer.Size = new Size(p.ClientRectangle.Width-SystemInformation.VerticalScrollBarWidth,p.ClientRectangle.Height-SystemInformation.HorizontalScrollBarHeight);
 			c_viewer.UpdateSize();
 		}

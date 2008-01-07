@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.50727</ProductVersion>
@@ -24,6 +24,7 @@
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\bin\Debug\</OutputPath>
@@ -183,6 +184,9 @@
     <Compile Include="controls\miniMapView.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="controls\SidePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="controls\TileEditor.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -285,6 +289,10 @@
     <EmbeddedResource Include="controls\mapView.resx">
       <DependentUpon>mapView.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="controls\SidePanel.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SidePanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="controls\TileViewer.resx">
       <DependentUpon>TileViewer.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -370,6 +378,7 @@
     <Content Include="resources\bitmaps\rectfill.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Properties\" />
     <Folder Include="resources\cursors\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

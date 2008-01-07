@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 namespace winmaped2.pr2 {
-    public interface IRenderImage : IDisposable {
+    public unsafe interface IRenderImage : IDisposable {
         void Clear(int color);
         IRenderImage Clone();
         void UpdatePixels(int[] newPixels);
@@ -10,7 +10,7 @@ namespace winmaped2.pr2 {
         void SetPixel(int x, int y, int color);
         int Height { get; }
         int Pitch { get; }
-        unsafe int* Buffer { get; }
+        int* Buffer { get; }
         int Stride { get; }
         int Width { get; }
     }
