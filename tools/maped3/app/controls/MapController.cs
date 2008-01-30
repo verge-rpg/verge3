@@ -51,8 +51,8 @@ namespace winmaped2
 		{
 			Panel p = this;
 			c_hscroll.Location = new Point(0,p.ClientRectangle.Height-SystemInformation.HorizontalScrollBarHeight);
-			c_vscroll.Location = new Point(p.ClientRectangle.Width-SystemInformation.VerticalScrollBarWidth);
-			c_hscroll.Width = p.ClientRectangle.Width - SystemInformation.VerticalScrollBarWidth;
+			c_vscroll.Location = new Point(p.ClientRectangle.Width-SystemInformation.VerticalScrollBarWidth,0);
+            c_hscroll.Width = p.ClientRectangle.Width - SystemInformation.VerticalScrollBarWidth;
 			c_hscroll.Height = SystemInformation.HorizontalScrollBarHeight;
 			c_vscroll.Height = p.ClientRectangle.Height - SystemInformation.HorizontalScrollBarHeight;
 			c_vscroll.Width = SystemInformation.VerticalScrollBarWidth;			

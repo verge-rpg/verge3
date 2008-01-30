@@ -448,8 +448,6 @@ namespace winmaped2 {
             this.tv_obs = new winmaped2.TileViewer();
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
-            this.clipboardPanel = new winmaped2.CollapsiblePanel();
-            this.mcClipboard = new winmaped2.MapController();
             this.minimapPanel = new winmaped2.CollapsiblePanel();
             this.ctMinimapP = new System.Windows.Forms.Panel();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -459,6 +457,8 @@ namespace winmaped2 {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.cb_transeffects = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.clipboardPanel = new winmaped2.CollapsiblePanel();
+            this.mcClipboard = new winmaped2.MapController();
             ((System.ComponentModel.ISupportInitialize)(this.sbpLoadInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sbpCursorInfo)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.sbpSelection)).BeginInit();
@@ -477,13 +477,13 @@ namespace winmaped2 {
             this.p_ents.SuspendLayout();
             this.g_tiles.SuspendLayout();
             this.g_obs.SuspendLayout();
-            this.clipboardPanel.SuspendLayout();
             this.minimapPanel.SuspendLayout();
             this.ctMinimapP.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.tb_zoom)).BeginInit();
             this.panel2.SuspendLayout();
             this.groupBox1.SuspendLayout();
+            this.clipboardPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // mainMenu
@@ -849,7 +849,7 @@ namespace winmaped2 {
             // statusBar
             // 
             this.statusBar.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.statusBar.Location = new System.Drawing.Point(0, 452);
+            this.statusBar.Location = new System.Drawing.Point(0, 410);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.sbpLoadInfo,
@@ -895,7 +895,7 @@ namespace winmaped2 {
             this.toolPanel.ForeColor = System.Drawing.SystemColors.ControlText;
             this.toolPanel.Location = new System.Drawing.Point(677, 0);
             this.toolPanel.Name = "toolPanel";
-            this.toolPanel.Size = new System.Drawing.Size(392, 452);
+            this.toolPanel.Size = new System.Drawing.Size(392, 410);
             this.toolPanel.TabIndex = 2;
             // 
             // button1
@@ -905,7 +905,7 @@ namespace winmaped2 {
             this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.button1.Location = new System.Drawing.Point(0, 0);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(16, 450);
+            this.button1.Size = new System.Drawing.Size(16, 408);
             this.button1.TabIndex = 5;
             this.button1.Text = ">";
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -918,11 +918,10 @@ namespace winmaped2 {
             this.sidebarPanel.Controls.Add(this.toolPalletePanel);
             this.sidebarPanel.Controls.Add(this.layerPanel);
             this.sidebarPanel.Controls.Add(this.tilesPanel);
-            //this.sidebarPanel.Controls.Add(this.clipboardPanel);
             this.sidebarPanel.Controls.Add(this.minimapPanel);
             this.sidebarPanel.Location = new System.Drawing.Point(18, 4);
             this.sidebarPanel.Name = "sidebarPanel";
-            this.sidebarPanel.Size = new System.Drawing.Size(369, 446);
+            this.sidebarPanel.Size = new System.Drawing.Size(369, 404);
             this.sidebarPanel.TabIndex = 16;
             // 
             // toolbarImages
@@ -939,7 +938,7 @@ namespace winmaped2 {
             this.mapPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mapPanel.Location = new System.Drawing.Point(0, 0);
             this.mapPanel.Name = "mapPanel";
-            this.mapPanel.Size = new System.Drawing.Size(677, 452);
+            this.mapPanel.Size = new System.Drawing.Size(677, 410);
             this.mapPanel.TabIndex = 5;
             this.mapPanel.Resize += new System.EventHandler(this.mapPanel_Resize);
             // 
@@ -951,7 +950,7 @@ namespace winmaped2 {
             this.mainpanel.ForeColor = System.Drawing.Color.Coral;
             this.mainpanel.Location = new System.Drawing.Point(0, 0);
             this.mainpanel.Name = "mainpanel";
-            this.mainpanel.Size = new System.Drawing.Size(673, 448);
+            this.mainpanel.Size = new System.Drawing.Size(673, 406);
             this.mainpanel.TabIndex = 10;
             this.mainpanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainpanel_Paint);
             // 
@@ -983,7 +982,7 @@ namespace winmaped2 {
             this.mapController.Location = new System.Drawing.Point(0, 0);
             this.mapController.Name = "mapController";
             this.mapController.ParentMap = null;
-            this.mapController.Size = new System.Drawing.Size(673, 448);
+            this.mapController.Size = new System.Drawing.Size(673, 406);
             this.mapController.TabIndex = 0;
             this.mapController.ZoomLevel = 2;
             // 
@@ -991,7 +990,7 @@ namespace winmaped2 {
             // 
             this.sizeGrip.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.sizeGrip.ForeColor = System.Drawing.Color.Coral;
-            this.sizeGrip.Location = new System.Drawing.Point(653, 430);
+            this.sizeGrip.Location = new System.Drawing.Point(653, 388);
             this.sizeGrip.Name = "sizeGrip";
             this.sizeGrip.Size = new System.Drawing.Size(16, 16);
             this.sizeGrip.TabIndex = 3;
@@ -1472,35 +1471,12 @@ namespace winmaped2 {
             this.button5.Text = "Arrange Tiles";
             this.button5.Click += new System.EventHandler(this.menuItem1_Click);
             // 
-            // clipboardPanel
-            // 
-            this.clipboardPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.clipboardPanel.Controls.Add(this.mcClipboard);
-            this.clipboardPanel.Enabled = false;
-            this.clipboardPanel.Location = new System.Drawing.Point(3, 629);
-            this.clipboardPanel.Name = "clipboardPanel";
-            this.clipboardPanel.Size = new System.Drawing.Size(341, 191);
-            this.clipboardPanel.TabIndex = 1;
-            this.clipboardPanel.Title = "Clipboard";
-            this.clipboardPanel.Visible = false;
-            // 
-            // mcClipboard
-            // 
-            this.mcClipboard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mcClipboard.Location = new System.Drawing.Point(0, 16);
-            this.mcClipboard.Name = "mcClipboard";
-            this.mcClipboard.ParentMap = null;
-            this.mcClipboard.Size = new System.Drawing.Size(341, 175);
-            this.mcClipboard.TabIndex = 0;
-            this.mcClipboard.ZoomLevel = 2;
-            // 
             // minimapPanel
             // 
             this.minimapPanel.Controls.Add(this.ctMinimapP);
-            this.minimapPanel.Location = new System.Drawing.Point(3, 826);
+            this.minimapPanel.Location = new System.Drawing.Point(3, 629);
             this.minimapPanel.Name = "minimapPanel";
-            this.minimapPanel.Size = new System.Drawing.Size(341, 207);
+            this.minimapPanel.Size = new System.Drawing.Size(341, 227);
             this.minimapPanel.TabIndex = 3;
             this.minimapPanel.Title = "Minimap";
             // 
@@ -1512,7 +1488,7 @@ namespace winmaped2 {
             this.ctMinimapP.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ctMinimapP.Location = new System.Drawing.Point(0, 16);
             this.ctMinimapP.Name = "ctMinimapP";
-            this.ctMinimapP.Size = new System.Drawing.Size(341, 191);
+            this.ctMinimapP.Size = new System.Drawing.Size(341, 211);
             this.ctMinimapP.TabIndex = 15;
             // 
             // groupBox3
@@ -1587,10 +1563,33 @@ namespace winmaped2 {
             this.checkBox1.Text = "Animate";
             this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
+            // clipboardPanel
+            // 
+            this.clipboardPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.clipboardPanel.Controls.Add(this.mcClipboard);
+            this.clipboardPanel.Enabled = false;
+            this.clipboardPanel.Location = new System.Drawing.Point(3, 629);
+            this.clipboardPanel.Name = "clipboardPanel";
+            this.clipboardPanel.Size = new System.Drawing.Size(341, 191);
+            this.clipboardPanel.TabIndex = 1;
+            this.clipboardPanel.Title = "Clipboard";
+            this.clipboardPanel.Visible = false;
+            // 
+            // mcClipboard
+            // 
+            this.mcClipboard.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mcClipboard.Location = new System.Drawing.Point(0, 16);
+            this.mcClipboard.Name = "mcClipboard";
+            this.mcClipboard.ParentMap = null;
+            this.mcClipboard.Size = new System.Drawing.Size(341, 175);
+            this.mcClipboard.TabIndex = 0;
+            this.mcClipboard.ZoomLevel = 2;
+            // 
             // MainWindow
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(1069, 476);
+            this.ClientSize = new System.Drawing.Size(1069, 434);
             this.Controls.Add(this.mapPanel);
             this.Controls.Add(this.toolPanel);
             this.Controls.Add(this.statusBar);
@@ -1621,7 +1620,6 @@ namespace winmaped2 {
             this.p_ents.ResumeLayout(false);
             this.g_tiles.ResumeLayout(false);
             this.g_obs.ResumeLayout(false);
-            this.clipboardPanel.ResumeLayout(false);
             this.minimapPanel.ResumeLayout(false);
             this.ctMinimapP.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
@@ -1629,6 +1627,7 @@ namespace winmaped2 {
             ((System.ComponentModel.ISupportInitialize)(this.tb_zoom)).EndInit();
             this.panel2.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
+            this.clipboardPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
