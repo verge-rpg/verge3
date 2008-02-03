@@ -118,7 +118,7 @@ std::string strtolower(std::string val) { std::transform(val.begin(), val.end(),
 	lua_settable(L,-3); \
 	lua_pop(L,1); }
 
-#define GLOBAL_NAMESPACE "LuaVergeRaw"
+#define GLOBAL_NAMESPACE "v3"
 #define LUA_FUNC(name) { module(L) [ def(#name, ___##name) ]; }
 #define LUA_BIND(name) { module(L) [ def(#name, ##name)]; }
 #define LUA_BIND_R(name)  { module(L) [ def("___get_"#name,___get_##name) ]; }
@@ -226,8 +226,8 @@ int ___get_xwin() { return xwin; }
 void ___set_xwin(int val) { xwin = val; }
 int ___get_ywin() { return ywin; }
 void ___set_ywin(int val) { ywin = val; }
-int ___get_cameratracking() { return cameratracking; }
-void ___set_cameratracking(int val) { cameratracking = val; }
+int ___get_cameratracking() { log("returning cameratracking: %d",cameratracking); return cameratracking; }
+void ___set_cameratracking(int val) { cameratracking = val; log("set cameratracking to %d",cameratracking); }
 int ___get_cameratracker() { return cameratracker; }
 void ___set_cameratracker(int val) { cameratracker = val; }
 
@@ -494,8 +494,8 @@ void LUA::bindApi() {
 
 		//OVERKILL: use this instead of the _G one below to put things in the other namespace
 		grr |= luaL_dostring(L,"\
-		LuaVergeRaw = {}; \
-		___xmagic_table(LuaVergeRaw,true); \
+		v3 = {}; \
+		___xmagic_table(v3,true); \
 		");
 		
 		//special setup for _G
@@ -879,10 +879,10 @@ void LUA::bindApi() {
 		LUA_BIND_RW(xwin); LUA_BIND_RW(ywin);
 		LUA_BIND_RW(cameratracking); LUA_BIND_RW(cameratracker);
 		grr |= luaL_dostring(L,"\
-			rw("GLOBAL_NAMESPACE",'xwin'); \
-			rw("GLOBAL_NAMESPACE",'ywin'); \
-			rw("GLOBAL_NAMESPACE",'cameratracking'); \
-			rw("GLOBAL_NAMESPACE",'cameratracker'); \
+			"GLOBAL_NAMESPACE":___rw('xwin',___get_xwin,___set_xwin); \
+			"GLOBAL_NAMESPACE":___rw('ywin',___get_ywin,___set_ywin); \
+			"GLOBAL_NAMESPACE":___rw('cameratracking',___get_cameratracking,___set_cameratracking);  \
+			"GLOBAL_NAMESPACE":___rw('cameratracker',___get_cameratracker,___set_cameratracker); \
 		");
 
 		//VII.g. Map Variables

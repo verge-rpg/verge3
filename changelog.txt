@@ -2,6 +2,10 @@
 Verge 3 Changelog
 ================================================
 
+Revision 195 (2008-02-03) (Kildorf)
+=========================
+* Changed Lua "global namespace" to v3 instead of LuaVergeRaw.
+
 Revision 194 (2008-02-03) (Kildorf)
 =========================
 * Removed MFC dependencies from Audiere.
