@@ -867,22 +867,22 @@ void LUA::bindApi() {
 		grr |= luaL_dostring(L,"\
 			"GLOBAL_NAMESPACE":___embed_magic_collection('sprite', function(table) \
 				table:___irw('x',___get_sprite_x,___set_sprite_x); \
-				table:___irw('x',___get_sprite_y,___set_sprite_y); \
-				table:___irw('x',___get_sprite_sc,___set_sprite_sc); \
-				table:___irw('x',___get_sprite_image,___set_sprite_image); \
-				table:___irw('x',___get_sprite_lucent,___set_sprite_lucent); \
-				table:___irw('x',___get_sprite_addsub,___set_sprite_addsub); \
-				table:___irw('x',___get_sprite_alphamap,___set_sprite_alphamap); \
+				table:___irw('y',___get_sprite_y,___set_sprite_y); \
+				table:___irw('sc',___get_sprite_sc,___set_sprite_sc); \
+				table:___irw('image',___get_sprite_image,___set_sprite_image); \
+				table:___irw('lucent',___get_sprite_lucent,___set_sprite_lucent); \
+				table:___irw('addsub',___get_sprite_addsub,___set_sprite_addsub); \
+				table:___irw('alphamap',___get_sprite_alphamap,___set_sprite_alphamap); \
 			end);");
 
 		//VII.f. Camera Variables
 		LUA_BIND_RW(xwin); LUA_BIND_RW(ywin);
 		LUA_BIND_RW(cameratracking); LUA_BIND_RW(cameratracker);
 		grr |= luaL_dostring(L,"\
-			"GLOBAL_NAMESPACE":___rw('xwin',___get_xwin,___set_xwin); \
-			"GLOBAL_NAMESPACE":___rw('ywin',___get_ywin,___set_ywin); \
-			"GLOBAL_NAMESPACE":___rw('cameratracking',___get_cameratracking,___set_cameratracking); \
-			"GLOBAL_NAMESPACE":___rw('cameratracker',___get_cameratracker,___set_cameratracker); \
+			rw("GLOBAL_NAMESPACE",'xwin'); \
+			rw("GLOBAL_NAMESPACE",'ywin'); \
+			rw("GLOBAL_NAMESPACE",'cameratracking'); \
+			rw("GLOBAL_NAMESPACE",'cameratracker'); \
 		");
 
 		//VII.g. Map Variables
