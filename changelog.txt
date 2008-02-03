@@ -2,6 +2,14 @@
 Verge 3 Changelog
 ================================================
 
+Revision 194 (2008-02-03) (Kildorf)
+=========================
+* Removed MFC dependencies from Audiere.
+
+Revision 193 (2008-02-03) (Kildorf)
+=========================
+* Fixed sprite accessor variables in Lua.
+
 Revision 189 (2007-12-16) (Kildorf
 =========================
 * Fixed off-by-one in WrapText. (durrr)
