@@ -2,6 +2,10 @@
 Verge 3 Changelog
 ================================================
 
+Revision 196 (2008-02-07) (Kildorf)
+=========================
+* Took out some debugging log() lines that I accidentally left in.
+
 Revision 195 (2008-02-03) (Kildorf)
 =========================
 * Changed Lua "global namespace" to v3 instead of LuaVergeRaw.

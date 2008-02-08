@@ -226,8 +226,8 @@ int ___get_xwin() { return xwin; }
 void ___set_xwin(int val) { xwin = val; }
 int ___get_ywin() { return ywin; }
 void ___set_ywin(int val) { ywin = val; }
-int ___get_cameratracking() { log("returning cameratracking: %d",cameratracking); return cameratracking; }
-void ___set_cameratracking(int val) { cameratracking = val; log("set cameratracking to %d",cameratracking); }
+int ___get_cameratracking() { return cameratracking; }
+void ___set_cameratracking(int val) { cameratracking = val; }
 int ___get_cameratracker() { return cameratracker; }
 void ___set_cameratracker(int val) { cameratracker = val; }
 
