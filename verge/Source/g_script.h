@@ -278,6 +278,7 @@ public:
 	static int Get_EntityFrameH(int ofs);
 	static std::string Get_EntityDescription(int arg);
 	static void Set_EntityDescription(int arg, std::string val);
+	static void Set_EntityActivateScript(int arg, std::string val);
 	static bool SoundIsPlaying(int chn);
 	static void RectVGrad(int x1, int y1, int x2, int y2, int c, int c2, int d);
 	static void RectHGrad(int x1, int y1, int x2, int y2, int c, int c2, int d);

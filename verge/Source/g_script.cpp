@@ -1393,6 +1393,13 @@ void ScriptEngine::Set_EntityDescription(int arg, std::string val) {
 		entity[arg]->description = val;
 }
 
+void ScriptEngine::Set_EntityActivateScript(int arg, std::string val)
+{
+	if(arg >= 0 && arg < entities)
+		entity[arg]->script = val;
+}
+
+
 bool ScriptEngine::SoundIsPlaying(int chn) { return ::SoundIsPlaying(chn); }
 void ScriptEngine::RectVGrad(int x1, int y1, int x2, int y2, int c, int c2, int d)
 {

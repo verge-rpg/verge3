@@ -194,6 +194,7 @@ int ___get_ent_lucent(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]-
 void ___set_ent_lucent(int ofs, int value) { if (ofs>=0 && ofs<entities) entity[ofs]->lucent = value; }
 
 std::string ___get_ent_script(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->script; else return ""; }
+void ___set_ent_script(int ofs,std::string val) { if (ofs>=0 && ofs<entities) se->Set_EntityActivateScript(ofs, val); }
 
 std::string ___get_ent_chr(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityChr(ofs); else return ""; }
 void ___set_ent_chr(int ofs, std::string chr) { if (ofs>=0 && ofs<entities) se->Set_EntityChr(ofs,chr); }
@@ -831,7 +832,7 @@ void LUA::bindApi() {
 		LUA_BIND_R(ent_movecode);
 		LUA_BIND_RW(ent_face); LUA_BIND_RW(ent_speed); LUA_BIND_RW(ent_visible);
 		LUA_BIND_RW(ent_obstruct); LUA_BIND_RW(ent_obstructable);
-		LUA_BIND_R(ent_script);
+		LUA_BIND_RW(ent_script);
 		LUA_BIND_RW(ent_chr);
 		grr |= luaL_dostring(L,"\
 			"GLOBAL_NAMESPACE":___r('entities',___get_entities); \
@@ -850,7 +851,7 @@ void LUA::bindApi() {
 				table:___irw('visible',___get_ent_visible,___set_ent_visible); \
 				table:___irw('obstruct',___get_ent_obstruct,___set_ent_obstruct); \
 				table:___irw('obstructable',___get_ent_obstructable,___set_ent_obstructable); \
-				table:___ir('script',___get_ent_script); \
+				table:___irw('script',___get_ent_script,___set_ent_script); \
 				table:___irw('chr',___get_ent_chr, ___set_ent_chr); \
 				table:___irw('lucent',___get_ent_lucent,___set_ent_lucent); \
 				table:___ir('framew',Get_EntityFrameW); \

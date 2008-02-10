@@ -2,6 +2,10 @@
 Verge 3 Changelog
 ================================================
 
+Revision 197 (2008-02-10) (Kildorf)
+=========================
+* Added support for entity.script to lua.
+
 Revision 196 (2008-02-07) (Kildorf)
 =========================
 * Took out some debugging log() lines that I accidentally left in.
