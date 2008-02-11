@@ -280,8 +280,9 @@ public:
 	void SetStrArray(const char *strname, int index, std::string value);
 	std::string GetStrArray(const char *strname, int index);
 
-private:
 	std::vector<function_t*>	userfuncs[NUM_CIMAGES];
+
+private:
 	std::vector<int_t*>			global_ints;
 	std::vector<string_t*>		global_strings;
 	std::vector<struct_instance*>		struct_instances;

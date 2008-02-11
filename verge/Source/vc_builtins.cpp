@@ -282,6 +282,8 @@ char* libfuncs[NUM_LIBFUNCS][3] = {
 	{"3", "ListBuiltinVariables", ""},
 	{"3", "ListBuiltinDefines", ""},
 	{"1", "GetPlayer", ""}, // Kildorf (2007-10-12): Return the entity number of the player.
+	
+	{"1", "GetUserSystemVcFunctionCount", ""},	// Grue
 };
 
 char* libvars[NUM_HVARS][3] = {

@@ -1601,6 +1601,12 @@ void vc_ListBuiltinDefines()
 	}
 }
 
+void vc_GetUserFunctionCount()
+{
+	vc->vcreturn = 0;
+	vc->vcreturn = vc->userfuncs[CIMAGE_SYSTEM].size();
+}
+
 
 // ===================== End VC Standard Function Library =====================
 
@@ -1881,6 +1887,9 @@ void VCCore::HandleLibFunc()
 		case 266: vc_ListBuiltinVariables(); break;
 		case 267: vc_ListBuiltinDefines(); break;
 		case 268: vc_GetPlayer(); break; // Kildorf (2007-10-13)
+		
+		case 269: vc_GetUserFunctionCount(); break; // grue 
+
 		default:
 			vc->vcerr("VC Execution error: Invalid STDLIB index. (%d)", (int) c);
 	}

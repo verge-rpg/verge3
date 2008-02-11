@@ -23,9 +23,9 @@
 #define IDENTIFIER_LEN		80
 #define VCLOG				"vcc_verbose.txt"
 
-#define CIMAGE_SYSTEM 0
-#define CIMAGE_MAP    1
-#define CIMAGE_TEMP   2
+#define CIMAGE_SYSTEM 0		//system vc
+#define CIMAGE_MAP    1		//map vc
+#define CIMAGE_TEMP   2		//vars internal to vc functions?
 #define NUM_CIMAGES   3
 
 extern int verbose;
