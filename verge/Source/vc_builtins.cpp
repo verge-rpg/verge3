@@ -284,6 +284,7 @@ char* libfuncs[NUM_LIBFUNCS][3] = {
 	{"1", "GetPlayer", ""}, // Kildorf (2007-10-12): Return the entity number of the player.
 	
 	{"1", "GetUserSystemVcFunctionCount", ""},	// Grue
+	{"3", "GetUserSystemVcFunctionByIndex", "1"},	// Grue
 };
 
 char* libvars[NUM_HVARS][3] = {

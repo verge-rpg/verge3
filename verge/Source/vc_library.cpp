@@ -1601,10 +1601,25 @@ void vc_ListBuiltinDefines()
 	}
 }
 
-void vc_GetUserFunctionCount()
+void vc_GetUserSystemVcFunctionCount()
 {
 	vc->vcreturn = 0;
 	vc->vcreturn = vc->userfuncs[CIMAGE_SYSTEM].size();
+}
+
+void vc_GetUserSystemVcFunctionByIndex()
+{
+	vc->vcretstr = "";
+	int index = vc->ResolveOperand();
+	int maxSize = vc->userfuncs[CIMAGE_SYSTEM].size();
+
+	if( index < 0 || index > maxSize )
+	{
+		vc->vcerr("VC Execution error: Invalid offset: (%d).  Valid range: (0-%d)", index, maxSize );
+	}
+
+	std::string myString = (vc->userfuncs[CIMAGE_SYSTEM].at(index))->name;
+	vc->vcretstr = myString;
 }
 
 
@@ -1888,7 +1903,8 @@ void VCCore::HandleLibFunc()
 		case 267: vc_ListBuiltinDefines(); break;
 		case 268: vc_GetPlayer(); break; // Kildorf (2007-10-13)
 		
-		case 269: vc_GetUserFunctionCount(); break; // grue 
+		case 269: vc_GetUserSystemVcFunctionCount(); break; // grue 
+		case 270: vc_GetUserSystemVcFunctionByIndex(); break; //grue
 
 		default:
 			vc->vcerr("VC Execution error: Invalid STDLIB index. (%d)", (int) c);
