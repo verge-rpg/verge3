@@ -430,7 +430,7 @@ int MAP::addLayer(int width, int height)
 
 int MAP::obstruct(int x, int y)
 {
-	if (x<0 || y<0 || x>=mapwidth || y>=mapwidth) return 1;
+	if (x<0 || y<0 || x>=mapwidth || y>=mapheight) return 1;
 	return obslayer[(y*mapwidth)+x];
 }
 
