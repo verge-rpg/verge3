@@ -2054,7 +2054,7 @@ namespace winmaped2 {
                 while (!done) {
                     if (vsp.FileOnDisk != null)
                         saveVspDialog.FileName = vsp.FileOnDisk.FullName;
-                    else saveVspDialog.FileName = dimap.FullName + "\\" + fimap.Name + ".vsp";
+                    else saveVspDialog.FileName = Path.Combine(dimap.FullName,Path.GetFileNameWithoutExtension(fimap.Name)) + ".vsp";
                     saveVspDialog.ShowDialog();
 
                     vspname = saveVspDialog.FileName;

@@ -416,7 +416,7 @@ namespace winmaped2 {
         }
         public static string GetRelativePath(string root, string fname) {
             if (root.Length > fname.Length) return null;
-            if (root != fname.Substring(0, root.Length))
+            if (root.ToUpper() != fname.ToUpper().Substring(0, root.Length))
                 return null;
             string rel = fname.Substring(root.Length);
             if (rel[0] == '\\') rel = rel.Substring(1);
