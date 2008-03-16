@@ -167,6 +167,55 @@ void dd_ColorReplace(int color_find, int color_replace, image *img)
 
 void dd_Line(int x, int y, int xe, int ye, int color, image *dest)
 {
+	if (x == xe) { VLine(x,y,ye,color,dest); return; }
+	if (y == ye) { HLine(x,y,xe,color,dest); return; }
+
+	// Bresenham's Line Drawing Algorithm
+
+	int cx, cy, dx, dy;
+	int xaccum, yaccum, xincre, yincre, xreset, yreset, xchange, ychange;
+	int finished = 0;
+
+	dx = abs(xe-x);
+	dy = abs(ye-y);
+	cx = x; cy = y;
+	
+	if(xe == x) xchange = 0; else if(xe < x) xchange = 0-1; else xchange = 1;
+	if(ye == y) ychange = 0; else if(ye < y) ychange = 0-1; else ychange = 1;
+	if(dx > dy) {
+		xaccum = 0; xreset = 0; xincre = 0;
+		yaccum = dy*2 - dx;
+		yincre = dy*2;
+		yreset = (dy-dx)*2;
+	} else {
+		yaccum = 0; yreset = 0; yincre = 0;
+		xaccum = dx*2 - dy;
+		xincre = dx*2;
+		xreset = (dx-dy)*2;
+	}
+	
+	while(!finished) {
+		if(xaccum < 0) {
+			xaccum += xincre;
+		} else {
+			cx += xchange;
+			xaccum += xreset;
+		}
+		
+		if(yaccum < 0) {
+			yaccum += yincre;
+		} else {
+			cy += ychange;
+			yaccum += yreset;
+		}
+		
+		PutPixel(cx,cy,color,dest);
+		
+		if(xreset == 0 && cx == xe) finished = 1;
+		if(yreset == 0 && cy == ye) finished = 1;
+	}
+	
+	/*
 	int dx = xe - x, dy = ye - y,
 		xg = sgn(dx), yg = sgn(dy),
 		i = 0;
@@ -185,6 +234,7 @@ void dd_Line(int x, int y, int xe, int ye, int color, image *dest)
 			PutPixel(x+(int)(slope*i), y+i, color, dest);
 	}
 	PutPixel(xe, ye, color, dest);
+	*/
 }
 
 void dd_Triangle(int x1, int y1, int x2, int y2, int x3, int y3, int color, image *dest)
