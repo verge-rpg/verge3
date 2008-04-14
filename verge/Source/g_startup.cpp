@@ -24,6 +24,8 @@
 /****************************** data ******************************/
 
 int v3_xres=320, v3_yres=240;
+int v3_window_xres=0, v3_window_yres = 0;
+
 bool windowmode=true;
 bool sound=true;
 bool cheats=false;
@@ -52,6 +54,12 @@ void LoadConfig()
 		v3_xres = cfg_GetIntKeyValue("xres");
 	if (cfg_KeyPresent("yres"))
 		v3_yres = cfg_GetIntKeyValue("yres");
+
+	if (cfg_KeyPresent("window_x_res"))
+		v3_window_xres = cfg_GetIntKeyValue("window_x_res");
+	if (cfg_KeyPresent("window_y_res"))
+		v3_window_yres = cfg_GetIntKeyValue("window_y_res");
+
 	if (cfg_KeyPresent("windowmode"))
 		windowmode = cfg_GetIntKeyValue("windowmode") ? true : false;
 	if (cfg_KeyPresent("nosound"))
@@ -94,12 +102,19 @@ void LoadConfig()
 		MountVFile(cfg_GetKeyValue("mount3"));
 }
 
+int getInitialWindowXres() {
+	return v3_window_xres;
+}
+
+int getInitialWindowYres() {
+	return v3_window_yres;
+}
+
 void InitVideo()
 {
 	//initialize the image handles
 	//allocate one dummy, one for screen, and one for the active vsp
 	Handle::forceAlloc(HANDLE_TYPE_IMAGE,3);
-
 
 	if (!windowmode)
 	{

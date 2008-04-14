@@ -193,4 +193,7 @@ void xmain(int argc, char *argv[]);
 void err(const char *s, ...);
 void HandleMessages();
 
+int getInitialWindowXres();
+int getInitialWindowYres();
+
 #endif

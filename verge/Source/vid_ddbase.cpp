@@ -155,17 +155,10 @@ void dd_init()
 	gameWindow = dynamic_cast<AuxWindow*>(dd_gameWindow);
 	hMainWnd = dd_gameWindow->hwnd;
 	dd_gameWindow->setVisibility(true);
-	//ShowCursor(0);
 
 	if(automax)
 	{
 		ShowWindow(dd_gameWindow->hwnd,SW_SHOWMAXIMIZED);
-//		RECT r;
-//		GetWindowRect(dd_gameWindow->hwnd,&r);
-		//dd_gameWindow->bPositionInitialized = true;
-		//dd_gameWindow->winx = r.left;
-		//dd_gameWindow->winy = r.top;
-//		dd_gameWindow->setPosition(r.left,r.top);
 	}
 
 	vid_Close = dd_Close;
@@ -175,7 +168,7 @@ void dd_init()
 	dd_initd = true;
 }
 
-int dd_SetMode(int xres, int yres, int bpp, bool windowflag)
+int dd_SetMode(int xres, int yres, int bpp, bool windowflag )
 {
 	HRESULT hr;
 
@@ -187,8 +180,22 @@ int dd_SetMode(int xres, int yres, int bpp, bool windowflag)
 	{
 		RECT r;
 		dd_gameWindow->adjust(xres,yres,&r);
-		dd_gameWindow->winw = r.right-r.left;
-		dd_gameWindow->winh = r.bottom-r.top;
+
+		int base_win_x_res = getInitialWindowXres();
+		int base_win_y_res = getInitialWindowYres();
+
+		/// this is for the windowsize verge.cfg vars.
+		if( base_win_x_res > 0 && base_win_y_res > 0 ) {
+			int win_offset_x = (r.right-r.left) - xres;
+			int win_offset_y = (r.bottom-r.top) - yres;
+
+			dd_gameWindow->winw = win_offset_x+base_win_x_res;
+			dd_gameWindow->winh = win_offset_y+base_win_y_res;
+		
+		} else {
+			dd_gameWindow->winw = r.right-r.left;
+			dd_gameWindow->winh = r.bottom-r.top;
+		}
 
 		WINDOWPLACEMENT wp;
 		wp.length = sizeof(WINDOWPLACEMENT);
@@ -228,7 +235,6 @@ int dd_SetMode(int xres, int yres, int bpp, bool windowflag)
 
 		//ShowWindow(dd_gameWindow->hwnd,SW_SHOWMAXIMIZED);
 		ShowWindow(dd_gameWindow->hwnd,SW_HIDE);
-
 
 		int ret = dd_gameWindow->set_fullscreen(xres,yres,bpp);
 		if(!ret)

@@ -104,7 +104,7 @@ int vid_SetMode(int xres, int yres, int bpp, int window, int mode)
 	switch (mode)
 	{
 		case MODE_SOFTWARE:
-			if (doModeSet(xres, yres, bpp, window?true:false))
+			if( doModeSet(xres, yres, bpp, window?true:false) )
 			{
 				vid_initd = true;
 				return 1;
