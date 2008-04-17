@@ -282,9 +282,11 @@ char* libfuncs[NUM_LIBFUNCS][3] = {
 	{"3", "ListBuiltinVariables", ""},
 	{"3", "ListBuiltinDefines", ""},
 	{"1", "GetPlayer", ""}, // Kildorf (2007-10-12): Return the entity number of the player.
-	
 	{"1", "GetUserSystemVcFunctionCount", ""},	// Grue
 	{"3", "GetUserSystemVcFunctionByIndex", "1"},	// Grue
+	{"5", "SetConnectionPort", "1"}, // Overkill (2008-04-17): Socket port can be switched to something besides 45150.
+	{"3", "SocketGetRaw", "11"}, // Overkill (2008-04-17): Sockets can send and receive raw length-delimited strings
+	{"5", "SocketSendRaw", "13"},
 };
 
 char* libvars[NUM_HVARS][3] = {

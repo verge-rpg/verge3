@@ -1215,21 +1215,33 @@ int ScriptEngine::PlayMovie(std::string s){ return win_movie_playSimple(s.c_str(
 
 //VI.n. Netcode Functions
 ServerSocket *vcserver = 0;
+
+// Overkill (2008-04-17): Socket port can be switched to something besides 45150.
+int vcsockport = 45150;
+void ScriptEngine::SetConnectionPort(int port)
+{
+	vcsockport = port;
+}
+
+// Overkill (2008-04-17): Socket port can be switched to something besides 45150.
 int ScriptEngine::Connect(std::string ip) {
 	Socket *s;
 	try
 	{
-		s = new Socket(ip.c_str(), 45150);
+		s = new Socket(ip.c_str(), vcsockport);
 	}
 	catch (NetworkException ne) {
 		return 0;
 	}
 	return (int) s;
 }
+
+// Overkill (2008-04-17): Socket port can be switched to something besides 45150.
+// Caveat: The server currently may not switch listen ports once instantiated.
 int ScriptEngine::GetConnection() {
 	try {
 		if (!vcserver)
-			vcserver = new ServerSocket(45150);
+			vcserver = new ServerSocket(vcsockport);
 		Socket *s = vcserver->accept();
 		return (int) s;
 	}
@@ -1237,6 +1249,7 @@ int ScriptEngine::GetConnection() {
 		return 0;
     }
 }
+
 int ScriptEngine::GetUrlImage(std::string url) { return ::getUrlImage(url); }
 std::string ScriptEngine::GetUrlText(std::string url) { return ::getUrlText(url); }
 void ScriptEngine::SocketClose(int sh) { delete ((Socket *)sh); }
@@ -1361,6 +1374,28 @@ void ScriptEngine::SocketSendString(int sh, std::string str) {
 	len >>= 16;
 #endif
 #endif
+	s->write(len, str.c_str());
+}
+
+// Overkill (2008-04-17): Sockets can send and receive raw length-delimited strings
+std::string ScriptEngine::SocketGetRaw(int sh, int len)
+{
+	static char buf[4096];
+	Socket *s = (Socket *) sh;
+	if (len > 4095)
+	{
+		err("SocketGetRaw() - can only receive a maximum of 4095 characters at a time. You've tried to get %d", len);
+	}
+	s->read(len, buf);
+	buf[len] = 0;
+	return buf;
+}
+
+// Overkill (2008-04-17): Sockets can send and receive raw length-delimited strings
+void ScriptEngine::SocketSendRaw(int sh, std::string str)
+{
+	Socket *s = (Socket *) sh;
+	int len = str.length();
 	s->write(len, str.c_str());
 }
 

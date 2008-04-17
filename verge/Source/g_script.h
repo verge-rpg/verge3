@@ -258,6 +258,7 @@ public:
 	static void MovieSetFrame(int m, int f);
 	static int PlayMovie(std::string s);
 	//VI.n. Netcode Functions
+	static void SetConnectionPort(int port);
 	static int Connect(std::string ip);
 	static int GetConnection();
 	static int GetUrlImage(std::string url);
@@ -271,6 +272,8 @@ public:
 	static void SocketSendFile(int sh, std::string fn);
 	static void SocketSendInt(int sh, int i);
 	static void SocketSendString(int sh, std::string str);
+	static std::string SocketGetRaw(int sh, int len);
+	static void SocketSendRaw(int sh, std::string str);
 	//XX: unsorted functions and variables, mostly newly added and undocumented
 	static std::string Get_EntityChr(int arg);
 	static void Set_EntityChr(int arg, std::string chr);

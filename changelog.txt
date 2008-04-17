@@ -2,6 +2,35 @@
 Verge 3 Changelog
 ================================================
 
+Revision 206 (2008-04-17) (Overkill)
+=========================
+* Added in new socket functionality.
+* SetConnectionPort(int port) lets you modify the socket port so you can use sockets with servers that listen to ports besides 45150. This comes with one caveat: servers that make use of SetConnectionPort() must do so before they start listening to connections, because after that point the listen port may not be changed (I don't want to break it).
+* SocketGetRaw(int socket, int length) and SocketSendRaw(int socket, string message) send length-delimited string packets in raw form to the given socket.
+* Now go nuts and start making your own IRC clients and Verge web browsers! Actually please don't, use it for something sane. But yeah.
+
+-----
+
+PEOPLE NEED TO DOCUMENT THEIR CHANGES IN THIS LOG, JERKS.
+
+Ahem, er anyway, beween Revisions 197 and 206, the following was done:
+* Added windowsize variables to verge.cfg so you can specify a default window size that's different than your default gamescreen size.
+Example:
+	xres 320
+	yres 240
+	window_x_res 640
+	window_y_res 480
+* Kildorf changed the line drawing routine to use Bresenham's line drawing algorithm (which very very slightly improves line drawing speed)
+* Zeromus fixed some stuff in Maped3
+* Ness fixed something tha
+* McGrue added string GetUserSystemVcFunctionByIndex(int i) and GetUserSystemVcFunctionCount(). These let you inspect a list of all the VergeC functions at runtime, not available in LuaVerge for obvious reasons.
+
+Love,
+	Overkill
+
+-----
+
+
 Revision 197 (2008-02-10) (Kildorf)
 =========================
 * Added support for entity.script to lua.

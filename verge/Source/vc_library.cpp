@@ -1622,6 +1622,28 @@ void vc_GetUserSystemVcFunctionByIndex()
 	vc->vcretstr = myString;
 }
 
+// Overkill (2008-04-17): Socket port can be switched to something besides 45150.
+void vc_SetConnectionPort()
+{
+	int port = vc->ResolveOperand();
+	vc->SetConnectionPort(port);
+}
+
+// Overkill (2008-04-17): Sockets can send and receive raw length-delimited strings
+void vc_SocketGetRaw()
+{
+	int sh = vc->ResolveOperand();
+	int len = vc->ResolveOperand();
+	vc->vcretstr = vc->SocketGetRaw(sh, len);
+}
+
+// Overkill (2008-04-17): Sckets can send and receive raw length-delimited strings
+void vc_SocketSendRaw()
+{
+	int sh = vc->ResolveOperand();
+	std::string str = vc->ResolveString();
+	vc->SocketSendRaw(sh, str);
+}
 
 // ===================== End VC Standard Function Library =====================
 
@@ -1902,10 +1924,11 @@ void VCCore::HandleLibFunc()
 		case 266: vc_ListBuiltinVariables(); break;
 		case 267: vc_ListBuiltinDefines(); break;
 		case 268: vc_GetPlayer(); break; // Kildorf (2007-10-13)
-		
 		case 269: vc_GetUserSystemVcFunctionCount(); break; // grue 
 		case 270: vc_GetUserSystemVcFunctionByIndex(); break; //grue
-
+		case 271: vc_SetConnectionPort(); break; // Overkill (2008-04-17)
+		case 272: vc_SocketGetRaw(); break; // Overkill (2008-04-17)
+		case 273: vc_SocketSendRaw(); break; // Overkill (2008-04-17)
 		default:
 			vc->vcerr("VC Execution error: Invalid STDLIB index. (%d)", (int) c);
 	}

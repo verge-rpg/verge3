@@ -753,6 +753,9 @@ void LUA::bindApi() {
 		SEFUNC(SocketSendFile);
 		SEFUNC(SocketSendInt);
 		SEFUNC(SocketSendString);
+		SEFUNC(SetConnectionPort); // Overkill (2008-04-17): Socket port can be switched to something besides 45150.
+		SEFUNC(SocketGetRaw); // Overkill (2008-04-17): Sockets can send and receive raw length-delimited strings
+		SEFUNC(SocketSendRaw);
 		//XX: unsorted functions and variables, mostly newly added and undocumented
 		SEFUNC(SoundIsPlaying);
 		SEFUNC(RectVGrad);
