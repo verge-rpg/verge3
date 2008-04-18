@@ -1386,8 +1386,8 @@ std::string ScriptEngine::SocketGetRaw(int sh, int len)
 	{
 		err("SocketGetRaw() - can only receive a maximum of 4095 characters at a time. You've tried to get %d", len);
 	}
-	s->read(len, buf);
-	buf[len] = 0;
+	int ret = s->read(len, buf);
+	buf[ret] = 0;
 	return buf;
 }
 
