@@ -146,6 +146,9 @@ void ShowPage()
 #ifdef __APPLE__
 #include "macsplash.h"
 #endif
+#ifdef __LINUX__
+#include "vcsplash.h"
+#endif
 #ifdef __WIN32__
 #include "vcsplash.h"
 #endif
@@ -218,8 +221,8 @@ void xmain(int argc, char *argv[])
 	InitScriptEngine();
 
 	//---cross-platform plugins initialization
-	extern void p_datastructs();
-	p_datastructs();
+//	extern void p_datastructs();
+	//p_datastructs();
 	//---------
 
 	gameWindow->setTitle(APPNAME);

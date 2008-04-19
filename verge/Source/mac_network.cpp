@@ -23,6 +23,18 @@
 #include <netdb.h>
 #include "xerxes.h"
 
+#ifdef __LINUX__
+std::string getUrlText(std::string url)
+{
+	err("getUrlText is TODO in Linux");
+}
+
+int getUrlImage(std::string url)
+{
+	err("getUrlImage is TODO in Linux");
+}
+#endif
+
 static void InitializeNetwork()
 {
 }

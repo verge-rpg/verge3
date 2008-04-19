@@ -31,8 +31,25 @@ bool IgnoreEvents = false;
 /***************************** code *****************************/
 
 
+#ifdef __LINUX__
+void InitEditCode()
+{
+	log("InitEditCode() is TODO in Linux");
+}
+
+void AddSourceFile(std::string s)
+{
+	log("AddSourceFile() is TODO in Linux");
+}
+
+void doMessageBox(std::string msg)
+{
+	log("MessageBox() is TODO in Linux: \"%s\"", msg.c_str());
+}
+#endif
+
 // internal use, in mac_cocoa_util.mm
-void doMessageBox(string msg);
+void doMessageBox(std::string msg);
 
 // internal use
 int getCurrentBpp();

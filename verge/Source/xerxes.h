@@ -16,6 +16,8 @@
 #define DEF_BUILD "20070708"
 #ifdef __APPLE__
 #define DEF_OS "\"mac\""
+#elif __LINUX__
+#define DEF_OS "\"linux\""
 #else
 #define DEF_OS "\"win\""
 #endif
@@ -39,6 +41,10 @@
 #define SND_USE_FMOD
 #endif
 
+#ifdef __LINUX__
+#define SND_USE_FMOD
+#endif
+
 //mbg 9/5/05 determine whether to use asm in ddblit
 //and other configs too
 //CRIPPLED is set if the goddamn cpu cant do unaligned
@@ -49,6 +55,12 @@
 //isnt it also necessary for mac? or is mac big endian but uncrippled?
 #ifdef __APPLE__
 #define CDECL _cdecl
+#define BLITTER_32BPP
+#define BLITTER_16BPP
+#define BLITTER_15BPP
+#define ENABLE_2XSAI
+#elif __LINUX__
+#define CDECL
 #define BLITTER_32BPP
 #define BLITTER_16BPP
 #define BLITTER_15BPP
@@ -96,6 +108,15 @@ typedef unsigned char  byte;
 #include "../fmod/fmod.h"
 #include "../corona/corona.h"
 
+#elif __LINUX__
+#include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include <unistd.h>
+#include <SDL.h>
+#include <fmod.h>
+#include <corona.h>
+
 //mbg 9/5/05 adding psp support
 #elif __PSP__
 #include <stdlib.h>
@@ -134,6 +155,16 @@ typedef unsigned char  byte;
 #include "a_dict.h"
 
 #ifdef __APPLE__
+#include "vid_macbase.h"
+#include "mac_joystick.h"
+#include "mac_network.h"
+#include "mac_keyboard.h"
+#include "mac_mouse.h"
+#include "mac_system.h"
+#include "mac_timer.h"
+#include "mac_movie.h"
+
+#elif __LINUX__
 #include "vid_macbase.h"
 #include "mac_joystick.h"
 #include "mac_network.h"

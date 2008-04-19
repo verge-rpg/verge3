@@ -93,6 +93,8 @@ int vid_SetMode(int xres, int yres, int bpp, int window, int mode)
 	int (*doModeSet)(int xres, int yres, int bpp, bool windowflag);
 #ifdef __APPLE__
 	doModeSet = sdl_SetMode;
+#elif __LINUX__
+	doModeSet = sdl_SetMode;
 //mbg 9/5/05 adding psp support
 #elif __PSP__
 	doModeSet = psp_SetMode;

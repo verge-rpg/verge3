@@ -46,6 +46,9 @@ void cfg_Init(char *fn)
 #ifdef __APPLE__
 	getcwd(cfgfn,255);
 	strcat(cfgfn, va("/%s", fn));
+#elif __LINUX__
+	getcwd(cfgfn,255);
+	strcat(cfgfn, va("/%s", fn));
 #elif __PSP__
 	//mbg 9/5/05
 	//make the bold assumption that PWD has not been changed

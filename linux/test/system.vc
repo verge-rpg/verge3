@@ -1,0 +1,11 @@
+void AutoExec()
+{
+	int sound = LoadSound("/usr/share/sounds/info.wav");
+	PlaySound(sound, 100);
+	while(!b1)
+	{
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		PrintString(0, 0, screen, 0, "Hello world!");
+		ShowPage();
+	}
+}

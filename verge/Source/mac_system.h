@@ -36,15 +36,18 @@ int getHour();
 int getMinute();
 int getSecond();
 
-std::vector<string> listFilePattern(string pattern);
+void strupr(char *c);
+void strlwr(char *c);
 
-void showMessageBox(string message);
+std::vector<std::string> listFilePattern(std::string pattern);
+
+void showMessageBox(std::string message);
 
 unsigned int timeGetTime();
 
 void Sleep(unsigned int msec);
 
 void InitEditCode(); // impl in mac_cocoa_util.mm
-void AddSourceFile(string s); // impl in mac_cocoa_util.mm
+void AddSourceFile(std::string s); // impl in mac_cocoa_util.mm
 
 #endif

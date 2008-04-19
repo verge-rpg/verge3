@@ -12,7 +12,9 @@
 #define _G_SOUND_CPP
 #include "xerxes.h"
 #include "garlick.h"
+#ifdef __WIN32__
 #include <delayimp.h>
+#endif
 
 #ifdef SND_USE_AUDIERE
 #include "snd_audiere.h"
