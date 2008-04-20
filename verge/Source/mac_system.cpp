@@ -16,6 +16,7 @@
 
 #include <sys/types.h>
 #include <dirent.h>
+#include <glob.h>
 
 #include "xerxes.h"
 
@@ -225,53 +226,26 @@ int getSecond()
 	return getTime()->tm_sec;
 }
 
-// returns a vector of filenames (in CWD) that match the
-// given pattern. The pattern may be either a raw
-// string (looking for a given file) or it may be
-// "*something", in which case it looks for files ending
-// with "something"
-// Matches case-insensitively (to mimic windows behaviour)
-std::vector<string> listFilePattern(string pattern)
+// Returns a vector of filenames that match the given pattern.
+// As you can see, it uses glob to get them, so this will now
+// match any pattern intelligently.
+std::vector<string> listFilePattern(std::string pattern)
 {
-	struct dirent *ent;
 	std::vector<string> res;
-	DIR *d = opendir(".");
-
-	bool matchEnd = false;
-	if(pattern[0] == '*')
+	
+	glob_t pglob;
+	
+	glob(pattern.c_str(),0,0,&pglob);
+	
+	int i;
+	for (i = 0; i < pglob.gl_pathc; i++)
 	{
-		matchEnd = true; // just match last piece of name
-		pattern = vc_strright(pattern, pattern.length()-1);
+		std::string s;
+		s.append(pglob.gl_pathv[i]);
+		res.push_back(s.substr(s.find_last_of("/\\")+1));
 	}
-
-	// lowercase it and all read names for case-insensitive
-	to_lower(pattern);
-
-	// get each entry, look at the name
-	while((ent = readdir(d)) != NULL)
-	{
-		// lowercase name for case-insensitive search
-		strlwr(ent->d_name);
-		string name = ent->d_name;
-		bool matches = false;
-		if(matchEnd)
-		{
-			// just check end
-			if(vc_strright(name, pattern.length()) == pattern)
-			{
-				matches = true;
-			}
-		}
-		else
-		{
-			if(name == pattern)
-				matches = true;
-		}
-		if(matches)
-			res.push_back(name);
-	}
-
-	closedir(d);
+	
+	globfree(&pglob);
 
 	return res;
 }
