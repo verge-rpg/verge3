@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		51BC9E390DBA8F400083C27F /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66B2B83707B41F2A000E3414 /* SDL.framework */; };
 		660DDBBC082CFFBA0084B9B7 /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 660DDBBB082CFFBA0084B9B7 /* Credits.html */; };
 		661F5B1108770D45008AE4D7 /* g_editcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 661F5B0F08770D45008AE4D7 /* g_editcode.cpp */; };
 		661F5B1208770D45008AE4D7 /* g_editcode.h in Headers */ = {isa = PBXBuildFile; fileRef = 661F5B1008770D45008AE4D7 /* g_editcode.h */; };
@@ -169,7 +170,6 @@
 		66743AF407AF194500765A03 /* vid_sysfont.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743AAC07AF194500765A03 /* vid_sysfont.h */; };
 		66743B0507AF194500765A03 /* xerxes.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743ABD07AF194500765A03 /* xerxes.h */; };
 		668634090A80F2BD00E20C3E /* p_datastructs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668634080A80F2BD00E20C3E /* p_datastructs.cpp */; };
-		669C82DE07EB2663000B1A45 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 66B2B83707B41F2A000E3414 /* SDL.framework */; };
 		66A448B308EDDDBF00132604 /* g_sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A448B108EDDDBF00132604 /* g_sound.cpp */; };
 		66A448B408EDDDBF00132604 /* g_sound.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A448B208EDDDBF00132604 /* g_sound.h */; };
 		66A448B708EDDE4500132604 /* snd_fmod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A448B508EDDE4500132604 /* snd_fmod.cpp */; };
@@ -295,6 +295,23 @@
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXBuildStyle section */
+		515C11E40D60F45000AFDCBE /* Development */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+			};
+			name = Development;
+		};
+		515C11E50D60F45000AFDCBE /* Deployment */ = {
+			isa = PBXBuildStyle;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+			};
+			name = Deployment;
+		};
+/* End PBXBuildStyle section */
+
 /* Begin PBXContainerItemProxy section */
 		66B3791F07B2B8600068C75B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -347,7 +364,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				669C82DE07EB2663000B1A45 /* SDL.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
@@ -682,6 +698,7 @@
 				66B2B83807B41F2A000E3414 /* SDL.framework in Frameworks */,
 				66DBFDC507B8085F00CB0A24 /* OpenGL.framework in Frameworks */,
 				66CB58EC0BFA863B00E37C0F /* libfmodub.a in Frameworks */,
+				51BC9E390DBA8F400083C27F /* SDL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -691,7 +708,6 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				66B2B83707B41F2A000E3414 /* SDL.framework */,
 				66DBFDC407B8085F00CB0A24 /* OpenGL.framework */,
 				66B3791107B2B7FD0068C75B /* libz.dylib */,
 				66B2B62407B40927000E3414 /* Carbon.framework */,
@@ -763,6 +779,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				66B2B83707B41F2A000E3414 /* SDL.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -1386,6 +1403,12 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = 66DE5FDB0A6FA8AF00D6CEEA /* Build configuration list for PBXProject "verge3" */;
+			buildSettings = {
+			};
+			buildStyles = (
+				515C11E40D60F45000AFDCBE /* Development */,
+				515C11E50D60F45000AFDCBE /* Deployment */,
+			);
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* verge3 */;
 			projectDirPath = "";
@@ -2106,7 +2129,10 @@
 				ARCHS = "$(NATIVE_ARCH)";
 				COPY_PHASE_STRIP = NO;
 				DEBUGGING_SYMBOLS = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					"$(SRCROOT)/../sdl",
+				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -2158,7 +2184,10 @@
 				);
 				COPY_PHASE_STRIP = NO;
 				DEPLOYMENT_POSTPROCESSING = YES;
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					"$(SRCROOT)/../sdl",
+				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_TRIGRAPHS = NO;
@@ -2203,7 +2232,10 @@
 		66DE5FDA0A6FA8AF00D6CEEA /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(FRAMEWORK_SEARCH_PATHS)",
+					"$(SRCROOT)/../sdl",
+				);
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
@@ -2245,6 +2277,9 @@
 		66DE5FDC0A6FA8AF00D6CEEA /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = ../sdl/;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Development;
 		};
@@ -2255,12 +2290,18 @@
 					ppc,
 					i386,
 				);
+				FRAMEWORK_SEARCH_PATHS = ../sdl/;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Deployment;
 		};
 		66DE5FDE0A6FA8AF00D6CEEA /* Default */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = ../sdl/;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
 			name = Default;
 		};
