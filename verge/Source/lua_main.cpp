@@ -23,7 +23,7 @@ bool LUA::CompileMap(const char *f) {
 	VFILE *si = vopen(va("%s.lua", f));
 	if (!si) ::err("unable to open %s.lua", f);
 	int scriptlen = filesize(si);
-	std::auto_ptr<char> temp(new char[scriptlen]);
+	std::auto_ptr<char> temp(new char[scriptlen+1]);
 	vread(temp.get(),scriptlen,si);
 	vclose(si);
 
@@ -45,6 +45,12 @@ bool LUA::CompileMap(const char *f) {
 	fwrite(buf, 1, mapcoresize, mo);
 	delete[] buf;
 
+#ifdef __APPLE__
+#ifdef __BIG_ENDIAN__
+	// we need to flip this so that it gets read properly
+	flip(&scriptlen,4);
+#endif
+#endif
 	fwrite(&scriptlen,4,1,mo);
 	fwrite(temp.get(),1,scriptlen,mo);
 	fclose(mo);
