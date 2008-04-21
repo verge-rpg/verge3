@@ -63,6 +63,7 @@ public:
 	int blockread(int size, void* bytes);
 	int dataready();
 	int connected();
+	int byteCount(); // Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
 
 private:
     Socket(SOCKET socket);

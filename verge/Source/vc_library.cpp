@@ -1645,6 +1645,13 @@ void vc_SocketSendRaw()
 	vc->SocketSendRaw(sh, str);
 }
 
+// Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
+void vc_SocketByteCount()
+{
+	int sh = vc->ResolveOperand();
+	vc->vcreturn = vc->SocketByteCount(sh);
+}
+
 // ===================== End VC Standard Function Library =====================
 
 void VCCore::HandleLibFunc()
@@ -1929,6 +1936,7 @@ void VCCore::HandleLibFunc()
 		case 271: vc_SetConnectionPort(); break; // Overkill (2008-04-17)
 		case 272: vc_SocketGetRaw(); break; // Overkill (2008-04-17)
 		case 273: vc_SocketSendRaw(); break; // Overkill (2008-04-17)
+		case 274: vc_SocketByteCount(); break; // Overkill (2008-04-20)
 		default:
 			vc->vcerr("VC Execution error: Invalid STDLIB index. (%d)", (int) c);
 	}

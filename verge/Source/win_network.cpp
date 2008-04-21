@@ -208,6 +208,16 @@ Socket::dataready()
 
 ////////////////////////////////////////////////////////////////////////////////
 
+// Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
+int Socket::byteCount()
+{
+	static char buf[2];
+	int ret = recv(m_socket, buf, 1, MSG_PEEK);
+	return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 int
 Socket::connected()
 {

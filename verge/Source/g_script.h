@@ -274,6 +274,7 @@ public:
 	static void SocketSendString(int sh, std::string str);
 	static std::string SocketGetRaw(int sh, int len);
 	static void SocketSendRaw(int sh, std::string str);
+	static int SocketByteCount(int sh); // Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
 	//XX: unsorted functions and variables, mostly newly added and undocumented
 	static std::string Get_EntityChr(int arg);
 	static void Set_EntityChr(int arg, std::string chr);

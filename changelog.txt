@@ -2,6 +2,16 @@
 Verge 3 Changelog
 ================================================
 
+Revision 207-211 (2008-04-20) (Overkill)
+=========================
+* Added SocketByteCount() at ustor's request. peeks at the count of bytes currently in the buffer. Needs Mac/*nix implementation.
+
+Revision 207-211 (2008-04-18 to 2008-04-19) (Overkill, Kildorf)
+=========================
+* A bunch of cross-platform portability related things.
+* listFilePattern under UNIX machines is now compatible with the Windows way of pattern matching
+* Map loading with LuaVerge under Macs was fixed.
+
 Revision 206 (2008-04-17) (Overkill)
 =========================
 * Added in new socket functionality.
@@ -22,7 +32,7 @@ Example:
 	window_y_res 480
 * Kildorf changed the line drawing routine to use Bresenham's line drawing algorithm (which very very slightly improves line drawing speed)
 * Zeromus fixed some stuff in Maped3
-* Ness fixed something tha
+* Ness fixed something that caused getObs() to give invalid reads.
 * McGrue added string GetUserSystemVcFunctionByIndex(int i) and GetUserSystemVcFunctionCount(). These let you inspect a list of all the VergeC functions at runtime, not available in LuaVerge for obvious reasons.
 
 Love,

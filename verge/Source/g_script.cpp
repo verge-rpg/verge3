@@ -1399,6 +1399,13 @@ void ScriptEngine::SocketSendRaw(int sh, std::string str)
 	s->write(len, str.c_str());
 }
 
+// Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
+int ScriptEngine::SocketByteCount(int sh)
+{
+	Socket *s = (Socket *) sh;
+	return s->byteCount();
+}
+
 //XX: unsorted functions and variables, mostly newly added and undocumented
 std::string ScriptEngine::Get_EntityChr(int arg) {
 	if(arg >= 0 && arg < entities && entity[arg]->chr != 0)

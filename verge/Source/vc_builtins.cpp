@@ -287,6 +287,7 @@ char* libfuncs[NUM_LIBFUNCS][3] = {
 	{"5", "SetConnectionPort", "1"}, // Overkill (2008-04-17): Socket port can be switched to something besides 45150.
 	{"3", "SocketGetRaw", "11"}, // Overkill (2008-04-17): Sockets can send and receive raw length-delimited strings
 	{"5", "SocketSendRaw", "13"},
+	{"1", "SocketByteCount", "1"}, // Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
 };
 
 char* libvars[NUM_HVARS][3] = {
