@@ -168,11 +168,11 @@ libluabind.a: $(LUABINDOBJS)
 	$(RANLIB) $@
 
 clean:
-	rm libzlib.a libcorona.a verge3 $(OBJS) $(COROBJS) $(LIBJPEGOBJS) $(LIBPNGOBJS) $(LIBUNGIFOBJS)
+	rm libzlib.a libcorona.a liblua.a libluabind.a verge3 $(OBJS) $(COROBJS) $(LIBJPEGOBJS) $(LIBPNGOBJS) $(LIBUNGIFOBJS)
 
 INCDIR = $(ZLIBSRC) $(V3SRC) $(CORSRC)jpeg-6b $(CORSRC)libungif-4.1.0 $(CORSRC)libpng-1.2.1 $(CORSRC)SDL_CFLAGS = $(shell sdl-config --cflags)
 SDL_LDFLAGS = $(shell sdl-config --libs)
-CFLAGS = $(SDL_CFLAGS)
+CFLAGS = $(SDL_CFLAGS) -O -Wall
 LIBDIR = .
 LDFLAGS = -lm -lc -lcorona -lzlib -llua -lluabind -lfmod-3.75 $(SDL_LDFLAGS)
 CXXFLAGS = $(CFLAGS) -D__LINUX__ -I$(ZLIBSRC) -I$(CORSRC) -I$(CORSRC)jpeg-6b -I$(CORSRC)libungif-4.1.0/ -I$(CORSRC)libpng-1.2.1/ -I../boost-1.34.0/ -I../sdl/include/ -I../fmod/ -I$(LUASRC) -I$(LUABINDSRC)
