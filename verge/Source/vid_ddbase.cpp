@@ -614,8 +614,7 @@ void dd_Window::flip_win()
 
 	//render the screen
 	dx_win_ps->SetClipper(clipper);
-	dx_win_ps->Flip(NULL,0);
-	//dx_win_ps->Blt(&r, dx_win_bs, 0, DDBLT_WAIT, 0);
+	dx_win_ps->Blt(&r, dx_win_bs, 0, DDBLT_WAIT, 0);
 
 	//draw black letterbox bars
 	if(iw != w || ih != h)
@@ -715,97 +714,7 @@ void dd_Window::flip_fullscreen()
 
 int dd_Window::set_win(int w, int h, int bpp)
 {
-	_ASSERTE(!bGameWindow);
-
-	quad ws;
-	HRESULT hr;
-
-
-	DX_RELEASE(dx_os);
-	DX_RELEASE(dx_ps);
-	DX_RELEASE(dx_win_ps);
-
-	hr = dx_dd->SetCooperativeLevel(hMainWnd, DDSCL_EXCLUSIVE);
-	if (hr != DD_OK)
-	{
-		return 0;
-	}
-
-	//hack for 320x200 letterboxing
-	if(w == 320 && h == 200)
-		dx_dd->SetDisplayMode(320, 240, bpp);
-	else
-		dx_dd->SetDisplayMode(w, h, bpp);
-
-
-	hr = dx_dd->CreateSurface(&dx_psd, &dx_ps, NULL);
-	if (hr != DD_OK)
-	{
-		return 0;
-	}
-
-	dx_osd.dwWidth=w;
-	dx_osd.dwHeight=h;
-	hr=dx_dd->CreateSurface(&dx_osd,&dx_os,NULL);
-	if(hr!=DD_OK)
-	{
-		return 0;
-	}
-	hr = dx_ps->GetAttachedSurface(&dx_bsd.ddsCaps, &dx_bs);
-	if (hr != DD_OK)
-	{
-		DX_RELEASE(dx_os);
-		return 0;
-	}
-
-	ws = GetWindowLong(hwnd, GWL_STYLE);
-	ws &= ~WS_OVERLAPPEDWINDOW;
-	ws |= WS_POPUP;
-	SetWindowLong(hwnd, GWL_STYLE, ws);
-	SetWindowPos(hwnd,0,0,0,0,0,SWP_NOSIZE|SWP_NOMOVE|SWP_FRAMECHANGED | SWP_NOZORDER);
-
-	//make window take up entire screen
-	//choose one or the other
-	//SetWindowPos(hwnd,0,0,0,w,h,SWP_NOACTIVATE | SWP_NOZORDER);
-	ShowWindow(hwnd,SW_SHOWMAXIMIZED);
-
-	//set pixelformat parameters
-	{
-		DDPIXELFORMAT ddpf;
-		ddpf.dwSize = sizeof(ddpf);
-		ddpf.dwFlags = DDPF_RGB;
-		hr = dx_ps->GetPixelFormat(&ddpf);
-		if (hr != DD_OK) err("Could not get pixel format!");
-		if (ddpf.dwRBitMask == 0x7C00 && bpp == 16)
-			vid_bpp = 15, vid_bytesperpixel = 2;
-		else
-			vid_bpp = bpp, vid_bytesperpixel = bpp / 8;
-	}
-
-
-	if(img) delete img;
-	img = new image();
-	img->shell = true;
-
-	SetHandleImage(1,img);
-	screen = img;
-
-//	img->alphamap = 0;
-	img->bpp = bpp;
-	img->width = w;
-	img->height = h;
-	img->cx1 = 0;
-	img->cx2 = w-1;
-	img->cy1 = 0;
-	img->cy2 = h-1;
-	img->data=0;
-
-	flip_win();
-
-	return 1;
-
-/*	
-	//	RECT r, r2;
+//	RECT r, r2;
 	HRESULT hr;
 
 	shutdown_win();
@@ -817,12 +726,6 @@ int dd_Window::set_win(int w, int h, int bpp)
 	{
 		return 0;
 	}
-	hr = dx_ps->GetAttachedSurface(&dx_win_bsd.ddsCaps, &dx_win_bs);
-	if (hr != DD_OK)
-	{
-		return 0;
-	}
-
 	hr = dx_win_bs->Lock(0, &dx_win_bsd, 0, 0);
 	if (hr != DD_OK)
 	{
@@ -889,7 +792,6 @@ int dd_Window::set_win(int w, int h, int bpp)
 	img->cy2 = h-1;
 
 	return 1;
-*/
 }
 
 //must be the game window
@@ -923,6 +825,7 @@ int dd_Window::set_fullscreen(int w, int h, int bpp)
 	{
 		return 0;
 	}
+
 
 	dx_osd.dwWidth=w;
 	dx_osd.dwHeight=h;
@@ -1043,8 +946,7 @@ dd_Window::dd_Window(bool bGameWindow) : AuxWindow()
 	memset(&dx_win_bsd, 0, sizeof(DDSURFACEDESC));
 	dx_win_bsd.dwSize = sizeof(DDSURFACEDESC);
 	dx_win_bsd.dwFlags = DDSD_CAPS | DDSD_WIDTH | DDSD_HEIGHT;
-	//dx_win_bsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
-	dx_win_bsd.ddsCaps.dwCaps = DDSCAPS_BACKBUFFER;
+	dx_win_bsd.ddsCaps.dwCaps = DDSCAPS_OFFSCREENPLAIN | DDSCAPS_SYSTEMMEMORY;
 
 	//always create the window now
 	createWindow();
