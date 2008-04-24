@@ -292,7 +292,7 @@ char* libfuncs[NUM_LIBFUNCS][3] = {
 
 char* libvars[NUM_HVARS][3] = {
 // type,    identifier,    dimlist
-	{"1", "systemtime", "" },
+	{"1", "systemtime", "" }, // index 0
 	{"1", "timer", "" },
 	{"1", "key", "1" },
 	{"1", "lastpressed", "" },
@@ -302,7 +302,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "mouse.r", "" },
 	{"1", "mouse.m", "" },
 	{"1", "mouse.w", "" },
-	{"1", "sysdate.year", "" },
+	{"1", "sysdate.year", "" },// index 10
 	{"1", "sysdate.month", "" },
 	{"1", "sysdate.day", "" },
 	{"1", "sysdate.dayofweek", "" },
@@ -312,7 +312,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "joystick", "" },
 	{"1", "joy.active", "" },
 	{"1", "joy.up", "" },
-	{"1", "joy.down" ,"" },
+	{"1", "joy.down" ,"" },// index 20
 	{"1", "joy.left", "" },
 	{"1", "joy.right", "" },
 	{"1", "joy.analogx", "" },
@@ -322,7 +322,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "down", "" },
 	{"1", "left", "" },
 	{"1", "right", "" },
-	{"1", "b1", "" },
+	{"1", "b1", "" },// index 30
 	{"1", "b2", "" },
 	{"1", "b3", "" },
 	{"1", "b4", "" },
@@ -332,7 +332,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "event.entity", "" },
 	{"1", "event.param", "" },
 	{"1", "xwin", "" },
-	{"1", "ywin", "" },
+	{"1", "ywin", "" },// index 40
 	{"1", "cameratracking", "" },
 	{"1", "entities", "" },
 	{"1", "entity.x", "1" },
@@ -342,7 +342,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "entity.hotx", "1" },
 	{"1", "entity.hoty", "1" },
 	{"1", "entity.hotw", "1" },
-	{"1", "entity.hoth", "1" },
+	{"1", "entity.hoth", "1" },// index 50
 	{"1", "transcolor", "" },
 	{"1", "_skewlines", "1" },
 	{"1", "dma.byte", "1" },
@@ -352,7 +352,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "dma.sword", "1" },
 	{"1", "dma.squad", "1" },
 	{"1", "gamewindow", "" },
-	{"1", "lastkey", ""},
+	{"1", "lastkey", ""},// index 60
 	{"1", "entity.movecode", "1"},
 	{"1", "entity.face", "1"},
 	{"1", "entity.speed", "1"},
@@ -362,7 +362,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "sprite.y", "1" },
 	{"1", "sprite.sc", "1" },
 	{"1", "sprite.image", "1" },
-	{"1", "sprite.lucent", "1" },
+	{"1", "sprite.lucent", "1" },// index 70
 	{"1", "sprite.addsub", "1" },
 	{"1", "sprite.alphamap", "1"},
 	{"1", "sprite.thinkrate", "1" }, //ni 73
@@ -372,7 +372,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "sprite.ybase", "1"}, //ni 77
 	{"1", "entity.obstruct", "1"},
 	{"1", "entity.obstructable", "1"},	//79
-	{"1", "curmap.w", ""},
+	{"1", "curmap.w", ""},// index 80
 	{"1", "curmap.h", ""},
 	{"1", "curmap.startx", ""},
 	{"1", "curmap.starty", ""},
@@ -382,7 +382,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "curmap.tileset", ""}, //87
 	{"3", "zone.name", "1"},	// Overkill (2006-06-25):
 	{"3", "zone.event", "1"},	// Now these two variables have a use!
-	{"1", "event.sprite", ""},
+	{"1", "event.sprite", ""},// index 90
 	{"1", "layer.w", "1" },
 	{"1", "layer.h", "1" },
 	{"1", "layer.visible", "1" },
@@ -392,7 +392,7 @@ char* libvars[NUM_HVARS][3] = {
     {"1", "layer.parallaxx", "1"},
     {"1", "layer.parallaxy", "1"},
     {"3", "curmap.path", ""},
-    {"3", "entity.chr", "1"},
+    {"3", "entity.chr", "1"},// index 100
 	{"1", "playerstep", ""},
 	{"1", "playerdiagonals", ""},
 	{"1", "window.active", ""},
@@ -402,7 +402,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "sprite.color", "1" },
 	{"1", "sprite.wait", "1" },
 	{"1", "sprite.onmap", "1" },
-	{"1", "sprite.layer", "1" },
+	{"1", "sprite.layer", "1" },// index 110
 	{"1", "entity.lucent", "1" },
 	{"1", "sprite.timer", "1" },
 	{"1", "entity.framew", "1" },
@@ -412,7 +412,9 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "@__argument.int", "1" },
 	{"1", "@__argument.is_int", "1" },
 	{"1", "@__argument.is_string", "1" },
-	{"3", "@__argument.string", "1" },
+	{"3", "@__argument.string", "1" },// index 120
+	{"3", "trigger.onStep", "" },// index 121
+	{"3", "trigger.afterStep", "" },// index 122
 };
 
 char* hdefs[NUM_HDEFS][2] = {

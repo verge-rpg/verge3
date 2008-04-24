@@ -105,7 +105,7 @@
 #define t_STRUCT			6
 
 #define NUM_LIBFUNCS		275
-#define NUM_HVARS			121
+#define NUM_HVARS			123
 #define NUM_HDEFS			104
 
 extern char *libfuncs[NUM_LIBFUNCS][3];

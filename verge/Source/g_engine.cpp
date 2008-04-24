@@ -544,13 +544,6 @@ void Render()
 	if (cheats && !inscroller && lastpressed == 41)
 		MapScroller();
 
-/*	if (cheats && lastpressed == 197)
-	{
-		keys[197] = 0;
-		lastpressed = 0;
-		obszone ^= 1;
-	}*/
-
 	int rmap = (current_map->mapwidth * 16);
 	int dmap = (current_map->mapheight * 16);
 
@@ -600,6 +593,18 @@ void Render()
 	current_map->render(xwin, ywin, screen);
 }
 
+void onStep() {
+	if( !_trigger_onStep.empty() ) {
+		se->ExecuteFunctionString( _trigger_onStep );
+	}
+}
+
+void afterStep() {
+	if( !_trigger_afterStep.empty() ) {
+		se->ExecuteFunctionString(_trigger_afterStep);
+	}
+}
+
 void CheckZone()
 {
 	int cur_timer = timer;
@@ -639,7 +644,10 @@ void TimedProcessEntities()
 			{
 				px = (myself->getx()+(myself->hotw/2)) / 16;
 				py = (myself->gety()+(myself->hoth/2)) / 16;
+				
+				onStep();
 				CheckZone();
+				afterStep();
 			}
 		}
 		lastentitythink++;

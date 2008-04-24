@@ -369,3 +369,5 @@ extern int event_entity;
 extern int event_param;
 extern int event_sprite;
 extern int invc;
+
+extern std::string _trigger_onStep, _trigger_afterStep;

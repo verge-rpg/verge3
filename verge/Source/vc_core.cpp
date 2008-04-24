@@ -48,6 +48,8 @@ int event_param;
 int event_sprite;
 std::string event_str;
 
+std::string _trigger_onStep, _trigger_afterStep;
+
 /****************************** code ******************************/
 
 VCCore::VCCore()
@@ -752,6 +754,14 @@ std::string VCCore::ProcessString()
 				case 95: ret = clipboard_getText(); break;
                 case 99: ret = current_map ? current_map->mapfname : ""; break;
 				case 104: ret = current_map ? current_map->savevspname : ""; break;
+
+				case 121: //trigger.onStep
+						ret = _trigger_onStep;
+						break;
+				case 122: //trigger.afterStep
+						ret = _trigger_afterStep;
+						break;
+
 				default: vcerr("VCCore::ProcessString() - bad HSTR0 (%d)", idx);
 			}
 			break;
@@ -1239,6 +1249,14 @@ void VCCore::HandleAssign()
 			case 104: tempstr = ResolveString();
 					 if (current_map) strcpy(current_map->savevspname, tempstr.c_str());
 					 break;
+
+			case 121: //trigger.onStep
+					_trigger_onStep = ResolveString();
+					break;
+			case 122: //trigger.afterStep
+					_trigger_afterStep = ResolveString();
+					break;
+
 			default: vcerr("VCCore::HandleAssign() - bad HSTR0 (%d)", idx);
 		}
 		return;

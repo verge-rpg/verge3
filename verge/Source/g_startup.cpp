@@ -92,6 +92,8 @@ void LoadConfig()
 	{
 		logconsole = true;
 		initConsole();
+	} else if (cfg_KeyPresent("logconsole-normalstdout")) {
+		logconsole = true;
 	}
 
 	if (cfg_KeyPresent("mount1"))
