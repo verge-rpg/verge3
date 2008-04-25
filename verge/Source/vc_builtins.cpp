@@ -415,7 +415,10 @@ char* libvars[NUM_HVARS][3] = {
 	{"3", "@__argument.string", "1" },// index 120
 	{"3", "trigger.onStep", "" },// index 121
 	{"3", "trigger.afterStep", "" },// index 122
-};
+	{"3", "trigger.beforeEntityScript", "" },// index 123
+	{"3", "trigger.afterEntityScript", "" },// index 124
+
+}; //when adding, remember to increment NUM_HVARS
 
 char* hdefs[NUM_HDEFS][2] = {
   /* identifier,    value */

@@ -249,6 +249,30 @@ int MaxPlayerMove(int d, int max)
 	return max;
 }
 
+void onStep() {
+	if( !_trigger_onStep.empty() ) {
+		se->ExecuteFunctionString( _trigger_onStep );
+	}
+}
+
+void afterStep() {
+	if( !_trigger_afterStep.empty() ) {
+		se->ExecuteFunctionString( _trigger_afterStep );
+	}
+}
+
+void beforeEntityActivation() {
+	if( !_trigger_beforeEntityScript.empty() ) {
+		se->ExecuteFunctionString( _trigger_beforeEntityScript );
+	}
+}
+
+void afterEntityActivation() {
+	if( !_trigger_afterEntityScript.empty() ) {
+		se->ExecuteFunctionString( _trigger_afterEntityScript );
+	}
+}
+
 void ProcessControls()
 {
 	UpdateControls();
@@ -445,7 +469,7 @@ void ProcessControls()
 	}
 
 	// Check for entity/zone activation
-	if (b1)
+	if( b1 )
 	{
 		int ex, ey;
 		UnB1();
@@ -473,7 +497,7 @@ void ProcessControls()
 		{
 			if (entity[i]->autoface && entity[i]->ready())
 			{
-				switch (myself->face)
+				switch( myself->face )
 				{
 					case NORTH: entity[i]->setface(SOUTH); break;
 					case SOUTH: entity[i]->setface(NORTH); break;
@@ -486,7 +510,9 @@ void ProcessControls()
 			event_ty = entity[i]->gety()/16;
 			event_entity = i;
 			int cur_timer = timer;
+			beforeEntityActivation();
 			se->ExecuteFunctionString(entity[i]->script.c_str());
+			afterEntityActivation();
 			timer = cur_timer;
 			return;
 		}
@@ -540,8 +566,8 @@ void MapScroller()
 
 void Render()
 {
-	if (!current_map) return;
-	if (cheats && !inscroller && lastpressed == 41)
+	if( !current_map) return;
+	if( cheats && !inscroller && lastpressed == 41 )
 		MapScroller();
 
 	int rmap = (current_map->mapwidth * 16);
@@ -550,15 +576,15 @@ void Render()
 	switch (cameratracking)
 	{
 		case 0:
-			if (xwin + screen->width >= rmap)
-				xwin = rmap - screen->width;
-			if (ywin + screen->height >= dmap)
+			if( xwin + screen->width >= rmap )
+			 	xwin = rmap - screen->width;
+			if( ywin + screen->height >= dmap )
 				ywin = dmap - screen->height;
-			if (xwin < 0) xwin = 0;
-			if (ywin < 0) ywin = 0;
+			if( xwin < 0 ) xwin = 0;
+			if( ywin < 0 ) ywin = 0;
 			break;
 		case 1:
-			if (myself)
+			if( myself )
 			{
 				xwin = (myself->getx() + myself->hotw/2) - (screen->width / 2);
 				ywin = (myself->gety() + myself->hoth/2) - (screen->height / 2);
@@ -591,18 +617,6 @@ void Render()
 			break;
 	}
 	current_map->render(xwin, ywin, screen);
-}
-
-void onStep() {
-	if( !_trigger_onStep.empty() ) {
-		se->ExecuteFunctionString( _trigger_onStep );
-	}
-}
-
-void afterStep() {
-	if( !_trigger_afterStep.empty() ) {
-		se->ExecuteFunctionString(_trigger_afterStep);
-	}
 }
 
 void CheckZone()

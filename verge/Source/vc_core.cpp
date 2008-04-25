@@ -49,6 +49,7 @@ int event_sprite;
 std::string event_str;
 
 std::string _trigger_onStep, _trigger_afterStep;
+std::string _trigger_beforeEntityScript, _trigger_afterEntityScript;
 
 /****************************** code ******************************/
 
@@ -761,6 +762,12 @@ std::string VCCore::ProcessString()
 				case 122: //trigger.afterStep
 						ret = _trigger_afterStep;
 						break;
+				case 123: //trigger.beforeEntityScript
+						ret = _trigger_beforeEntityScript;
+						break;
+				case 124: //trigger.afterEntityScript
+						ret = _trigger_afterEntityScript;
+						break;
 
 				default: vcerr("VCCore::ProcessString() - bad HSTR0 (%d)", idx);
 			}
@@ -1255,6 +1262,12 @@ void VCCore::HandleAssign()
 					break;
 			case 122: //trigger.afterStep
 					_trigger_afterStep = ResolveString();
+					break;
+			case 123: //trigger.beforeEntityScript
+					_trigger_beforeEntityScript = ResolveString();
+					break;
+			case 124: //trigger.afterEntityScript
+					_trigger_afterEntityScript = ResolveString();
 					break;
 
 			default: vcerr("VCCore::HandleAssign() - bad HSTR0 (%d)", idx);

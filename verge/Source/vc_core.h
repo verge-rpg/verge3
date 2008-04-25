@@ -371,3 +371,4 @@ extern int event_sprite;
 extern int invc;
 
 extern std::string _trigger_onStep, _trigger_afterStep;
+extern std::string _trigger_beforeEntityScript, _trigger_afterEntityScript;
