@@ -21,11 +21,6 @@ namespace winmaped2
 
         public string WorkingDirectory;
 
-        /*
-        public bool ToolPanelCollapsed;
-        public bool ToolPanelHidden;        
-         */
-
         private static Preferences current;
         /// <summary>
         /// Gets or sets the current preference set

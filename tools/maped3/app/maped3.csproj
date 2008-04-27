@@ -145,9 +145,6 @@
     <Compile Include="code\VSP.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="code\W32Externs.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="code\WindowsClipboard.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -242,7 +239,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\mainWindow.cs">
-      <SubType>Component</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\MapedPreferences.cs">
       <SubType>Form</SubType>
