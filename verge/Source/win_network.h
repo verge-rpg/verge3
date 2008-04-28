@@ -60,6 +60,7 @@ public:
 
     int write(int size, const void* bytes);
 	int read(int size, void* bytes);
+	int nonblockread(int size, void* bytes); // Overkill (2008-04-28): A nonblocking read operation.
 	int blockread(int size, void* bytes);
 	int dataready();
 	int connected();

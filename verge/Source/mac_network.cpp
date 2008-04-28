@@ -193,6 +193,20 @@ Socket::read(int size, void* bytes)
 ////////////////////////////////////////////////////////////////////////////////
 
 int
+Socket::nonblockread(int size, void* bytes)
+{
+	int flags = MSG_DONTWAIT;
+	int recvd = 0;
+
+	// Receives a nonblocked packet.
+	recvd = recv (m_socket, (char*) bytes, size, flags);
+
+	return (recvd == SOCKET_ERROR) ? 0 : recvd;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+int
 Socket::blockread(int size, void* bytes)
 {
 	int recvd = 0;

@@ -173,6 +173,29 @@ Socket::read(int size, void* bytes)
 ////////////////////////////////////////////////////////////////////////////////
 
 int
+Socket::nonblockread(int size, void* bytes)
+{
+	int flags = 0;
+	int mode;
+	int recvd = 0;
+
+	// Temporarily make reading nonblocking
+	mode = 1;
+	ioctlsocket(m_socket, FIONBIO, (u_long FAR*) &mode);
+
+	// Receives a nonblocked packet.
+	recvd = recv (m_socket, (char*) bytes, size, flags);
+
+	// Make reading blocking again
+	mode = 0;
+	ioctlsocket(m_socket, FIONBIO, (u_long FAR*) &mode);
+
+	return (recvd == SOCKET_ERROR) ? 0 : recvd;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+int
 Socket::blockread(int size, void* bytes)
 {
 	int recvd = 0;
