@@ -630,8 +630,6 @@ void CheckZone()
 	if (rnd(0,254) < current_map->zones[cz]->percent)
 	{
 		event_zone = cz;
-		event_tx = px;
-		event_ty = py;
 		se->ExecuteFunctionString(current_map->zones[cz]->script);
 	}
 	timer = cur_timer;
@@ -659,6 +657,9 @@ void TimedProcessEntities()
 				px = (myself->getx()+(myself->hotw/2)) / 16;
 				py = (myself->gety()+(myself->hoth/2)) / 16;
 				
+				event_tx = px;
+				event_ty = py;
+
 				onStep();
 				CheckZone();
 				afterStep();

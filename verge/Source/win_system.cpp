@@ -441,7 +441,7 @@ void err(const char *str, ...)
 	if (strlen(msg))
 	{
 		MessageBoxA(GetDesktopWindow(), msg, APPNAME, MB_OK | MB_TASKMODAL);
-		log("Exiting: %s", msg);
+		log("Exiting: \n%s", msg);
 	}
 	delete systimer;
 	PostQuitMessage(0);
