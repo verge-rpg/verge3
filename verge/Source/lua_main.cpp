@@ -332,26 +332,21 @@ int InitErrorHandler(lua_State *L)
 				break \n\
 			end \n\
 			\n\
-			if filename == info.short_src and line == info.currentline then \n\
-				match = true \n\
-			end \n\
-			if match then \n\
-				s = s .. \"    File '\" .. info.short_src .. \"', line \" .. tostring(info.currentline) \n\
-				if info.name or info.namewhat then \n\
-					s = s .. \", in\" \n\
-					if info.namewhat then \n\
-						if info.namewhat ~= \"\" then \n\
-							s = s .. \" \" .. info.namewhat \n\
-						else \n\
-							s = s .. \" (function)\" \n\
-						end \n\
-					end \n\
-					if info.name and info.name ~= \"\" then \n\
-						s = s .. \" \" .. info.name \n\
+			s = s .. \"    File '\" .. info.short_src .. \"', line \" .. tostring(info.currentline) \n\
+			if info.name or info.namewhat then \n\
+				s = s .. \", in\" \n\
+				if info.namewhat then \n\
+					if info.namewhat ~= \"\" then \n\
+						s = s .. \" \" .. info.namewhat \n\
+					else \n\
+						s = s .. \" (function)\" \n\
 					end \n\
 				end \n\
-				s = s .. \"\\n\" \n\
+				if info.name and info.name ~= \"\" then \n\
+					s = s .. \" \" .. info.name \n\
+				end \n\
 			end \n\
+			s = s .. \"\\n\" \n\
 			level = level + 1 \n\
 		end \n\
 		return s \n\
