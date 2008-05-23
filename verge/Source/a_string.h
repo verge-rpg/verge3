@@ -64,20 +64,4 @@ inline std::string strovr(std::string source, std::string rep, int offset)
 	return vc_strleft(source,offset) + rep + vc_strright(source,length - offset - replen);
 }
 
-// Overkill: 2005-12-28
-// Helper function.
-inline int strpos(std::string source, std::string sub, int start)
-{
-	int i;
-	int count = 0;
-	int lensub = sub.length();
-	int lensource = source.length();
-	for (i = start; i < lensource; i++)
-	{
-		if (!strcmp(sub.c_str(), vc_strmid(source, i, lensub).c_str())) return i;
-	}
-	return lensource;
-}
-
-
 #endif

@@ -1523,7 +1523,7 @@ std::string ScriptEngine::WrapText(int wt_font, std::string wt_s, int wt_linelen
 }
 
 int ScriptEngine::strpos(std::string sub, std::string source, int start) {
-	return ::strpos(source, sub, start);
+	return source.find(sub, start);
 }
 
 int ScriptEngine::HSV(int h, int s, int v) { return ::HSVtoColor(h,s,v); }

@@ -870,7 +870,7 @@ void vc_strpos()
 	std::string sub = vc->ResolveString();
 	std::string source = vc->ResolveString();
 	int start = vc->ResolveOperand();
-	vc->vcreturn = strpos(source, sub, start);
+	vc->vcreturn = source.find(sub, start);
 }
 
 // Overkill: 2005-12-28
