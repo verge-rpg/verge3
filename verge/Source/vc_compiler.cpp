@@ -1986,24 +1986,6 @@ fclose(f);*/
 		int save_srcofs = srcofs;
 		GetToken();
 
-		// aen 12/3/05 11:43 :
-		// Made to use explicit GetIdentifierToken()
-		// request for improved error reporting.
-		// 
-		// For example: int ';
-		//
-		// The ' character is marked DIGIT and will be
-		// treated as a number token if GetToken() is used.
-		//
-		// The number parser will report ' as an invalid number
-		// token, which is a confusing message in the context
-		// of a variable declaration.
-		//
-		// The desired behavior, therefore, is to report
-		// on an invalid identifier. This is achieved by using
-		// explicit calls to an identifier getter.
-		//
-		//isFunc = NextIs(2, "(");
 		isFunc = false;
 		if (TokenIs("int") || TokenIs("string"))
 		{
