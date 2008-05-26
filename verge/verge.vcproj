@@ -778,10 +778,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Source\vc_compiler_test.cpp"
-				>
-			</File>
-			<File
 				RelativePath="Source\vc_core.cpp"
 				>
 				<FileConfiguration
