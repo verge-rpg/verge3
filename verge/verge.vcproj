@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../win32;../dumb/include;&quot;../lua/lua-5.1.2&quot;;&quot;../boost-1.34.0&quot;;../lua/luabind;&quot;../flac-1.1.4/include&quot;;../audiere/src"
+				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../win32;../dumb/include;&quot;../lua/lua-5.1.2&quot;;&quot;../boost-1.34.0&quot;;../lua/luabind;&quot;../flac-1.1.4/include&quot;;../audiere/src;../UnitTest++/src"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;MIKMOD_STATIC;_CRT_SECURE_NO_DEPRECATE;USE_DUMB;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,7 +63,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="DelayImp.lib msacm32.lib vfw32.lib winmm.lib ws2_32.lib ../win32/dxguid.lib ../win32/ddraw.lib ../win32/dinput.lib wininet.lib ../zlib/debug/zlib.lib ../corona/output/debug/corona.lib ../flac-1.1.4/obj/$(ConfigurationName)/lib/libFLAC_static.lib user32.lib gdi32.lib ../fmod/fmodvc.lib ../lua/$(ConfigurationName)/lua.lib ../audiere/vc7/bin/$(ConfigurationName)/audiere.lib"
+				AdditionalDependencies="DelayImp.lib msacm32.lib vfw32.lib winmm.lib ws2_32.lib ../win32/dxguid.lib ../win32/ddraw.lib ../win32/dinput.lib wininet.lib ../zlib/debug/zlib.lib ../corona/output/debug/corona.lib ../flac-1.1.4/obj/$(ConfigurationName)/lib/libFLAC_static.lib user32.lib gdi32.lib ../fmod/fmodvc.lib ../lua/$(ConfigurationName)/lua.lib ../audiere/vc7/bin/$(ConfigurationName)/audiere.lib ../UnitTest++/output/Debug/UnitTest++.lib"
 				OutputFile="$(OutDir)/verge.exe"
 				LinkIncremental="2"
 				DelayLoadDLLs="fmod.dll"
@@ -776,6 +776,10 @@
 						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Source\vc_compiler_test.cpp"
+				>
 			</File>
 			<File
 				RelativePath="Source\vc_core.cpp"
