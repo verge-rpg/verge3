@@ -2372,6 +2372,49 @@ void VCCompiler::ParseStringDecl(scan_t type)
 	Expect(";");
 }
 
+void VCCompiler::ParseStructDeclVar(struct_definition* mystruct, int variable_type)
+{
+    if (variable_type != t_INT
+    &&  variable_type != t_STRING
+    &&  variable_type != t_STRUCT)
+    {
+        throw va("%s(%d) : assertion failure: expecting t_INT (%d) or t_STRING (%d) or t_STRUCT(%d) type; got %d", sourcefile, linenum, t_INT, t_STRING, t_STRUCT, variable_type);
+    }
+
+    char type_name[80];
+    strcpy(type_name, token);
+    while (true)
+    {
+        struct_element *myelem = new struct_element;
+        strcpy(myelem->type_name, type_name);
+        myelem->dim = 0;
+        myelem->len = 1;
+        myelem->dims.push_back(0);
+
+        GetToken();             // grab name
+        strcpy(myelem->name, token);
+
+        CheckStructElementNameDup(token, mystruct);
+
+        while (NextIs("["))     // it's an array
+        {
+            GetToken(2);
+            myelem->len *= token_value;
+            if (myelem->dim)
+            {
+                myelem->dims.push_back(0);
+            }
+            myelem->dims[myelem->dim++] = token_value;
+            Expect("]");
+        }
+        myelem->type = variable_type;
+        mystruct->elements.push_back(myelem);
+        if (NextIs(";")) break;
+        Expect(",");
+    }
+    Expect(";");
+}
+
 void VCCompiler::ParseStructDecl(scan_t type)
 {
 	switch(type) {
@@ -2395,112 +2438,15 @@ void VCCompiler::ParseStructDecl(scan_t type)
 		GetToken();
 		if (TokenIs("int"))
 		{
-			// parse ints
-			while (true)
-			{
-				struct_element *myelem = new struct_element;
-				myelem->dim = 0;
-				myelem->len = 1;
-				myelem->dims.push_back(0);
-
-				GetToken();					// grab name of int
-				strcpy(myelem->name, token);
-
-				// Overkill (2006-05-06):
-				// A name check that follows rules relevant to structure elements.
-				CheckStructElementNameDup(token, mystruct);
-
-				while (NextIs("["))			// it's an array
-				{
-					GetToken(2);
-					myelem->len *= token_value;
-					if (myelem->dim)
-					{
-						myelem->dims.push_back(0);
-					}
-					myelem->dims[myelem->dim++] = token_value;
-					Expect("]");
-				}
-				myelem->type = t_INT;
-				mystruct->elements.push_back(myelem);
-				if (NextIs(";")) break;
-				Expect(",");
-			}
-			Expect(";");
+            ParseStructDeclVar(mystruct, t_INT);
 		}
 		else if (TokenIs("string"))
 		{
-			// parse strings
-			while (true)
-			{
-				struct_element *myelem = new struct_element;
-				myelem->dim = 0;
-				myelem->len = 1;
-				myelem->dims.push_back(0);
-
-				GetToken();					// grab name of string
-				strcpy(myelem->name, token);
-
-				// Overkill (2006-05-06):
-				// A name check that follows rules relevant to structure elements.
-				CheckStructElementNameDup(token, mystruct);
-
-				while (NextIs("["))			// it's an array
-				{
-					GetToken(2);
-					myelem->len *= token_value;
-					if (myelem->dim)
-					{
-						myelem->dims.push_back(0);
-					}
-					myelem->dims[myelem->dim++] = token_value;
-					Expect("]");
-				}
-				myelem->type = t_STRING;
-				mystruct->elements.push_back(myelem);
-				if (NextIs(";")) break;
-				Expect(",");
-			}
-			Expect(";");
+            ParseStructDeclVar(mystruct, t_STRING);
 		}
 		else
 		{
-			// parse struct type definition.
-			char type_name[80];
-			strcpy(type_name, token);
-			while (true)
-			{
-				struct_element *myelem = new struct_element;
-				myelem->type = t_STRUCT;
-				strcpy(myelem->type_name, type_name);
-				myelem->dim = 0;
-				myelem->len = 1;
-				myelem->dims.push_back(0);
-
-				GetToken();					// grab name of variable
-				strcpy(myelem->name, token);
-
-				// Overkill (2006-05-06):
-				// A name check that follows rules relevant to structure elements.
-				CheckStructElementNameDup(token, mystruct);
-
-				while (NextIs("["))			// it's an array
-				{
-					GetToken(2);
-					myelem->len *= token_value;
-					if (myelem->dim)
-					{
-						myelem->dims.push_back(0);
-					}
-					myelem->dims[myelem->dim++] = token_value;
-					Expect("]");
-				}
-				
-				mystruct->elements.push_back(myelem);
-				if (NextIs(";")) break;
-				Expect(",");
-			}
-			Expect(";");
+            ParseStructDeclVar(mystruct, t_STRUCT);
 		}
 	}
 	vprint("struct type declare %s: %d elements \n", mystruct->name, mystruct->elements.size());
