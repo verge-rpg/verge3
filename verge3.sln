@@ -19,8 +19,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libFLAC_static", "flac-1.1.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audiere", "audiere\vc7\audiere\audiere.vcproj", "{E5195361-63CD-4C1B-8DD7-3E579779B1F6}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest++", "UnitTest++\UnitTest++.vcproj", "{64A4FEFE-0461-4E95-8CC1-91EF5F57DBC6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -51,10 +49,6 @@ Global
 		{E5195361-63CD-4C1B-8DD7-3E579779B1F6}.Debug|Win32.Build.0 = Debug|Win32
 		{E5195361-63CD-4C1B-8DD7-3E579779B1F6}.Release|Win32.ActiveCfg = Release|Win32
 		{E5195361-63CD-4C1B-8DD7-3E579779B1F6}.Release|Win32.Build.0 = Release|Win32
-		{64A4FEFE-0461-4E95-8CC1-91EF5F57DBC6}.Debug|Win32.ActiveCfg = Debug|Win32
-		{64A4FEFE-0461-4E95-8CC1-91EF5F57DBC6}.Debug|Win32.Build.0 = Debug|Win32
-		{64A4FEFE-0461-4E95-8CC1-91EF5F57DBC6}.Release|Win32.ActiveCfg = Release|Win32
-		{64A4FEFE-0461-4E95-8CC1-91EF5F57DBC6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
