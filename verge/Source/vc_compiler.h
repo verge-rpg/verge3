@@ -188,6 +188,12 @@ struct debuginfo
 	int  linenum;
 };
 
+typedef enum  {
+    SCAN_ALL,
+    SCAN_IGNORE_NON_FUNC,
+    SCAN_ERR_NON_FUNC
+} scan_t;
+
 class VCCompiler : public MapScriptCompiler
 {
 public:
@@ -240,6 +246,9 @@ public:
 	void PushFunction(int cimage, function_t *f);
 	void ClearFunctionList(int cimage);
 
+    void ScanPass(scan_t type);
+    std::vector<struct_definition*> struct_defs;
+
 private:
 	std::vector<Define*> defines;
 	std::vector<Builtin*> builtins;
@@ -289,7 +298,6 @@ private:
 	// scanning pass component
 	std::vector<int_t*>					global_ints;
 	std::vector<string_t*>				global_strings;
-	std::vector<struct_definition*>		struct_defs;
 	std::vector<struct_instance*>		struct_instances;
 
 	int global_intofs, global_stringofs;
@@ -322,14 +330,6 @@ private:
 	// in a single compilation pass are always considered
 	// errors.
 	bool permit_duplicates;
-
-	typedef enum  {
-		SCAN_ALL,
-		SCAN_IGNORE_NON_FUNC,
-		SCAN_ERR_NON_FUNC
-	} scan_t;
-
-	void ScanPass(scan_t type);
 
 	void SkipBrackets();
 	void SkipFunction();
