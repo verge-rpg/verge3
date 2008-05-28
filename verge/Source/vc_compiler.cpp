@@ -729,6 +729,10 @@ bool VCCompiler::CompileAll()
 		ScanPass(SCAN_ALL);
 		CompilePass();
 	}
+    catch (CircularIncludeException cie) {
+        sprintf(errmsg, cie.message.c_str());
+        result = false;
+    }
 	catch (const char *str)
 	{
 		sprintf(errmsg, str);
@@ -1071,15 +1075,20 @@ void VCCompiler::stripdefinevalue(char *v)
 	}
 }
 
+void VCCompiler::check_for_circular_includes(char* filename) {
+    for (int index = 0; index < pp_included_files.size(); index++) {
+        if (!zstrcmp(filename,  pp_included_files[index])) {
+            throw CircularIncludeException(va("preprocessor step: circular dependencies on %s", filename));
+        }
+    }
+}
+
 bool VCCompiler::Process(char *fn)
 {
 	int  i;
 	char *buf;
 
-	// check to see if this file is already included
-	for (i=0; i<pp_included_files.size(); i++)
-		if (!zstrcmp(fn, pp_included_files[i]))
-			throw va("preprocessor step: circular dependencies on %s", fn);
+    check_for_circular_includes(fn);
 
 	pp_included_files.push_back(fn); // no problem, add to list
 		

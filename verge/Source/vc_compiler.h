@@ -194,6 +194,12 @@ typedef enum  {
     SCAN_ERR_NON_FUNC
 } scan_t;
 
+struct CircularIncludeException {
+public:
+    std::string message;
+    CircularIncludeException(std::string message): message(message) {}
+};
+
 class VCCompiler : public MapScriptCompiler
 {
 public:
@@ -248,6 +254,8 @@ public:
 
     void ScanPass(scan_t type);
     std::vector<struct_definition*> struct_defs;
+	std::vector<char*> pp_included_files;
+    void check_for_circular_includes(char* filename);
 
 private:
 	std::vector<Define*> defines;
@@ -257,7 +265,6 @@ private:
 	// preprocessor component
 	char pptbl[256];
 	int  pp_total_lines;
-	std::vector<char*> pp_included_files;
     bool add_source_files;
 
 	bool PreProcess(char *fn);
