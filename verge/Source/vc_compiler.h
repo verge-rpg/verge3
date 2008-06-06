@@ -200,6 +200,8 @@ public:
     CircularIncludeException(std::string message): message(message) {}
 };
 
+struct LexerNotInitializedException {};
+
 class FileServer {
 public:
     virtual char* fetch(char* filename);
@@ -208,6 +210,7 @@ public:
 class VCCompiler : public MapScriptCompiler
 {
     FileServer* file_server;
+    bool lexer_initialized;
 
 public:
 	char errmsg[2048];
@@ -261,10 +264,12 @@ public:
 
     void ScanPass(scan_t type);
     std::vector<struct_definition*> struct_defs;
-	std::vector<char*> pp_included_files;
+    std::vector<char*> pp_included_files;
     void check_for_circular_includes(char* filename);
-	bool PreProcess(char *fn);
+    bool PreProcess(char *fn);
     bool Process(char *fn);
+    void Init_pptbl();
+    void collapse_whitespace(char*& code);
 
 private:
 	std::vector<Define*> defines;
@@ -276,7 +281,6 @@ private:
 	int  pp_total_lines;
     bool add_source_files;
 
-	void Init_pptbl();
 	void pp_filetag(char *fn);
 	void pp_linetag(int line);
 	void stripdefinevalue(char *v);

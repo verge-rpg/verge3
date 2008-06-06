@@ -616,6 +616,7 @@ void function_t::write(FILE *f)
 /***************** class VCCompiler *****************/
 
 VCCompiler::VCCompiler(FileServer* file_server)
+: lexer_initialized(false)
 {
     if (NULL == file_server) {
         file_server = new FileServer();
@@ -734,7 +735,10 @@ bool VCCompiler::CompileAll()
 		ScanPass(SCAN_ALL);
 		CompilePass();
 	}
-    catch (CircularIncludeException cie) {
+    catch (LexerNotInitialized lni) {
+        sprintf(errmsg, "Lexer not initialized");
+        result = false;
+    } catch (CircularIncludeException cie) {
         sprintf(errmsg, cie.message.c_str());
         result = false;
     }
@@ -1056,6 +1060,8 @@ void VCCompiler::Init_pptbl()
 	pptbl['\n'] = PP_NEWLINE;
 	pptbl['\"'] = PP_QUOTE;
 	pptbl['#'] = PP_DIRECTIVE;
+
+    lexer_initialized = true;
 }
 
 void VCCompiler::pp_filetag(char *fn)
@@ -1107,10 +1113,22 @@ char* FileServer::fetch(char* filename) {
     return buf;
 }
 
+void VCCompiler::collapse_whitespace(char*& code) {
+    source.EmitC(' ');
+    while (pptbl[*code++] == PP_WHITE) {
+        // empty
+    }
+    code--;
+}
+
 bool VCCompiler::Process(char *fn)
 {
 	int  i;
 	char *buf;
+
+    if (!lexer_initialized) {
+        throw LexerNotInitializedException();
+    }
 
     check_for_circular_includes(fn);
 
@@ -1140,9 +1158,7 @@ bool VCCompiler::Process(char *fn)
 		char token_type = pptbl[*s];
 		if (token_type == PP_WHITE)
 		{
-			source.EmitC(' ');
-			while (pptbl[*s++] == PP_WHITE);
-			s--;
+            collapse_whitespace(s);
 			continue;
 		}
 		if (s[0]=='/' && s[1]=='/')			// c-style comment, skip to end of line
