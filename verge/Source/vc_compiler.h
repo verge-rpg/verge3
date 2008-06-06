@@ -200,8 +200,15 @@ public:
     CircularIncludeException(std::string message): message(message) {}
 };
 
+class FileServer {
+public:
+    virtual char* fetch(char* filename);
+};
+
 class VCCompiler : public MapScriptCompiler
 {
+    FileServer* file_server;
+
 public:
 	char errmsg[2048];
 	bool vcerror;
@@ -209,7 +216,7 @@ public:
 	// the current code image being compiled
 	Chunk source, output;
 
-	VCCompiler();
+	VCCompiler(FileServer* file_server = NULL);
 	~VCCompiler();
 
 	// call to compile system.vc - starts fresh. Only use
@@ -256,6 +263,8 @@ public:
     std::vector<struct_definition*> struct_defs;
 	std::vector<char*> pp_included_files;
     void check_for_circular_includes(char* filename);
+	bool PreProcess(char *fn);
+    bool Process(char *fn);
 
 private:
 	std::vector<Define*> defines;
@@ -267,8 +276,6 @@ private:
 	int  pp_total_lines;
     bool add_source_files;
 
-	bool PreProcess(char *fn);
-	bool Process(char *fn);
 	void Init_pptbl();
 	void pp_filetag(char *fn);
 	void pp_linetag(int line);

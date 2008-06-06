@@ -615,8 +615,13 @@ void function_t::write(FILE *f)
 
 /***************** class VCCompiler *****************/
 
-VCCompiler::VCCompiler()
+VCCompiler::VCCompiler(FileServer* file_server)
 {
+    if (NULL == file_server) {
+        file_server = new FileServer();
+    }
+    this->file_server = file_server;
+
 	vcerror = false;
 	remove(VCLOG);
 
@@ -1083,6 +1088,25 @@ void VCCompiler::check_for_circular_includes(char* filename) {
     }
 }
 
+char* FileServer::fetch(char* filename) {
+    VFILE* in = vopen(filename);
+    if (!in) {
+        throw va("preprocess step: could not open %s", filename);
+    }
+
+    int length_in_bytes = filesize(in);
+    char* buf = new char[length_in_bytes + 2];
+    memset(buf, 0, length_in_bytes + 2);
+
+    vread(buf, length_in_bytes, in);
+    vclose(in);
+
+    buf[length_in_bytes++] = 0;
+    buf[length_in_bytes] = 0;
+
+    return buf;
+}
+
 bool VCCompiler::Process(char *fn)
 {
 	int  i;
@@ -1095,22 +1119,13 @@ bool VCCompiler::Process(char *fn)
     if(add_source_files) {
         AddSourceFile(fn);
     }
-        
-	// read in source file
-	VFILE *in = vopen(fn);
-	if (!in) 
-	{
-		pp_included_files.pop_back();
-		throw va("preprocess step: could not open %s", fn);
-		return false;
-	}
-	
-	int len = filesize(in);
-	buf = new char[len+2];
-	memset(buf, 0, len+2);
-	vread(buf, len, in);
-	vclose(in);
-	buf[len] = buf[len+1] = 0;
+
+    try {
+        buf = file_server->fetch(fn);
+    } catch (char* pc) {
+        pp_included_files.pop_back();
+        throw pc;
+    }
 
 	// output initial filename and linenumber tags
 	pp_filetag(fn);
