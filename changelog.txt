@@ -2,6 +2,44 @@
 Verge 3 Changelog
 ================================================
 
+Revision 239 (2008-06-06) (Overkill)
+=========================
+* Moved the key buffer related stuff over to the general script binding so now it can be accessed by both VergeC and LuaVerge.
+
+Revision 224-238 (2008-05-25 to 2008-06-06) (aen)
+=========================
+* A bunch of compiler refactoring so testing can be incorporated with it.
+
+Revision 223 (2008-05-22) (aen)
+=========================
+* Replaced implementation of strpos() with STL's find().
+
+Revision 222 (2008-05-11) (Overkill)
+=========================
+* Verge's icon has a transparent background now.
+
+Revision 221 (2008-05-11) (Overkill)
+=========================
+* Fixed the error reporting in LuaVerge when calling functions. It no longer "cleverly" omits levels in its traceback, because this was causing empty strack traces which are nearly impossible to debug then (bad!)
+
+Revision 219 (2008-04-28) (Overkill)
+=========================
+* Okay so apparently SocketGetRaw wasn't nonblocking. So I attempted to fix that. I think it works.
+* The Mac/Linux implementation was written but I'm not sure if it works, COMPILING AND TESTING NEEDED ON THOSE PLATFORMS.
+
+Revision 217 (2008-04-25) (McGrue)
+=========================
+
+* Added trigger.beforeEntityScript and trigger.afterEntityScript to the global read/write variables.
+* if trigger.beforeEntityScript is set to a vc function name, that function will be called before any entity's onActivate script is called. 
+* if trigger.afterEntityScript is set to a vc function name, that function will be called after any entity's onActivate script is called. 
+* both of these functions will have the proper event.tx, event.ty, and event.entity values available to them, just like the entity's onActivate script does.
+
+Revision 216 (2008-04-24) (McGrue)
+=========================
+* Added global read/write strings trigger.onStep and trigger.afterStep. 
+* If they are set to the name of a vc script, said script will fire everytime the player enters any new tile.
+
 Revision 207-211 (2008-04-20) (Overkill)
 =========================
 * Added SocketByteCount() at ustor's request. peeks at the count of bytes currently in the buffer. Needs Mac/*nix implementation.

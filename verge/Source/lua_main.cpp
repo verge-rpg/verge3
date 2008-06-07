@@ -773,6 +773,9 @@ void LUA::bindApi() {
 		SEFUNC(GetV);
 		SEFUNC(HueReplace);
 		SEFUNC(ColorReplace);
+		SEFUNC(GetKeyBuffer);
+		SEFUNC(FlushKeyBuffer);
+		SEFUNC(SetKeyDelay);
 
 
 		//some handy functions

@@ -735,7 +735,7 @@ bool VCCompiler::CompileAll()
 		ScanPass(SCAN_ALL);
 		CompilePass();
 	}
-    catch (LexerNotInitialized lni) {
+    catch (LexerNotInitializedException lni) {
         sprintf(errmsg, "Lexer not initialized");
         result = false;
     } catch (CircularIncludeException cie) {

@@ -297,6 +297,9 @@ public:
 	static int GetV(int col);
 	static void HueReplace(int hue_find, int hue_tolerance, int hue_replace, int image);
 	static void ColorReplace(int find, int replace, int image);
+	static std::string GetKeyBuffer();
+	static void FlushKeyBuffer();
+	static void SetKeyDelay(int d);
 };
 
 

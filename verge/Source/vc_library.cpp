@@ -1424,22 +1424,14 @@ void vc_cbrt()
 // TODO: Implement for other platforms.
 void vc_GetKeyBuffer()
 {
-	#ifdef __WIN32__
-		vc->vcretstr = keybuffer;
-	#else 
-		err("The function GetKeyBuffer() is not defined for this platform.");
-	#endif
+	vc->vcretstr = vc->GetKeyBuffer();
 }
 
 // Overkill (2006-06-30): Clears the contents of the key buffer.
 // TODO: Implement for other platforms.
 void vc_FlushKeyBuffer()
 {
-	#ifdef __WIN32__
-		FlushKeyBuffer();
-	#else 
-		err("The function FlushKeyBuffer() is not defined for this platform.");
-	#endif
+	vc->FlushKeyBuffer();
 }
 
 // Overkill (2006-06-30): Sets the delay in centiseconds before key repeat.
@@ -1447,15 +1439,8 @@ void vc_FlushKeyBuffer()
 void vc_SetKeyDelay()
 {
 	int d = vc->ResolveOperand();
-	if (d <= 0)
-	{
-		d = 0;
-	}
-	#ifdef __WIN32__
-		key_input_delay = d;
-	#else 
-		err("The function SetKeyDelay() is not defined for this platform.");
-	#endif
+	vc->SetKeyDelay(d);
+
 }
 // Overkill (2006-07-20):
 // Saves a CHR file, using an open file handle, saving the specified entity.
