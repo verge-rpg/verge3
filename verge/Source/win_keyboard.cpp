@@ -103,7 +103,7 @@ int ParseKeyEvent()
 				{
 					keybuffer = keybuffer + '\n';
 				}
-				else
+				else if (lastkey)
 				{
 					keybuffer = keybuffer + (char)lastkey;
 				}
@@ -190,9 +190,9 @@ int ParseKeyEvent()
 		{
 			keybuffer = keybuffer + '\n';
 		}
-		else
+		else if (mykey)
 		{
-			keybuffer = keybuffer + (char)mykey;
+				keybuffer = keybuffer + (char)mykey;
 		}
 		// Update the timestamp, so it'll repeat at a sane rate again.
 		key_timer = systemtime;

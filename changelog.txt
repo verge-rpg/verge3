@@ -2,6 +2,10 @@
 Verge 3 Changelog
 ================================================
 
+Revision 240 (2008-06-07) (Overkill)
+=========================
+* Fixed a bug with the key buffer that was ONLY visible in LuaVerge. Go figure. Apparently VergeC is treating its strings a little more forgivingly than Lua and in Lua, \0 was being added when it shouldn't have.
+
 Revision 239 (2008-06-06) (Overkill)
 =========================
 * Moved the key buffer related stuff over to the general script binding so now it can be accessed by both VergeC and LuaVerge.
