@@ -18,7 +18,7 @@
     <DelaySign>false</DelaySign>
     <OutputType>WinExe</OutputType>
     <RootNamespace>winmaped2</RootNamespace>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
     <StartupObject>winmaped2.App</StartupObject>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -240,7 +240,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="dialogs\mainWindow.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="dialogs\MapedPreferences.cs">
       <SubType>Form</SubType>
@@ -383,7 +383,6 @@
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>$(SolutionDir)NUnit\nunit-console.exe $(TargetPath)</PostBuildEvent>
   </PropertyGroup>
 </Project>
