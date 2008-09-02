@@ -7,7 +7,6 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Collections;
 using System.Collections.Generic;
-using zlib;
 
 namespace winmaped2 {
     /// <summary>
@@ -585,51 +584,6 @@ namespace winmaped2 {
         }
     }
 
-    public static class Compression
-    {
-        /// <summary>
-        /// Decompresses a data buffer written using the delflate algorithm
-        /// </summary>
-        /// <param name="compressedData">Byte buffer containing compressed data</param>
-        /// <returns></returns>
-        public static byte[] Inflate(byte[] compressedData)
-        {
-            byte[] uncompressedData;
-            using (MemoryStream outData = new MemoryStream())
-            {
-                using (ZOutputStream decompresser = new ZOutputStream(outData))
-                {
-                    decompresser.FlushMode = zlibConst.Z_FULL_FLUSH;
-                    decompresser.Write(compressedData, 0, compressedData.Length);
-                    uncompressedData = outData.ToArray();
-                }
-            }
-
-            return uncompressedData;
-        }
 
 
-        /// <summary>
-        /// Compresses a data buffer using the deflate algorithm
-        /// </summary>
-        /// <param name="inputData"></param>
-        /// <returns></returns>
-        public static byte[] Deflate(byte[] inputData)
-        {
-            byte[] compressedData;
-            using (MemoryStream outData = new MemoryStream())
-            {
-                using (ZOutputStream compresser = new ZOutputStream(outData, zlibConst.Z_BEST_COMPRESSION))
-                {
-                    compresser.FlushMode = zlibConst.Z_FULL_FLUSH;
-                    compresser.Write(inputData, 0, inputData.Length);
-                    compressedData = outData.ToArray();
-                }
-            }
-
-            return compressedData;
-
-        }
-
-    }
 }

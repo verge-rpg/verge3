@@ -101,10 +101,11 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <Reference Include="zlib.net, Version=1.0.3.0, Culture=neutral, PublicKeyToken=47d7877cb3620160">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\components\zlib.net.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\zlib\zlib.net.vcproj">
+      <Name>zlib.net</Name>
+      <Project>{1C1C2264-1C1F-4CC2-8747-FE3781AA1BF0}</Project>
+      <Package>{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}</Package>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="code\App.cs">
