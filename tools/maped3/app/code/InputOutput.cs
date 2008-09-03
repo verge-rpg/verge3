@@ -81,9 +81,6 @@ namespace winmaped2 {
                 map.Layers.Add(ml);
             }
 
-
-
-
             MapLayer ol = new MapLayer(map);
             ol.type = LayerType.Obs;
             ol.name = "Obstructions";
@@ -227,7 +224,6 @@ namespace winmaped2 {
             int version = br.ReadInt32();
             if (sig != VSP_SIGNATURE || version != VSP_VERSION)
                 return null;
-
 
             // assume 16
             int tilesize = br.ReadInt32();
