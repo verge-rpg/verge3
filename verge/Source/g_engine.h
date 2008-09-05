@@ -31,3 +31,5 @@ bool ObstructAt(int x, int y);
 // returns if it managed to clean up at least one spot
 bool CleanupCHRs();
 CHR *RequestCHR(const char *fname);
+
+void onEntityCollision();

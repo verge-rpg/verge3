@@ -174,7 +174,7 @@ int EntityAt(int x, int y)
 
 int EntityObsAt(int x, int y)
 {
-	for (int i=0; i<entities; i++)
+	for( int i=0; i<entities; i++ )
 	{
 		if (entity[i]->active && entity[i]->obstruction &&
 			x >= entity[i]->getx() && x < entity[i]->getx() + entity[i]->hotw &&
@@ -184,10 +184,44 @@ int EntityObsAt(int x, int y)
 	return -1;
 }
 
+int isEntityCollisionCapturing() {
+	return !_trigger_onEntityCollide.empty();
+}
+
+int __obstructionHappened = 0;
+
 bool ObstructAt(int x, int y)
 {
-	if (current_map->obstructpixel(x, y) || EntityObsAt(x, y) > -1)
+	if( current_map->obstructpixel(x, y) ) {
+		
+		if( isEntityCollisionCapturing() ) {
+			event_tx = x/16;
+			event_ty = y/16;
+			event_entity = __grue_actor_index;
+			event_zone = current_map->zone(x/16, y/16);
+			event_entity_hit = -1;
+			onEntityCollision();
+		}
+
 		return true;
+	}
+
+	int ent_idx = EntityObsAt(x, y);
+
+	if( ent_idx > -1 ) {
+
+		if( isEntityCollisionCapturing() ) {
+			event_tx = x/16;
+			event_ty = y/16;
+			event_entity = __grue_actor_index;
+			event_zone = -1;
+			event_entity_hit = ent_idx;
+			onEntityCollision();
+		}
+
+		return true;
+	}
+
 	return false;
 }
 
@@ -195,12 +229,15 @@ bool ObstructAt(int x, int y)
 // the first obstruction in the given direction
 int MaxPlayerMove(int d, int max)
 {
+	__grue_actor_index = myself->index;
+
 	int x, y;
 	int ex = myself->getx();
 	int ey = myself->gety();
 
-   // check to see if the player is obstructable at all
+    // check to see if the player is obstructable at all
 	if (!myself->obstructable) return max;
+
 	for(int check = 1; check <= max+1; check++) {
 		switch (d)
 		{
@@ -270,6 +307,12 @@ void beforeEntityActivation() {
 void afterEntityActivation() {
 	if( !_trigger_afterEntityScript.empty() ) {
 		se->ExecuteFunctionString( _trigger_afterEntityScript );
+	}
+}
+
+void onEntityCollision() {
+	if( isEntityCollisionCapturing() ) {
+		se->ExecuteFunctionString( _trigger_onEntityCollide );
 	}
 }
 
@@ -492,6 +535,7 @@ void ProcessControls()
 				ey = myself->gety()+(myself->hoth/2);
 				break;
 		}
+
 		int i = EntityAt(ex, ey);
 		if (i != -1 && entity[i]->script.length())
 		{
@@ -525,6 +569,7 @@ void ProcessControls()
 			event_zone = cz;
 			event_tx = ex/16;
 			event_ty = ey/16;
+			event_entity = i;
 
 			se->ExecuteFunctionString(current_map->zones[cz]->script);
 			timer = cur_timer;

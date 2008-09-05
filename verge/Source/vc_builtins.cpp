@@ -417,6 +417,8 @@ char* libvars[NUM_HVARS][3] = {
 	{"3", "trigger.afterStep", "" },// index 122
 	{"3", "trigger.beforeEntityScript", "" },// index 123
 	{"3", "trigger.afterEntityScript", "" },// index 124
+	{"3", "trigger.onEntityCollide", "" },// index 125
+	{"1", "event.entity_hit", "" }, //126
 
 }; //when adding, remember to increment NUM_HVARS
 

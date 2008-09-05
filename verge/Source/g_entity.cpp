@@ -298,6 +298,8 @@ void Entity::think()
 
 bool Entity::ObstructDirTick(int d)
 {
+	__grue_actor_index = this->index;
+
 	int x, y;
 	int ex = getx();
 	int ey = gety();
@@ -327,6 +329,8 @@ bool Entity::ObstructDirTick(int d)
 
 bool Entity::ObstructDir(int d)
 {
+	__grue_actor_index = this->index;
+
 	int i, x, y;
 	int ex = getx();
 	int ey = gety();

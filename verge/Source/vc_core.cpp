@@ -46,11 +46,17 @@ int event_zone;
 int event_entity;
 int event_param;
 int event_sprite;
+
+int event_entity_hit;
+
+int __grue_actor_index;
+
+
 std::string event_str;
 
 std::string _trigger_onStep, _trigger_afterStep;
 std::string _trigger_beforeEntityScript, _trigger_afterEntityScript;
-
+std::string _trigger_onEntityCollide;
 /****************************** code ******************************/
 
 VCCore::VCCore()
@@ -421,6 +427,9 @@ int VCCore::ReadInt(int category, int loc, int ofs)
 				case 103: return AppIsForeground;
 				// Overkill (2007-05-02): Variable argument lists.
 				case 116: return vararg_stack[vararg_stack.size() - 1].size();
+
+				case 126: return event_entity_hit;
+
 				default: vcerr("Unknown HVAR0 (%d)", loc);
 			}
 			break;
@@ -767,6 +776,9 @@ std::string VCCore::ProcessString()
 						break;
 				case 124: //trigger.afterEntityScript
 						ret = _trigger_afterEntityScript;
+						break;
+				case 125: //trigger.onEntityCollide
+						ret = _trigger_onEntityCollide;
 						break;
 
 				default: vcerr("VCCore::ProcessString() - bad HSTR0 (%d)", idx);
@@ -1268,6 +1280,9 @@ void VCCore::HandleAssign()
 					break;
 			case 124: //trigger.afterEntityScript
 					_trigger_afterEntityScript = ResolveString();
+					break;
+			case 125: //trigger.onEntityCollide
+					_trigger_onEntityCollide = ResolveString();
 					break;
 
 			default: vcerr("VCCore::HandleAssign() - bad HSTR0 (%d)", idx);

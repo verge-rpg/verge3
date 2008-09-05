@@ -368,7 +368,12 @@ extern int event_zone;
 extern int event_entity;
 extern int event_param;
 extern int event_sprite;
+extern int event_entity_hit;
+
+extern int __grue_actor_index;
+
 extern int invc;
 
 extern std::string _trigger_onStep, _trigger_afterStep;
 extern std::string _trigger_beforeEntityScript, _trigger_afterEntityScript;
+extern std::string _trigger_onEntityCollide;
