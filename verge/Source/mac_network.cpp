@@ -192,6 +192,10 @@ Socket::read(int size, void* bytes)
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifndef SOCKET_ERROR
+#define	SOCKET_ERROR	-1
+#endif
+
 int
 Socket::nonblockread(int size, void* bytes)
 {
@@ -234,11 +238,18 @@ Socket::blockread(int size, void* bytes)
 int
 Socket::dataready()
 {
+    if(this->byteCount()) return 1;
+    return 0;
+}
+
+int 
+Socket::byteCount() 
+{
 	static char buf[2];
 	int ret = recv(m_socket, buf, 1, MSG_PEEK);
-	if (ret	> 0) return 1;
-	return 0;
-}
+    return ret;
+} 
+
 
 ////////////////////////////////////////////////////////////////////////////////
 

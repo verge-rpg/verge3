@@ -61,6 +61,8 @@ public:
 	int blockread(int size, void* bytes);
 	int dataready();
 	int connected();
+    int byteCount();
+    
 private:
 	Socket(int socket);
 	int m_socket;

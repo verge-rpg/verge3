@@ -12,7 +12,7 @@
 #define XERXES_H
 
 //version info macros
-#define DEF_VERSION "\"Verge 3.1 2007.07.08\""
+#define DEF_VERSION "\"Verge 3.14 2008.09.29\""
 #define DEF_BUILD "20070708"
 #ifdef __APPLE__
 #define DEF_OS "\"mac\""
