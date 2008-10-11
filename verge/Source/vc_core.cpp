@@ -1860,9 +1860,9 @@ void VCCore::DecompileLibFunc()
 	byte c = currentvc->GrabC();
 	fprintf(vcd, "%s(", libfuncs[c].name);
 
-	for (int i=0; i<strlen(libfuncs[c].argumentTypes); i++)
+	for (int i=0; i<libfuncs[c].argumentTypes.size(); i++)
 	{
-		switch (libfuncs[c].argumentTypes[i]-'0')
+		switch (libfuncs[c].argumentTypes[i])
 		{
 			case t_INT:
 				// DecompileOperand();

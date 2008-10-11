@@ -284,6 +284,7 @@ private:
 	quad srcofs, linenum;
 
 	void Init_Lexical();
+	bool streq(const std::string & lhs, const std::string & rhs);
 	bool streq(const char *a, const char *b);
 	int  hextoi(char *h);
 	void ParseWhitespace();

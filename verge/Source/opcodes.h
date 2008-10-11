@@ -109,9 +109,23 @@
 #define NUM_HDEFS			104
 
 struct VcFunction {
-	const char* returnType;
-	const char* name;
-	const char* argumentTypes;
+	int returnType;
+	std::string name;
+    std::vector<int> argumentTypes;
+
+	VcFunction(const char * rt, const char * n, const char * at)
+		: returnType(atoi(rt)),
+		  name(n)
+	{
+		char buf[2];
+		memset(buf, 0, 2);
+		while (*at) {
+			buf[0] = *at;
+			int argumentType = atoi(buf);
+			argumentTypes.push_back(argumentType);
+			at++;
+		}
+	}
 };
 
 extern VcFunction libfuncs[NUM_LIBFUNCS];

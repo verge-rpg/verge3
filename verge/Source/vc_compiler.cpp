@@ -1431,6 +1431,10 @@ void VCCompiler::Init_Lexical()
 	memset(sourcefile, 0, 256);
 }
 
+bool VCCompiler::streq(const std::string & lhs, const std::string & rhs) {
+	return streq(lhs.c_str(), rhs.c_str());
+}
+
 bool VCCompiler::streq(const char *a, const char *b)
 {
 	while (*a)
@@ -3051,7 +3055,7 @@ void VCCompiler::CheckIdentifier(char *s)
 		{
 			id_type = ID_LIBFUNC;
 			id_index = i;
-			id_subtype = atoi(libfuncs[i].returnType);
+			id_subtype = libfuncs[i].returnType;
 			return;
 		}
 
@@ -3345,7 +3349,7 @@ void VCCompiler::CompileAtom()
 	}
     if (id_type == ID_LIBFUNC)
     {
-		if (atoi(libfuncs[id_index].returnType) != t_INT)
+		if (libfuncs[id_index].returnType != t_INT)
 			throw va("%s(%d): %s does not return an int", sourcefile, linenum, token);
         output.EmitC(intLIBFUNC);
         HandleLibraryFunc();
@@ -3565,7 +3569,7 @@ void VCCompiler::ProcessString()
 	}
 	if (id_type == ID_LIBFUNC)
     {
-        if (atoi(libfuncs[id_index].returnType) != t_STRING)
+        if (libfuncs[id_index].returnType != t_STRING)
 			throw va("%s(%d): %s does not return a string", sourcefile, linenum, token);
         output.EmitC(strLIBFUNC);
         HandleLibraryFunc();
@@ -3800,7 +3804,7 @@ void VCCompiler::HandleLibraryFunc()
 	{
 		if (NextIs(")"))
 		{
-			if (i < strlen(libfuncs[myindex].argumentTypes) && libfuncs[myindex].argumentTypes[i]-'0' == t_VARARG)
+			if (i < libfuncs[myindex].argumentTypes.size() && libfuncs[myindex].argumentTypes[i] == t_VARARG)
 			{
 				output.EmitC(opVARARG_START);
 				varargs = true;
@@ -3808,9 +3812,9 @@ void VCCompiler::HandleLibraryFunc()
 			}
 			break;
 		}
-		if (i < strlen(libfuncs[myindex].argumentTypes))
+		if (i < libfuncs[myindex].argumentTypes.size())
 		{
-			switch (libfuncs[myindex].argumentTypes[i]-'0')
+			switch (libfuncs[myindex].argumentTypes[i])
 			{
 				case t_INT:
 					CompileOperand();
@@ -3867,9 +3871,9 @@ void VCCompiler::HandleLibraryFunc()
 	{
 		output.EmitC(opVARARG_END);
 	}
-	if (i < strlen(libfuncs[myindex].argumentTypes) || (i > strlen(libfuncs[myindex].argumentTypes) && !varargs))
+	if (i < libfuncs[myindex].argumentTypes.size() || (i > libfuncs[myindex].argumentTypes.size() && !varargs))
 	{
-		throw va("%s(%d) %s() expects %d arguments. (Got %d)", sourcefile, linenum, libfuncs[myindex].name, strlen(libfuncs[myindex].argumentTypes), i);
+		throw va("%s(%d) %s() expects %d arguments. (Got %d)", sourcefile, linenum, libfuncs[myindex].name, libfuncs[myindex].argumentTypes.size(), i);
 	}
 
 	id_index = myindex;
