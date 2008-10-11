@@ -15,6 +15,7 @@
 
 #include "xerxes.h"
 #include "opcodes.h"
+#include <sstream>
 
 /****************************** data ******************************/
 
@@ -23,6 +24,35 @@ extern VCCore *vc;
 int cf_r1, cf_g1, cf_b1;
 int cf_r2, cf_g2, cf_b2;
 int cf_rr, cf_gr, cf_br;
+
+/***************************** devilry ****************************/
+
+#define VC_LIBFUNC(name) \
+	void name (); \
+	VcFunctionBinding _bind_ ## name (#name, name); \
+	void name
+
+VcFunctionImplTable & VcGetLibfuncBindings () {
+	static VcFunctionImplTable table;
+	return table;
+}
+
+VcFunctionDispatchTable & VcGetLibfuncDispatch () {
+	static VcFunctionDispatchTable table;
+	return table;
+}
+
+void VcBuildLibraryDispatchTable () {
+	VcFunctionImplTable & bindings = VcGetLibfuncBindings();
+	VcFunctionDispatchTable & dispatch = VcGetLibfuncDispatch();
+	for (int i = 0; i < NUM_LIBFUNCS; i++) {
+		VcFunction & theFunc = libfuncs[i];
+		std::stringstream key;
+		key << "vc_" << theFunc.name;
+		VcFunctionImpl ptr = bindings[key.str()];
+		dispatch[i] = ptr;
+	}
+}
 
 /****************************** code ******************************/
 
@@ -56,15 +86,16 @@ int HandleForDict(dict *d)
 	return Handle::alloc(HANDLE_TYPE_DICT, d);
 }
 
-void vc_Exit()
-{
+VC_LIBFUNC(vc_Exit) () {
 	std::string message = vc->ResolveString();
 	err("%s", message.c_str());
 }
 
-void vc_Log() { vc->Log(vc->ResolveString()); }
+VC_LIBFUNC(vc_Log) () { 
+	vc->Log(vc->ResolveString()); 
+}
 
-void vc_NewImage() {
+VC_LIBFUNC(vc_NewImage) () {
 	int xsize = vc->ResolveOperand();
 	int ysize = vc->ResolveOperand();
 	vc->vcreturn = vc->NewImage(xsize,ysize);
@@ -90,8 +121,14 @@ void vc_SetClip()
 	vc->SetClip(x1, y1, x2, y2, i);
 }
 
-void vc_LoadImage() { vc->vcreturn = vc->LoadImage(vc->ResolveString()); }
-void vc_LoadImage0()  { vc->vcreturn = vc->LoadImage0(vc->ResolveString()); }
+VC_LIBFUNC(vc_LoadImage) () { 
+	vc->vcreturn = vc->LoadImage(vc->ResolveString()); 
+}
+
+VC_LIBFUNC(vc_LoadImage0) ()  { 
+	vc->vcreturn = vc->LoadImage0(vc->ResolveString()); 
+}
+
 void vc_LoadImage8()  { vc->vcreturn = vc->LoadImage8(vc->ResolveString()); }
 
 void vc_ShowPage() { vc->ShowPage(); }
@@ -1645,16 +1682,19 @@ void VCCore::HandleLibFunc()
 	// Yay! We'll probably never reach the 65535 mark,
 	// so we're safe again.
 	word c = currentvc->GrabW();
+
+	VcFunctionDispatchTable & dispatch = VcGetLibfuncDispatch();
+	VcFunctionImpl ptr = dispatch[c];
+	if (ptr) {
+		ptr();
+		return;
+	}
+
 	switch (c)
 	{
-		case 0: vc_Exit(); break;
-		case 1: vc_Log(); break;
-		case 2: vc_NewImage(); break;
 		case 3: vc_MakeColor(); break;
 		case 4: vc_SetLucent(); break;
 		case 5: vc_SetClip(); break;
-		case 6: vc_LoadImage(); break;
-		case 7: vc_LoadImage0(); break;
 		case 8: vc_ShowPage(); break;
 		case 9: vc_UpdateControls(); break;
 		case 10: vc_Blit(); break;

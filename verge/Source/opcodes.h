@@ -133,6 +133,18 @@ struct VcFunction {
 	}
 };
 
+typedef void (*VcFunctionImpl) ();
+typedef std::map<std::string, VcFunctionImpl> VcFunctionImplTable;
+typedef std::map<int, VcFunctionImpl> VcFunctionDispatchTable;
+
+extern VcFunctionImplTable & VcGetLibfuncBindings ();
+
+struct VcFunctionBinding {
+	VcFunctionBinding(std::string name, VcFunctionImpl fn) {
+		VcGetLibfuncBindings()[name] = fn;
+	}
+};
+
 extern VcFunction libfuncs[NUM_LIBFUNCS];
 extern char* libvars[NUM_HVARS][3];
 extern char* hdefs[NUM_HDEFS][2];

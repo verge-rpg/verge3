@@ -57,10 +57,15 @@ std::string event_str;
 std::string _trigger_onStep, _trigger_afterStep;
 std::string _trigger_beforeEntityScript, _trigger_afterEntityScript;
 std::string _trigger_onEntityCollide;
+
+extern void VcBuildLibraryDispatchTable ();
+
 /****************************** code ******************************/
 
 VCCore::VCCore()
 {
+	VcBuildLibraryDispatchTable();
+
 	int_stack_base = 0;
 	int_stack_ptr = 0;
 	str_stack_base = 0;
