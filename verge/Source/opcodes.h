@@ -141,6 +141,7 @@ extern VcFunctionImplTable & VcGetLibfuncBindings ();
 
 struct VcFunctionBinding {
 	VcFunctionBinding(std::string name, VcFunctionImpl fn) {
+		std::transform(name.begin(), name.end(), name.begin(), tolower);
 		VcGetLibfuncBindings()[name] = fn;
 	}
 };

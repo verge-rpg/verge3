@@ -47,9 +47,14 @@ void VcBuildLibraryDispatchTable () {
 	VcFunctionDispatchTable & dispatch = VcGetLibfuncDispatch();
 	for (int i = 0; i < NUM_LIBFUNCS; i++) {
 		VcFunction & theFunc = libfuncs[i];
-		std::stringstream key;
-		key << "vc_" << theFunc.name;
-		VcFunctionImpl ptr = bindings[key.str()];
+		std::string key;
+		{
+			std::stringstream buf;
+			buf << "vc_" << theFunc.name;
+			key = buf.str();
+		}
+		std::transform(key.begin(), key.end(), key.begin(), tolower);
+		VcFunctionImpl ptr = bindings[key];
 		dispatch[i] = ptr;
 	}
 }
@@ -101,7 +106,7 @@ VC_LIBFUNC(vc_NewImage) () {
 	vc->vcreturn = vc->NewImage(xsize,ysize);
 }
 
-void vc_MakeColor()
+VC_LIBFUNC(vc_MakeColor) ()
 {
 	int r = vc->ResolveOperand();
 	int g = vc->ResolveOperand();
@@ -109,9 +114,9 @@ void vc_MakeColor()
 	vc->vcreturn = vc->MakeColor(r,g,b);
 }
 
-void vc_SetLucent() { vc->SetLucent(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_SetLucent) () { vc->SetLucent(vc->ResolveOperand()); }
 
-void vc_SetClip()
+VC_LIBFUNC(vc_SetClip) ()
 {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
@@ -129,12 +134,12 @@ VC_LIBFUNC(vc_LoadImage0) ()  {
 	vc->vcreturn = vc->LoadImage0(vc->ResolveString()); 
 }
 
-void vc_LoadImage8()  { vc->vcreturn = vc->LoadImage8(vc->ResolveString()); }
+VC_LIBFUNC(vc_LoadImage8) ()  { vc->vcreturn = vc->LoadImage8(vc->ResolveString()); }
 
-void vc_ShowPage() { vc->ShowPage(); }
-void vc_UpdateControls() { vc->UpdateControls(); }
+VC_LIBFUNC(vc_ShowPage) () { vc->ShowPage(); }
+VC_LIBFUNC(vc_UpdateControls) () { vc->UpdateControls(); }
 
-void vc_Blit() {
+VC_LIBFUNC(vc_Blit) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int xxx = vc->ResolveOperand();
@@ -142,7 +147,7 @@ void vc_Blit() {
 	vc->Blit(x, y, xxx, yyy);
 }
 
-void vc_TBlit()
+VC_LIBFUNC(vc_TBlit) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -151,7 +156,7 @@ void vc_TBlit()
 	TBlit(x, y, s, d);
 }
 
-void vc_AdditiveBlit() {
+VC_LIBFUNC(vc_AdditiveBlit) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int s = vc->ResolveOperand();
@@ -159,7 +164,7 @@ void vc_AdditiveBlit() {
 	vc->AdditiveBlit(x, y, s, d);
 }
 
-void vc_TAdditiveBlit()
+VC_LIBFUNC(vc_TAdditiveBlit) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -168,7 +173,7 @@ void vc_TAdditiveBlit()
 	vc->TAdditiveBlit(x, y, s, d);
 }
 
-void vc_SubtractiveBlit() {
+VC_LIBFUNC(vc_SubtractiveBlit) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int s = vc->ResolveOperand();
@@ -176,7 +181,7 @@ void vc_SubtractiveBlit() {
 	vc->SubtractiveBlit(x, y, s, d);
 }
 
-void vc_TSubtractiveBlit()
+VC_LIBFUNC(vc_TSubtractiveBlit) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -185,7 +190,7 @@ void vc_TSubtractiveBlit()
 	vc->TSubtractiveBlit(x, y, s, d);
 }
 
-void vc_WrapBlit() {
+VC_LIBFUNC(vc_WrapBlit) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int s = vc->ResolveOperand();
@@ -193,7 +198,7 @@ void vc_WrapBlit() {
 	vc->WrapBlit(x, y, s, d);
 }
 
-void vc_TWrapBlit() {
+VC_LIBFUNC(vc_TWrapBlit) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int s = vc->ResolveOperand();
@@ -201,7 +206,7 @@ void vc_TWrapBlit() {
 	vc->TWrapBlit(x, y, s, d);
 }
 
-void vc_ScaleBlit() {
+VC_LIBFUNC(vc_ScaleBlit) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int dw = vc->ResolveOperand();
@@ -211,7 +216,7 @@ void vc_ScaleBlit() {
 	vc->ScaleBlit(x, y, dw, dh, s, d);
 }
 
-void vc_TScaleBlit()
+VC_LIBFUNC(vc_TScaleBlit) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -222,14 +227,14 @@ void vc_TScaleBlit()
 	vc->TScaleBlit(x, y, dw, dh, s, d);
 }
 
-void vc_RGB() {
+VC_LIBFUNC(vc_RGB) () {
 	int r = vc->ResolveOperand();
 	int g = vc->ResolveOperand();
 	int b = vc->ResolveOperand();
 	vc->vcreturn = vc->rgb(r,g,b);
 }
 
-void vc_SetPixel() {
+VC_LIBFUNC(vc_SetPixel) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
@@ -237,14 +242,14 @@ void vc_SetPixel() {
 	vc->SetPixel(x, y, c, d);
 }
 
-void vc_GetPixel() {
+VC_LIBFUNC(vc_GetPixel) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int s = vc->ResolveOperand();
 	vc->vcreturn = vc->GetPixel(x,y,s);
 }
 
-void vc_Line() {
+VC_LIBFUNC(vc_Line) () {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
 	int x2 = vc->ResolveOperand();
@@ -254,7 +259,7 @@ void vc_Line() {
 	vc->Line(x1, y1, x2, y2, c, d);
 }
 
-void vc_Rect()
+VC_LIBFUNC(vc_Rect) ()
 {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
@@ -265,7 +270,7 @@ void vc_Rect()
 	vc->Rect(x1, y1, x2, y2, c, d);
 }
 
-void vc_RectFill()
+VC_LIBFUNC(vc_RectFill) ()
 {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
@@ -276,7 +281,7 @@ void vc_RectFill()
 	vc->RectFill(x1, y1, x2, y2, c, d);
 }
 
-void vc_Circle() {
+VC_LIBFUNC(vc_Circle) () {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
 	int xr = vc->ResolveOperand();
@@ -286,7 +291,7 @@ void vc_Circle() {
 	vc->Circle(x1, y1, xr, yr, c, d);
 }
 
-void vc_CircleFill() {
+VC_LIBFUNC(vc_CircleFill) () {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
 	int xr = vc->ResolveOperand();
@@ -296,11 +301,11 @@ void vc_CircleFill() {
 	vc->CircleFill(x1, y1, xr, yr, c, d);
 }
 
-void vc_GetR() { vc->vcreturn = vc->GetR(vc->ResolveOperand()); }
-void vc_GetG() { vc->vcreturn = vc->GetG(vc->ResolveOperand()); }
-void vc_GetB() { vc->vcreturn = vc->GetB(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_GetR) () { vc->vcreturn = vc->GetR(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_GetG) () { vc->vcreturn = vc->GetG(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_GetB) () { vc->vcreturn = vc->GetB(vc->ResolveOperand()); }
 
-void vc_RotScale() {
+VC_LIBFUNC(vc_RotScale) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int angle = vc->ResolveOperand();
@@ -310,9 +315,9 @@ void vc_RotScale() {
 	vc->RotScale(x,y,angle,scale,s,d);
 }
 
-void vc_FreeImage() { vc->FreeImage(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FreeImage) () { vc->FreeImage(vc->ResolveOperand()); }
 
-void vc_Silhouette() {
+VC_LIBFUNC(vc_Silhouette) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int c = vc->ResolveOperand();
@@ -321,7 +326,7 @@ void vc_Silhouette() {
 	vc->Silhouette(x, y, c, s, d);
 }
 
-void vc_GrabRegion() {
+VC_LIBFUNC(vc_GrabRegion) () {
 	int sx1 = vc->ResolveOperand();
 	int sy1 = vc->ResolveOperand();
 	int sx2 = vc->ResolveOperand();
@@ -333,7 +338,7 @@ void vc_GrabRegion() {
 	vc->GrabRegion(sx1,sy1,sx2,sy2,dx,dy,s,d);
 }
 
-void vc_TGrabRegion()
+VC_LIBFUNC(vc_TGrabRegion) ()
 {
 	int sx1 = vc->ResolveOperand();
 	int sy1 = vc->ResolveOperand();
@@ -346,16 +351,16 @@ void vc_TGrabRegion()
 	vc->TGrabRegion(sx1,sy1,sx2,sy2,dx,dy,s,d);
 }
 
-void vc_Mosaic() {
+VC_LIBFUNC(vc_Mosaic) () {
 	int xgran = vc->ResolveOperand();
 	int ygran = vc->ResolveOperand();
 	int dest = vc->ResolveOperand();
 	vc->Mosaic(xgran, ygran, dest);
 }
 
-void vc_DuplicateImage() { vc->vcreturn = vc->DuplicateImage(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_DuplicateImage) () { vc->vcreturn = vc->DuplicateImage(vc->ResolveOperand()); }
 
-void vc_Triangle()
+VC_LIBFUNC(vc_Triangle) ()
 {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
@@ -368,17 +373,17 @@ void vc_Triangle()
 	vc->Triangle(x1, y1, x2, y2, x3, y3, c, dest);
 }
 
-void vc_ImageWidth() { vc->vcreturn = vc->ImageWidth(vc->ResolveOperand()); }
-void vc_ImageHeight() { vc->vcreturn = vc->ImageHeight(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_ImageWidth) () { vc->vcreturn = vc->ImageWidth(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_ImageHeight) () { vc->vcreturn = vc->ImageHeight(vc->ResolveOperand()); }
 
-void vc_LoadFont() {
+VC_LIBFUNC(vc_LoadFontEx) () {
 	std::string filename = vc->ResolveString();
 	int width = vc->ResolveOperand();
 	int height = vc->ResolveOperand();
 	vc->vcreturn = vc->LoadFont(filename,width,height);
 }
 
-void vc_SetCharacterWidth()
+VC_LIBFUNC(vc_SetCharacterWidth) ()
 {
 	Font *font = (Font*)vc->ResolveOperand();
 	int character = vc->ResolveOperand();
@@ -386,14 +391,14 @@ void vc_SetCharacterWidth()
 	font->SetCharacterWidth(character,width);
 }
 
-void vc_LoadFontEx() {
+VC_LIBFUNC(vc_LoadFont) () {
 	std::string filename = vc->ResolveString();
 	vc->vcreturn = vc->LoadFontEx(filename);
 }
 
-void vc_EnableVariableWidth() { vc->EnableVariableWidth(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_EnableVariableWidth) () { vc->EnableVariableWidth(vc->ResolveOperand()); }
 
-void vc_PrintString() {
+VC_LIBFUNC(vc_PrintString) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int dest = vc->ResolveOperand();
@@ -402,7 +407,7 @@ void vc_PrintString() {
 	vc->PrintString(x,y,dest,fh,text);
 }
 
-void vc_PrintRight() {
+VC_LIBFUNC(vc_PrintRight) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int dest = vc->ResolveOperand();
@@ -411,7 +416,7 @@ void vc_PrintRight() {
 	vc->PrintRight(x,y,dest,fh,text);
 }
 
-void vc_PrintCenter() {
+VC_LIBFUNC(vc_PrintCenter) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int dest = vc->ResolveOperand();
@@ -421,24 +426,24 @@ void vc_PrintCenter() {
 }
 
 
-void vc_TextWidth() {
+VC_LIBFUNC(vc_TextWidth) () {
 	int fh = vc->ResolveOperand();
 	std::string text = vc->ResolveString();
 	vc->vcreturn = vc->TextWidth(fh,text);
 }
 
-void vc_FreeFont() { vc->FreeFont(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FreeFont) () { vc->FreeFont(vc->ResolveOperand()); }
 
-void vc_Random() { 
+VC_LIBFUNC(vc_Random) () { 
 	int min = vc->ResolveOperand();
 	int max = vc->ResolveOperand();
 	vc->vcreturn = vc->Random(min, max);
 }
 
-void vc_len() { vc->vcreturn = vc->Len(vc->ResolveString()); }
-void vc_val() { vc->vcreturn = vc->Val(vc->ResolveString()); }
+VC_LIBFUNC(vc_len) () { vc->vcreturn = vc->Len(vc->ResolveString()); }
+VC_LIBFUNC(vc_val) () { vc->vcreturn = vc->Val(vc->ResolveString()); }
 
-void vc_Unpress() { vc->Unpress(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_Unpress) () { vc->Unpress(vc->ResolveOperand()); }
 
 int vc_GetYear()
 {
@@ -475,48 +480,48 @@ int vc_GetSecond()
 	return getSecond();
 }
 
-void vc_FileOpen() {
+VC_LIBFUNC(vc_FileOpen) () {
 	std::string fname = vc->ResolveString();
 	int mode = vc->ResolveOperand();
 	vc->vcreturn = vc->FileOpen(fname,mode);
 }
 
-void vc_FileClose() { vc->FileClose(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FileClose) () { vc->FileClose(vc->ResolveOperand()); }
 
-void vc_FileWrite() {
+VC_LIBFUNC(vc_FileWrite) () {
 	int handle = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
 	vc->FileWrite(handle,s);
 }
 
-void vc_FileWriteln() {
+VC_LIBFUNC(vc_FileWriteln) () {
 	int handle = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
 	vc->FileWriteln(handle,s);
 }
 
-void vc_FileReadln() { vc->vcretstr = vc->FileReadln(vc->ResolveOperand()); }
-void vc_FileReadToken() { vc->vcretstr = vc->FileReadToken(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FileReadln) () { vc->vcretstr = vc->FileReadln(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FileReadToken) () { vc->vcretstr = vc->FileReadToken(vc->ResolveOperand()); }
 
-void vc_FileSeekLine() {
+VC_LIBFUNC(vc_FileSeekLine) () {
 	int handle = vc->ResolveOperand();
 	int line = vc->ResolveOperand();
 	vc->FileSeekLine(handle,line);
 }
 
 
-void vc_FileEOF() { vc->vcreturn = vc->FileEOF(vc->ResolveOperand())?1:0; }
+VC_LIBFUNC(vc_FileEOF) () { vc->vcreturn = vc->FileEOF(vc->ResolveOperand())?1:0; }
 
-void vc_LoadSound() { vc->vcreturn = vc->LoadSound(vc->ResolveString()); }
-void vc_FreeSound() { vc->FreeSound(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_LoadSound) () { vc->vcreturn = vc->LoadSound(vc->ResolveString()); }
+VC_LIBFUNC(vc_FreeSound) () { vc->FreeSound(vc->ResolveOperand()); }
 
-void vc_PlaySound() {
+VC_LIBFUNC(vc_PlaySound) () {
 	int slot = vc->ResolveOperand();
 	int volume = vc->ResolveOperand();
 	vc->vcreturn = vc->PlaySound(slot,volume);
 }
 
-void vc_CallFunction()
+VC_LIBFUNC(vc_CallFunction) ()
 {
 	std::string func = vc->ResolveString();
 	std::vector<argument_t> arguments;
@@ -540,7 +545,7 @@ void vc_CallFunction()
 	vc->ExecuteFunctionString(func.c_str());
 }
 
-void vc_AssignArray()
+VC_LIBFUNC(vc_AssignArray) ()
 {
 	// FIXME: restore this. (cannot read globalint from here)
 	/*int n = vc->ResolveOperand();
@@ -559,58 +564,58 @@ void vc_AssignArray()
 	}*/
 }
 
-void vc_FileSeekPos() {
+VC_LIBFUNC(vc_FileSeekPos) () {
 	int handle = vc->ResolveOperand();
 	int offset = vc->ResolveOperand();
 	int mode = vc->ResolveOperand();
 	vc->FileSeekPos(handle,offset,mode);
 }
 
-void vc_FileCurrentPos() { vc->vcreturn = vc->FileCurrentPos(vc->ResolveOperand()); }
-void vc_FileWriteByte() {
+VC_LIBFUNC(vc_FileCurrentPos) () { vc->vcreturn = vc->FileCurrentPos(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FileWriteByte) () {
 	int handle = vc->ResolveOperand();
 	int var = vc->ResolveOperand();
 	vc->FileWriteByte(handle,var);
 }
 
-void vc_FileWriteWord() {
+VC_LIBFUNC(vc_FileWriteWord) () {
 	int handle = vc->ResolveOperand();
 	int var = vc->ResolveOperand();
 	vc->FileWriteWord(handle,var);
 }
 
-void vc_FileWriteQuad() {
+VC_LIBFUNC(vc_FileWriteQuad) () {
 	int handle = vc->ResolveOperand();
 	int var = vc->ResolveOperand();
 	vc->FileWriteQuad(handle,var);
 }
 
-void vc_FileWriteString() {
+VC_LIBFUNC(vc_FileWriteString) () {
 	int handle = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
 	vc->FileWriteString(handle,s);
 }
 
-void vc_FileReadByte() { vc->vcreturn = vc->FileReadByte(vc->ResolveOperand()); }
-void vc_FileReadWord() { vc->vcreturn = vc->FileReadWord(vc->ResolveOperand()); }
-void vc_FileReadQuad() { vc->vcreturn = vc->FileReadQuad(vc->ResolveOperand()); }
-void vc_FileReadString() { vc->vcretstr = vc->FileReadString(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FileReadByte) () { vc->vcreturn = vc->FileReadByte(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FileReadWord) () { vc->vcreturn = vc->FileReadWord(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FileReadQuad) () { vc->vcreturn = vc->FileReadQuad(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FileReadString) () { vc->vcretstr = vc->FileReadString(vc->ResolveOperand()); }
 
-void vc_sqrt() { vc->vcreturn = vc->sqrt(vc->ResolveOperand()); }
-void vc_pow() {
+VC_LIBFUNC(vc_sqrt) () { vc->vcreturn = vc->sqrt(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_pow) () {
 	int a = vc->ResolveOperand();
 	int b = vc->ResolveOperand();
 	vc->vcreturn = vc->pow(a,b);
 }
 
-void vc_SetAppName() { vc->SetAppName(vc->ResolveString()); }
-void vc_SetResolution() { 
+VC_LIBFUNC(vc_SetAppName) () { vc->SetAppName(vc->ResolveString()); }
+VC_LIBFUNC(vc_SetResolution) () { 
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	vc->SetResolution(x,y);
 }
 
-void vc_BlitLucent()
+VC_LIBFUNC(vc_BlitLucent) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -620,7 +625,7 @@ void vc_BlitLucent()
 	vc->BlitLucent(x,y,lucent,s,d);
 }
 
-void vc_TBlitLucent()
+VC_LIBFUNC(vc_TBlitLucent) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -630,47 +635,47 @@ void vc_TBlitLucent()
 	vc->TBlitLucent(x,y,lucent,s,d);
 }
 
-void vc_Map()
+VC_LIBFUNC(vc_Map) ()
 {
 	std::string map = vc->ResolveString();
 	vc->Map(map);
 }
 
-void vc_strcmp()
+VC_LIBFUNC(vc_strcmp) ()
 {
 	std::string s1 = vc->ResolveString();
 	std::string s2 = vc->ResolveString();
 	vc->vcreturn = vc->Strcmp(s1,s2);
 }
 
-void vc_strdup()
+VC_LIBFUNC(vc_strdup) ()
 {
 	std::string s = vc->ResolveString();
 	int times = vc->ResolveOperand();
 	vc->vcretstr = vc->Strdup(s,times);
 }
 
-void vc_HookTimer() { vc->HookTimer(vc->ResolveString()); }
-void vc_HookRetrace() { vc->HookRetrace(vc->ResolveString()); }
-void vc_HookKey() { 
+VC_LIBFUNC(vc_HookTimer) () { vc->HookTimer(vc->ResolveString()); }
+VC_LIBFUNC(vc_HookRetrace) () { vc->HookRetrace(vc->ResolveString()); }
+VC_LIBFUNC(vc_HookKey) () { 
 	int k = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
 	vc->HookKey(k,s);
 }
-void vc_HookButton() { 
+VC_LIBFUNC(vc_HookButton) () { 
 	int b = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
 	vc->HookButton(b,s);
 }
 
-void vc_HookEntityRender()
+VC_LIBFUNC(vc_HookEntityRender) ()
 {
 	int i = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
 	vc->HookEntityRender(i,s);
 }
 
-void vc_BlitTile()
+VC_LIBFUNC(vc_BlitTile) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -679,7 +684,7 @@ void vc_BlitTile()
 	vc->BlitTile(x,y,t,d);
 }
 
-void vc_TBlitTile()
+VC_LIBFUNC(vc_TBlitTile) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -688,7 +693,7 @@ void vc_TBlitTile()
 	vc->TBlitTile(x,y,t,d);
 }
 
-void vc_BlitEntityFrame()
+VC_LIBFUNC(vc_BlitEntityFrame) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -698,14 +703,14 @@ void vc_BlitEntityFrame()
 	vc->BlitEntityFrame(x,y,e,f,d);
 }
 
-void vc_GetTile() {
+VC_LIBFUNC(vc_GetTile) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int i = vc->ResolveOperand();
 	vc->vcreturn = vc->GetTile(x,y,i);
 }
 
-void vc_SetTile()
+VC_LIBFUNC(vc_SetTile) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -714,14 +719,14 @@ void vc_SetTile()
 	vc->SetTile(x,y,i,z);
 }
 
-void vc_GetZone()
+VC_LIBFUNC(vc_GetZone) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	vc->vcreturn = vc->GetZone(x,y);
 }
 
-void vc_SetZone()
+VC_LIBFUNC(vc_SetZone) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -729,7 +734,7 @@ void vc_SetZone()
 	vc->SetZone(x,y,z);
 }
 
-void vc_SuperSecretThingy() {
+VC_LIBFUNC(vc_SuperSecretThingy) () {
 	int xskew = vc->ResolveOperand();
 	int yofs = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -738,7 +743,7 @@ void vc_SuperSecretThingy() {
 	vc->SuperSecretThingy(xskew, yofs, y, s, d);
 }
 
-void vc_BlitWrap() {
+VC_LIBFUNC(vc_BlitWrap) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int s = vc->ResolveOperand();
@@ -746,13 +751,13 @@ void vc_BlitWrap() {
 	vc->BlitWrap(x, y, s, d);
 }
 
-void vc_ColorFilter() {
+VC_LIBFUNC(vc_ColorFilter) () {
 	int filter = vc->ResolveOperand();
 	int d = vc->ResolveOperand();
 	vc->ColorFilter(filter, d);
 }
 
-void vc_ImageShell() {
+VC_LIBFUNC(vc_ImageShell) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
@@ -761,18 +766,18 @@ void vc_ImageShell() {
 	vc->vcreturn = vc->ImageShell(x,y,w,h,s);
 }
 
-void vc_Malloc()
+VC_LIBFUNC(vc_Malloc) ()
 {
 	int s = vc->ResolveOperand();
 	vc->vcreturn = (int) malloc(s);
 }
 
-void vc_MemFree()
+VC_LIBFUNC(vc_MemFree) ()
 {
 	free((void *) vc->ResolveOperand());
 }
 
-void vc_MemCopy()
+VC_LIBFUNC(vc_MemCopy) ()
 {
 	int src = vc->ResolveOperand();
 	int dst = vc->ResolveOperand();
@@ -782,21 +787,21 @@ void vc_MemCopy()
 }
 
 
-void vc_sin() { vc->vcreturn = vc->sin(vc->ResolveOperand()); }
-void vc_cos() { vc->vcreturn = vc->cos(vc->ResolveOperand()); }
-void vc_tan() { vc->vcreturn = vc->tan(vc->ResolveOperand()); }
-void vc_fsin() { vc->vcreturn = vc->fsin(vc->ResolveOperand()); }
-void vc_fcos() { vc->vcreturn = vc->fcos(vc->ResolveOperand()); }
-void vc_ftan() { vc->vcreturn = vc->ftan(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_sin) () { vc->vcreturn = vc->sin(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_cos) () { vc->vcreturn = vc->cos(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_tan) () { vc->vcreturn = vc->tan(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_fsin) () { vc->vcreturn = vc->fsin(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_fcos) () { vc->vcreturn = vc->fcos(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_ftan) () { vc->vcreturn = vc->ftan(vc->ResolveOperand()); }
 
-void vc_asin() { vc->vcreturn = vc->asin(vc->ResolveOperand()); }
-void vc_fasin() { vc->vcreturn = vc->fasin(vc->ResolveOperand()); }
-void vc_acos() { vc->vcreturn = vc->acos(vc->ResolveOperand()); }
-void vc_facos() { vc->vcreturn = vc->facos(vc->ResolveOperand()); }
-void vc_atan() { vc->vcreturn = vc->atan(vc->ResolveOperand()); }
-void vc_fatan() { vc->vcreturn = vc->fatan(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_asin) () { vc->vcreturn = vc->asin(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_fasin) () { vc->vcreturn = vc->fasin(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_acos) () { vc->vcreturn = vc->acos(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_facos) () { vc->vcreturn = vc->facos(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_atan) () { vc->vcreturn = vc->atan(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_fatan) () { vc->vcreturn = vc->fatan(vc->ResolveOperand()); }
 
-void vc_AlphaBlit() {
+VC_LIBFUNC(vc_AlphaBlit) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int s = vc->ResolveOperand();
@@ -806,7 +811,7 @@ void vc_AlphaBlit() {
 }
 
 
-void vc_WindowCreate() {
+VC_LIBFUNC(vc_WindowCreate) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
@@ -815,45 +820,45 @@ void vc_WindowCreate() {
 	vc->vcreturn = vc->WindowCreate(x,y,w,h,s);
 }
 
-void vc_WindowGetImage() { vc->vcreturn = vc->WindowGetImage(vc->ResolveOperand()); }
-void vc_WindowClose() { vc->WindowClose(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_WindowGetImage) () { vc->vcreturn = vc->WindowGetImage(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_WindowClose) () { vc->WindowClose(vc->ResolveOperand()); }
 
-void vc_WindowSetSize() {
+VC_LIBFUNC(vc_WindowSetSize) () {
 	int win = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
 	int h = vc->ResolveOperand();
 	vc->WindowSetSize(win,w,h);
 }
 
-void vc_WindowSetResolution() {
+VC_LIBFUNC(vc_WindowSetResolution) () {
 	int win = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
 	int h = vc->ResolveOperand();
 	vc->WindowSetResolution(win,w,h);
 }
 
-void vc_WindowSetPosition() {
+VC_LIBFUNC(vc_WindowSetPosition) () {
 	int win = vc->ResolveOperand();
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	vc->WindowSetPosition(win,x,y);
 }
 
-void vc_WindowSetTitle() {
+VC_LIBFUNC(vc_WindowSetTitle) () {
 	int win = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
 	vc->WindowSetTitle(win,s);
 }
 
-void vc_WindowHide() { vc->WindowHide(vc->ResolveOperand()); }
-void vc_WindowShow() { vc->WindowHide(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_WindowHide) () { vc->WindowHide(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_WindowShow) () { vc->WindowHide(vc->ResolveOperand()); }
 
-void vc_WindowGetXRes() { vc->vcreturn = vc->WindowGetXRes(vc->ResolveOperand()); }
-void vc_WindowGetYRes() { vc->vcreturn = vc->WindowGetYRes(vc->ResolveOperand()); }
-void vc_WindowGetWidth() { vc->vcreturn = vc->WindowGetWidth(vc->ResolveOperand()); }
-void vc_WindowGetHeight() { vc->vcreturn = vc->WindowGetHeight(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_WindowGetXRes) () { vc->vcreturn = vc->WindowGetXRes(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_WindowGetYRes) () { vc->vcreturn = vc->WindowGetYRes(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_WindowGetWidth) () { vc->vcreturn = vc->WindowGetWidth(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_WindowGetHeight) () { vc->vcreturn = vc->WindowGetHeight(vc->ResolveOperand()); }
 
-void vc_WindowPositionCommand() {
+VC_LIBFUNC(vc_WindowPositionCommand) () {
 	int win = vc->ResolveOperand();
 	int command = vc->ResolveOperand();
 	int arg1 = vc->ResolveOperand();
@@ -861,35 +866,35 @@ void vc_WindowPositionCommand() {
 	vc->WindowPositionCommand(win,command,arg1,arg2);
 }
 
-void vc_SetSongPaused() {
+VC_LIBFUNC(vc_SetSongPaused) () {
 	int h = vc->ResolveOperand();
 	int p = vc->ResolveOperand();
 	vc->SetSongPaused(h, p);
 }
 
-void vc_SetSongVolume() {
+VC_LIBFUNC(vc_SetSongVolume) () {
 	int h = vc->ResolveOperand();
 	int v = vc->ResolveOperand();
 	vc->SetSongVolume(h, v);
 }
 
-void vc_SetSongPos() {
+VC_LIBFUNC(vc_SetSongPos) () {
 	int h = vc->ResolveOperand();
 	int v = vc->ResolveOperand();
 	vc->SetSongPos(h, v);
 }
 
-void vc_SetMusicVolume() { vc->SetMusicVolume(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_SetMusicVolume) () { vc->SetMusicVolume(vc->ResolveOperand()); }
 
 
 bool isdelim(char c, std::string s);
-void vc_TokenCount() {
+VC_LIBFUNC(vc_TokenCount) () {
 	std::string s = vc->ResolveString();
 	std::string d = vc->ResolveString();
 	vc->vcreturn = vc->TokenCount(s,d);
 }
 
-void vc_GetToken()
+VC_LIBFUNC(vc_GetToken) ()
 {
 	std::string s = vc->ResolveString();
 	std::string d = vc->ResolveString();
@@ -897,12 +902,12 @@ void vc_GetToken()
 	vc->vcretstr = vc->GetToken(s,d,i);
 }
 
-void vc_ToLower() { vc->vcretstr = vc->ToLower(vc->ResolveString()); }
-void vc_ToUpper() { vc->vcretstr = vc->ToUpper(vc->ResolveString()); }
+VC_LIBFUNC(vc_ToLower) () { vc->vcretstr = vc->ToLower(vc->ResolveString()); }
+VC_LIBFUNC(vc_ToUpper) () { vc->vcretstr = vc->ToUpper(vc->ResolveString()); }
 
 // Overkill: 2005-12-28
 // Thank you, Zip.
-void vc_strpos()
+VC_LIBFUNC(vc_strpos) ()
 {
 	std::string sub = vc->ResolveString();
 	std::string source = vc->ResolveString();
@@ -950,7 +955,7 @@ int GetTokenPos(std::string teststr, std::string tokens, int pos, int tok)
 
 // Overkill: 2005-12-28
 // Thank you, Zip.
-void vc_GetTokenPos()
+VC_LIBFUNC(vc_GetTokenPos) ()
 {
 
 	std::string teststr = vc->ResolveString();
@@ -963,7 +968,7 @@ void vc_GetTokenPos()
 
 // Overkill: 2005-12-28
 // Thank you, Zip.
-void vc_TokenLeft()	// Excludes token.
+VC_LIBFUNC(vc_TokenLeft) ()	// Excludes token.
 {
 	std::string full = vc->ResolveString();
 	std::string tokens = vc->ResolveString();
@@ -989,7 +994,7 @@ void vc_TokenLeft()	// Excludes token.
 // Thank you, Zip.
 // Overkill (2006-07-28):
 //	Fixed a bug where it included the delimiter character in TokenRight()
-void vc_TokenRight()
+VC_LIBFUNC(vc_TokenRight) ()
 {
 	std::string full = vc->ResolveString();
 	std::string tokens = vc->ResolveString();
@@ -1014,7 +1019,7 @@ void vc_TokenRight()
 
 // Overkill: 2005-12-28
 // Thank you, Zip.
-void vc_strovr()
+VC_LIBFUNC(vc_strovr) ()
 {
 	std::string rep = vc->ResolveString();
 	std::string source = vc->ResolveString();
@@ -1024,7 +1029,7 @@ void vc_strovr()
 
 // Overkill: 2005-12-19
 // Thank you, Zip.
-void vc_WrapText()
+VC_LIBFUNC(vc_WrapText) ()
 // Pass: The font to use, the string to wrap, the length in pixels to fit into
 // Return: The passed string with \n characters inserted as breaks
 // Assmes: The font is valid, and will overrun if a word is longer than linelen
@@ -1039,58 +1044,58 @@ void vc_WrapText()
 }
 
 
-void vc_FontHeight() { vc->vcreturn = vc->FontHeight(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_FontHeight) () { vc->vcreturn = vc->FontHeight(vc->ResolveOperand()); }
 
-void vc_MixColor() {
+VC_LIBFUNC(vc_MixColor) () {
 	int c1 = vc->ResolveOperand();
 	int c2 = vc->ResolveOperand();
 	int p = vc->ResolveOperand();
 	vc->vcreturn = vc->MixColor(c1,c2,p);
 }
 
-void vc_CHR() { vc->vcretstr = vc->Chr(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_CHR) () { vc->vcretstr = vc->Chr(vc->ResolveOperand()); }
 
-void vc_PlayMovie() { vc->vcreturn = vc->PlayMovie(vc->ResolveString()); }
-void vc_AbortMovie() { vc->AbortMovie(); }
+VC_LIBFUNC(vc_PlayMovie) () { vc->vcreturn = vc->PlayMovie(vc->ResolveString()); }
+VC_LIBFUNC(vc_AbortMovie) () { vc->AbortMovie(); }
 
-void vc_MovieLoad() {
+VC_LIBFUNC(vc_MovieLoad) () {
 	std::string s = vc->ResolveString();
 	int mute = vc->ResolveOperand();
 	vc->vcreturn = vc->MovieLoad(s,mute!=0);
 }
 
-void vc_MoviePlay() {
+VC_LIBFUNC(vc_MoviePlay) () {
 	int m = vc->ResolveOperand();
 	int loop = vc->ResolveOperand();
 	vc->MoviePlay(m,loop!=0);
 }
 
-void vc_MovieGetImage() {  vc->vcreturn = vc->MovieGetImage(vc->ResolveOperand()); }
-void vc_MovieRender() { vc->MovieRender(vc->ResolveOperand()); }
-void vc_MovieClose() { vc->MovieClose(vc->ResolveOperand()); }
-void vc_MovieGetCurrFrame() { vc->vcreturn = vc->MovieGetCurrFrame(vc->ResolveOperand()); }
-void vc_MovieGetFramerate() { vc->vcreturn = vc->MovieGetFramerate(vc->ResolveOperand()); }
-void vc_MovieNextFrame() { vc->MovieNextFrame(vc->ResolveOperand()); }
-void vc_MovieSetFrame() {
+VC_LIBFUNC(vc_MovieGetImage) () {  vc->vcreturn = vc->MovieGetImage(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_MovieRender) () { vc->MovieRender(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_MovieClose) () { vc->MovieClose(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_MovieGetCurrFrame) () { vc->vcreturn = vc->MovieGetCurrFrame(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_MovieGetFramerate) () { vc->vcreturn = vc->MovieGetFramerate(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_MovieNextFrame) () { vc->MovieNextFrame(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_MovieSetFrame) () {
 	int m = vc->ResolveOperand();
 	int f = vc->ResolveOperand();
 	vc->MovieSetFrame(m,f);
 }
 
-void vc_GetObsPixel() {
+VC_LIBFUNC(vc_GetObsPixel) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	vc->vcreturn = vc->GetObsPixel(x,y);
 }
 
-void vc_GetObs()
+VC_LIBFUNC(vc_GetObs) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	vc->vcreturn = vc->GetObs(x,y);
 }
 
-void vc_SetObs()
+VC_LIBFUNC(vc_SetObs) ()
 {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
@@ -1098,42 +1103,42 @@ void vc_SetObs()
 	vc->SetObs(x,y,c);
 }
 
-void vc_EntitySpawn() {
+VC_LIBFUNC(vc_EntitySpawn) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
 	vc->vcreturn = vc->EntitySpawn(x,y,s);
 }
 
-void vc_SetPlayer() { vc->SetPlayer(vc->ResolveOperand()); }
-void vc_GetPlayer() { vc->vcreturn = vc->GetPlayer(); }
+VC_LIBFUNC(vc_SetPlayer) () { vc->SetPlayer(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_GetPlayer) () { vc->vcreturn = vc->GetPlayer(); }
 
-void vc_EntityStalk()
+VC_LIBFUNC(vc_EntityStalk) ()
 {
 	int stalker = vc->ResolveOperand();
 	int stalkee = vc->ResolveOperand();
 	vc->EntityStalk(stalker,stalkee);
 }
 
-void vc_EntityMove() {
+VC_LIBFUNC(vc_EntityMove) () {
 	int e = vc->ResolveOperand();
 	std::string s = vc->ResolveString();
 	vc->EntityMove(e,s);
 }
 
-void vc_PlayerMove()
+VC_LIBFUNC(vc_PlayerMove) ()
 {
 	std::string s = vc->ResolveString();
 	vc->PlayerMove(s);
 }
 
-void vc_ChangeCHR() {
+VC_LIBFUNC(vc_ChangeCHR) () {
 	int e = vc->ResolveOperand();
 	std::string c = vc->ResolveString();
 	vc->ChangeCHR(e,c);
 }
-void vc_EntitySetWanderZone() { vc->EntitySetWanderZone(vc->ResolveOperand()); }
-void vc_EntitySetWanderRect()
+VC_LIBFUNC(vc_EntitySetWanderZone) () { vc->EntitySetWanderZone(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_EntitySetWanderRect) ()
 {
 	int e = vc->ResolveOperand();
 	int x1 = vc->ResolveOperand();
@@ -1142,85 +1147,85 @@ void vc_EntitySetWanderRect()
 	int y2 = vc->ResolveOperand();
 	vc->EntitySetWanderRect(e,x1,y1,x2,y2);
 }
-void vc_EntityStop() { vc->EntityStop(vc->ResolveOperand()); }
-void vc_EntitySetWanderDelay()
+VC_LIBFUNC(vc_EntityStop) () { vc->EntityStop(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_EntitySetWanderDelay) ()
 {
 	int e = vc->ResolveOperand();
 	int d = vc->ResolveOperand();
 	vc->EntitySetWanderDelay(e,d);
 }
-void vc_SetEntitiesPaused() { vc->SetEntitiesPaused(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_SetEntitiesPaused) () { vc->SetEntitiesPaused(vc->ResolveOperand()); }
 
-void vc_Render() { vc->Render(); }
-void vc_RenderMap() {
+VC_LIBFUNC(vc_Render) () { vc->Render(); }
+VC_LIBFUNC(vc_RenderMap) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int dest = vc->ResolveOperand();
 	vc->RenderMap(x,y,dest);
 }
-void vc_GetSprite() { vc->vcreturn = vc->GetSprite(); }
-void vc_ResetSprites() { vc->ResetSprites(); }
+VC_LIBFUNC(vc_GetSprite) () { vc->vcreturn = vc->GetSprite(); }
+VC_LIBFUNC(vc_ResetSprites) () { vc->ResetSprites(); }
 
-void vc_SetButtonKey() { 
+VC_LIBFUNC(vc_SetButtonKey) () { 
 	int b = vc->ResolveOperand();
 	int k = vc->ResolveOperand();
 	vc->SetButtonKey(b,k);
 }
-void vc_SetButtonJB() { 
+VC_LIBFUNC(vc_SetButtonJB) () { 
 	int b = vc->ResolveOperand();
 	int jb = vc->ResolveOperand();
 	vc->SetButtonJB(b,jb);
 }
 
-void vc_FunctionExists()
+VC_LIBFUNC(vc_FunctionExists) ()
 {
 	std::string f = vc->ResolveString();
 	vc->vcreturn = vc->FunctionExists(f.c_str());
 }
 
-void vc_atan2() {
+VC_LIBFUNC(vc_atan2) () {
 	int y = vc->ResolveOperand();
 	int x = vc->ResolveOperand();
 	vc->vcreturn = vc->atan2(y,x);
 }
 
-void vc_fatan2()
+VC_LIBFUNC(vc_fatan2) ()
 {
 	int y = vc->ResolveOperand();
 	int x = vc->ResolveOperand();
 	vc->vcreturn = vc->fatan2(y,x);
 }
 
-void vc_CopyImageToClipboard() { vc->CopyImageToClipboard(vc->ResolveOperand()); }
-void vc_GetImageFromClipboard() { vc->vcreturn = vc->GetImageFromClipboard(); }
+VC_LIBFUNC(vc_CopyImageToClipboard) () { vc->CopyImageToClipboard(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_GetImageFromClipboard) () { vc->vcreturn = vc->GetImageFromClipboard(); }
 
-void vc_SetInt()
+VC_LIBFUNC(vc_SetInt) ()
 {
 	std::string intname = vc->ResolveString();
 	int value = vc->ResolveOperand();
 	vc->SetInt(intname.c_str(), value);
 }
 
-void vc_GetInt()
+VC_LIBFUNC(vc_GetInt) ()
 {
 	std::string intname = vc->ResolveString();
 	vc->vcreturn = vc->GetInt(intname.c_str());
 }
 
-void vc_SetString()
+VC_LIBFUNC(vc_SetString) ()
 {
 	std::string strname = vc->ResolveString();
 	std::string value = vc->ResolveString();
 	vc->SetStr(strname.c_str(), value);
 }
 
-void vc_GetString()
+VC_LIBFUNC(vc_GetString) ()
 {
 	std::string strname = vc->ResolveString();
 	vc->vcretstr = vc->GetStr(strname.c_str());
 }
 
-void vc_SetIntArray()
+VC_LIBFUNC(vc_SetIntArray) ()
 {
 	std::string intname = vc->ResolveString();
 	int index = vc->ResolveOperand();
@@ -1228,14 +1233,14 @@ void vc_SetIntArray()
 	vc->SetIntArray(intname.c_str(), index, value);
 }
 
-void vc_GetIntArray()
+VC_LIBFUNC(vc_GetIntArray) ()
 {
 	std::string intname = vc->ResolveString();
 	int index = vc->ResolveOperand();
 	vc->vcreturn = vc->GetIntArray(intname.c_str(), index);
 }
 
-void vc_SetStringArray()
+VC_LIBFUNC(vc_SetStringArray) ()
 {
 	std::string strname = vc->ResolveString();
 	int index = vc->ResolveOperand();
@@ -1243,14 +1248,14 @@ void vc_SetStringArray()
 	vc->SetStrArray(strname.c_str(), index, value);
 }
 
-void vc_GetStringArray()
+VC_LIBFUNC(vc_GetStringArray) ()
 {
 	std::string strname = vc->ResolveString();
 	int index = vc->ResolveOperand();
 	vc->vcretstr = vc->GetStrArray(strname.c_str(), index);
 }
 
-void vc_FlipBlit() {
+VC_LIBFUNC(vc_FlipBlit) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
 	int fx = vc->ResolveOperand();
@@ -1260,115 +1265,115 @@ void vc_FlipBlit() {
 	vc->FlipBlit(x, y, fx!=0, fy!=0, s, d);
 }
 
-void vc_Connect() { vc->vcreturn = vc->Connect(vc->ResolveString()); }
-void vc_GetConnection() { vc->vcreturn = vc->GetConnection(); }
-void vc_SocketConnected() { vc->vcreturn = vc->SocketConnected(vc->ResolveOperand())?1:0; }
-void vc_SocketHasData()  { vc->vcreturn = vc->SocketHasData(vc->ResolveOperand())?1:0; }
-void vc_SocketGetString() { vc->vcretstr = vc->SocketGetString(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_Connect) () { vc->vcreturn = vc->Connect(vc->ResolveString()); }
+VC_LIBFUNC(vc_GetConnection) () { vc->vcreturn = vc->GetConnection(); }
+VC_LIBFUNC(vc_SocketConnected) () { vc->vcreturn = vc->SocketConnected(vc->ResolveOperand())?1:0; }
+VC_LIBFUNC(vc_SocketHasData) ()  { vc->vcreturn = vc->SocketHasData(vc->ResolveOperand())?1:0; }
+VC_LIBFUNC(vc_SocketGetString) () { vc->vcretstr = vc->SocketGetString(vc->ResolveOperand()); }
 
-void vc_SocketSendString() {
+VC_LIBFUNC(vc_SocketSendString) () {
 	int sh = vc->ResolveOperand();
 	std::string str = vc->ResolveString();
 	vc->SocketSendString(sh,str);
 }
 
-void vc_SocketClose() { vc->SocketClose(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_SocketClose) () { vc->SocketClose(vc->ResolveOperand()); }
 
-void vc_SetCustomColorFilter()
+VC_LIBFUNC(vc_SetCustomColorFilter) ()
 {
 	int c1 = vc->ResolveOperand();
 	int c2 = vc->ResolveOperand();
 	vc->SetCustomColorFilter(c1, c2);
 }
 
-void vc_SocketSendInt() { 
+VC_LIBFUNC(vc_SocketSendInt) () { 
 	int sh = vc->ResolveOperand();
 	int i = vc->ResolveOperand();
 	vc->SocketSendInt(sh,i);
 }
 
-void vc_SocketGetInt() { vc->vcreturn = vc->SocketGetInt(vc->ResolveOperand()); }
-void vc_GetUrlText() { vc->vcretstr = vc->GetUrlText(vc->ResolveString()); }
-void vc_GetUrlImage() { vc->vcreturn = vc->GetUrlImage(vc->ResolveString()); }
+VC_LIBFUNC(vc_SocketGetInt) () { vc->vcreturn = vc->SocketGetInt(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_GetUrlText) () { vc->vcretstr = vc->GetUrlText(vc->ResolveString()); }
+VC_LIBFUNC(vc_GetUrlImage) () { vc->vcreturn = vc->GetUrlImage(vc->ResolveString()); }
 
-void vc_SocketSendFile() {
+VC_LIBFUNC(vc_SocketSendFile) () {
 	int sh = vc->ResolveOperand();
 	std::string fn = vc->ResolveString();
 	vc->SocketSendFile(sh,fn);
 }
 
-void vc_SocketGetFile() {
+VC_LIBFUNC(vc_SocketGetFile) () {
 	int sh = vc->ResolveOperand();
 	std::string override = vc->ResolveString();
 	vc->vcretstr = vc->SocketGetFile(sh,override); 
 }
 
-void vc_ListFilePattern() { vc->vcretstr = vc->ListFilePattern(vc->ResolveString());}
+VC_LIBFUNC(vc_ListFilePattern) () { vc->vcretstr = vc->ListFilePattern(vc->ResolveString());}
 
-void vc_ImageValid() { vc->vcreturn = vc->ImageValid(vc->ResolveOperand()); }
-void vc_Asc() { vc->vcreturn = vc->Asc(vc->ResolveString()); }
+VC_LIBFUNC(vc_ImageValid) () { vc->vcreturn = vc->ImageValid(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_Asc) () { vc->vcreturn = vc->Asc(vc->ResolveString()); }
 
-void vc_DictNew() {
+VC_LIBFUNC(vc_DictNew) () {
 	dict *d = new dict();
 	vc->vcreturn = HandleForDict(d);
 }
 
-void vc_DictFree() {
+VC_LIBFUNC(vc_DictFree) () {
 	int handle = vc->ResolveOperand();
 	dict *d = DictForHandle(handle);
 	FreeDictHandle(handle);
 	delete d;
 }
 
-void vc_DictGetString() {
+VC_LIBFUNC(vc_DictGetString) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
 	vc->vcretstr = d->GetString(vc->ResolveString());
 }
 
-void vc_DictSetString() {
+VC_LIBFUNC(vc_DictSetString) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
 	std::string key = vc->ResolveString();
 	std::string value = vc->ResolveString();
 	d->SetString(key, value);
 }
 
-void vc_DictContainsString() {
+VC_LIBFUNC(vc_DictContainsString) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
 	vc->vcreturn = d->ContainsString(vc->ResolveString());
 }
 
-void vc_DictSize() {
+VC_LIBFUNC(vc_DictSize) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
 	vc->vcreturn = d->Size();
 }
 
-void vc_DictGetInt() {
+VC_LIBFUNC(vc_DictGetInt) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
 	vc->vcreturn = atoi(d->GetString(vc->ResolveString()).c_str());
 }
 
-void vc_DictSetInt() {
+VC_LIBFUNC(vc_DictSetInt) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
 	std::string key = vc->ResolveString();
 	int value = vc->ResolveOperand();
 	d->SetString(key, va("%d", value));
 }
 
-void vc_DictRemove() {
+VC_LIBFUNC(vc_DictRemove) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
 	std::string key = vc->ResolveString();
 	d->RemoveString(key);
 }
 
 // Overkill: 2007-06-20
-void vc_DictListKeys() {
+VC_LIBFUNC(vc_DictListKeys) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
 	std::string separator = vc->ResolveString();
 	vc->vcretstr = d->ListKeys(separator);
 }
 
 // Overkill: 12/18/05
-void vc_max()
+VC_LIBFUNC(vc_max) ()
 {
 	int a = vc->ResolveOperand();
 	int b = vc->ResolveOperand();
@@ -1376,7 +1381,7 @@ void vc_max()
 }
 
 // Overkill: 12/18/05
-void vc_min()
+VC_LIBFUNC(vc_min) ()
 {
 	int a = vc->ResolveOperand();
 	int b = vc->ResolveOperand();
@@ -1384,21 +1389,21 @@ void vc_min()
 }
 
 // Overkill: 12/18/05
-void vc_abs()
+VC_LIBFUNC(vc_abs) ()
 {
 	int a = vc->ResolveOperand();
 	vc->vcreturn = (a < 0 ? -a : a);
 }
 
 // Overkill: 12/19/05
-void vc_sgn()
+VC_LIBFUNC(vc_sgn) ()
 {
 	int a = vc->ResolveOperand();
 	vc->vcreturn = (((a) < 0) ? -1 : ((a) > 0) ? 1 : 0);
 }
 
 // Overkill 2006-02-04
-void vc_RectVGrad()
+VC_LIBFUNC(vc_RectVGrad) ()
 {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
@@ -1411,7 +1416,7 @@ void vc_RectVGrad()
 }
 
 // Overkill 2006-02-04
-void vc_RectHGrad()
+VC_LIBFUNC(vc_RectHGrad) ()
 {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
@@ -1424,7 +1429,7 @@ void vc_RectHGrad()
 }
 
 // janus 2006-07-22
-void vc_RectRGrad()
+VC_LIBFUNC(vc_RectRGrad) ()
 {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
@@ -1437,7 +1442,7 @@ void vc_RectRGrad()
 }
 
 // janus 2006-07-22
-void vc_Rect4Grad()
+VC_LIBFUNC(vc_Rect4Grad) ()
 {
 	int x1 = vc->ResolveOperand();
 	int y1 = vc->ResolveOperand();
@@ -1452,28 +1457,28 @@ void vc_Rect4Grad()
 }
 
 // Overkill (2006-06-25): Returns the cube root of a number.
-void vc_cbrt()
+VC_LIBFUNC(vc_cbrt) ()
 {
 	vc->vcreturn = (int) (float) pow((float) vc->ResolveOperand(), (float) 1 / 3);
 }
 
 // Overkill (2006-06-30): Gets the contents of the key buffer.
 // TODO: Implement for other platforms.
-void vc_GetKeyBuffer()
+VC_LIBFUNC(vc_GetKeyBuffer) ()
 {
 	vc->vcretstr = vc->GetKeyBuffer();
 }
 
 // Overkill (2006-06-30): Clears the contents of the key buffer.
 // TODO: Implement for other platforms.
-void vc_FlushKeyBuffer()
+VC_LIBFUNC(vc_FlushKeyBuffer) ()
 {
 	vc->FlushKeyBuffer();
 }
 
 // Overkill (2006-06-30): Sets the delay in centiseconds before key repeat.
 // TODO: Implement for other platforms.
-void vc_SetKeyDelay()
+VC_LIBFUNC(vc_SetKeyDelay) ()
 {
 	int d = vc->ResolveOperand();
 	vc->SetKeyDelay(d);
@@ -1481,7 +1486,7 @@ void vc_SetKeyDelay()
 }
 // Overkill (2006-07-20):
 // Saves a CHR file, using an open file handle, saving the specified entity.
-void vc_FileWriteCHR() {
+VC_LIBFUNC(vc_FileWriteCHR) () {
 	int handle = vc->ResolveOperand();
 	int ent = vc->ResolveOperand();
 	vc->FileWriteCHR(handle,ent);
@@ -1489,20 +1494,20 @@ void vc_FileWriteCHR() {
 
 // Overkill (2006-07-20):
 // Saves a MAP file, using an open file handle, saving the current map.
-void vc_FileWriteMAP() {
+VC_LIBFUNC(vc_FileWriteMAP) () {
 	int handle = vc->ResolveOperand();
 	vc->FileWriteMAP(handle);
 }
 // Overkill (2006-07-20):
 // Saves a VSP file, using an open file handle, saving the current map's VSP.
-void vc_FileWriteVSP() {
+VC_LIBFUNC(vc_FileWriteVSP) () {
 	int handle = vc->ResolveOperand();
 	vc->FileWriteVSP(handle);
 }
 
 // Overkill (2006-07-20):
 // Compiles the specified MAP filename.
-void vc_CompileMap()
+VC_LIBFUNC(vc_CompileMap) ()
 {
 	if(releasemode)
 	{
@@ -1525,7 +1530,7 @@ void vc_CompileMap()
 	}
 }
 
-void vc_ListStructMembers()
+VC_LIBFUNC(vc_ListStructMembers) ()
 {
 	std::string structname = vc->ResolveString();
 	std::vector<std::string> result = vc->ListStructMembers(structname.c_str());
@@ -1539,7 +1544,7 @@ void vc_ListStructMembers()
 	}
 }
 
-void vc_CopyArray()
+VC_LIBFUNC(vc_CopyArray) ()
 {
 	std::string src = vc->ResolveString();
 	std::string dest = vc->ResolveString();
@@ -1548,28 +1553,28 @@ void vc_CopyArray()
 }
 
 // Overkill (2006-11-20)
-void vc_SoundIsPlaying() { vc->vcreturn = ScriptEngine::SoundIsPlaying(vc->ResolveOperand()); }
+VC_LIBFUNC(vc_SoundIsPlaying) () { vc->vcreturn = ScriptEngine::SoundIsPlaying(vc->ResolveOperand()); }
 
 // Overkill (2007-05-04)
-void vc_GetH()
+VC_LIBFUNC(vc_GetH) ()
 {
 	vc->vcreturn = ScriptEngine::GetH(vc->ResolveOperand());
 }
 
 // Overkill (2007-05-04)
-void vc_GetS()
+VC_LIBFUNC(vc_GetS) ()
 {
 	vc->vcreturn = ScriptEngine::GetS(vc->ResolveOperand());
 }
 
 // Overkill (2007-05-04)
-void vc_GetV()
+VC_LIBFUNC(vc_GetV) ()
 {
 	vc->vcreturn = ScriptEngine::GetV(vc->ResolveOperand());
 }
 
 // Overkill (2007-05-04)
-void vc_HSV()
+VC_LIBFUNC(vc_HSV) ()
 {
 	int h = vc->ResolveOperand();
 	int s = vc->ResolveOperand();
@@ -1578,7 +1583,7 @@ void vc_HSV()
 }
 
 // Overkill (2007-05-04)
-void vc_HueReplace()
+VC_LIBFUNC(vc_HueReplace) ()
 {
 	int hue_find = vc->ResolveOperand();
 	int hue_tolerance = vc->ResolveOperand();
@@ -1588,7 +1593,7 @@ void vc_HueReplace()
 }
 
 // Overkill (2007-05-04)
-void vc_ColorReplace()
+VC_LIBFUNC(vc_ColorReplace) ()
 {
 	int find = vc->ResolveOperand();
 	int replace = vc->ResolveOperand();
@@ -1596,7 +1601,7 @@ void vc_ColorReplace()
 	ScriptEngine::ColorReplace(find, replace, dest);
 }
 
-void vc_ListBuiltinFunctions()
+VC_LIBFUNC(vc_ListBuiltinFunctions) ()
 {
 	vc->vcretstr = "";
 	for (int i = 0; i < NUM_LIBFUNCS; i++)
@@ -1605,7 +1610,7 @@ void vc_ListBuiltinFunctions()
 	}
 }
 
-void vc_ListBuiltinVariables()
+VC_LIBFUNC(vc_ListBuiltinVariables) ()
 {
 	vc->vcretstr = "";
 	for (int i = 0; i < NUM_HVARS; i++)
@@ -1614,7 +1619,7 @@ void vc_ListBuiltinVariables()
 	}
 }
 
-void vc_ListBuiltinDefines()
+VC_LIBFUNC(vc_ListBuiltinDefines) ()
 {
 	vc->vcretstr = "";
 	for (int i = 0; i < NUM_HDEFS; i++)
@@ -1623,13 +1628,13 @@ void vc_ListBuiltinDefines()
 	}
 }
 
-void vc_GetUserSystemVcFunctionCount()
+VC_LIBFUNC(vc_GetUserSystemVcFunctionCount) ()
 {
 	vc->vcreturn = 0;
 	vc->vcreturn = vc->userfuncs[CIMAGE_SYSTEM].size();
 }
 
-void vc_GetUserSystemVcFunctionByIndex()
+VC_LIBFUNC(vc_GetUserSystemVcFunctionByIndex) ()
 {
 	vc->vcretstr = "";
 	int index = vc->ResolveOperand();
@@ -1645,14 +1650,14 @@ void vc_GetUserSystemVcFunctionByIndex()
 }
 
 // Overkill (2008-04-17): Socket port can be switched to something besides 45150.
-void vc_SetConnectionPort()
+VC_LIBFUNC(vc_SetConnectionPort) ()
 {
 	int port = vc->ResolveOperand();
 	vc->SetConnectionPort(port);
 }
 
 // Overkill (2008-04-17): Sockets can send and receive raw length-delimited strings
-void vc_SocketGetRaw()
+VC_LIBFUNC(vc_SocketGetRaw) ()
 {
 	int sh = vc->ResolveOperand();
 	int len = vc->ResolveOperand();
@@ -1660,7 +1665,7 @@ void vc_SocketGetRaw()
 }
 
 // Overkill (2008-04-17): Sckets can send and receive raw length-delimited strings
-void vc_SocketSendRaw()
+VC_LIBFUNC(vc_SocketSendRaw) ()
 {
 	int sh = vc->ResolveOperand();
 	std::string str = vc->ResolveString();
@@ -1668,7 +1673,7 @@ void vc_SocketSendRaw()
 }
 
 // Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
-void vc_SocketByteCount()
+VC_LIBFUNC(vc_SocketByteCount) ()
 {
 	int sh = vc->ResolveOperand();
 	vc->vcreturn = vc->SocketByteCount(sh);
@@ -1692,34 +1697,6 @@ void VCCore::HandleLibFunc()
 
 	switch (c)
 	{
-		case 3: vc_MakeColor(); break;
-		case 4: vc_SetLucent(); break;
-		case 5: vc_SetClip(); break;
-		case 8: vc_ShowPage(); break;
-		case 9: vc_UpdateControls(); break;
-		case 10: vc_Blit(); break;
-		case 11: vc_TBlit(); break;
-		case 12: vc_AdditiveBlit(); break;
-		case 13: vc_TAdditiveBlit(); break;
-		case 14: vc_SubtractiveBlit(); break;
-		case 15: vc_TSubtractiveBlit(); break;
-		case 16: vc_WrapBlit(); break;
-		case 17: vc_TWrapBlit(); break;
-		case 18: vc_ScaleBlit(); break;
-		case 19: vc_TScaleBlit(); break;
-		case 20: vc_RGB(); break;
-		case 21: vc_SetPixel(); break;
-		case 22: vc_GetPixel(); break;
-		case 23: vc_Line(); break;
-		case 24: vc_Rect(); break;
-		case 25: vc_RectFill(); break;
-		case 26: vc_Circle(); break;
-		case 27: vc_CircleFill(); break;
-		case 28: vc_GetR(); break;
-		case 29: vc_GetG(); break;
-		case 30: vc_GetB(); break;
-		case 31: vc_RotScale(); break;
-		case 32: vc_FreeImage(); break;
 		case 33: vc->vcreturn = vc->LoadSong(vc->ResolveString()); break;
 		case 34: vc->PlaySong(vc->ResolveOperand()); break;
 		case 35: vc->StopSong(vc->ResolveOperand()); break;
@@ -1727,241 +1704,12 @@ void VCCore::HandleLibFunc()
 		case 37: vc->StopMusic(); break;
 		case 38: vc->StopSound(vc->ResolveOperand()); break;
 		case 39: vc->FreeSong(vc->ResolveOperand()); break;
-
-		case 41: vc_Silhouette(); break;
-		case 42: vc_GrabRegion(); break;
-		case 43: vc_TGrabRegion(); break;
-		case 44: vc_Mosaic(); break;
-		case 45: vc_DuplicateImage(); break;
-		case 46: vc_Triangle(); break;
-		case 47: vc_BlitTile(); break;
-		case 48: vc_TBlitTile(); break;
-
-
-		case 51: vc_ImageWidth(); break;
-		case 52: vc_ImageHeight(); break;
-		case 53: vc_LoadFont(); break;
-		case 54: vc_EnableVariableWidth(); break;
-		case 55: vc_PrintString(); break;
-		case 56: vc_PrintRight(); break;
-		case 57: vc_PrintCenter(); break;
-		case 58: vc_TextWidth(); break;
-		case 59: vc_FreeFont(); break;
-		case 60: vc_Random(); break;
-		case 61: vc_len(); break;
-		case 62: vc_val(); break;
-		case 63: vc_Unpress(); break;
 		case 64: DebugBreakpoint("User breakpoint"); break;
-		case 65: vc_FileOpen(); break;
-		case 66: vc_FileClose(); break;
-		case 67: vc_FileWrite(); break;
-		case 68: vc_FileWriteln(); break;
-		case 69: vc_FileReadln(); break;
-		case 70: vc_FileReadToken(); break;
-		case 71: vc_FileSeekLine(); break;
-		case 72: vc_LoadSound(); break;
-		case 73: vc_FreeSound(); break;
-		case 74: vc_PlaySound(); break;
-		case 75: vc_CallFunction(); break;
-		case 76: vc_AssignArray(); break;
-		case 77: vc_FileSeekPos(); break;
-		case 78: vc_FileCurrentPos(); break;
-		case 79: vc_FileWriteByte(); break;
-		case 80: vc_FileWriteWord(); break;
-		case 81: vc_FileWriteQuad(); break;
-		case 82: vc_FileWriteString(); break;
-		case 83: vc_FileReadByte(); break;
-		case 84: vc_FileReadWord(); break;
-		case 85: vc_FileReadQuad(); break;
-		case 86: vc_FileReadString(); break;
-		case 87: vc_sqrt(); break;
-		case 88: vc_pow(); break;
-		case 89: vc_SetAppName(); break;
-		case 90: vc_SetResolution(); break;
-		case 91: vc_BlitLucent(); break;
-		case 92: vc_TBlitLucent(); break;
-		case 93: vc_Map(); break;
-		case 94: vc_strcmp(); break;
-		case 95: vc_strdup(); break;
-		case 96: vc_HookTimer(); break;
-		case 97: vc_HookRetrace(); break;
-		case 98: vc_HookEntityRender(); break;
-		case 99: vc_HookKey(); break;
-		case 100: vc_HookButton(); break;
-		case 101: vc_BlitEntityFrame(); break;
-		case 102: vc_SetEntitiesPaused(); break;
-		case 103: vc_GetObsPixel(); break;
-		case 104: vc_GetTile(); break;
-		case 105: vc_SetTile(); break;
-		case 106: vc_GetZone(); break;
-		case 107: vc_SetZone(); break;
 		case 108: showMessageBox(vc->ResolveString()); break;
-		case 109: vc_sin(); break;
-		case 110: vc_cos(); break;
-		case 111: vc_tan(); break;
-		case 112: vc_SuperSecretThingy(); break;
-		case 113: vc_BlitWrap(); break;
-		case 114: vc_ColorFilter(); break;
-		case 115: vc_ImageShell(); break;
-		case 116: vc_Malloc(); break;
-		case 117: vc_MemFree(); break;
-		case 118: vc_MemCopy(); break;
-		case 119: vc_asin(); break;
-		case 120: vc_acos(); break;
-		case 121: vc_atan(); break;
-		case 122: vc_AlphaBlit(); break;
-		case 123: vc_WindowCreate(); break;
-		case 124: vc_WindowGetImage(); break;
-		case 125: vc_WindowClose(); break;
-		case 126: vc_WindowSetSize(); break;
-		case 127: vc_WindowSetResolution(); break;
-		case 128: vc_WindowSetPosition(); break;
-		case 129: vc_WindowSetTitle(); break;
-		case 130: vc_WindowHide(); break;
-		case 131: vc_WindowShow(); break;
-		case 132: vc_WindowGetXRes(); break;
-		case 133: vc_WindowGetYRes(); break;
-		case 134: vc_WindowGetWidth(); break;
-		case 135: vc_WindowGetHeight(); break;
-		case 136: vc_WindowPositionCommand(); break;
-		case 137: vc_SetSongPaused(); break;
-		case 138: vc_SetSongVolume(); break;
 		case 139: vc->vcreturn = vc->GetSongVolume(vc->ResolveOperand()); break;
 		case 140: vc->vcreturn = vc->GetSongPos(vc->ResolveOperand()); break;
-		case 141: vc_SetSongPos(); break;
-		case 142: vc_TokenCount(); break;
-		case 143: vc_GetToken(); break;
-		case 144: vc_ToUpper(); break;
-		case 145: vc_ToLower(); break;
-		case 146: vc_LoadFontEx(); break;
-		case 147: vc_FontHeight(); break;
-		case 148: vc_MixColor(); break;
-		case 149: vc_CHR(); break;
-		case 150: vc_PlayMovie(); break;
-		case 151: vc_MovieLoad(); break;
-		case 152: vc_MoviePlay(); break;
-		case 153: vc_MovieGetImage(); break;
-		case 154: vc_MovieRender(); break;
-		case 155: vc_MovieClose(); break;
-		case 156: vc_MovieGetCurrFrame(); break;
-		case 157: vc_MovieGetFramerate(); break;
-		case 158: vc_MovieNextFrame(); break;
-		case 159: vc_MovieSetFrame(); break;
-		case 160: vc_Render(); break;
-		case 161: vc_GetObs(); break;
-		case 162: vc_SetObs(); break;
-		case 163: vc_EntitySpawn(); break;
-		case 164: vc_SetPlayer(); break;
-		case 165: vc_EntityStalk(); break;
-		case 166: vc_EntityMove(); break;
-		case 167: vc_SetMusicVolume(); break;
-		case 168: vc_PlayerMove(); break;
-		case 169: vc_ChangeCHR(); break;
-		case 170: vc_EntitySetWanderZone(); break;
-		case 171: vc_EntitySetWanderRect(); break;
-		case 172: vc_EntityStop(); break;
-		case 173: vc_EntitySetWanderDelay(); break;
 		case 174: vc->SetRandSeed(vc->ResolveOperand()); break;
-		case 175: vc_ResetSprites(); break;
-		case 176: vc_GetSprite(); break;
-		case 177: vc_RenderMap(); break;
-		case 178: vc_SetButtonKey(); break;
-		case 179: vc_SetButtonJB(); break;
-		case 180: vc_FunctionExists(); break;
-		case 181: vc_atan2(); break;
-		case 182: vc_CopyImageToClipboard(); break;
-		case 183: vc_GetImageFromClipboard(); break;
-		case 184: vc_SetInt(); break;
-		case 185: vc_GetInt(); break;
-		case 186: vc_SetString(); break;
-		case 187: vc_GetString(); break;
-		case 188: vc_SetIntArray(); break;
-		case 189: vc_GetIntArray(); break;
-		case 190: vc_SetStringArray(); break;
-		case 191: vc_GetStringArray(); break;
-		case 192: vc_FlipBlit(); break;
-		case 193: vc_Connect(); break;
-		case 194: vc_GetConnection(); break;
-		case 195: vc_SocketConnected(); break;
-		case 196: vc_SocketHasData(); break;
-		case 197: vc_SocketGetString(); break;
-		case 198: vc_SocketSendString(); break;
-		case 199: vc_SocketClose(); break;
 		case 200: Sleep(vc->ResolveOperand()); break;
-		case 201: vc_SetCustomColorFilter(); break;
-		case 202: vc_SocketSendInt(); break;
-		case 203: vc_SocketGetInt(); break;
-
-
-		case 206: vc_GetUrlText(); break;
-		case 207: vc_GetUrlImage(); break;
-		case 208: vc_SocketSendFile(); break;
-		case 209: vc_SocketGetFile(); break;
-		case 210: vc_ListFilePattern(); break;
-		case 211: vc_ImageValid(); break;
-		case 212: vc_Asc(); break;
-		case 213: vc_FileEOF(); break;
-		case 214: vc_DictNew(); break;
-		case 215: vc_DictFree(); break;
-		case 216: vc_DictGetString(); break;
-		case 217: vc_DictSetString(); break;
-		case 218: vc_DictContainsString(); break;
-		case 219: vc_DictSize(); break;
-		case 220: vc_DictGetInt(); break;
-		case 221: vc_DictSetInt(); break;
-		case 222: vc_DictRemove(); break;
-		case 223: vc_LoadImage8(); break;
-		case 224: vc_AbortMovie(); break; //mbg 12/11/05
-		case 225: vc_max(); break; // Overkill: 12/28/05
-		case 226: vc_min(); break; // Overkill: 12/28/05
-		case 227: vc_abs(); break; // Overkill: 12/28/05
-		case 228: vc_sgn(); break; // Overkill: 12/28/05
-		case 229: vc_GetTokenPos(); break; // Overkill: 12/28/05
-		case 230: vc_TokenLeft(); break; // Overkill: 12/28/05
-		case 231: vc_TokenRight(); break; // Overkill: 12/28/05
-		case 232: vc_strpos(); break; // Overkill: 12/28/05
-		case 233: vc_strovr(); break; // Overkill: 12/28/05
-		case 234: vc_WrapText(); break; // Overkill: 12/28/05
-		case 235: vc_RectVGrad(); break; // Overkill: 02/04/06, 06/25/06
-		case 236: vc_RectHGrad(); break; // Overkill: 02/04/06, 06/25/06
-		case 237: vc_cbrt(); break; // Overkill: 06/25/06
-		case 238: vc_GetKeyBuffer(); break; // Overkill: 06/29/06
-		case 239: vc_FlushKeyBuffer(); break; // Overkill: 06/29/06
-		case 240: vc_SetKeyDelay(); break; // Overkill: 06/30/06
-		case 241: vc_FileWriteCHR(); break; // Overkill: 05/20/06
-		case 242: vc_FileWriteMAP(); break; // Overkill: 05/21/06
-		case 243: vc_FileWriteVSP(); break; // Overkill: 05/21/06
-		case 244: vc_CompileMap(); break; // Overkill: 05/21/06
-		case 245: vc_RectRGrad(); break; // janus: 07/22/06
-		case 246: vc_Rect4Grad(); break; // janus: 07/22/06
-		case 247: vc_ListStructMembers(); break; // Overkill (2006-08-16)
-		case 248: vc_CopyArray(); break; // Overkill (2006-08-16)
-		case 249: vc_SoundIsPlaying(); break; // Overkill (2006-11-20)
-		case 250: vc_GetH(); break; // Overkill: (2007-05-04)
-		case 251: vc_GetS(); break; // Overkill: (2007-05-04)
-		case 252: vc_GetV(); break; // Overkill: (2007-05-04)
-		case 253: vc_HSV(); break; // Overkill: (2007-05-04)
-		case 254: vc_HueReplace(); break; // Overkill: (2007-05-04)
-		case 255: vc_ColorReplace(); break; // Overkill: (2007-05-04)
-		case 256: vc_fatan(); break;
-		case 257: vc_fatan2(); break;
-		case 258: vc_fasin(); break;
-		case 259: vc_facos(); break;
-		case 260: vc_fsin(); break;
-		case 261: vc_fcos(); break;
-		case 262: vc_ftan(); break;
-		case 263: vc_SetCharacterWidth(); break; //mbg (2007-06-18)
-		case 264: vc_DictListKeys(); break; // Overkill: (2007-06-20)
-		case 265: vc_ListBuiltinFunctions(); break;
-		case 266: vc_ListBuiltinVariables(); break;
-		case 267: vc_ListBuiltinDefines(); break;
-		case 268: vc_GetPlayer(); break; // Kildorf (2007-10-13)
-		case 269: vc_GetUserSystemVcFunctionCount(); break; // grue 
-		case 270: vc_GetUserSystemVcFunctionByIndex(); break; //grue
-		case 271: vc_SetConnectionPort(); break; // Overkill (2008-04-17)
-		case 272: vc_SocketGetRaw(); break; // Overkill (2008-04-17)
-		case 273: vc_SocketSendRaw(); break; // Overkill (2008-04-17)
-		case 274: vc_SocketByteCount(); break; // Overkill (2008-04-20)
 		default:
 			vc->vcerr("VC Execution error: Invalid STDLIB index. (%d)", (int) c);
 	}
