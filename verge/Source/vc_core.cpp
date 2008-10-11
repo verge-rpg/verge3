@@ -739,7 +739,7 @@ std::string VCCore::ProcessString()
 			if (d >= 0 && d < maxstr)
 				ret = vcstring[d];
 			else
-				vcerr("VCCore::ProcessString() - bad offset to vcstring[]");
+				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strGLOBAL) %d/%d", d, maxstr);
 			break;
 		case strARRAY:
 		{
@@ -755,7 +755,7 @@ std::string VCCore::ProcessString()
 			if (d>=0 && d<maxstr)
 				ret = vcstring[d];
 			else
-				vcerr("VCCore::ProcessString() - bad offset to vcstring[]");
+				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strARRAY) %d/%d", d, maxstr);
 			break;
 		}
 		case strHSTR0:   // _READSTR

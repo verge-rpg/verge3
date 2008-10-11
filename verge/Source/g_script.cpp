@@ -169,7 +169,12 @@ void ScriptEngine::SetResolution(int v3_xres, int v3_yres) { vid_SetMode(v3_xres
 void ScriptEngine::Unpress(int n) {
 	switch (n)
 	{
-		case 0: if (b1) UnB1(); if (b2) UnB2(); if (b3) UnB3(); if (b4) UnB4();	break;
+		case 0: 
+			if (b1) UnB1(); 
+			if (b2) UnB2(); 
+			if (b3) UnB3(); 
+			if (b4) UnB4(); 	
+			break;
 		case 1: if (b1) UnB1(); break;
 		case 2: if (b2) UnB2(); break;
 		case 3: if (b3) UnB3(); break;
@@ -178,6 +183,16 @@ void ScriptEngine::Unpress(int n) {
 		case 6: if (down) UnDown(); break;
 		case 7: if (left) UnLeft(); break;
 		case 8: if (right) UnRight(); break;
+		case 9: 
+			if (b1) UnB1(); 
+			if (b2) UnB2(); 
+			if (b3) UnB3(); 
+			if (b4) UnB4();
+			if (up) UnUp();
+			if (down) UnDown();
+			if (left) UnLeft();
+			if (right) UnRight();
+			break;
 	}
 }
 
