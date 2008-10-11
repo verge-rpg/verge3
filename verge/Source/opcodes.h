@@ -113,6 +113,11 @@ struct VcFunction {
 	std::string name;
     std::vector<int> argumentTypes;
 
+	VcFunction()
+		: returnType(0)
+	{
+	}
+
 	VcFunction(const char * rt, const char * n, const char * at)
 		: returnType(atoi(rt)),
 		  name(n)

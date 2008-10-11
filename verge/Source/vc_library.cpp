@@ -1687,7 +1687,7 @@ void VCCore::HandleLibFunc()
 		case 37: vc->StopMusic(); break;
 		case 38: vc->StopSound(vc->ResolveOperand()); break;
 		case 39: vc->FreeSong(vc->ResolveOperand()); break;
-		case 40: vc->vcerr("mask"); break;
+
 		case 41: vc_Silhouette(); break;
 		case 42: vc_GrabRegion(); break;
 		case 43: vc_TGrabRegion(); break;
@@ -1696,8 +1696,8 @@ void VCCore::HandleLibFunc()
 		case 46: vc_Triangle(); break;
 		case 47: vc_BlitTile(); break;
 		case 48: vc_TBlitTile(); break;
-		case 49: vc->vcerr("horzflip"); break;
-		case 50: vc->vcerr("vertflip"); break;
+
+
 		case 51: vc_ImageWidth(); break;
 		case 52: vc_ImageHeight(); break;
 		case 53: vc_LoadFont(); break;
@@ -1851,8 +1851,8 @@ void VCCore::HandleLibFunc()
 		case 201: vc_SetCustomColorFilter(); break;
 		case 202: vc_SocketSendInt(); break;
 		case 203: vc_SocketGetInt(); break;
-		case 204: // sendfloat
-		case 205: // getfloat
+
+
 		case 206: vc_GetUrlText(); break;
 		case 207: vc_GetUrlImage(); break;
 		case 208: vc_SocketSendFile(); break;
