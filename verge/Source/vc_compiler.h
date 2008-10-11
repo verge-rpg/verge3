@@ -51,14 +51,6 @@ public:
 	~Define();
 };
 
-class Builtin
-{
-public:
-	char returntype, *paramtype, *name, numparams;
-	Builtin(char *r, char *n, char *p);
-	~Builtin();
-};
-
 class HVar
 {
 public:
@@ -273,7 +265,6 @@ public:
 
 private:
 	std::vector<Define*> defines;
-	std::vector<Builtin*> builtins;
 	std::vector<HVar*> hvars;
 
 	// preprocessor component
@@ -293,7 +284,7 @@ private:
 	quad srcofs, linenum;
 
 	void Init_Lexical();
-	bool streq(char *a, char *b);
+	bool streq(const char *a, const char *b);
 	int  hextoi(char *h);
 	void ParseWhitespace();
 	void ParseIdentifier();

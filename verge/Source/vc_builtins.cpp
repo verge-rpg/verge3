@@ -11,8 +11,10 @@
 #include "xerxes.h"
 #include "opcodes.h"
 
-char* libfuncs[NUM_LIBFUNCS][3] = {
+
+VcFunction libfuncs[NUM_LIBFUNCS] = {
 // return,    identifier,    signature
+	
 	{"5", "Exit", "3" },
 	{"5", "Log", "3" },
 	{"1", "NewImage", "11" },

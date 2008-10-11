@@ -74,31 +74,6 @@ Define::~Define()
 	delete[] value;
 }
 
-/***************** subclass Builtin *****************/
-
-Builtin::Builtin(char *r, char *n, char *p)
-{
-	name = new char[strlen(n)+1];
-	strcpy(name, n);
-	returntype = atoi(r);
-	numparams = strlen(p);
-	if (numparams)
-	{
-		paramtype = new char[numparams];
-		for (int i=0; i<numparams; i++)
-			paramtype[i]=p[i]-'0';
-	}
-	else
-		paramtype = 0;
-}
-
-Builtin::~Builtin()
-{
-	delete[] name;
-	if (numparams)
-		delete[] paramtype;
-}
-
 /***************** subclass HVar *****************/
 
 HVar::HVar(char *n, char *d)
@@ -628,19 +603,13 @@ VCCompiler::VCCompiler(FileServer* file_server)
 
 	vprint("Constructing VCCompiler object... ");
 
-	// initialize library functions
-	int i;
-	for (i=0; i<NUM_LIBFUNCS; i++)
-		builtins.push_back(new Builtin(libfuncs[i][0], libfuncs[i][1], libfuncs[i][2]));
-	vprint("Builtins...\n");
-
 	// initialize library variables
-	for (i=0; i<NUM_HVARS; i++)
+	for (int i=0; i<NUM_HVARS; i++)
 		hvars.push_back(new HVar(libvars[i][1], libvars[i][2]));
 	vprint("HVARS...\n");
 
 	// initialize built-in defines
-	for (i=0; i<NUM_HDEFS; i++)
+	for (int i=0; i<NUM_HDEFS; i++)
 		defines.push_back(new Define(hdefs[i][0], hdefs[i][1]));
 	vprint("HDEFS...\n");
 
@@ -658,9 +627,6 @@ VCCompiler::~VCCompiler()
 	// free defines
 	for (i=0; i<defines.size(); i++)
 		delete defines[i];
-	// free builtins
-	for (i=0; i<builtins.size(); i++)
-		delete builtins[i];
 	// free hvars
 	for (i=0; i<hvars.size(); i++)
 		delete hvars[i];
@@ -1465,7 +1431,7 @@ void VCCompiler::Init_Lexical()
 	memset(sourcefile, 0, 256);
 }
 
-bool VCCompiler::streq(char *a, char *b)
+bool VCCompiler::streq(const char *a, const char *b)
 {
 	while (*a)
 		if (tolower(*a++) != tolower(*b++))
@@ -2163,8 +2129,8 @@ void VCCompiler::CheckNameDup(char *s)
 		throw va("%s(%d): identifier name %s is too long. (max: %d characters)", sourcefile, linenum, s, IDENTIFIER_LEN-1);
 
 	// check vs. system library functions
-	for (i=0; i<builtins.size(); i++)
-		if (streq(builtins[i]->name, token))
+	for (i=0; i<NUM_LIBFUNCS; i++)
+		if (streq(libfuncs[i].name, token))
 			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. all other functions compiled so far
@@ -3080,12 +3046,12 @@ void VCCompiler::CheckIdentifier(char *s)
 	int i,j;
 
 	// check library functions first
-	for (i=0; i<builtins.size(); i++)
-		if (streq(s, builtins[i]->name))
+	for (i=0; i<NUM_LIBFUNCS; i++)
+		if (streq(s, libfuncs[i].name))
 		{
 			id_type = ID_LIBFUNC;
 			id_index = i;
-			id_subtype = atoi(&libfuncs[id_index][0][0]);
+			id_subtype = atoi(libfuncs[i].returnType);
 			return;
 		}
 
@@ -3379,7 +3345,7 @@ void VCCompiler::CompileAtom()
 	}
     if (id_type == ID_LIBFUNC)
     {
-        if (atoi(&libfuncs[id_index][0][0]) != t_INT)
+		if (atoi(libfuncs[id_index].returnType) != t_INT)
 			throw va("%s(%d): %s does not return an int", sourcefile, linenum, token);
         output.EmitC(intLIBFUNC);
         HandleLibraryFunc();
@@ -3599,7 +3565,7 @@ void VCCompiler::ProcessString()
 	}
 	if (id_type == ID_LIBFUNC)
     {
-        if (atoi(&libfuncs[id_index][0][0]) != t_STRING)
+        if (atoi(libfuncs[id_index].returnType) != t_STRING)
 			throw va("%s(%d): %s does not return a string", sourcefile, linenum, token);
         output.EmitC(strLIBFUNC);
         HandleLibraryFunc();
@@ -3834,7 +3800,7 @@ void VCCompiler::HandleLibraryFunc()
 	{
 		if (NextIs(")"))
 		{
-			if (i < strlen(libfuncs[myindex][2]) && libfuncs[myindex][2][i]-'0' == t_VARARG)
+			if (i < strlen(libfuncs[myindex].argumentTypes) && libfuncs[myindex].argumentTypes[i]-'0' == t_VARARG)
 			{
 				output.EmitC(opVARARG_START);
 				varargs = true;
@@ -3842,9 +3808,9 @@ void VCCompiler::HandleLibraryFunc()
 			}
 			break;
 		}
-		if (i < strlen(libfuncs[myindex][2]))
+		if (i < strlen(libfuncs[myindex].argumentTypes))
 		{
-			switch (libfuncs[myindex][2][i]-'0')
+			switch (libfuncs[myindex].argumentTypes[i]-'0')
 			{
 				case t_INT:
 					CompileOperand();
@@ -3901,9 +3867,9 @@ void VCCompiler::HandleLibraryFunc()
 	{
 		output.EmitC(opVARARG_END);
 	}
-	if (i < strlen(libfuncs[myindex][2]) || (i > strlen(libfuncs[myindex][2]) && !varargs))
+	if (i < strlen(libfuncs[myindex].argumentTypes) || (i > strlen(libfuncs[myindex].argumentTypes) && !varargs))
 	{
-		throw va("%s(%d) %s() expects %d arguments. (Got %d)", sourcefile, linenum, libfuncs[myindex][1], strlen(libfuncs[myindex][2]), i);
+		throw va("%s(%d) %s() expects %d arguments. (Got %d)", sourcefile, linenum, libfuncs[myindex].name, strlen(libfuncs[myindex].argumentTypes), i);
 	}
 
 	id_index = myindex;

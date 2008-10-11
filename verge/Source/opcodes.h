@@ -108,8 +108,14 @@
 #define NUM_HVARS			127
 #define NUM_HDEFS			104
 
-extern char *libfuncs[NUM_LIBFUNCS][3];
-extern char *libvars[NUM_HVARS][3];
-extern char *hdefs[NUM_HDEFS][2];
+struct VcFunction {
+	const char* returnType;
+	const char* name;
+	const char* argumentTypes;
+};
+
+extern VcFunction libfuncs[NUM_LIBFUNCS];
+extern char* libvars[NUM_HVARS][3];
+extern char* hdefs[NUM_HDEFS][2];
 
 #endif  /* OPCODES_H */

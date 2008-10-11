@@ -1564,7 +1564,7 @@ void vc_ListBuiltinFunctions()
 	vc->vcretstr = "";
 	for (int i = 0; i < NUM_LIBFUNCS; i++)
 	{
-		vc->vcretstr += std::string(libfuncs[i][1]) + "|";
+		vc->vcretstr += std::string(libfuncs[i].name) + "|";
 	}
 }
 
