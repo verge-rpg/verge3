@@ -489,7 +489,10 @@ int ScriptEngine::ImageHeight(int src) { return ((image*)ImageForHandle(src))->h
 int ScriptEngine::ImageShell(int x, int y, int w, int h, int src) {
 	image *s = ImageForHandle(src);
 	if (w+x > s->width || y+h > s->height)
-		err("ImageShell() - Bad arguements. x/y+w/h greater than original image dimensions");
+		err(
+			"ImageShell() - Bad arguements. x/y+w/h greater than original image dimensions\n\nx:%d,w:%d (%d),y:%d,h:%d (%d), orig_x:%d, orig_y:%d",
+			x,w,x+w,y,h,y+h,s->width,s->height
+		);
 
 	image *d = new image(w, h);
 	d->delete_data();
