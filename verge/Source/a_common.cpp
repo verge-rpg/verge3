@@ -95,9 +95,9 @@ char *va(char* format, ...)
 	return string;
 }
 
-
+#ifdef __WIN32__
 int strcasecmp(const char *s1, const char *s2)
-{
+{	
 	while (true)
 	{
 		if (tolower(*s1) != tolower(*s2))
@@ -109,6 +109,7 @@ int strcasecmp(const char *s1, const char *s2)
 	}
 	return -1;
 }
+#endif
 
 char mycharcmp(char c)
 {

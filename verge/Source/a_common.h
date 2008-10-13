@@ -18,7 +18,9 @@ byte* ImageTo24bpp(image *img);
 void log_Init(bool on);
 void log(const char *text, ...);
 char *va(char* format, ...);
+#ifdef __WIN32__
 int strcasecmp(const char *s1, const char *s2);
+#endif
 int fncmp(const char *s1, const char *s2);
 bool ExtensionIs(const char *f, const char *e);
 bool isletter(const char c);
