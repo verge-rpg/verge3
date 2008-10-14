@@ -26,7 +26,7 @@
 
 /****************************************************************/
 
-bool AppIsForeground;
+bool AppIsForeground = true;
 int DesktopBPP;
 bool IgnoreEvents = false;
 /***************************** code *****************************/
@@ -140,6 +140,14 @@ void handleMouseButton(SDL_MouseButtonEvent e)
 	}
 }
 
+void handleActive(SDL_ActiveEvent e)
+{
+  if(e.state & SDL_APPINPUTFOCUS)
+  {
+    AppIsForeground = e.gain;
+  }
+}
+
 /* Run the SDL event loop to get waiting messages */
 void HandleMessages(void)
 {
@@ -168,6 +176,9 @@ void HandleMessages(void)
 			case SDL_QUIT:
 				err("");
 				break;
+      case SDL_ACTIVEEVENT:
+        handleActive(event.active);
+        break;
 			default:
 				break;
 		}
