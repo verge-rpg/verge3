@@ -17,6 +17,7 @@
 		66380C3007C968F700207F2B /* verge.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66380C2F07C968F700207F2B /* verge.icns */; };
 		66380C7007C969FF00207F2B /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 66380C6D07C969FF00207F2B /* MainMenu.nib */; };
 		66380C7F07C96A0F00207F2B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66380C7D07C96A0F00207F2B /* InfoPlist.strings */; };
+		66648E5C0EA5248D00BE2395 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 66B2B83707B41F2A000E3414 /* SDL.framework */; };
 		666E154707B4911200617631 /* SDL.h in Headers */ = {isa = PBXBuildFile; fileRef = 666E154407B4911200617631 /* SDL.h */; };
 		666E154807B4911200617631 /* SDLMain.h in Headers */ = {isa = PBXBuildFile; fileRef = 666E154507B4911200617631 /* SDLMain.h */; };
 		666E154907B4911200617631 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 666E154607B4911200617631 /* SDLMain.m */; };
@@ -343,12 +344,13 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		669C82DA07EB261D000B1A45 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 8;
+			buildActionMask = 12;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				66648E5C0EA5248D00BE2395 /* SDL.framework in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -2139,6 +2141,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = verge3;
 				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = NO;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -2193,6 +2196,7 @@
 				PRODUCT_NAME = verge3;
 				SECTORDER_FLAGS = "";
 				SEPARATE_STRIP = YES;
+				SKIP_INSTALL = NO;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
@@ -2239,6 +2243,7 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = verge3;
 				SECTORDER_FLAGS = "";
+				SKIP_INSTALL = NO;
 				WARNING_CFLAGS = (
 					"-Wmost",
 					"-Wno-four-char-constants",
