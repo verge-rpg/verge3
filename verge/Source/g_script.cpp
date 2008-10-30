@@ -80,7 +80,7 @@ void HookRetrace()
 image *ImageForHandle(int handle)
 {
 	if (handle == 0)
-		se->Error("ImageForHandle() - Null image reference, probably an uninitialized image handle");
+		se->Error("ImageForHandle() - Null image reference (0), probably an uninitialized image handle");
 
 	if (!Handle::isValid(HANDLE_TYPE_IMAGE, handle) )
 		se->Error("ImageForHandle() - Image reference is bogus! (%d)", handle);
@@ -88,7 +88,7 @@ image *ImageForHandle(int handle)
 	image* ptr = (image*) Handle::getPointer(HANDLE_TYPE_IMAGE,handle);
 
 	if (ptr == NULL)
-		se->Error("ImageForHandle() - Image reference is valid but no image is allocated for this handle. You may have mistakenly freed it and continued to use it.");
+		se->Error("ImageForHandle() - Image reference (%d) is valid but no image is allocated for this handle. You may have mistakenly freed it and continued to use it.", handle);
 	return ptr;
 }
 
