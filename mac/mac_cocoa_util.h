@@ -7,6 +7,11 @@
 
 #include <Cocoa/Cocoa.h>
 
+/* Use this flag to determine if we use Resources/verge as the CWD 
+ or if we use the app's instead instead */
+#define     MAC_USE_VERGE_RES_DIR   0
+
+
 void sdl_toggleFullscreen();
 
 @interface MacCocoaUtil : NSObject {

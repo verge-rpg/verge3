@@ -47,5 +47,6 @@ std::vector<std::string> listFilePattern(std::string pattern);
 
 
 void showMessageBox(std::string message);
+std::string GetSystemSaveDirectory(std::string name);
 
 #endif

@@ -14,10 +14,6 @@
 /* This should be 1 for verge */
 #define		SDL_USE_NIB_FILE	1
 
-/* Use this flag to determine if we use Resources/verge as the CWD 
-   or if we use the app's instead instead */
-#define     USE_VERGE_RES_DIR   0
-
 static int    gArgc;
 static char  **gArgv;
 static BOOL   gFinderLaunch;
@@ -73,7 +69,7 @@ static BOOL   gFinderLaunch;
     {
       chdir (parentdir);   /* chdir to the binary app's parent */
 
-#if USE_VERGE_RES_DIR
+#if MAC_USE_VERGE_RES_DIR
       chdir("../Resources/verge"); /* chdir to verge folder in resources */
 #else
       chdir ("../../../"); /* chdir to the .app's parent */

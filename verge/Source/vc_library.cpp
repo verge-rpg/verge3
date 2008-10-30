@@ -1679,6 +1679,13 @@ VC_LIBFUNC(vc_SocketByteCount) ()
 	vc->vcreturn = vc->SocketByteCount(sh);
 }
 
+
+VC_LIBFUNC(vc_GetSystemSaveDir)()
+{
+  std::string appname = vc->ResolveString();
+  vc->vcretstr = GetSystemSaveDirectory(appname);
+}
+
 // ===================== End VC Standard Function Library =====================
 
 void VCCore::HandleLibFunc()

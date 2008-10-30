@@ -50,4 +50,6 @@ void Sleep(unsigned int msec);
 void InitEditCode(); // impl in mac_cocoa_util.mm
 void AddSourceFile(std::string s); // impl in mac_cocoa_util.mm
 
+std::string GetSystemSaveDirectory(std::string name); // impl in mac_cocoa_util.mm 
+
 #endif

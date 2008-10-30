@@ -517,3 +517,8 @@ void showMessageBox(std::string message)
 {
 	MessageBoxA(GetDesktopWindow(), message.c_str(), APPNAME, MB_OK | MB_TASKMODAL);
 }
+
+std::string GetSystemSaveDirectory(std::string name)
+{
+  return std::string("./");
+}

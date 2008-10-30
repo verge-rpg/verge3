@@ -84,6 +84,31 @@ int getUrlImage(string inUrl)
 	return toReturn;
 }
 
+std::string GetSystemSaveDirectory(std::string name)
+{
+  NSArray *arr = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, true);
+  if([arr count] == 0 || !MAC_USE_VERGE_RES_DIR)
+  {
+    return std::string("./");
+  }
+  else
+  {
+    name = "com.verge-rpg." + name;
+    NSString *prefsDirName = [NSString stringWithUTF8String:name.c_str()];
+    
+    NSString *libDir = [arr objectAtIndex:0];
+    NSString *vergeDir = [[libDir stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:prefsDirName];
+    
+    NSFileManager *manager = [NSFileManager defaultManager];
+    if(![manager fileExistsAtPath:vergeDir]) 
+    {
+      [manager createDirectoryAtPath:vergeDir attributes:nil];
+    }
+    
+    return std::string([vergeDir UTF8String]) + "/";
+  }
+}
+
 // The MacCocoaUtil handles user input
 // from the code-editing window, other Cocoa stuff
 @implementation MacCocoaUtil

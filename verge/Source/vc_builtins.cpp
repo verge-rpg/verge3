@@ -288,6 +288,7 @@ VcFunction libfuncs[NUM_LIBFUNCS] = {
 	VcFunction("3", "SocketGetRaw", "11"), // Overkill (2008-04-17): Sockets can send and receive raw length-delimited strings
 	VcFunction("5", "SocketSendRaw", "13"),
 	VcFunction("1", "SocketByteCount", "1"), // Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
+	VcFunction("3", "GetSystemSaveDir", "3"),
 };
 
 char* libvars[NUM_HVARS][3] = {
