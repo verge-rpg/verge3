@@ -441,6 +441,12 @@ void ScriptEngine::FreeImage(int handle) {
 	{
  		se->Error("vc_FreeImage() - cannot free the screen reference");
 	}
+
+	if( !ScriptEngine::ImageValid(handle) )
+	{
+ 		se->Error("vc_FreeImage() - cannot free an invalid image reference (try using ImageValid() first?)");		
+	}
+
 	delete ImageForHandle(handle);
 	FreeImageHandle(handle);
 }
