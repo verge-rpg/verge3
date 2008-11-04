@@ -215,7 +215,7 @@ void a_srand()
     register int    j;
 
 	for(namespace_a_rand::left=0, *s++=x, j=N; --j;
-        *s++ = (x*=69069U) & 0xFFFFFFFFU);
+		*s++ = (x*=69069U) & 0xFFFFFFFFU) {}
 }
 
 
