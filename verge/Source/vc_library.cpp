@@ -1337,7 +1337,7 @@ VC_LIBFUNC(vc_DictSetString) () {
 	d->SetString(key, value);
 }
 
-VC_LIBFUNC(vc_DictContainsString) () {
+VC_LIBFUNC(vc_DictContains) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
 	vc->vcreturn = d->ContainsString(vc->ResolveString());
 }
@@ -1718,6 +1718,6 @@ void VCCore::HandleLibFunc()
 		case 174: vc->SetRandSeed(vc->ResolveOperand()); break;
 		case 200: Sleep(vc->ResolveOperand()); break;
 		default:
-			vc->vcerr("VC Execution error: Invalid STDLIB index. (%d)", (int) c);
+			vc->vcerr("VC Execution error: Invalid vc STDLIB index. (%d)", (int) c);
 	}
 }
