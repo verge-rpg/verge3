@@ -8,6 +8,10 @@
 # endif
 #endif
 
+#ifdef CORONA_PROHIBIT_DEBUG
+#undef CORONA_DEBUG
+#endif
+
 
 #ifdef CORONA_DEBUG
 

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <string.h>
 #include "Debug.h"
 #include "Open.h"
 #include "SimpleImage.h"
