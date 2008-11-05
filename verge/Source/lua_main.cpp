@@ -1,4 +1,7 @@
 #include "xerxes.h"
+
+#ifdef ENABLE_LUA
+
 #include "lua_main.h"
 #include <luabind/object.hpp>
 #include <stdio.h>
@@ -45,12 +48,9 @@ bool LUA::CompileMap(const char *f) {
 	fwrite(buf, 1, mapcoresize, mo);
 	delete[] buf;
 
-#ifdef __APPLE__
-#ifdef __BIG_ENDIAN__
-	// we need to flip this so that it gets read properly
+	// we need to endian flip this so that it gets read properly
 	flip(&scriptlen,4);
-#endif
-#endif
+	
 	fwrite(&scriptlen,4,1,mo);
 	fwrite(temp.get(),1,scriptlen,mo);
 	fclose(mo);
@@ -139,7 +139,7 @@ int ___get_lastpressed() { return lastpressed; }
 void ___set_lastpressed(int val) { lastpressed = val; }
 int ___get_lastkey() { return lastkey; }
 void ___set_lastkey(int val) { lastkey = val; }
-bool ___get_key(int ofs) { if (ofs>=0 && ofs<256) return keys[ofs]; else return 0; }
+bool ___get_key(int ofs) { if (ofs>=0 && ofs<256) return keys[ofs]!=0; else return false; }
 void ___set_key(int ofs, bool val) { if (ofs>=0 && ofs<256) keys[ofs] = val; }
 
 //VII.b. Mouse Variables
@@ -1096,3 +1096,5 @@ void LUA::bindApi() {
 	int zzz=9;
 
 }
+
+#endif

@@ -108,20 +108,29 @@
 #define NUM_HVARS			127
 #define NUM_HDEFS			104
 
+struct VcFunctionDecl {
+	const char* returnType;
+	const char* name;
+	const char* argumentTypes;
+};
+
+void vc_initBuiltins();
+void vc_initLibrary();
+
 struct VcFunction {
 	int returnType;
 	std::string name;
     std::vector<int> argumentTypes;
 
-	VcFunction()
-		: returnType(0)
-	{
-	}
+	VcFunction() {}
 
-	VcFunction(const char * rt, const char * n, const char * at)
-		: returnType(atoi(rt)),
-		  name(n)
+	VcFunction(VcFunctionDecl &decl)
+		: returnType(decl.returnType?atoi(decl.returnType):0),
+		name(decl.name?decl.name:"")
 	{
+		const char * at = decl.argumentTypes;
+		if(!at) return;
+
 		char buf[2];
 		memset(buf, 0, 2);
 		while (*at) {
@@ -139,14 +148,22 @@ typedef std::map<int, VcFunctionImpl> VcFunctionDispatchTable;
 
 extern VcFunctionImplTable & VcGetLibfuncBindings ();
 
+struct VcFunctionBindingDecl {
+	const char * name;
+	VcFunctionImpl fn;
+};
+
+extern VcFunctionBindingDecl _bind_decl[1000];
+extern int _bind_decl_ctr;
+
 struct VcFunctionBinding {
-	VcFunctionBinding(std::string name, VcFunctionImpl fn) {
-		std::transform(name.begin(), name.end(), name.begin(), tolower);
-		VcGetLibfuncBindings()[name] = fn;
+	VcFunctionBinding(const char* name, const VcFunctionImpl& fn) {
+		_bind_decl[_bind_decl_ctr].name = name;
+		_bind_decl[_bind_decl_ctr++].fn = fn;
 	}
 };
 
-extern VcFunction libfuncs[NUM_LIBFUNCS];
+extern VcFunction* libfuncs;
 extern char* libvars[NUM_HVARS][3];
 extern char* hdefs[NUM_HDEFS][2];
 

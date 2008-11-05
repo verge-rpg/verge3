@@ -172,26 +172,26 @@ void VCCore::LoadSystemXVC()
 	struct_instances.clear();
 
 	int ver;
-	fread(&ver, 1, 4, f);
+	fread_le(&ver, f);
 	if (ver != 1)
 		err("VCCore::LoadSystemXVC() - system.xvc has incorrect version marker");
 
 	int size, i;
-	fread(&size, 1, 4, f);
+	fread_le(&size, f);
 	for (i=0; i<size; i++)
 		global_ints.push_back(new int_t(f));
 	maxint = size ? global_ints[size-1]->ofs + global_ints[size-1]->len : 1;
 
-	fread(&size, 1, 4, f);
+	fread_le(&size, f);
 	for (i=0; i<size; i++)
 		global_strings.push_back(new string_t(f));
 	maxstr = size ? global_strings[size-1]->ofs + global_strings[size-1]->len : 1;
 
-	fread(&size, 1, 4, f);
+	fread_le(&size, f);
 	for (i=0; i<size; i++)
 		struct_instances.push_back(new struct_instance(f));
 
-	fread(&size, 1, 4, f);
+	fread_le(&size, f);
 	for (i=0; i<size; i++)
 		userfuncs[CIMAGE_SYSTEM].push_back(new function_t(f));
 

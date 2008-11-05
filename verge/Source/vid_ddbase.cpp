@@ -168,7 +168,7 @@ void dd_init()
 	dd_initd = true;
 }
 
-int dd_SetMode(int xres, int yres, int bpp, bool windowflag )
+int dd_SetMode(int xres, int yres, int bpp, bool windowflag)
 {
 	HRESULT hr;
 

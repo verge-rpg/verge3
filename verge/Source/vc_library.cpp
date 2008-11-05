@@ -32,6 +32,19 @@ int cf_rr, cf_gr, cf_br;
 	VcFunctionBinding _bind_ ## name (#name, name); \
 	void name
 
+VcFunctionBindingDecl _bind_decl[1000];
+int _bind_decl_ctr = 0;
+
+void vc_initLibrary() {
+	for(int i=0;i<_bind_decl_ctr;i++) {
+		std::string name = _bind_decl[i].name;
+		std::transform(name.begin(), name.end(), name.begin(), tolower);
+		VcGetLibfuncBindings()[name] = _bind_decl[i].fn;
+	}
+}
+
+
+
 VcFunctionImplTable & VcGetLibfuncBindings () {
 	static VcFunctionImplTable table;
 	return table;

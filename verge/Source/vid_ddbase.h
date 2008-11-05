@@ -12,7 +12,9 @@
 #ifndef DDBASE_H
 #define DDBASE_H
 
+#ifdef __WIN32__
 #include "ddraw.h"
+#endif
 
 
 void ddwin_Flip();

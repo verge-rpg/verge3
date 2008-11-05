@@ -29,6 +29,7 @@
 #endif
 
 SoundEngine *snd_engine;
+char playingsng[80] = {0};
 
 #ifdef _WIN32
 FARPROC WINAPI FmodFailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */) {
@@ -80,7 +81,6 @@ bool snd_Init(int soundEngine) {
 //////////////////////////////////////
 //global sound functions--link to active sound engine
 // Dummy music interface
-extern char playingsng[];
 void PlayMusic(const std::string &ssng) { 
 	// Check all possible fail conditions. We do this so that if it does fail, we don't
 	// unnessarily stop whatever is presently playing.

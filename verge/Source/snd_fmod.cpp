@@ -28,7 +28,6 @@
 
 #define MAX_SONGS	10
 
-char playingsng[80] = {0};
 int  numsamples     = 0;
 bool UseSound       = false;
 

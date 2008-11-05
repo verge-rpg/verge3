@@ -149,6 +149,7 @@ public:
 	}
 
 	static void validateIdentifier(char *ident) {
+		(void)ident;
 		//TODO : make builtins always overriden by user functions and builtins
 	}
 

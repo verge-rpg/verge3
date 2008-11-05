@@ -580,7 +580,7 @@ void Entity::draw()
 	if (chr)
 		chr->render(zx, zy, frame, screen);
 	else
-		Rect(zx, zy, zx + 15, zy + 15, MakeColor(255,255,255), screen);
+		DrawRect(zx, zy, zx + 15, zy + 15, MakeColor(255,255,255), screen);
 }
 
 void Entity::SetWanderZone()

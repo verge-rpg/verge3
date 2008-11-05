@@ -1,4 +1,7 @@
 #include "xerxes.h"
+
+#ifdef ENABLE_LUA
+
 #include "g_script.h"
 #include <luabind/luabind.hpp>
 
@@ -67,3 +70,5 @@ private:
 	void bindApi();
 
 };
+
+#endif

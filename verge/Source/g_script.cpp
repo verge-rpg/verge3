@@ -557,7 +557,7 @@ void ScriptEngine::Rect(int x1, int y1, int x2, int y2, int c, int dst) {
 }
 void ScriptEngine::RectFill(int x1, int y1, int x2, int y2, int c, int dst) {
 	image *d = ImageForHandle(dst);
-	::Rect(x1, y1, x2, y2, c, d);
+	::DrawRect(x1, y1, x2, y2, c, d);
 }
 void ScriptEngine::RotScale(int x, int y, int angle, int scale, int src, int dst) {
 	image *s = ImageForHandle(src);
@@ -1343,11 +1343,11 @@ std::string ScriptEngine::SocketGetString(int sh) {
 	ret = s->blockread(2, &stlen);
 	if (!ret)
 		return "";
-#ifdef __APPLE__
+
 #ifdef __BIG_ENDIAN__
 	stlen >>= 16;
 #endif
-#endif
+
 	if (stlen>4095) err("yeah uh dont send such big strings thru the network plz0r");
 	ret = s->blockread(stlen, buf);
 	buf[stlen] = 0;
@@ -1387,17 +1387,17 @@ void ScriptEngine::SocketSendString(int sh, std::string str) {
 	if (len>4095) err("yeah uh dont send such big strings thru the network plz0r");
 	char t = '3';
 	s->write(1, &t);
-#ifdef __APPLE__
+
 #ifdef __BIG_ENDIAN__
 	len <<= 16;
 #endif
-#endif
+
 	s->write(2, &len);
-#ifdef __APPLE__
+
 #ifdef __BIG_ENDIAN__
 	len >>= 16;
 #endif
-#endif
+
 	s->write(len, str.c_str());
 }
 
@@ -1582,6 +1582,7 @@ std::string ScriptEngine::GetKeyBuffer()
 		return keybuffer;
 	#else 
 		err("The function GetKeyBuffer() is not defined for this platform.");
+		return "";
 	#endif
 }
 

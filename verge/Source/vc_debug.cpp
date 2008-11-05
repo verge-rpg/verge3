@@ -70,7 +70,7 @@ public:
 	void rendercontent(int xadj, int yadj, int width, int height)
 	{
 		SetLucent(50);
-		Rect(xadj, yadj, xadj+width, yadj+height, 0xffffffff, screen);
+		DrawRect(xadj, yadj, xadj+width, yadj+height, 0xffffffff, screen);
 		SetLucent(0);
 	}
 };

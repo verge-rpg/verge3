@@ -22,7 +22,7 @@ bool vid_initd = false;
 bool vid_window = true;
 int vid_bpp, vid_xres, vid_yres, vid_bytesperpixel;
 int transColor;
-image *screen;
+image *screen = 0;
 AuxWindow *gameWindow;
 
 /****************************************************************/
@@ -46,7 +46,7 @@ void   (*Line) (int x, int y, int xe, int ye, int color, image *dest);
 void   (*VLine) (int x, int y, int ye, int color, image *dest);
 void   (*HLine) (int x, int y, int xe, int color, image *dest);
 void   (*Box) (int x, int y, int xe, int ye, int color, image *dest);
-void   (*Rect) (int x, int y, int xe, int ye, int color, image *dest);
+void   (*DrawRect) (int x, int y, int xe, int ye, int color, image *dest);
 void   (*Sphere) (int x, int y, int xradius, int yradius, int color, image *dest);
 void   (*Circle) (int x, int y, int xradius, int yradius, int color, image *dest);
 void   (*ScaleBlit) (int x, int y, int dw, int dh, image *src, image *dest);
@@ -98,8 +98,9 @@ int vid_SetMode(int xres, int yres, int bpp, int window, int mode)
 //mbg 9/5/05 adding psp support
 #elif __PSP__
 	doModeSet = psp_SetMode;
+#elif __WII__
+	doModeSet = wii_SetMode;
 #else
-
 	doModeSet = dd_SetMode;
 #endif
 
@@ -148,7 +149,7 @@ image::image(int xres, int yres)
 
 void image::delete_data()
 {
-	delete[] data;
+	delete[] (char*)data;
 }
 
 image::~image()

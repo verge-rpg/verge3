@@ -50,7 +50,9 @@ byte* ImageTo24bpp(image *img)
 
 void log_Init(bool on)
 {
+#ifndef PROHIBIT_DISK_LOG
 	remove(LOGFILE);
+#endif
 	log_on = on;
 }
 
@@ -65,7 +67,9 @@ void log(const char *text, ...)
 	va_end(argptr);
 
 	if (!log_on) return;
+#ifndef PROHIBIT_DISK_LOG
 	logfile = fopen(LOGFILE,"a");
+#endif
 	if (logfile)
 	{
 		fprintf(logfile,"%s\n",msg);

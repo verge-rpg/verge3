@@ -88,7 +88,7 @@ extern void   (*Line) (int x, int y, int xe, int ye, int color, image *dest);
 extern void   (*VLine) (int x, int y, int ye, int color, image *dest);
 extern void   (*HLine) (int x, int y, int xe, int color, image *dest);
 extern void   (*Box) (int x, int y, int xe, int ye, int color, image *dest);
-extern void   (*Rect) (int x, int y, int xe, int ye, int color, image *dest);
+extern void   (*DrawRect) (int x, int y, int xe, int ye, int color, image *dest);
 extern void   (*Sphere) (int x, int y, int xradius, int yradius, int color, image *dest);
 extern void   (*Circle) (int x, int y, int xradius, int yradius, int color, image *dest);
 extern void   (*ScaleBlit) (int x, int y, int dw, int dh, image *src, image *dest);

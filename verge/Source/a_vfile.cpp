@@ -397,7 +397,6 @@ int vread(char *dest, int len, VFILE *f)
 
 void flip(void *d, int size)
 {
-#ifdef __APPLE__
 #ifdef __BIG_ENDIAN__
 	byte *val = (byte *)d;
 	for(int i = 0; i < size/2; i++)
@@ -406,7 +405,6 @@ void flip(void *d, int size)
 		val[i] = val[size-i-1];
 		val[size-i-1] = temp;
 	}
-#endif
 #endif
 }
 

@@ -48,7 +48,13 @@ bool Exist(const char *fname);
 bool VExist(char *fname);
 VFILE *vopen(const char *fname);
 void MountVFile(char *fname);
+
 void flip(void *d, int size);
+
+
+template<typename T>
+inline void flip(T *d) { flip(d,sizeof(T)); }
+
 int _vread(void *dest, int len, VFILE *f);
 
 int vread(byte *dest, int len, VFILE *f);
@@ -73,3 +79,5 @@ void vgets(char *str, int len, VFILE *f);
 int vtell(VFILE* f);
 int veof(VFILE *f);
 boost::shared_array<byte> vreadfile(const char *fname);
+
+inline void fread_le(int* dest, FILE *fp) { fread(dest,1,sizeof(int),fp); flip(dest,sizeof(int)); }

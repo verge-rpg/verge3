@@ -108,7 +108,7 @@ Chunk::~Chunk()
 
 void Chunk::LoadChunk(FILE *f)
 {
-	fread(&cursize, 1, 4, f);
+	fread_le(&cursize, f);
 	int temp = cursize / CHUNK_UNIT;
 	if(temp*CHUNK_UNIT != cursize)
 		temp++;
@@ -123,7 +123,7 @@ void Chunk::Append(FILE *f, bool save_pos)
 {
 	int pos = curpos();
 	int size;
-	fread(&size, 1, 4, f);
+	fread_le(&size, f);
 	int oldsize = cursize;
 	cursize += size;
 
@@ -183,6 +183,7 @@ word Chunk::GrabW()
 	return *(word *)buf;
 #else
 	word x = *(word *)(ptr);
+	flip(&x);
 	ptr += 2;
 	return x;
 #endif
@@ -202,6 +203,7 @@ quad Chunk::GrabD()
 	return *(quad *)buf;
 #else
 	quad x = *(quad *)(ptr);
+	flip(&x);
 	ptr+=4;
 	return x;
 #endif
@@ -328,14 +330,14 @@ int_t::int_t()
 int_t::int_t(FILE *f)
 {
 	fread(name, 1, IDENTIFIER_LEN, f);
-	fread(&ofs, 1, 4, f);
-	fread(&len, 1, 4, f);
-	fread(&dim, 1, 4, f);
+	fread_le(&ofs, f);
+	fread_le(&len, f);
+	fread_le(&dim, f);
 	dims.resize(dim);
 	for (int i = 0; i < dim; i++)
 	{
 		int mydimsize;
-		fread(&mydimsize, 1, 4, f);
+		fread_le(&mydimsize, f);
 		dims[i] = mydimsize;
 	}
 	initializer = "";
@@ -366,14 +368,14 @@ string_t::string_t()
 string_t::string_t(FILE *f)
 {
 	fread(name, 1, IDENTIFIER_LEN, f);
-	fread(&ofs, 1, 4, f);
-	fread(&len, 1, 4, f);
-	fread(&dim, 1, 4, f);
+	fread_le(&ofs, f);
+	fread_le(&len, f);
+	fread_le(&dim, f);
 	dims.resize(dim);
 	for (int i = 0; i < dim; i++)
 	{
 		int mydimsize;
-		fread(&mydimsize, 1, 4, f);
+		fread_le(&mydimsize, f);
 		dims[i] = mydimsize;
 	}
 	initializer = "";
@@ -406,13 +408,13 @@ struct_element::struct_element(FILE *f)
 	fread(&type, 1, 1, f);
 	fread(name, 1, IDENTIFIER_LEN, f);
 	fread(type_name, 1, IDENTIFIER_LEN, f);
-	fread(&len, 1, 4, f);
-	fread(&dim, 1, 4, f);
+	fread_le(&len, f);
+	fread_le(&dim, f);
 	dims.resize(dim);
 	for (int i = 0; i < dim; i++)
 	{
 		int mydimsize;
-		fread(&mydimsize, 1, 4, f);
+		fread_le(&mydimsize, f);
 		dims[i] = mydimsize;
 	}
 	//log("Loaded %s of type '%d' type name '%s'.", name, type, type_name);
@@ -472,7 +474,7 @@ struct_definition::struct_definition(FILE *f)
 {
 	fread(name, 1, IDENTIFIER_LEN, f);
 	int element_count;
-	fread(&element_count, 1, 4, f);
+	fread_le(&element_count, f);
 	elements.resize(element_count);
 	for (int i = 0; i < element_count; i++)
 	{
@@ -527,12 +529,12 @@ struct_instance::struct_instance()
 struct_instance::struct_instance(FILE *f)
 {
 	fread(name, 1, IDENTIFIER_LEN, f);
-	fread(&dim, 1, 4, f);
+	fread_le(&dim,f);
 	dims.resize(dim);
 	for (int i = 0; i < dim; i++)
 	{
 		int mydimsize;
-		fread(&mydimsize, 1, 4, f);
+		fread_le(&mydimsize, f);
 		dims[i] = mydimsize;
 	}
 	is = new struct_definition(f);
@@ -564,11 +566,11 @@ function_t::function_t(FILE *f)
 {
 	memset(argtype, 0, sizeof (argtype));
 	memset(localnames, 0, sizeof (localnames));
-	fread(&numargs, 1, 4, f);
-	fread(&numlocals, 1, 4, f);
-	fread(&signature, 1, 4, f);
-	fread(&codeofs, 1, 4, f);
-	fread(&codeend, 1, 4, f);
+	fread_le(&numargs, f);
+	fread_le(&numlocals, f);
+	fread_le(&signature, f);
+	fread_le(&codeofs, f);
+	fread_le(&codeend, f);
 	fread(&coreimage, 1, 1, f);
 	fread(name, 1, IDENTIFIER_LEN, f);
 	fread(argtype, 1, numlocals, f);
@@ -702,6 +704,7 @@ bool VCCompiler::CompileAll()
 		CompilePass();
 	}
     catch (LexerNotInitializedException lni) {
+		(void)lni;
         sprintf(errmsg, "Lexer not initialized");
         result = false;
     } catch (CircularIncludeException cie) {
@@ -1227,7 +1230,7 @@ bool VCCompiler::Process(char *fn)
 					pp_included_files.pop_back();
 					return false;
 				}
-				while (*s && *s++ != '\n');
+				while (*s && *s++ != '\n') {}
 				pp_filetag(fn);
 				pp_linetag(++curline);
 				pp_total_lines++;
@@ -1483,7 +1486,7 @@ void VCCompiler::ParseWhitespace()
         {
 			srcofs++;
 			strcpy(sourcefile, &source.chunk[srcofs]);
-			while (source[srcofs++]);
+			while (source[srcofs++]) {}
 			skipped = true;
         }
         if (source[srcofs] == PP_LINETAG)
@@ -2950,7 +2953,7 @@ void VCCompiler::SkipVariables()
 					group--;
 				if (TokenIs("\""))  // quoted string
 				{
-					while (source[srcofs++] != '\"');
+					while (source[srcofs++] != '\"') {}
 					source.setpos(srcofs);
 					if (!group && (NextIs(";") || NextIs(","))) break;
 					GetToken();

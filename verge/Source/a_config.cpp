@@ -55,7 +55,10 @@ void cfg_Init(char *fn)
 	//and never will be
 	//better handling might be required in the future
 	sprintf(cfgfn,"%s",fn);
-#else
+#elif __WII__
+	//likewise above
+	sprintf(cfgfn,"%s",fn);
+#else 
 	GetCurrentDirectory(255, cfgfn);
 	strcat(cfgfn, va("\\%s",fn));
 #endif

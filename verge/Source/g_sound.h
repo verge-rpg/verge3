@@ -69,8 +69,7 @@ void FreeSong(int h);
 
 void snd_Shutdown();
 
-#ifndef _G_SOUND_CPP
 extern SoundEngine *snd_engine;
-#endif
+extern char playingsng[];
 
 #endif

@@ -17,6 +17,7 @@
 #include "xerxes.h"
 #include "garlick.h"
 #include "lua_main.h"
+#include "opcodes.h"
 
 #include <memory>
 #include <functional>
@@ -165,7 +166,7 @@ void DisplayCompileImage()
 	fclose(f);
 	image *splash = xLoadImage("__temp__img$$$.gif");
 	remove("__temp__img$$$.gif");
-	Rect(0, 0, screen->width, screen->height, 0, screen);
+	DrawRect(0, 0, screen->width, screen->height, 0, screen);
 	Blit((screen->width/2)-(splash->width/2), (screen->height/2)-(splash->height/2), splash, screen);
 	delete splash;
 	ShowPage();
@@ -212,6 +213,9 @@ bool CompileMaps(const char *ext, MapScriptCompiler *compiler)
 //---
 void xmain(int argc, char *argv[])
 {
+	vc_initBuiltins();
+	vc_initLibrary();
+
 	InitGarlick();
 	Handle::init();
 	LoadConfig();
@@ -239,7 +243,7 @@ void xmain(int argc, char *argv[])
 	if (argc == 2)
 	{
 		if (strlen(argv[1]) > 254)
-			err("Mapname arguement too long!");
+			err("Mapname argument too long!");
 		strcpy(mapname, argv[1]);
 	}
 
@@ -258,18 +262,23 @@ void xmain(int argc, char *argv[])
 		InitEditCode();
 	}
 
+	#ifdef ENABLE_LUA
 	LUA *lua;
 
 	if(use_lua)
 		se = lua = new LUA();
+	#endif
 	
 	if (!releasemode)
 	{
 		DisplayCompileImage();
+		#ifdef ENABLE_LUA
 		if(use_lua) {
 			lua->compileSystem();
 			CompileMaps("lua",lua);
-		} else {
+		} else 
+		#endif
+		{
 			bool result = vcc->CompileAll();
 			if (!result) err(vcc->errmsg);
 			vcc->ExportSystemXVC();

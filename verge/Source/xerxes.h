@@ -11,6 +11,8 @@
 #ifndef XERXES_H
 #define XERXES_H
 
+#define ENABLE_LUA
+
 //version info macros
 #define DEF_VERSION "\"Verge 3.14 2008.09.29\""
 #define DEF_BUILD "20070708"
@@ -18,6 +20,8 @@
 #define DEF_OS "\"mac\""
 #elif __LINUX__
 #define DEF_OS "\"linux\""
+#elif __WII__
+#define DEF_OS "\"wii\""
 #else
 #define DEF_OS "\"win\""
 #endif
@@ -44,6 +48,7 @@
 #ifdef __LINUX__
 #define SND_USE_FMOD
 #endif
+
 
 //mbg 9/5/05 determine whether to use asm in ddblit
 //and other configs too
@@ -72,6 +77,12 @@
 #define CRIPPLED
 #define BLITTER_61BPP
 #define BLITTER_16BPP
+#elif __WII__
+#define CDECL
+#define BLITTER_32BPP
+//#define BLITTER_16BPP
+//#define BLITTER_15BPP
+//#define ENABLE_2XSAI
 #else
 #define DDBLIT_ASM
 #define CDECL _cdecl
@@ -141,6 +152,11 @@ typedef unsigned char  byte;
 #include "../corona/corona.h"
 #define strlwr _strlwr
 #define strupr _strupr
+
+//mbg 114/08 adding wii support
+#elif __WII__
+#include "wiisys.h"
+#undef ENABLE_LUA
 #endif
 
 /* xerxes includes */
@@ -188,6 +204,20 @@ typedef unsigned char  byte;
 #include "psp_movie.h"
 #include "psp_network.h"
 #include "psp.h"
+
+//mbg 02-nov-08 adding wii support
+#elif __WII__
+
+#include "vid_ddbase.h"
+#include "wii_system.h"
+#include "wii_timer.h"
+#include "wii_sound.h"
+#include "wii_keyboard.h"
+#include "wii_mouse.h"
+#include "wii_joystick.h"
+#include "wii_movie.h"
+#include "wii_network.h"
+#include "wii.h"
 
 #else
 

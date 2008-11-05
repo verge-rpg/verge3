@@ -7350,11 +7350,9 @@ void dd32_PutPixel_lucent(int x, int y, int color, image *dest)
 	c = (byte *) &color;
 	d = (byte *) dest->data;
 	d += ((y*dest->pitch)+x)<<2;
-#ifdef __APPLE__
 #ifdef __BIG_ENDIAN__
 	d++;
 	c++;
-#endif
 #endif
 	*d = ((*d * alpha) + (*c * ialpha)) / 100; d++; c++;
 	*d = ((*d * alpha) + (*c * ialpha)) / 100; d++; c++;
@@ -10453,7 +10451,7 @@ void dd_RegisterBlitters()
 			VLine			= dd16_VLine;
 			Line			= dd_Line;
 			Box				= dd_Box;
-			Rect            = dd_Rect;
+			DrawRect           = dd_Rect;
 			Sphere          = dd_Sphere;
 			Circle          = dd_Circle;
 			Blit            = dd16_Blit;
@@ -10496,7 +10494,7 @@ void dd_RegisterBlitters()
 			VLine			= dd16_VLine;
 			Line			= dd_Line;
 			Box				= dd_Box;
-			Rect            = dd_Rect;
+			DrawRect            = dd_Rect;
 			Sphere          = dd_Sphere;
 			Circle          = dd_Circle;
 			Blit            = dd16_Blit;
@@ -10539,7 +10537,7 @@ void dd_RegisterBlitters()
 			VLine			= dd61_VLine;
 			Line			= dd_Line;
 			Box				= dd_Box;
-			Rect            = dd_Rect;
+			DrawRect            = dd_Rect;
 			Sphere          = dd_Sphere;
 			Circle          = dd_Circle;
 			Blit            = dd61_Blit;
@@ -10582,7 +10580,7 @@ void dd_RegisterBlitters()
 			VLine			= dd32_VLine;
 			Line			= dd_Line;
 			Box				= dd_Box;
-			Rect            = dd_Rect;
+			DrawRect            = dd_Rect;
 			Sphere          = dd_Sphere;
 			Circle          = dd_Circle;
 			Blit            = dd32_Blit;
