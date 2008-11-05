@@ -82,6 +82,7 @@ GifFileType *DGifOpenFileName(const char *FileName)
 *   Returns GifFileType pointer dynamically allocated which serves as the gif *
 *   info record. _GifError is cleared if succesfull.                          *
 ******************************************************************************/
+#if 0 //mbg 04-nov-08 - unused
 GifFileType *DGifOpenFileHandle(int FileHandle)
 {
     char Buf[GIF_STAMP_LEN+1];
@@ -149,6 +150,7 @@ GifFileType *DGifOpenFileHandle(int FileHandle)
 
     return GifFile;
 }
+#endif
 
 /******************************************************************************
 * GifFileType constructor with user supplied input function (TVT)             *
