@@ -172,7 +172,7 @@ void Font::PrintString(char *str, int x, int y, image *dest, ...)
 				if (!*++s) return;
 				if (*s != '\n')
 				{
-					*--s;
+					--s;
 				}
 			}
 			x = x1;
