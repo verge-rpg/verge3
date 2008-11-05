@@ -27,7 +27,7 @@ char *smal_tbl[]=
 { sBlank,
     sYow,  sQuote,    sNum,   sBuck,sPercnt, sCarot, sQuotes, slParen,
  srParen,    star,    sPtr,  sComma, sMinus,sPeriod,  sSlash,      s0,
-      s1,      s2,      s3,      s4,     s5,     s6,      s7,      s8,
+      s1,      s2,      s3,      s4,     s5,     s6,      s7,      _s8,
       s9,  sColon,  ssemic,      ss,     ss,    sra,  sQuest,     sAT,
      sbA,     sbB,     sbC,     sbD,    sbE,    sbF,     sbG,     sbH,
      sbI,     sbJ,     sbK,     sbL,    sbM,    sbN,     sbO,     sbP,
@@ -108,7 +108,7 @@ void PrintString(char *str, image *dest, ...)
 				if (!*++str) return;
 				if (*str != '\n')
 				{
-					*--str;
+					--str;
 				}
 			}
 			GotoXY(x1, fonty + 7);

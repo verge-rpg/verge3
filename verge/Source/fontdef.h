@@ -604,7 +604,7 @@ char s7[]=
     zz,xx,zz,
     zz,xx,zz};
 
-char s8[]=
+char _s8[]=
    {4,
     zz,xx,xx,zz,
     xx,zz,zz,xx,
