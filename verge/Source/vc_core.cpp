@@ -212,7 +212,7 @@ void VCCore::LoadCore(VFILE *f, int cimage, bool append, bool patch_others)
 		UnloadCore(cimage);
 
 	int newfuncs;
-	_vread(&newfuncs, 4, f);
+	fread_le(&newfuncs, f->fp);
 	if (!newfuncs) return;
 
 	for (int i=0; i<newfuncs; i++) {
