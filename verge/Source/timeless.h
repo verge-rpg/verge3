@@ -9,7 +9,7 @@
 /// changes you made below this line.
 
 
-unsigned short timeless[] =
+const unsigned short timeless[] =
 {
  3840,256,0,0,0,256,0,0,0,256,0,0,256,0,0,0,
  256,0,0,256,0,0,256,0,0,256,0,0,256,0,256,0,
