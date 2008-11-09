@@ -283,11 +283,12 @@ public:
 
 	std::vector<function_t*>	userfuncs[NUM_CIMAGES];
 	
-	typedef std::map<quad,int> TUserFuncMap;
-	struct UserFuncLookupRecord {
-		
+	struct TUserFuncMap {
+		quad hash;
+		int index;
+		bool operator < (TUserFuncMap const & rhs) const { return hash < rhs.hash; }		
 	};
-	TUserFuncMap userfuncMap[NUM_CIMAGES];
+	TUserFuncMap* userfuncMap[NUM_CIMAGES];
 
 private:
 	std::vector<int_t*>					global_ints;

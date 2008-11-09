@@ -15,6 +15,7 @@
  ******************************************************************/
 
 #include <stdarg.h>
+#include <algorithm>
 #include "xerxes.h"
 #include "opcodes.h"
 
@@ -66,6 +67,7 @@ extern void VcBuildLibraryDispatchTable ();
 
 VCCore::VCCore()
 {
+	userfuncMap[0] = userfuncMap[1] = userfuncMap[2] = 0;
 	VcBuildLibraryDispatchTable();
 
 	int_stack_base = 0;
@@ -101,7 +103,8 @@ VCCore::~VCCore()
 		for (j=0; j<userfuncs[i].size(); j++)
 			delete userfuncs[i][j];
 		userfuncs[i].clear();
-		userfuncMap[i].clear();
+		delete[] userfuncMap[i];
+		userfuncMap[i] = 0;
 	}
 
 	delete[] vcint;
@@ -119,17 +122,16 @@ bool VCCore::ExecuteFunctionString(const StringRef &script)
 	std::string s = script.str();
 	to_lower(s);
 
-	//todo - this COULD be a list with a binary search. that would chunk memory less
-	//we'll try that later.
-
 	quad hash = FastHash(s.c_str());
 	for(int i=0; i<NUM_CIMAGES; i++) {
-		TUserFuncMap::iterator it = userfuncMap[i].find(hash);
-		if(it == userfuncMap[i].end()) continue;
+		TUserFuncMap find; find.hash = hash;
+		TUserFuncMap *end = userfuncMap[i]+userfuncs[i].size();
+		TUserFuncMap *found = std::lower_bound( userfuncMap[i], end, find );
+		if(found == end || found->hash != hash) continue;
 	
 		invc++;
 		// Overkill (2007-05-02): Argument passing introduced.
-		ExecuteUserFunc(i, it->second, true);
+		ExecuteUserFunc(i, found->index, true);
 		invc--;
 
 		return true;
@@ -144,16 +146,16 @@ bool VCCore::FunctionExists(const StringRef &script)
 	std::string s = script.str();
 	to_lower(s);
 
-	//todo - this COULD be a list with a binary search. that would chunk memory less
-	//we'll try that later.
-
 	quad hash = FastHash(s.c_str());
 	for(int i=0; i<NUM_CIMAGES; i++) {
-		TUserFuncMap::iterator it = userfuncMap[i].find(hash);
-		if(it == userfuncMap[i].end()) continue;
+		TUserFuncMap find; find.hash = hash;
+		TUserFuncMap *end = userfuncMap[i]+userfuncs[i].size();
+		TUserFuncMap *found = std::lower_bound( userfuncMap[i], end, find );
+		if(found == end || found->hash != hash) continue;
 	
 		return true;
 	}
+
 	return false;
 }
 
@@ -199,11 +201,14 @@ void VCCore::LoadSystemXVC()
 		struct_instances.push_back(new struct_instance(f));
 
 	fread_le(&size, f);
+	userfuncMap[CIMAGE_SYSTEM] = new TUserFuncMap[size];
 	for (i=0; i<size; i++) {
 		function_t* func = new function_t(f);
 		userfuncs[CIMAGE_SYSTEM].push_back(func);
-		userfuncMap[CIMAGE_SYSTEM][FastHash(func->name)] = i;
+		userfuncMap[CIMAGE_SYSTEM][i].index = i;
+		userfuncMap[CIMAGE_SYSTEM][i].hash = FastHash(func->name);
 	}
+	std::sort(userfuncMap[CIMAGE_SYSTEM],userfuncMap[CIMAGE_SYSTEM]+size);
 
 	// Allocate and initialize all vc global variables (to 0 or "")
 	vcint = new int[maxint];
@@ -223,6 +228,7 @@ void VCCore::LoadCore(VFILE *f, int cimage, bool append, bool patch_others)
 	fread_le(&newfuncs, f->fp);
 	if (!newfuncs) return;
 
+	userfuncMap[cimage] = new TUserFuncMap[newfuncs];
 	for (int i=0; i<newfuncs; i++) {
 		function_t *func =new function_t(f->fp);
 
@@ -247,9 +253,13 @@ void VCCore::LoadCore(VFILE *f, int cimage, bool append, bool patch_others)
 		}
 
 		userfuncs[cimage].push_back(func);
-		userfuncMap[cimage][FastHash(func->name)] = i;
+		userfuncMap[cimage][i].index = i;
+		userfuncMap[cimage][i].hash = FastHash(func->name);
 		vcc->PushFunction(cimage, func);
 	}
+
+	std::sort(userfuncMap[cimage],userfuncMap[cimage]+newfuncs);
+
 	if(append)
 		coreimages[cimage].Append(f->fp, true);
 	else
@@ -290,7 +300,8 @@ void VCCore::UnloadCore(int cimage)
 	}
 	vcc->ClearFunctionList(cimage);
 	userfuncs[cimage].clear();
-	userfuncMap[cimage].clear();
+	delete[] userfuncMap[cimage];
+	userfuncMap[cimage] = 0;
 }
 
 Chunk *VCCore::GetCore(int cimage)
