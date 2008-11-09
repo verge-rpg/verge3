@@ -142,7 +142,7 @@
 				BrowseInformation="1"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
+				DebugInformationFormat="3"
 				DisableSpecificWarnings="4018;4731"
 			/>
 			<Tool
@@ -328,6 +328,20 @@
 						PrecompiledHeaderThrough="xerxes.h"
 					/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="2"
+						PrecompiledHeaderThrough="xerxes.h"
+						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Source\a_string.cpp"
+				>
 				<FileConfiguration
 					Name="Release|Win32"
 					>

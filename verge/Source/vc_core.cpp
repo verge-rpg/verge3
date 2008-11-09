@@ -99,6 +99,7 @@ VCCore::~VCCore()
 		for (j=0; j<userfuncs[i].size(); j++)
 			delete userfuncs[i][j];
 		userfuncs[i].clear();
+		userfuncMap[i].clear();
 	}
 
 	delete[] vcint;
@@ -111,42 +112,46 @@ void VCCore::ExecAutoexec()
 	ExecuteFunctionString("autoexec");
 }
 
-//TODO - yuck I cant believe this looks at all the strings
-bool VCCore::ExecuteFunctionString(const std::string &script)
+bool VCCore::ExecuteFunctionString(const StringRef &script)
 {
-	std::string s = script;
+	std::string s = script.str();
 	to_lower(s);
 
-	int i, j;
+	//todo - this COULD be a list with a binary search. that would chunk memory less
+	//we'll try that later.
 
-	strcasecmp(s,s);
+	quad hash = FastHash(s.c_str());
+	for(int i=0; i<NUM_CIMAGES; i++) {
+		TUserFuncMap::iterator it = userfuncMap[i].find(hash);
+		if(it == userfuncMap[i].end()) continue;
+	
+		invc++;
+		// Overkill (2007-05-02): Argument passing introduced.
+		ExecuteUserFunc(i, it->second, true);
+		invc--;
 
-	for (i=0; i<NUM_CIMAGES; i++)
-		for (j=0; j<userfuncs[i].size(); j++)
-			if (!strcasecmp(userfuncs[i][j]->name, s)) {
-				invc++;
-				// Overkill (2007-05-02): Argument passing introduced.
-				ExecuteUserFunc(i, j, true);
-				invc--;
+		return true;
+	}
 
-				return true;
-			}
 	return false;
 }
 
-bool VCCore::FunctionExists(const std::string &func)
+//TODO - yuck I cant believe this looks at all the strings
+bool VCCore::FunctionExists(const StringRef &script)
 {
-	std::string s = func;
+	std::string s = script.str();
 	to_lower(s);
 
-	int i, j;
+	//todo - this COULD be a list with a binary search. that would chunk memory less
+	//we'll try that later.
 
-	for (i=0; i<NUM_CIMAGES; i++)
-		for (j=0; j<userfuncs[i].size(); j++)
-			if (!strcasecmp(userfuncs[i][j]->name, s)) {
-				return true;
-			}
-
+	quad hash = FastHash(s.c_str());
+	for(int i=0; i<NUM_CIMAGES; i++) {
+		TUserFuncMap::iterator it = userfuncMap[i].find(hash);
+		if(it == userfuncMap[i].end()) continue;
+	
+		return true;
+	}
 	return false;
 }
 
@@ -192,15 +197,16 @@ void VCCore::LoadSystemXVC()
 		struct_instances.push_back(new struct_instance(f));
 
 	fread_le(&size, f);
-	for (i=0; i<size; i++)
-		userfuncs[CIMAGE_SYSTEM].push_back(new function_t(f));
+	for (i=0; i<size; i++) {
+		function_t* func = new function_t(f);
+		userfuncs[CIMAGE_SYSTEM].push_back(func);
+		userfuncMap[CIMAGE_SYSTEM][FastHash(func->name)] = i;
+	}
 
 	// Allocate and initialize all vc global variables (to 0 or "")
 	vcint = new int[maxint];
-	vcstring = new std::string[maxstr];
+	vcstring = new StringRef[maxstr];
 	memset(vcint, 0, maxint*4);
-	for (i=0; i<maxstr; i++)
-		vcstring[i] = "";
 
 	coreimages[CIMAGE_SYSTEM].LoadChunk(f);
 	vclose(vf);
@@ -239,6 +245,7 @@ void VCCore::LoadCore(VFILE *f, int cimage, bool append, bool patch_others)
 		}
 
 		userfuncs[cimage].push_back(func);
+		userfuncMap[cimage][FastHash(func->name)] = i;
 		vcc->PushFunction(cimage, func);
 	}
 	if(append)
@@ -281,6 +288,7 @@ void VCCore::UnloadCore(int cimage)
 	}
 	vcc->ClearFunctionList(cimage);
 	userfuncs[cimage].clear();
+	userfuncMap[cimage].clear();
 }
 
 Chunk *VCCore::GetCore(int cimage)
@@ -302,14 +310,14 @@ int VCCore::PopInt()
 	return int_stack[--int_stack_ptr];
 }
 
-void VCCore::PushString(std::string s)
+void VCCore::PushString(StringRef s)
 {
 	if (str_stack_ptr < 0 || str_stack_ptr > 1024)
 		err("VCCore::PushString() Stack overflow!");
 	str_stack[str_stack_ptr++] = s;
 }
 
-std::string VCCore::PopString()
+StringRef VCCore::PopString()
 {
 	if (str_stack_ptr<=0 || str_stack_ptr>1024)
 		err("VCCore::PopString() Stack underflow!");
@@ -334,7 +342,7 @@ int VCCore::GetIntArgument(int index)
 	return int_stack[int_stack_base + in_func->numlocals + index];
 }
 
-std::string VCCore::GetStringArgument(int index)
+StringRef VCCore::GetStringArgument(int index)
 {
 	if (index >= vararg_stack[vararg_stack.size() - 1].size())
 	{
@@ -352,7 +360,7 @@ void VCCore::SetIntArgument(int index, int value)
 	int_stack[int_stack_base + in_func->numlocals + index] = value;	
 }
 
-void VCCore::SetStringArgument(int index, std::string value)
+void VCCore::SetStringArgument(int index, StringRef value)
 {
 	if (index >= vararg_stack[vararg_stack.size() - 1].size())
 	{
@@ -723,9 +731,9 @@ int VCCore::ResolveOperand()
 	return num;
 }
 
-std::string VCCore::ProcessString()
+StringRef VCCore::ProcessString()
 {
-	std::string ret;
+	StringRef ret;
 	int d;
 	byte c = currentvc->GrabC();
 	byte temp;
@@ -899,19 +907,30 @@ std::string VCCore::ProcessString()
 	return ret;
 }
 
-std::string VCCore::ResolveString()
+StringRef VCCore::ResolveString()
 {
 	byte c;
-	std::string ret = ProcessString();
+	StringRef ret = ProcessString();
+	std::string temp;
+	bool useTemp = false;
 	do
 	{
 		c = currentvc->GrabC();
-		if (c == sADD)
-			ret += ProcessString();
+		if (c == sADD) {
+			if(!useTemp) {
+				temp = ret.str();
+				useTemp = true;
+			}
+			temp += ProcessString().str();
+		}
 		else if (c != sEND)
 			vcerr("VCCore::ResolveString() - Unknown string operator %d", (int) c);
 	} while (c != sEND);
-	return ret;
+
+	if(useTemp)
+		return temp;
+	else
+		return ret;
 }
 
 void VCCore::ExecuteBlock()
@@ -1050,7 +1069,7 @@ void VCCore::ArgumentPassAddInt(int value)
 	argument_pass_list.push_back(arg);
 }
 
-void VCCore::ArgumentPassAddString(std::string value)
+void VCCore::ArgumentPassAddString(StringRef value)
 {
 	argument_t arg;
 	arg.type_id = t_STRING;
@@ -1232,7 +1251,6 @@ void VCCore::HandleAssign()
 {
 	int	op, value, base=0, offset=0;
 	byte c = currentvc->GrabC();
-	std::string tempstr;
 
 	if(c == strPLUGINVAR) {
 		int idx = currentvc->GrabD();
@@ -1260,6 +1278,7 @@ void VCCore::HandleAssign()
 
 	if (c == strHSTR0)  // WRITESTR
 	{
+		StringRef tempstr;
 		int idx = currentvc->GrabD();
 		c = currentvc->GrabC();
 		if (c != aSET)
@@ -1267,7 +1286,7 @@ void VCCore::HandleAssign()
 		switch (idx)
 		{
 			case 85: tempstr = ResolveString();
-					 if (current_map) strcpy(current_map->renderstring, to_upper_copy(tempstr).c_str());
+					 if (current_map) strcpy(current_map->renderstring, to_upper_copy(tempstr.str()).c_str());
 					 break;
 			case 95: clipboard_setText(ResolveString().c_str()); break;
 			case 104: tempstr = ResolveString();
@@ -1549,7 +1568,7 @@ void VCCore::LookupOffset(int ofs, std::string &s)
 	s += va("\tUNKNOWN: %d\n", ofs);
 }
 
-void VCCore::DisplayError(const std::string &msg)
+void VCCore::DisplayError(const StringRef &msg)
 {
 	std::string s = msg;
 	s += ": \n\n";
@@ -1560,9 +1579,8 @@ void VCCore::DisplayError(const std::string &msg)
 	err(s.c_str());
 }
 
-std::vector<std::string> VCCore::ListStructMembers(const char *structname)
+void VCCore::ListStructMembers(std::vector<StringRef> &result, const char *structname)
 {
-	std::vector<std::string> result;
 	for (int i=0; i<struct_instances.size(); i++)
 	{
 		if (!strcasecmp(struct_instances[i]->name, structname))
@@ -1571,12 +1589,11 @@ std::vector<std::string> VCCore::ListStructMembers(const char *structname)
 			{
 				result.push_back(struct_instances[j]->is->elements[j]->name);
 			}
-			return result;
+			return;
 		}
 	}
 
 	err("Unexpected condition in VCCore::ListStructMembers! please contact tech support immediately!");
-	return result;
 }
 
 bool VCCore::CopyArray(const char *srcname, const char *destname)

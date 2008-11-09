@@ -27,13 +27,13 @@ public:
 	bool CompileMap(const char *fname);
 	
 	//ScriptEngine implementations
-	void DisplayError(const std::string &msg) {
+	void DisplayError(const StringRef& msg) {
 		::err(msg.c_str());
 	}
 	
 	virtual void LoadMapScript(VFILE *f);
 	virtual void ExecAutoexec();
-	virtual bool ExecuteFunctionString(const std::string &func) {
+	virtual bool ExecuteFunctionString(const StringRef& func) {
 		//the gettop/settop is to recover the stack from the user having returned a value from the callback function (we dont want one)
 		int temp = lua_gettop(L);
 
@@ -43,12 +43,12 @@ public:
 		lua_getglobal(L, func.c_str());
 		bool ret = lua_isfunction(L,-1);
 
-		if(ret) if(lua_pcall(L,0,0,errhandler)) err("Error when calling '" + func + "'");
+		if(ret) if(lua_pcall(L,0,0,errhandler)) err("Error when calling '" + func.str() + "'");
 
 		lua_settop(L,temp);
 		return ret;
 	}
-	virtual bool FunctionExists(const std::string &func) {
+	virtual bool FunctionExists(const StringRef& func) {
 		lua_getglobal(L, func.c_str());
 		bool ret = lua_isfunction(L, -1);
 		lua_remove(L, -1);
@@ -58,11 +58,11 @@ public:
 private:
 	lua_State *L;
 
-	void err(std::string msg) {
+	void err(const std::string &msg) {
 		::err("%s: %s",msg.c_str(),lua_tostring(L, -1));
 	}
 
-	void dump(std::string msg) {
+	void dump(const std::string &msg) {
 		::err("%s",msg.c_str());
 		//todo - dump stacktrace or offending line or something
 	}

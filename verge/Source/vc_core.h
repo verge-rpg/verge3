@@ -225,7 +225,7 @@ struct argument_t
 {
 	byte type_id;
 	int int_value;
-	std::string string_value;
+	StringRef string_value;
 };
 
 class VCCore : public ScriptEngine {
@@ -240,11 +240,11 @@ public:
 	void LoadMapScript(VFILE *f);
 	void ExecAutoexec();
 	void Decompile();
-	bool ExecuteFunctionString(const std::string &script);
-	bool FunctionExists(const std::string &func);
+	bool ExecuteFunctionString(const StringRef& script);
+	bool FunctionExists(const StringRef &func);
 	int ResolveOperand();
-	std::string ResolveString();
-	void DisplayError(const std::string &msg);
+	StringRef ResolveString();
+	void DisplayError(const StringRef &msg);
 	void vcerr(char *str, ...) {
 	  	va_list argptr;
 		char msg[256];
@@ -256,9 +256,9 @@ public:
 	}
 
 	int vcreturn;
-	std::string vcretstr;
+	StringRef vcretstr;
 
-	std::vector<std::string> ListStructMembers(const char *structname);
+	void ListStructMembers(std::vector<StringRef> &result, const char *structname);
 
 	bool CopyArray(const char *srcname, const char *destname);
 
@@ -269,7 +269,7 @@ public:
 	std::vector<argument_t> argument_pass_list;
 
 	void ArgumentPassAddInt(int value);
-	void ArgumentPassAddString(std::string value);
+	void ArgumentPassAddString(StringRef value);
 	void ArgumentPassClear();
 
 	void SetInt(const char *intname, int value);
@@ -282,6 +282,12 @@ public:
 	std::string GetStrArray(const char *strname, int index);
 
 	std::vector<function_t*>	userfuncs[NUM_CIMAGES];
+	
+	typedef std::map<quad,int> TUserFuncMap;
+	struct UserFuncLookupRecord {
+		
+	};
+	TUserFuncMap userfuncMap[NUM_CIMAGES];
 
 private:
 	std::vector<int_t*>			global_ints;
@@ -296,14 +302,14 @@ private:
 
 	int int_stack[1024+20];
 	int int_stack_base, int_stack_ptr;
-	std::string str_stack[1024+20];
+	StringRef str_stack[1024+20];
 	int str_stack_base, str_stack_ptr;
 	int int_last_base, str_last_base;
 	std::vector < std::vector<argument_t> > vararg_stack;
 	function_t *in_func;
 
 	int *vcint;
-	std::string *vcstring;
+	StringRef *vcstring;
 	int maxint, maxstr;
 
 	Chunk* currentvc;
@@ -315,10 +321,10 @@ private:
 
 	void PushInt(int n);
 	int  PopInt();
-	void PushString(std::string s);
-	std::string PopString();
+	void PushString(StringRef s);
+	StringRef PopString();
 
-	std::string ProcessString();
+	StringRef ProcessString();
 	int  ProcessOperand();
 	int  ReadInt(int c, int i, int ofs);
 	void WriteInt(int c, int i, int ofs, int value);
@@ -334,9 +340,9 @@ private:
 	void ExecuteUserFunc(int cimage, int i, bool argument_pass = false);
 
 	int GetIntArgument(int index);
-	std::string GetStringArgument(int index);
+	StringRef GetStringArgument(int index);
 	void SetIntArgument(int index, int value);
-	void SetStringArgument(int index, std::string value);
+	void SetStringArgument(int index, StringRef value);
 
 	FILE *vcd;
 	int dtablvl;

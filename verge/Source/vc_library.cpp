@@ -105,7 +105,7 @@ int HandleForDict(dict *d)
 }
 
 VC_LIBFUNC(vc_Exit) () {
-	std::string message = vc->ResolveString();
+	StringRef message = vc->ResolveString();
 	err("%s", message.c_str());
 }
 
@@ -390,7 +390,7 @@ VC_LIBFUNC(vc_ImageWidth) () { vc->vcreturn = vc->ImageWidth(vc->ResolveOperand(
 VC_LIBFUNC(vc_ImageHeight) () { vc->vcreturn = vc->ImageHeight(vc->ResolveOperand()); }
 
 VC_LIBFUNC(vc_LoadFontEx) () {
-	std::string filename = vc->ResolveString();
+	StringRef filename = vc->ResolveString();
 	int width = vc->ResolveOperand();
 	int height = vc->ResolveOperand();
 	vc->vcreturn = vc->LoadFont(filename,width,height);
@@ -405,7 +405,7 @@ VC_LIBFUNC(vc_SetCharacterWidth) ()
 }
 
 VC_LIBFUNC(vc_LoadFont) () {
-	std::string filename = vc->ResolveString();
+	StringRef filename = vc->ResolveString();
 	vc->vcreturn = vc->LoadFontEx(filename);
 }
 
@@ -416,7 +416,7 @@ VC_LIBFUNC(vc_PrintString) () {
 	int y = vc->ResolveOperand();
 	int dest = vc->ResolveOperand();
 	int fh =vc->ResolveOperand();
-	std::string text = vc->ResolveString();
+	StringRef text = vc->ResolveString();
 	vc->PrintString(x,y,dest,fh,text);
 }
 
@@ -425,7 +425,7 @@ VC_LIBFUNC(vc_PrintRight) () {
 	int y = vc->ResolveOperand();
 	int dest = vc->ResolveOperand();
 	int fh =vc->ResolveOperand();
-	std::string text = vc->ResolveString();
+	StringRef text = vc->ResolveString();
 	vc->PrintRight(x,y,dest,fh,text);
 }
 
@@ -434,14 +434,14 @@ VC_LIBFUNC(vc_PrintCenter) () {
 	int y = vc->ResolveOperand();
 	int dest = vc->ResolveOperand();
 	int fh =vc->ResolveOperand();
-	std::string text = vc->ResolveString();
+	StringRef text = vc->ResolveString();
 	vc->PrintCenter(x,y,dest,fh,text);
 }
 
 
 VC_LIBFUNC(vc_TextWidth) () {
 	int fh = vc->ResolveOperand();
-	std::string text = vc->ResolveString();
+	StringRef text = vc->ResolveString();
 	vc->vcreturn = vc->TextWidth(fh,text);
 }
 
@@ -494,7 +494,7 @@ int vc_GetSecond()
 }
 
 VC_LIBFUNC(vc_FileOpen) () {
-	std::string fname = vc->ResolveString();
+	StringRef fname = vc->ResolveString();
 	int mode = vc->ResolveOperand();
 	vc->vcreturn = vc->FileOpen(fname,mode);
 }
@@ -503,13 +503,13 @@ VC_LIBFUNC(vc_FileClose) () { vc->FileClose(vc->ResolveOperand()); }
 
 VC_LIBFUNC(vc_FileWrite) () {
 	int handle = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->FileWrite(handle,s);
 }
 
 VC_LIBFUNC(vc_FileWriteln) () {
 	int handle = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->FileWriteln(handle,s);
 }
 
@@ -536,7 +536,7 @@ VC_LIBFUNC(vc_PlaySound) () {
 
 VC_LIBFUNC(vc_CallFunction) ()
 {
-	std::string func = vc->ResolveString();
+	StringRef func = vc->ResolveString();
 	std::vector<argument_t> arguments;
 	if (vc->CheckForVarargs())
 	{
@@ -605,7 +605,7 @@ VC_LIBFUNC(vc_FileWriteQuad) () {
 
 VC_LIBFUNC(vc_FileWriteString) () {
 	int handle = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->FileWriteString(handle,s);
 }
 
@@ -650,20 +650,20 @@ VC_LIBFUNC(vc_TBlitLucent) ()
 
 VC_LIBFUNC(vc_Map) ()
 {
-	std::string map = vc->ResolveString();
+	StringRef map = vc->ResolveString();
 	vc->Map(map);
 }
 
 VC_LIBFUNC(vc_strcmp) ()
 {
-	std::string s1 = vc->ResolveString();
-	std::string s2 = vc->ResolveString();
+	StringRef s1 = vc->ResolveString();
+	StringRef s2 = vc->ResolveString();
 	vc->vcreturn = vc->Strcmp(s1,s2);
 }
 
 VC_LIBFUNC(vc_strdup) ()
 {
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	int times = vc->ResolveOperand();
 	vc->vcretstr = vc->Strdup(s,times);
 }
@@ -672,19 +672,19 @@ VC_LIBFUNC(vc_HookTimer) () { vc->HookTimer(vc->ResolveString()); }
 VC_LIBFUNC(vc_HookRetrace) () { vc->HookRetrace(vc->ResolveString()); }
 VC_LIBFUNC(vc_HookKey) () { 
 	int k = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->HookKey(k,s);
 }
 VC_LIBFUNC(vc_HookButton) () { 
 	int b = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->HookButton(b,s);
 }
 
 VC_LIBFUNC(vc_HookEntityRender) ()
 {
 	int i = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->HookEntityRender(i,s);
 }
 
@@ -829,7 +829,7 @@ VC_LIBFUNC(vc_WindowCreate) () {
 	int y = vc->ResolveOperand();
 	int w = vc->ResolveOperand();
 	int h = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->vcreturn = vc->WindowCreate(x,y,w,h,s);
 }
 
@@ -859,7 +859,7 @@ VC_LIBFUNC(vc_WindowSetPosition) () {
 
 VC_LIBFUNC(vc_WindowSetTitle) () {
 	int win = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->WindowSetTitle(win,s);
 }
 
@@ -900,17 +900,16 @@ VC_LIBFUNC(vc_SetSongPos) () {
 VC_LIBFUNC(vc_SetMusicVolume) () { vc->SetMusicVolume(vc->ResolveOperand()); }
 
 
-bool isdelim(char c, std::string s);
 VC_LIBFUNC(vc_TokenCount) () {
-	std::string s = vc->ResolveString();
-	std::string d = vc->ResolveString();
+	StringRef s = vc->ResolveString();
+	StringRef d = vc->ResolveString();
 	vc->vcreturn = vc->TokenCount(s,d);
 }
 
 VC_LIBFUNC(vc_GetToken) ()
 {
-	std::string s = vc->ResolveString();
-	std::string d = vc->ResolveString();
+	StringRef s = vc->ResolveString();
+	StringRef d = vc->ResolveString();
 	int i = vc->ResolveOperand();
 	vc->vcretstr = vc->GetToken(s,d,i);
 }
@@ -922,15 +921,15 @@ VC_LIBFUNC(vc_ToUpper) () { vc->vcretstr = vc->ToUpper(vc->ResolveString()); }
 // Thank you, Zip.
 VC_LIBFUNC(vc_strpos) ()
 {
-	std::string sub = vc->ResolveString();
-	std::string source = vc->ResolveString();
+	StringRef sub = vc->ResolveString();
+	StringRef source = vc->ResolveString();
 	int start = vc->ResolveOperand();
-	vc->vcreturn = source.find(sub, start);
+	vc->vcreturn = source.str().find(sub, start);
 }
 
 // Overkill: 2005-12-28
 // Helper function.
-int GetTokenPos(std::string teststr, std::string tokens, int pos, int tok)
+int GetTokenPos(StringRef teststr, StringRef tokens, int pos, int tok)
 {
 	int i = 0;
 	bool last = false;
@@ -971,8 +970,8 @@ int GetTokenPos(std::string teststr, std::string tokens, int pos, int tok)
 VC_LIBFUNC(vc_GetTokenPos) ()
 {
 
-	std::string teststr = vc->ResolveString();
-	std::string tokens = vc->ResolveString();
+	StringRef teststr = vc->ResolveString();
+	StringRef tokens = vc->ResolveString();
 	int pos = vc->ResolveOperand();
 	int tok = vc->ResolveOperand();
 	vc->vcreturn = GetTokenPos(teststr, tokens, pos, tok);
@@ -983,8 +982,8 @@ VC_LIBFUNC(vc_GetTokenPos) ()
 // Thank you, Zip.
 VC_LIBFUNC(vc_TokenLeft) ()	// Excludes token.
 {
-	std::string full = vc->ResolveString();
-	std::string tokens = vc->ResolveString();
+	StringRef full = vc->ResolveString();
+	StringRef tokens = vc->ResolveString();
 	int pos = vc->ResolveOperand();
 	if (pos < 1)
 	{
@@ -1009,8 +1008,8 @@ VC_LIBFUNC(vc_TokenLeft) ()	// Excludes token.
 //	Fixed a bug where it included the delimiter character in TokenRight()
 VC_LIBFUNC(vc_TokenRight) ()
 {
-	std::string full = vc->ResolveString();
-	std::string tokens = vc->ResolveString();
+	StringRef full = vc->ResolveString();
+	StringRef tokens = vc->ResolveString();
 	int pos = vc->ResolveOperand();
 	if (pos < 1)
 	{
@@ -1034,8 +1033,8 @@ VC_LIBFUNC(vc_TokenRight) ()
 // Thank you, Zip.
 VC_LIBFUNC(vc_strovr) ()
 {
-	std::string rep = vc->ResolveString();
-	std::string source = vc->ResolveString();
+	StringRef rep = vc->ResolveString();
+	StringRef source = vc->ResolveString();
 	int offset = vc->ResolveOperand();
 	vc->vcretstr = strovr(source, rep, offset);
 }
@@ -1051,7 +1050,7 @@ VC_LIBFUNC(vc_WrapText) ()
 {
 
 	int wt_font = vc->ResolveOperand();
-	std::string wt_s = vc->ResolveString();
+	StringRef wt_s = vc->ResolveString();
 	int wt_linelen = vc->ResolveOperand();
 	vc->vcretstr = ScriptEngine::WrapText(wt_font,wt_s,wt_linelen);
 }
@@ -1072,7 +1071,7 @@ VC_LIBFUNC(vc_PlayMovie) () { vc->vcreturn = vc->PlayMovie(vc->ResolveString());
 VC_LIBFUNC(vc_AbortMovie) () { vc->AbortMovie(); }
 
 VC_LIBFUNC(vc_MovieLoad) () {
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	int mute = vc->ResolveOperand();
 	vc->vcreturn = vc->MovieLoad(s,mute!=0);
 }
@@ -1119,7 +1118,7 @@ VC_LIBFUNC(vc_SetObs) ()
 VC_LIBFUNC(vc_EntitySpawn) () {
 	int x = vc->ResolveOperand();
 	int y = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->vcreturn = vc->EntitySpawn(x,y,s);
 }
 
@@ -1135,19 +1134,19 @@ VC_LIBFUNC(vc_EntityStalk) ()
 
 VC_LIBFUNC(vc_EntityMove) () {
 	int e = vc->ResolveOperand();
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->EntityMove(e,s);
 }
 
 VC_LIBFUNC(vc_PlayerMove) ()
 {
-	std::string s = vc->ResolveString();
+	StringRef s = vc->ResolveString();
 	vc->PlayerMove(s);
 }
 
 VC_LIBFUNC(vc_ChangeCHR) () {
 	int e = vc->ResolveOperand();
-	std::string c = vc->ResolveString();
+	StringRef c = vc->ResolveString();
 	vc->ChangeCHR(e,c);
 }
 VC_LIBFUNC(vc_EntitySetWanderZone) () { vc->EntitySetWanderZone(vc->ResolveOperand()); }
@@ -1192,7 +1191,7 @@ VC_LIBFUNC(vc_SetButtonJB) () {
 
 VC_LIBFUNC(vc_FunctionExists) ()
 {
-	std::string f = vc->ResolveString();
+	StringRef f = vc->ResolveString();
 	vc->vcreturn = vc->FunctionExists(f.c_str());
 }
 
@@ -1214,33 +1213,33 @@ VC_LIBFUNC(vc_GetImageFromClipboard) () { vc->vcreturn = vc->GetImageFromClipboa
 
 VC_LIBFUNC(vc_SetInt) ()
 {
-	std::string intname = vc->ResolveString();
+	StringRef intname = vc->ResolveString();
 	int value = vc->ResolveOperand();
 	vc->SetInt(intname.c_str(), value);
 }
 
 VC_LIBFUNC(vc_GetInt) ()
 {
-	std::string intname = vc->ResolveString();
+	StringRef intname = vc->ResolveString();
 	vc->vcreturn = vc->GetInt(intname.c_str());
 }
 
 VC_LIBFUNC(vc_SetString) ()
 {
-	std::string strname = vc->ResolveString();
-	std::string value = vc->ResolveString();
+	StringRef strname = vc->ResolveString();
+	StringRef value = vc->ResolveString();
 	vc->SetStr(strname.c_str(), value);
 }
 
 VC_LIBFUNC(vc_GetString) ()
 {
-	std::string strname = vc->ResolveString();
+	StringRef strname = vc->ResolveString();
 	vc->vcretstr = vc->GetStr(strname.c_str());
 }
 
 VC_LIBFUNC(vc_SetIntArray) ()
 {
-	std::string intname = vc->ResolveString();
+	StringRef intname = vc->ResolveString();
 	int index = vc->ResolveOperand();
 	int value = vc->ResolveOperand();
 	vc->SetIntArray(intname.c_str(), index, value);
@@ -1248,22 +1247,22 @@ VC_LIBFUNC(vc_SetIntArray) ()
 
 VC_LIBFUNC(vc_GetIntArray) ()
 {
-	std::string intname = vc->ResolveString();
+	StringRef intname = vc->ResolveString();
 	int index = vc->ResolveOperand();
 	vc->vcreturn = vc->GetIntArray(intname.c_str(), index);
 }
 
 VC_LIBFUNC(vc_SetStringArray) ()
 {
-	std::string strname = vc->ResolveString();
+	StringRef strname = vc->ResolveString();
 	int index = vc->ResolveOperand();
-	std::string value = vc->ResolveString();
+	StringRef value = vc->ResolveString();
 	vc->SetStrArray(strname.c_str(), index, value);
 }
 
 VC_LIBFUNC(vc_GetStringArray) ()
 {
-	std::string strname = vc->ResolveString();
+	StringRef strname = vc->ResolveString();
 	int index = vc->ResolveOperand();
 	vc->vcretstr = vc->GetStrArray(strname.c_str(), index);
 }
@@ -1286,7 +1285,7 @@ VC_LIBFUNC(vc_SocketGetString) () { vc->vcretstr = vc->SocketGetString(vc->Resol
 
 VC_LIBFUNC(vc_SocketSendString) () {
 	int sh = vc->ResolveOperand();
-	std::string str = vc->ResolveString();
+	StringRef str = vc->ResolveString();
 	vc->SocketSendString(sh,str);
 }
 
@@ -1311,13 +1310,13 @@ VC_LIBFUNC(vc_GetUrlImage) () { vc->vcreturn = vc->GetUrlImage(vc->ResolveString
 
 VC_LIBFUNC(vc_SocketSendFile) () {
 	int sh = vc->ResolveOperand();
-	std::string fn = vc->ResolveString();
+	StringRef fn = vc->ResolveString();
 	vc->SocketSendFile(sh,fn);
 }
 
 VC_LIBFUNC(vc_SocketGetFile) () {
 	int sh = vc->ResolveOperand();
-	std::string override = vc->ResolveString();
+	StringRef override = vc->ResolveString();
 	vc->vcretstr = vc->SocketGetFile(sh,override); 
 }
 
@@ -1345,8 +1344,8 @@ VC_LIBFUNC(vc_DictGetString) () {
 
 VC_LIBFUNC(vc_DictSetString) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
-	std::string key = vc->ResolveString();
-	std::string value = vc->ResolveString();
+	StringRef key = vc->ResolveString();
+	StringRef value = vc->ResolveString();
 	d->SetString(key, value);
 }
 
@@ -1367,21 +1366,21 @@ VC_LIBFUNC(vc_DictGetInt) () {
 
 VC_LIBFUNC(vc_DictSetInt) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
-	std::string key = vc->ResolveString();
+	StringRef key = vc->ResolveString();
 	int value = vc->ResolveOperand();
 	d->SetString(key, va("%d", value));
 }
 
 VC_LIBFUNC(vc_DictRemove) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
-	std::string key = vc->ResolveString();
+	StringRef key = vc->ResolveString();
 	d->RemoveString(key);
 }
 
 // Overkill: 2007-06-20
 VC_LIBFUNC(vc_DictListKeys) () {
 	dict *d = DictForHandle(vc->ResolveOperand());
-	std::string separator = vc->ResolveString();
+	StringRef separator = vc->ResolveString();
 	vc->vcretstr = d->ListKeys(separator);
 }
 
@@ -1526,7 +1525,7 @@ VC_LIBFUNC(vc_CompileMap) ()
 	{
 		vc->vcerr("vc_CompileMap() - Can't compile map in release mode!");
 	}
-	std::string filename = vc->ResolveString();
+	StringRef filename = vc->ResolveString();
 	// Get the filename sans .map extension.
 	char *s = stripext(filename.c_str());
 	// If the vc file exists, compile it in.
@@ -1545,22 +1544,25 @@ VC_LIBFUNC(vc_CompileMap) ()
 
 VC_LIBFUNC(vc_ListStructMembers) ()
 {
-	std::string structname = vc->ResolveString();
-	std::vector<std::string> result = vc->ListStructMembers(structname.c_str());
-	vc->vcretstr = "";
+	StringRef structname = vc->ResolveString();
+	std::vector<StringRef> result;
+	vc->ListStructMembers(result, structname.c_str());
+	std::string temp;
 
-	for(std::vector<std::string>::iterator i = result.begin();
+	for(std::vector<StringRef>::iterator i = result.begin();
 		i != result.end();
 		i++)
 	{
-		vc->vcretstr += *i + "|";
+		temp += (*i).str() + "|";
 	}
+
+	vc->vcretstr = temp;
 }
 
 VC_LIBFUNC(vc_CopyArray) ()
 {
-	std::string src = vc->ResolveString();
-	std::string dest = vc->ResolveString();
+	StringRef src = vc->ResolveString();
+	StringRef dest = vc->ResolveString();
 	bool result = vc->CopyArray(src.c_str(), dest.c_str());
 	vc->vcreturn = result;
 }
@@ -1616,29 +1618,32 @@ VC_LIBFUNC(vc_ColorReplace) ()
 
 VC_LIBFUNC(vc_ListBuiltinFunctions) ()
 {
-	vc->vcretstr = "";
+	std::string temp;
 	for (int i = 0; i < NUM_LIBFUNCS; i++)
 	{
-		vc->vcretstr += std::string(libfuncs[i].name) + "|";
+		temp += libfuncs[i].name + "|";
 	}
+	vc->vcretstr = temp;
 }
 
 VC_LIBFUNC(vc_ListBuiltinVariables) ()
 {
-	vc->vcretstr = "";
+	std::string temp;
 	for (int i = 0; i < NUM_HVARS; i++)
 	{
-		vc->vcretstr += std::string(libvars[i][1]) + "|";
+		temp += std::string(libvars[i][1]) + "|";
 	}
+	vc->vcretstr = temp;
 }
 
 VC_LIBFUNC(vc_ListBuiltinDefines) ()
 {
-	vc->vcretstr = "";
+	std::string temp;
 	for (int i = 0; i < NUM_HDEFS; i++)
 	{
-		vc->vcretstr += std::string(hdefs[i][0]) + "|";
+		temp += std::string(hdefs[i][0]) + "|";
 	}
+	vc->vcretstr = temp;
 }
 
 VC_LIBFUNC(vc_GetUserSystemVcFunctionCount) ()
@@ -1658,7 +1663,7 @@ VC_LIBFUNC(vc_GetUserSystemVcFunctionByIndex) ()
 		vc->vcerr("VC Execution error: Invalid offset: (%d).  Valid range: (0-%d)", index, maxSize );
 	}
 
-	std::string myString = (vc->userfuncs[CIMAGE_SYSTEM].at(index))->name;
+	StringRef myString = (vc->userfuncs[CIMAGE_SYSTEM].at(index))->name;
 	vc->vcretstr = myString;
 }
 
@@ -1681,7 +1686,7 @@ VC_LIBFUNC(vc_SocketGetRaw) ()
 VC_LIBFUNC(vc_SocketSendRaw) ()
 {
 	int sh = vc->ResolveOperand();
-	std::string str = vc->ResolveString();
+	StringRef str = vc->ResolveString();
 	vc->SocketSendRaw(sh, str);
 }
 
@@ -1695,7 +1700,7 @@ VC_LIBFUNC(vc_SocketByteCount) ()
 
 VC_LIBFUNC(vc_GetSystemSaveDir)()
 {
-  std::string appname = vc->ResolveString();
+  StringRef appname = vc->ResolveString();
   vc->vcretstr = GetSystemSaveDirectory(appname);
 }
 
