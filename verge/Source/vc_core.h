@@ -290,8 +290,8 @@ public:
 	TUserFuncMap userfuncMap[NUM_CIMAGES];
 
 private:
-	std::vector<int_t*>			global_ints;
-	std::vector<string_t*>		global_strings;
+	std::vector<int_t*>					global_ints;
+	std::vector<string_t*>				global_strings;
 	std::vector<struct_instance*>		struct_instances;
 
 	// patches pairs of <cimage,findex>

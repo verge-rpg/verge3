@@ -18,6 +18,8 @@
 #include "xerxes.h"
 #include "opcodes.h"
 
+#include <sstream>
+
 /****************************** data ******************************/
 
 #undef max
@@ -740,19 +742,25 @@ StringRef VCCore::ProcessString()
 	switch (c)
 	{
 		case strLITERAL:
+		{
 			ret = currentvc->GrabString();
 			break;
+		}
 		case strGLOBAL:
-			d = global_strings[currentvc->GrabD()]->ofs;
+		{
+			int idx = currentvc->GrabD();
+			d = global_strings[idx]->ofs;
 			if (d >= 0 && d < maxstr)
 				ret = vcstring[d];
 			else
-				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strGLOBAL) %d/%d", d, maxstr);
+				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strGLOBAL) %d, valid range [0,%d) \n global string name: '%s' ", d, maxstr, global_strings[idx]->name);
 			break;
+		}
 		case strARRAY:
 		{
 			int idx = currentvc->GrabD();
 			d = global_strings[idx]->ofs;
+
 			for (int i=0; i<global_strings[idx]->dim; i++)
 			{
 				int dimofs = ResolveOperand();
@@ -762,8 +770,9 @@ StringRef VCCore::ProcessString()
 			}
 			if (d>=0 && d<maxstr)
 				ret = vcstring[d];
-			else
-				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strARRAY) %d/%d", d, maxstr);
+			else {
+				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strARRAY) %d, valid range [0,%d).\n global string name: '%s'", d, maxstr, global_strings[idx]->name);
+			}
 			break;
 		}
 		case strHSTR0:   // _READSTR
