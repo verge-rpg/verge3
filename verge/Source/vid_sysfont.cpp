@@ -116,11 +116,11 @@ void PrintString(char *str, image *dest, ...)
 	}
 }
 
-int pixels(const char *str)
+int pixels(const char *str, const char *end)
 {
 	int pix;
 
-	for (pix=0; *str; ++str)
+	for (pix=0; *str && (!end||str!=end); ++str)
 	{
 		char c = *str - 32;
 		if (c<0 || c>96) c = 2;

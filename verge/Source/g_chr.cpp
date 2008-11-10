@@ -169,7 +169,7 @@ void CHR::render(int x, int y, int frame, image *dest)
 
 	if (frame <0 || frame >= totalframes)
 		err("CHR::render(), frame requested is undefined (%d of %d)", frame, totalframes);
-	container->data = (void *) ((int) rawdata->data + (frame*fxsize*fysize*vid_bytesperpixel));
+	container->data = (quad *) ((int) rawdata->data + (frame*fxsize*fysize*vid_bytesperpixel));
 	TBlit(x, y, container, dest);
 //SetLucent(50);
 //Rect(x+hx, y+hy, x+hx+hw-1, y+hy+hh-1, 0, dest);

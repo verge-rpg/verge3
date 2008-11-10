@@ -190,7 +190,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="..\win32\upx.exe -9 ..\redist\verge.exe"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
@@ -907,6 +907,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Source\vid_fbfx.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Source\vid_manager.cpp"
 				>
 				<FileConfiguration
@@ -951,6 +955,10 @@
 						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Source\vid_timeless.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\Source\win_editcode.cpp"
@@ -1475,6 +1483,10 @@
 			</File>
 			<File
 				RelativePath="Source\vid_ddbase.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\vid_fbfx.h"
 				>
 			</File>
 			<File

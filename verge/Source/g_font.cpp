@@ -95,7 +95,7 @@ Font::~Font()
 
 bool Font::ColumnEmpty(int cell, int column)
 {
-	container->data = (void *) ((int) rawdata->data + ((cell)*width*height*vid_bytesperpixel));
+	container->data = (quad *) ((int) rawdata->data + ((cell)*width*height*vid_bytesperpixel));
 	for (int y=0; y<container->height; y++)
 		if (ReadPixel(column, y, container) != transColor)
 			return false;
@@ -128,8 +128,8 @@ void Font::SetCharacterWidth(int character, int width)
 
 void Font::PrintChar(char c, int x, int y, image *dest)
 {
-	if (c<32) return; /* don't need to check for >= 128 because that would make c negative */
-	container->data = (void *) ((int) rawdata->data + (((c-32)+(100*selected))*width*height*vid_bytesperpixel));
+	if (c<32) return; // don't need to check for >= 128 because that would make c negative 
+	container->data = (quad *) ((int) rawdata->data + (((c-32)+(100*selected))*width*height*vid_bytesperpixel));
 	TBlit(x, y, container, dest);
 }
 
@@ -141,6 +141,7 @@ void Font::PrintString(char *str, int x, int y, image *dest, ...)
 	va_start(argptr, dest);
 	vsprintf(msg, str, argptr);
 	va_end(argptr);
+
 	int x1 = x; // Remember where x where the line should start. -- Overkill 2005-12-28.
     for (s = msg; *s; s++)
 	{
@@ -212,11 +213,11 @@ void Font::PrintCenter(char *str, int x, int y, image *dest, ...)
 	PrintString(msg, x, y, dest);
 }
 
-int Font::Pixels(const char *str)
+int Font::Pixels(const char *str, const char* end)
 {
 	int xsize = 0;
 
-    for (const char *s = str; *s; s++)
+    for (const char *s = str; *s && (!end||s!=end); s++)
 	{
 		if (*s == '@')
 		{

@@ -8,6 +8,8 @@
 /// If you have altered this source file, please log your name, date, and what
 /// changes you made below this line.
 
+//MBG TODO - this is an old file. it sucks. do something better.
+
 
 #ifndef _HANDLE_H_
 #define _HANDLE_H_
@@ -16,7 +18,7 @@
 #define HANDLE_TYPE_IMAGE (1)
 #define HANDLE_TYPE_DICT  (2)
 #define HANDLE_TYPE_AUDCHN  (3)
-#define HANDLE_TYPE_MAX (3)
+#define HANDLE_TYPE_MAX (4)
 
 #include <vector>
 #include <stack>

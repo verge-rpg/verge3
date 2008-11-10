@@ -15,6 +15,7 @@
  ****************************************************************/
 
 #include "xerxes.h"
+#include <assert.h>
 
 /***************************** data *****************************/
 
@@ -27,8 +28,6 @@ AuxWindow *gameWindow;
 
 /****************************************************************/
 
-int    (*MakeColor) (int r, int g, int b);
-bool   (*GetColor) (int c, int &r, int &g, int &b);
 void   (*Flip) (void);
 void   (*Blit) (int x, int y, image *src, image *dest);
 void   (*TBlit) (int x, int y, image *src, image *dest);
@@ -39,9 +38,7 @@ void   (*SubtractiveBlit) (int x, int y, image *src, image *dest);
 void   (*TSubtractiveBlit) (int x, int y, image *src, image *dest);
 void   (*BlitTile) (int x, int y, char *src, image *dest);
 void   (*TBlitTile) (int x, int y, char *src, image *dest);
-void   (*Clear) (int color, image *dest);
 void   (*PutPixel) (int x, int y, int color, image *dest);
-int    (*ReadPixel) (int x, int y, image *dest);
 void   (*Line) (int x, int y, int xe, int ye, int color, image *dest);
 void   (*VLine) (int x, int y, int ye, int color, image *dest);
 void   (*HLine) (int x, int y, int xe, int color, image *dest);
@@ -56,7 +53,6 @@ void   (*TWrapBlit) (int x, int y, image *src, image *dst);
 void   (*Silhouette) (int x, int y, int c, image *src, image *dst);
 void   (*RotScale) (int x, int y, float angle, float scale, image *src, image *dest);
 void   (*Mosaic) (int xf, int yf, image *src);
-void   (*Timeless) (int x, int y1, int y, image *src, image *dest);
 void   (*BlitWrap) (int x, int y, image *src, image *dest);
 void   (*ColorFilter) (int filter, image *img);
 void   (*Triangle) (int x1, int y1, int x2, int y2, int x3, int y3, int c, image *dest);
@@ -119,64 +115,36 @@ int vid_SetMode(int xres, int yres, int bpp, int window, int mode)
 	return 0;
 }
 
-
-image::image()
-{
-}
+static int imagesize = 0;
 
 
-image::image(int xres, int yres)
-{
+image::image(int xres, int yres) {
 	width = pitch = xres;
 	height = yres;
 	cx1 = 0;
 	cy1 = 0;
 	cx2 = width - 1;
 	cy2 = height - 1;
-	bpp = vid_bpp;
 	shell = 0;
-	data = new char[width*height*vid_bytesperpixel];
-	//switch (vid_bpp)
-	//{
-	//	case 15:
-	//	case 16:
-	//	case 61: data = new word[width * height];
-	//			 break;
-	//	case 32: data = new quad[width * height];
-	//			 break;
-	//}
+	
+	imagesize += width*height*4;
+	//log("Allocating %d image bytes; now up to %dK",width*height*4,imagesize/1024);
+	data = new quad[width*height];
+
+	//we are going to assume that pixels are 4byte aligned.
+	assert((((int)data) & 3) == 0);
+
+	//we're running out of memory sometimes
+	assert(data);
 }
 
-void image::delete_data()
-{
-	delete[] (char*)data;
+void image::delete_data() {
+	imagesize -= width*height*4;
+	//log("Freeing %d image bytes; now down to %dK",width*height*4,imagesize/1024);
+	delete[] (quad*)data;
 }
 
-image::~image()
-{
+image::~image() {
 	if (data && !shell)
 		delete_data();
 }
-
-
-void image::SetClip(int x1, int y1, int x2, int y2)
-{
-	cx1 = x1 >= 0 ? x1 : 0;
-	cy1 = y1 >= 0 ? y1 : 0;
-	cx1 = cx1 < width ? cx1 : width-1;
-	cy1 = cy1 < height ? cy1 : height-1;
-	cx2 = x2 >= 0 ? x2 : 0;
-	cy2 = y2 >= 0 ? y2 : 0;
-	cx2 = cx2 < width ? cx2 : width-1;
-	cy2 = cy2 < height ? cy2 : height-1;
-}
-
-
-void image::GetClip(int &x1, int &y1, int &x2, int &y2)
-{
-	x1 = cx1;
-	y1 = cy1;
-	x2 = cx2;
-	y2 = cy2;
-}
-

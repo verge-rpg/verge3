@@ -13,7 +13,7 @@ extern byte up, down, left, right;
 extern byte kill_up, kill_down, kill_left, kill_right;
 extern byte b1, b2, b3, b4;
 extern byte kill_b1, kill_b2, kill_b3, kill_b4;
-extern std::string bindbutton[4];
+extern StringRef bindbutton[4];
 
 #define UnUp() { kill_up = true; up = false; }
 #define UnDown() { kill_down = true; down = false; }

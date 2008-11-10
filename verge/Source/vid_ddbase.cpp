@@ -708,7 +708,7 @@ void dd_Window::flip_fullscreen()
 	}
 	dx_os->Unlock(0);
 
-	img->data=dx_osd.lpSurface;
+	img->data=(quad*)dx_osd.lpSurface;
 	img->pitch=dx_osd.lPitch/vid_bytesperpixel;
 }
 
@@ -780,9 +780,8 @@ int dd_Window::set_win(int w, int h, int bpp)
 		screen = img;
 	}
 
-	img->data = dx_win_bsd.lpSurface;
+	img->data = (quad*)dx_win_bsd.lpSurface;
 //	img->alphamap = 0;
-	img->bpp = bpp;
 	img->width = w;
 	img->height = h;
 	img->pitch = dx_win_bsd.lPitch / vid_bytesperpixel;
@@ -874,7 +873,6 @@ int dd_Window::set_fullscreen(int w, int h, int bpp)
 	screen = img;
 
 //	img->alphamap = 0;
-	img->bpp = bpp;
 	img->width = w;
 	img->height = h;
 	img->cx1 = 0;

@@ -5,22 +5,22 @@
 boost::object_pool<_StringRef> _StringRef_allocator;
 StringRef StringRef::empty_string = "";
 
-//#ifdef __WIN32__
-//
-//void* operator new(size_t n) 
-//{
-//	static int ctr = 0;
-//	ctr++;
-//	if(ctr%1000==0)
-//		printf("%d\n",ctr);
-//	return malloc(n);
-//}
-//
-//void operator delete(void* mem) throw() {
-//	free(mem);
-//}
-//
-//#endif
+#ifdef __WIN32__
+
+void* operator new(size_t n) 
+{
+	static int ctr = 0;
+	ctr++;
+	if(ctr%1000==0)
+		printf("%d\n",ctr);
+	return malloc(n);
+}
+
+void operator delete(void* mem) throw() {
+	free(mem);
+}
+
+#endif
 
 
 int strcasecmp(std::string s1, std::string s2) {
@@ -43,7 +43,8 @@ StringRef vc_strsub(const StringRef &str, int pos, int len) {
 	if (pos+len>=strlen)
 		len=strlen-pos+1;
 	
-	return str.str().substr(pos,len);
+	//return str.str().substr(pos,len);
+	return str.substr(pos,len);
 }
 
 StringRef vc_strmid(const StringRef &str, int pos, int len) { return vc_strsub(str,pos,len); }

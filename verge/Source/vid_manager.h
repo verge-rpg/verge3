@@ -21,15 +21,35 @@ class image
 public:
 	int width, height, pitch;
 	int cx1, cy1, cx2, cy2;
-	int bpp, shell;
-	void *data;
+	int shell;
+	quad *data;
 
-	image();
+
+	image() {}
 	image(int xres, int yres);
-	~image();
 	void delete_data();
-	void SetClip(int x1, int y1, int x2, int y2);
-	void GetClip(int &x1, int &y1, int &x2, int &y2);
+	~image();
+
+	void SetClip(int x1, int y1, int x2, int y2) {
+		cx1 = x1 >= 0 ? x1 : 0;
+		cy1 = y1 >= 0 ? y1 : 0;
+		cx1 = cx1 < width ? cx1 : width-1;
+		cy1 = cy1 < height ? cy1 : height-1;
+		cx2 = x2 >= 0 ? x2 : 0;
+		cy2 = y2 >= 0 ? y2 : 0;
+		cx2 = cx2 < width ? cx2 : width-1;
+		cy2 = cy2 < height ? cy2 : height-1;
+	}
+
+	void GetClip(int &x1, int &y1, int &x2, int &y2)
+	{
+		x1 = cx1;
+		y1 = cy1;
+		x2 = cx2;
+		y2 = cy2;
+	}
+
+
 };
 
 
@@ -67,10 +87,9 @@ int dd_SetMode(int xres, int yres, int bpp, bool windowflag);
 int vid_SetMode(int xres, int yres, int bpp, int window, int mode);
 int SetLucent(int percent);
 
-void run2xSAI(image *src, image *dest);
 
-extern int    (*MakeColor) (int r, int g, int b);
-extern bool   (*GetColor) (int c, int &r, int &g, int &b);
+
+
 extern void   (*Flip) (void);
 extern void   (*Blit) (int x, int y, image *src, image *dest);
 extern void   (*TBlit) (int x, int y, image *src, image *dest);
@@ -81,9 +100,9 @@ extern void   (*SubtractiveBlit) (int x, int y, image *src, image *dest);
 extern void   (*TSubtractiveBlit) (int x, int y, image *src, image *dest);
 extern void   (*BlitTile) (int x, int y, char *src, image *dest);
 extern void   (*TBlitTile) (int x, int y, char *src, image *dest);
-extern void   (*Clear) (int color, image *dest);
+void   Clear (int color, image *dest);
 extern void   (*PutPixel) (int x, int y, int color, image *dest);
-extern int    (*ReadPixel) (int x, int y, image *dest);
+int    ReadPixel (int x, int y, image *dest);
 extern void   (*Line) (int x, int y, int xe, int ye, int color, image *dest);
 extern void   (*VLine) (int x, int y, int ye, int color, image *dest);
 extern void   (*HLine) (int x, int y, int xe, int color, image *dest);
@@ -98,7 +117,6 @@ extern void   (*TWrapBlit) (int x, int y, image *src, image *dst);
 extern void   (*Silhouette) (int x, int y, int c, image *src, image *dst);
 extern void   (*RotScale) (int x, int y, float angle, float scale, image *src, image *dest);
 extern void   (*Mosaic) (int xf, int yf, image *src);
-extern void   (*Timeless) (int x, int y1, int y, image *src, image *dest);
 extern void   (*BlitWrap) (int x, int y, image *src, image *dest);
 extern void   (*ColorFilter) (int filter, image *img);
 extern void   (*Triangle) (int x1, int y1, int x2, int y2, int x3, int y3, int c, image *dest);
@@ -126,5 +144,30 @@ extern void    (*GetHSV) (int color, int &h, int &s, int &v);
 extern void    (*HueReplace) (int hue_find, int hue_tolerance, int hue_replace, image *img);
 // Overkill (2007-05-04)
 extern void	(*ColorReplace) (int color_find, int color_replace, image *img);
+
+inline int MakeColor(int r, int g, int b)
+{
+	return ((r<<16)|(g<<8)|b);
+}
+
+inline int ReadPixel(int x, int y, image *source)
+{
+	quad *ptr = (quad*)source->data;
+	return ptr[(y * source->pitch) + x];
+}
+
+inline bool GetColor(int c, int &r, int &g, int &b)
+{
+	//mbg 09-nov-08 - when was this removed?  was the old logic put into VC?
+//	if (c == transColor) return false;
+	b = c & 0xff;
+	g = (c >> 8) & 0xff;
+	r = (c >> 16) & 0xff;
+    return true;
+}
+
+#ifndef NOTIMELESS
+void   Timeless(int x, int y1, int y, image *src, image *dest);
+#endif
 
 #endif

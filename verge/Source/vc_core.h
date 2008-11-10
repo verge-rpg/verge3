@@ -368,7 +368,7 @@ private:
 
 extern bool die;
 extern int vc_paranoid, vc_arraycheck;
-extern std::string renderfunc, timerfunc;
+extern StringRef renderfunc, timerfunc;
 
 extern int event_tx;
 extern int event_ty;
@@ -382,6 +382,6 @@ extern int __grue_actor_index;
 
 extern int invc;
 
-extern std::string _trigger_onStep, _trigger_afterStep;
-extern std::string _trigger_beforeEntityScript, _trigger_afterEntityScript;
-extern std::string _trigger_onEntityCollide;
+extern StringRef _trigger_onStep, _trigger_afterStep;
+extern StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
+extern StringRef _trigger_onEntityCollide;

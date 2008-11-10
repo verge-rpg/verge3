@@ -41,7 +41,7 @@ std::vector<VCPlugins::Plugin*> VCPlugins::plugins;
 /******************* vc engine state variables ********************/
 
 int cur_stick = 0;
-std::string renderfunc,timerfunc;
+StringRef renderfunc,timerfunc;
 
 int event_tx;
 int event_ty;
@@ -55,11 +55,11 @@ int event_entity_hit;
 int __grue_actor_index;
 
 
-std::string event_str;
+StringRef event_str;
 
-std::string _trigger_onStep, _trigger_afterStep;
-std::string _trigger_beforeEntityScript, _trigger_afterEntityScript;
-std::string _trigger_onEntityCollide;
+StringRef _trigger_onStep, _trigger_afterStep;
+StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
+StringRef _trigger_onEntityCollide;
 
 extern void VcBuildLibraryDispatchTable ();
 
@@ -207,8 +207,11 @@ void VCCore::LoadSystemXVC()
 		userfuncs[CIMAGE_SYSTEM].push_back(func);
 		userfuncMap[CIMAGE_SYSTEM][i].index = i;
 		userfuncMap[CIMAGE_SYSTEM][i].hash = FastHash(func->name);
+		//log("hash %08X function %s", userfuncMap[CIMAGE_SYSTEM][i].hash, func->name);
 	}
 	std::sort(userfuncMap[CIMAGE_SYSTEM],userfuncMap[CIMAGE_SYSTEM]+size);
+	//for(int i=0;i<size;i++)
+	//	log(":: id %06d hash %08X", i, userfuncMap[CIMAGE_SYSTEM][i].hash);
 
 	// Allocate and initialize all vc global variables (to 0 or "")
 	vcint = new int[maxint];

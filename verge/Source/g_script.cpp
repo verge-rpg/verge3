@@ -61,7 +61,7 @@ void EnforceNoDirectories(StringRef s)
 
 void HookTimer()
 {
-	if (timerfunc != "")
+	if (!timerfunc.empty())
 	{
 		while (hooktimer)
 		{
@@ -73,7 +73,7 @@ void HookTimer()
 
 void HookRetrace()
 {
-	if (renderfunc != "")
+	if (!renderfunc.empty())
 		se->ExecuteFunctionString(renderfunc);
 }
 
@@ -110,7 +110,7 @@ int HandleForImage(image *img)
 
 //-------------
 
-void ScriptEngine::Exit(StringRef message) { err("%s",message.c_str()); }
+void ScriptEngine::Exit(CStringRef message) { err("%s",message.c_str()); }
 
 void ScriptEngine::SetButtonJB(int b, int jb) {
 	switch (b)
@@ -124,29 +124,29 @@ void ScriptEngine::SetButtonJB(int b, int jb) {
 
 // Overkill (2007-08-25): HookButton is supposed to start at 1, not 0.
 // It's meant to be consistent with Unpress().
-void ScriptEngine::HookButton(int b, StringRef s) {
+void ScriptEngine::HookButton(int b, CStringRef s) {
 	if (b<1 || b>4) return;
 	bindbutton[b-1] = s;
 }
 
-void ScriptEngine::HookKey(int k, StringRef s) {
+void ScriptEngine::HookKey(int k, CStringRef s) {
 	if (k<0 || k>127) return;
 	bindarray[k] = s;
 }
 
-void ScriptEngine::HookTimer(StringRef s) {
+void ScriptEngine::HookTimer(CStringRef s) {
 	hooktimer = 0;
 	timerfunc = s;
 }
 
-void ScriptEngine::HookRetrace(StringRef s) {
+void ScriptEngine::HookRetrace(CStringRef s) {
 	renderfunc = s;
 }
 
-void ScriptEngine::Log(StringRef s) { log(s.c_str()); }
-void ScriptEngine::MessageBox(StringRef msg) { showMessageBox(msg); }
+void ScriptEngine::Log(CStringRef s) { log(s.c_str()); }
+void ScriptEngine::MessageBox(CStringRef msg) { showMessageBox(msg); }
 int ScriptEngine::Random(int min, int max) { return rnd(min, max); }
-void ScriptEngine::SetAppName(StringRef s) { setWindowTitle(s.c_str()); }
+void ScriptEngine::SetAppName(CStringRef s) { setWindowTitle(s.c_str()); }
 
 void ScriptEngine::SetButtonKey(int b, int k) {
 	switch (b)
@@ -199,43 +199,42 @@ void ScriptEngine::Unpress(int n) {
 void ScriptEngine::UpdateControls() { ::UpdateControls(); }
 
 
-int ScriptEngine::Asc(StringRef s) { if(s == "") return 0; else return (int)s[0]; }
+int ScriptEngine::Asc(CStringRef s) { if(s == "") return 0; else return (int)s[0]; }
 StringRef ScriptEngine::Chr(int c) { return va("%c", c); }
-StringRef ScriptEngine::GetToken(StringRef s, StringRef d, int i) {
+StringRef ScriptEngine::GetToken(CStringRef s, CStringRef d, int i) {
 	int n = 0;
 	int tokenindex = 0;
 	while (n < s.length())
 	{
-		std::string token = "";
-
 		while (n < s.length() && isdelim(s[n], d))
 			n++;
+		int len = 0, start = n;
 		while (n < s.length() && !isdelim(s[n], d))
 		{
-			token += s[n];
+			len++;
 			n++;
 		}
 		if (i == tokenindex)
-			return token;
+			return s.substr(start,len);
 		tokenindex++;
 	}
 
-	return "";
+	return empty_string();
 }
-StringRef ScriptEngine::Left(StringRef str, int len) { return vc_strleft(str,len); }
-int ScriptEngine::Len(StringRef s) { return s.length(); }
-StringRef ScriptEngine::Mid(StringRef str, int pos, int len) { return vc_strmid(str,pos,len); }
-StringRef ScriptEngine::Right(StringRef str, int len) { return vc_strright(str,len); }
+StringRef ScriptEngine::Left(CStringRef str, int len) { return vc_strleft(str,len); }
+int ScriptEngine::Len(CStringRef s) { return s.length(); }
+StringRef ScriptEngine::Mid(CStringRef str, int pos, int len) { return vc_strmid(str,pos,len); }
+StringRef ScriptEngine::Right(CStringRef str, int len) { return vc_strright(str,len); }
 StringRef ScriptEngine::Str(int d) { return va("%d", d); }
-int ScriptEngine::Strcmp(StringRef s1, StringRef s2) { return strcmp(s1.c_str(), s2.c_str()); }
-StringRef ScriptEngine::Strdup(StringRef s, int times) {
+int ScriptEngine::Strcmp(CStringRef s1, CStringRef s2) { return strcmp(s1.c_str(), s2.c_str()); }
+StringRef ScriptEngine::Strdup(CStringRef s, int times) {
 	std::string ret;
 	ret.reserve(s.size()*times);
 	for (int i=0; i<times; i++)
 		ret += s;
 	return ret;
 }
-int ScriptEngine::TokenCount(StringRef s, StringRef d) {
+int ScriptEngine::TokenCount(CStringRef s, CStringRef d) {
 	int n = 0;
 	int tokenindex = 0;
 	while (n < s.length())
@@ -253,20 +252,20 @@ int ScriptEngine::TokenCount(StringRef s, StringRef d) {
 	}
 	return tokenindex;
 }
-StringRef ScriptEngine::ToLower(StringRef str) { 
+StringRef ScriptEngine::ToLower(CStringRef str) { 
 	std::string temp = str.str();
 	to_lower(temp); 
 	return temp;
 }
 
-StringRef ScriptEngine::ToUpper(StringRef str)
+StringRef ScriptEngine::ToUpper(CStringRef str)
 {
 	std::string temp = str.str();
 	to_upper(temp); 
 	return temp;
 }
 
-int ScriptEngine::Val(StringRef s) { return atoi(s.c_str()); }
+int ScriptEngine::Val(CStringRef s) { return atoi(s.c_str()); }
 
 
 //VI.d. Map Functions
@@ -274,7 +273,7 @@ int ScriptEngine::GetObs(int x, int y) { if(!current_map) return 0; else return 
 int ScriptEngine::GetObsPixel(int x, int y) { if(!current_map) return 0; else return current_map->obstructpixel(x, y); }
 int ScriptEngine::GetTile(int x, int y, int i) { if(!current_map) return 0; if(i>=current_map->numlayers) return 0; return current_map->layers[i]->GetTile(x,y); }
 int ScriptEngine::GetZone(int x, int y) { if(!current_map) return 0; else return current_map->zone(x,y); }
-void ScriptEngine::Map(StringRef map) {
+void ScriptEngine::Map(CStringRef map) {
 	strcpy(mapname, map.c_str());
 	die = 1;
 	done = 1;
@@ -293,11 +292,11 @@ void ScriptEngine::SetTile(int x, int y, int i, int z) { if(!current_map) return
 void ScriptEngine::SetZone(int x, int y, int z) { if(!current_map) return; else if(z>=current_map->numzones) return; else current_map->SetZone(x,y,z); }
 
 //VI.e. Entity Functions
-void ScriptEngine::ChangeCHR(int e, StringRef c) {
+void ScriptEngine::ChangeCHR(int e, CStringRef c) {
 	if (e<0 || e >= entities) return;
 	else entity[e]->set_chr(c);
 }
-void ScriptEngine::EntityMove(int e, StringRef s) {
+void ScriptEngine::EntityMove(int e, CStringRef s) {
 	if (e<0 || e >= entities) return;
 	else entity[e]->SetMoveScript(s.c_str());
 }
@@ -313,7 +312,7 @@ void ScriptEngine::EntitySetWanderZone(int e) {
 	if (e<0 || e >= entities) return;
 	else entity[e]->SetWanderZone();
 }
-int ScriptEngine::EntitySpawn(int x, int y, StringRef s) { return AllocateEntity(x*16,y*16,s.c_str()); }
+int ScriptEngine::EntitySpawn(int x, int y, CStringRef s) { return AllocateEntity(x*16,y*16,s.c_str()); }
 void ScriptEngine::EntityStalk(int stalker, int stalkee) {
 	if (stalker<0 || stalker>=entities)
 		return;
@@ -328,11 +327,11 @@ void ScriptEngine::EntityStop(int e) {
 	if (e<0 || e >= entities) return;
 	else entity[e]->SetMotionless();
 }
-void ScriptEngine::HookEntityRender(int i, StringRef s) {
+void ScriptEngine::HookEntityRender(int i, CStringRef s) {
 	if (i<0 || i>=entities) err("vc_HookEntityRender() - no such entity %d", i);
 	entity[i]->hookrender = s;
 }
-void ScriptEngine::PlayerMove(StringRef s) {
+void ScriptEngine::PlayerMove(CStringRef s) {
     if (!myself) return;
 	myself->SetMoveScript(s.c_str());
 	while (myself->movecode)
@@ -507,18 +506,9 @@ int ScriptEngine::ImageShell(int x, int y, int w, int h, int src) {
 	d->delete_data();
 	d->shell = 1;
 
-	switch (s->bpp)
-	{
-		case 15:
-		case 16:
-			d->data = (void *) ((word *) s->data + (y*s->pitch)+x);
-			d->pitch = s->pitch;
-			break;
-		case 32:
-			d->data = (void *) ((quad *) s->data + (y*s->pitch)+x);
-			d->pitch = s->pitch;
-			break;
-	}
+	d->data = (s->data + (y*s->pitch)+x);
+	d->pitch = s->pitch;
+	
 	return HandleForImage(d);
 }
 int ScriptEngine::ImageValid(int handle) {
@@ -531,9 +521,9 @@ void ScriptEngine::Line(int x1, int y1, int x2, int y2, int c, int dst) {
 	image *d = ImageForHandle(dst);
 	::Line(x1, y1, x2, y2, c, d);
 }
-int ScriptEngine::LoadImage(StringRef fn) { return HandleForImage(::xLoadImage(fn.c_str())); }
-int ScriptEngine::LoadImage0(StringRef fn) { return HandleForImage(::xLoadImage0(fn.c_str())); }
-int ScriptEngine::LoadImage8(StringRef fn) { return HandleForImage(::xLoadImage8(fn.c_str())); }
+int ScriptEngine::LoadImage(CStringRef fn) { return HandleForImage(::xLoadImage(fn.c_str())); }
+int ScriptEngine::LoadImage0(CStringRef fn) { return HandleForImage(::xLoadImage0(fn.c_str())); }
+int ScriptEngine::LoadImage8(CStringRef fn) { return HandleForImage(::xLoadImage8(fn.c_str())); }
 int ScriptEngine::MakeColor(int r, int g, int b) { return ::MakeColor(r,g,b); }
 int ScriptEngine::MixColor(int c1, int c2, int p) {
 	if (p>255) p=255;
@@ -685,9 +675,9 @@ void ScriptEngine::FreeSong(int handle) { ::FreeSong(handle); }
 void ScriptEngine::FreeSound(int slot) { ::FreeSample((void*)slot); }
 int ScriptEngine::GetSongPos(int handle) { return ::GetSongPos(handle); }
 int ScriptEngine::GetSongVolume(int handle) { return ::GetSongVol(handle); }
-int ScriptEngine::LoadSong(StringRef fn) { return ::LoadSong(fn.c_str()); }
-int ScriptEngine::LoadSound(StringRef fn) { return (int)LoadSample(fn.c_str()); }
-void ScriptEngine::PlayMusic(StringRef fn) { ::PlayMusic(fn.c_str()); }
+int ScriptEngine::LoadSong(CStringRef fn) { return ::LoadSong(fn.c_str()); }
+int ScriptEngine::LoadSound(CStringRef fn) { return (int)LoadSample(fn.c_str()); }
+void ScriptEngine::PlayMusic(CStringRef fn) { ::PlayMusic(fn.c_str()); }
 void ScriptEngine::PlaySong(int handle) { ::PlaySong(handle); }
 int ScriptEngine::PlaySound(int slot, int volume) { return ::PlaySample((void*) slot, volume * 255 / 100); }
 void ScriptEngine::SetMusicVolume(int v) { ::SetMusicVolume(v); }
@@ -711,12 +701,12 @@ void ScriptEngine::FreeFont(int f) {
 	Font *font = (Font*) f;
 	if (font) delete font;
 }
-int ScriptEngine::LoadFont(StringRef filename, int width, int height) {
+int ScriptEngine::LoadFont(CStringRef filename, int width, int height) {
 	return (int) new Font(filename.c_str(), width, height);
 }
-int ScriptEngine::LoadFontEx(StringRef filename) { return (int) new Font(filename.c_str()); }
+int ScriptEngine::LoadFontEx(CStringRef filename) { return (int) new Font(filename.c_str()); }
 //helper:
-static void print(int x, int y, image *dest, Font *font, StringRef text, int which) {
+static void print(int x, int y, image *dest, Font *font, CStringRef text, int which) {
 	char *str = va("%s",text.c_str());
 	switch(which) {
 		case 0:	
@@ -735,10 +725,10 @@ static void print(int x, int y, image *dest, Font *font, StringRef text, int whi
 			break;
 	}
 }
-void ScriptEngine::PrintCenter(int x, int y, int d, int fh, StringRef text) { print(x,y,ImageForHandle(d),(Font*)fh,text,1); }
-void ScriptEngine::PrintRight(int x, int y, int d, int fh, StringRef text) { print(x,y,ImageForHandle(d),(Font*)fh,text,2); }
-void ScriptEngine::PrintString(int x, int y, int d, int fh, StringRef text) { print(x,y,ImageForHandle(d),(Font*)fh,text,0); }
-int ScriptEngine::TextWidth(int fh, StringRef text) {
+void ScriptEngine::PrintCenter(int x, int y, int d, int fh, CStringRef text) { print(x,y,ImageForHandle(d),(Font*)fh,text,1); }
+void ScriptEngine::PrintRight(int x, int y, int d, int fh, CStringRef text) { print(x,y,ImageForHandle(d),(Font*)fh,text,2); }
+void ScriptEngine::PrintString(int x, int y, int d, int fh, CStringRef text) { print(x,y,ImageForHandle(d),(Font*)fh,text,0); }
+int ScriptEngine::TextWidth(int fh, CStringRef text) {
 	Font *font = (Font*)fh;
 	if (font == 0) return ::pixels(text.c_str());
 	else return font->Pixels(text.c_str());
@@ -879,7 +869,7 @@ bool ScriptEngine::FileEOF(int handle) {
 	return veof(vcfiles[handle].vfptr)!=0;
 }
 
-int ScriptEngine::FileOpen(StringRef fname, int filemode) {
+int ScriptEngine::FileOpen(CStringRef fname, int filemode) {
 	int index;
 
 	for (index=1; index<VCFILES; index++)
@@ -1040,7 +1030,7 @@ void ScriptEngine::FileSeekPos(int handle, int offset, int mode) {
 			se->Error("SFileeekPos() - File mode not valid! That's bad!");
 	}
 }
-void ScriptEngine::FileWrite(int handle, StringRef s) {
+void ScriptEngine::FileWrite(int handle, CStringRef s) {
 	if (!handle) se->Error("FileWrite() - Yo, you be writin' to a file that aint open, foo.");
 	if (handle > VCFILES) se->Error("FileWrite() - given file handle is not a valid file handle.");
 	if (!vcfiles[handle].active) se->Error("FileWrite() - given file handle is not open.");
@@ -1056,7 +1046,7 @@ void ScriptEngine::FileWriteByte(int handle, int var) {
 	flip(&var, sizeof(var)); // ensure little-endian writing
 	fwrite(&var, 1, 1, vcfiles[handle].fptr);
 }
-void ScriptEngine::FileWriteln(int handle, StringRef s) {
+void ScriptEngine::FileWriteln(int handle, CStringRef s) {
 	std::string temp = s;
 	temp +=  "\r\n";
 	if (!handle) se->Error("FileWriteln() - Yo, you be writin' to a file that aint open, foo.");
@@ -1074,7 +1064,7 @@ void ScriptEngine::FileWriteQuad(int handle, int var) {
 	flip(&var, sizeof(var)); // ensure little-endian writing
 	fwrite(&var, 1, 4, vcfiles[handle].fptr);
 }
-void ScriptEngine::FileWriteString(int handle, StringRef s) {
+void ScriptEngine::FileWriteString(int handle, CStringRef s) {
 	if (!handle || handle > VCFILES || !vcfiles[handle].active)
 		se->Error("FileWriteString() - file handle is either invalid or file is not open.");
 	if (vcfiles[handle].mode != VC_WRITE)
@@ -1095,7 +1085,7 @@ void ScriptEngine::FileWriteWord(int handle, int var) {
 	flip(&var, sizeof(var)); // ensure little-endian writing
 	fwrite(&var, 1, 2, vcfiles[handle].fptr);
 }
-StringRef ScriptEngine::ListFilePattern(StringRef pattern) {
+StringRef ScriptEngine::ListFilePattern(CStringRef pattern) {
 	std::vector<std::string> result = listFilePattern(pattern);
 	std::string ret;
 
@@ -1158,7 +1148,7 @@ void ScriptEngine::WindowClose(int win) {
 	checkhandle("WindowClose",win,auxwin);
 	auxwin->dispose();
 }
-int ScriptEngine::WindowCreate(int x, int y, int w, int h, StringRef s) {
+int ScriptEngine::WindowCreate(int x, int y, int w, int h, CStringRef s) {
 	AuxWindow *auxwin = vid_createAuxWindow();
 	auxwin->setTitle(s.c_str());
 	auxwin->setPosition(x,y);
@@ -1218,7 +1208,7 @@ void ScriptEngine::WindowSetSize(int win, int w, int h) {
 	checkhandle("WindowSetSize",win,auxwin);
 	auxwin->setSize(w,h);
 }
-void ScriptEngine::WindowSetTitle(int win, StringRef s) {
+void ScriptEngine::WindowSetTitle(int win, CStringRef s) {
 	AuxWindow *auxwin = vid_findAuxWindow(win);
 	checkhandle("WindowSetTitle",win,auxwin);
 	auxwin->setTitle(s.c_str());
@@ -1234,12 +1224,12 @@ void ScriptEngine::MovieClose(int m) { win_movie_close(m); }
 int ScriptEngine::MovieGetCurrFrame(int m) { return win_movie_getCurrFrame(m); }
 int ScriptEngine::MovieGetFramerate(int m) { return win_movie_getFramerate(m); }
 int ScriptEngine::MovieGetImage(int m) { return win_movie_getImage(m); }
-int ScriptEngine::MovieLoad(StringRef s, bool mute) { return win_movie_load(s.c_str(), mute); }
+int ScriptEngine::MovieLoad(CStringRef s, bool mute) { return win_movie_load(s.c_str(), mute); }
 void ScriptEngine::MovieNextFrame(int m) { win_movie_nextFrame(m); }
 void ScriptEngine::MoviePlay(int m, bool loop) { win_movie_play(m, loop?1:0); }
 void ScriptEngine::MovieRender(int m) { win_movie_render(m); }
 void ScriptEngine::MovieSetFrame(int m, int f) { win_movie_setFrame(m,f); }
-int ScriptEngine::PlayMovie(StringRef s){ return win_movie_playSimple(s.c_str()); }
+int ScriptEngine::PlayMovie(CStringRef s){ return win_movie_playSimple(s.c_str()); }
 
 //VI.n. Netcode Functions
 ServerSocket *vcserver = 0;
@@ -1252,7 +1242,7 @@ void ScriptEngine::SetConnectionPort(int port)
 }
 
 // Overkill (2008-04-17): Socket port can be switched to something besides 45150.
-int ScriptEngine::Connect(StringRef ip) {
+int ScriptEngine::Connect(CStringRef ip) {
 	Socket *s;
 	try
 	{
@@ -1278,11 +1268,11 @@ int ScriptEngine::GetConnection() {
     }
 }
 
-int ScriptEngine::GetUrlImage(StringRef url) { return ::getUrlImage(url); }
-StringRef ScriptEngine::GetUrlText(StringRef url) { return ::getUrlText(url); }
+int ScriptEngine::GetUrlImage(CStringRef url) { return ::getUrlImage(url); }
+StringRef ScriptEngine::GetUrlText(CStringRef url) { return ::getUrlText(url); }
 void ScriptEngine::SocketClose(int sh) { delete ((Socket *)sh); }
 bool ScriptEngine::SocketConnected(int sh) { return ((Socket*)sh)->connected()!=0; }
-StringRef ScriptEngine::SocketGetFile(int sh, StringRef override) {
+StringRef ScriptEngine::SocketGetFile(int sh, CStringRef override) {
 	static char stbuf[4096];
 	Socket *s = (Socket *) sh;
 	StringRef retstr;
@@ -1358,7 +1348,7 @@ StringRef ScriptEngine::SocketGetString(int sh) {
 	return buf;
 }
 bool ScriptEngine::SocketHasData(int sh) { return ((Socket*)sh)->dataready()!=0; }
-void ScriptEngine::SocketSendFile(int sh, StringRef fn) {
+void ScriptEngine::SocketSendFile(int sh, CStringRef fn) {
 	Socket *s = (Socket *) sh;
 
 	EnforceNoDirectories(fn);
@@ -1385,7 +1375,7 @@ void ScriptEngine::SocketSendInt(int sh, int i) {
 	s->write(1, &t);
 	s->write(4, &i);
 }
-void ScriptEngine::SocketSendString(int sh, StringRef str) {
+void ScriptEngine::SocketSendString(int sh, CStringRef str) {
 	Socket *s = (Socket *) sh;
 	int len = str.length();
 	if (len>4095) err("yeah uh dont send such big strings thru the network plz0r");
@@ -1420,7 +1410,7 @@ StringRef ScriptEngine::SocketGetRaw(int sh, int len)
 }
 
 // Overkill (2008-04-17): Sockets can send and receive raw length-delimited strings
-void ScriptEngine::SocketSendRaw(int sh, StringRef str)
+void ScriptEngine::SocketSendRaw(int sh, CStringRef str)
 {
 	Socket *s = (Socket *) sh;
 	int len = str.length();
@@ -1441,7 +1431,7 @@ StringRef ScriptEngine::Get_EntityChr(int arg) {
 	else
 		return StringRef();
 }
-void ScriptEngine::Set_EntityChr(int arg, StringRef chr) {
+void ScriptEngine::Set_EntityChr(int arg, CStringRef chr) {
 	if(arg >= 0 && arg < entities)
 		entity[arg]->set_chr(chr);
 }
@@ -1458,12 +1448,12 @@ StringRef ScriptEngine::Get_EntityDescription(int arg) {
 	else
 		return StringRef();
 }
-void ScriptEngine::Set_EntityDescription(int arg, StringRef val) { 
+void ScriptEngine::Set_EntityDescription(int arg, CStringRef val) { 
 	if(arg >= 0 && arg < entities)
 		entity[arg]->description = val;
 }
 
-void ScriptEngine::Set_EntityActivateScript(int arg, StringRef val)
+void ScriptEngine::Set_EntityActivateScript(int arg, CStringRef val)
 {
 	if(arg >= 0 && arg < entities)
 		entity[arg]->script = val;
@@ -1494,18 +1484,18 @@ void ScriptEngine::Rect4Grad(int x1, int y1, int x2, int y2, int c1, int c2, int
 
 // Overkill: 2005-12-28
 // Helper function for WrapText.
-static int TextWidth(int f, StringRef text)
+static int TextWidth(int f, CStringRef text, int pos, int len)
 {
 	Font *font = (Font*) f;
 	if (font == 0)
-		return pixels(text.c_str());
+		return pixels(text.c_str(),text.c_str()+len);
 	else
-		return font->Pixels(text.c_str());
+		return font->Pixels(text.c_str(),text.c_str()+len);
 }
 
 // Overkill: 2005-12-28
 // Thank you, Zip.
-StringRef ScriptEngine::strovr(StringRef rep, StringRef source, int offset)
+StringRef ScriptEngine::strovr(CStringRef rep, CStringRef source, int offset)
 {
 	return ::strovr(source, rep, offset);
 }
@@ -1513,7 +1503,7 @@ StringRef ScriptEngine::strovr(StringRef rep, StringRef source, int offset)
 // Overkill: 2005-12-19
 // Thank you, Zip.
 // Rewritten, Kildorf: 2007-10-16
-StringRef ScriptEngine::WrapText(int wt_font, StringRef wt_s, int wt_linelen)
+StringRef ScriptEngine::WrapText(int wt_font, CStringRef wt_s, int wt_linelen)
 // Pass: The font to use, the string to wrap, the length in pixels to fit into
 // Return: The passed string with \n characters inserted as breaks
 // Assmes: The font is valid, and will overrun if a word is longer than linelen
@@ -1525,13 +1515,13 @@ StringRef ScriptEngine::WrapText(int wt_font, StringRef wt_s, int wt_linelen)
 	int currloc = 0; // current character
 	int len = wt_s.length(); // length of string
 
-	std::string temp = wt_s;
+	StringRef temp = wt_s.str();
 
 	while (currloc < len)
 	{
-		if (TextWidth(wt_font, vc_strmid(wt_s, lastbreak+1, currloc - (lastbreak+1))) > wt_linelen && lastws != lastbreak)
+		if (::TextWidth(wt_font, wt_s, lastbreak+1, currloc - (lastbreak+1)) > wt_linelen && lastws != lastbreak)
 		{
-			temp[lastws] = '\n';
+			temp.dangerous_peek()[lastws] = '\n';
 			lastbreak = lastws;
 		}
 		else
@@ -1552,7 +1542,7 @@ StringRef ScriptEngine::WrapText(int wt_font, StringRef wt_s, int wt_linelen)
 	return temp;
 }
 
-int ScriptEngine::strpos(StringRef sub, StringRef source, int start) {
+int ScriptEngine::strpos(CStringRef sub, CStringRef source, int start) {
 	return source.str().find(sub, start);
 }
 

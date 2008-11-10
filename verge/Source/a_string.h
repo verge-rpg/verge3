@@ -36,6 +36,11 @@ public:
 		, mRefcount(0)
 	{}
 
+	_StringRef(const char* cstr, const char* cstrend)
+		: str(cstr,cstrend)
+		, mRefcount(0)
+	{}
+
 	const char* c_str() { return str.c_str(); }
 
 	std::string str;
@@ -78,6 +83,10 @@ public:
 		: X_StringRef(_StringRef_allocator.construct(cstr))
 	{}
 
+	StringRef(const char* cstr, const char* cstrend)
+		: X_StringRef(_StringRef_allocator.construct(cstr,cstrend))
+	{}
+
 	std::string const & str() const { return get()->str; }
 	operator std::string const &() const { return str(); }
 	const char* c_str() const { return str().c_str(); }
@@ -86,7 +95,21 @@ public:
 	const char& operator[](int index) const { return str()[index]; }
 	bool operator==(const StringRef& rhs) const { return str() == rhs.str(); }
 	bool operator==(const char* rhs) const { return str() == rhs; }
+	bool empty() const { return size()==0; }
+
+	//same as std::string, but saves a string allocation
+	StringRef substr(int pos, int len) const {
+		pos = std::min(pos,(int)length());
+		len = std::max(len,0);
+		len = std::min(len,(int)length()-pos);
+		return StringRef(c_str()+pos,c_str()+pos+len);
+	}
+
+	//peeks at the underlying string. use with caution, you will be changing it for all associated StringRefs
+	std::string & dangerous_peek() { return get()->str; }
 };
+
+typedef const StringRef& CStringRef;
 
 
 inline StringRef empty_string() { return StringRef::empty_string; }

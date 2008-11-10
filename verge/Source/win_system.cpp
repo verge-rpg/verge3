@@ -165,7 +165,7 @@ void clipboard_putImage(image *img)
 	bih.biWidth=img->width;
 	bih.biHeight=-img->height;
 	bih.biPlanes=1;
-	bih.biBitCount=img->bpp;
+	bih.biBitCount=32;
 	bih.biCompression=BI_RGB;
 	bih.biSizeImage=bih.biXPelsPerMeter=bih.biYPelsPerMeter=bih.biClrUsed=bih.biClrImportant=0;
 	bmp=CreateDIBSection(0,(BITMAPINFO *)&bih,DIB_RGB_COLORS,&vp,0,0);

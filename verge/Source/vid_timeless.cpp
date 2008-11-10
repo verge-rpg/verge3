@@ -1,15 +1,121 @@
-/// The VERGE 3 Project is originally by Ben Eirich and is made available via
-///  the BSD License.
-///
-/// Please see LICENSE in the project's root directory for the text of the
-/// licensing agreement.  The CREDITS file in the same directory enumerates the
-/// folks involved in this public build.
-///
-/// If you have altered this source file, please log your name, date, and what
-/// changes you made below this line.
+#ifndef NOTIMELESS
 
+#include "xerxes.h"
 
-const unsigned short timeless[] =
+extern const unsigned short timeless[];
+int skewlines[100] = { 0 };
+
+void Timeless(int x, int y1, int y, image *src, image *dest)
+{
+	quad xofs = x < 0 ? (256-x) % 256 : x % 256;
+	quad rot = x < 0 ? (320-x) % 320 : x % 320;
+	quad yofs = (y1)%256;
+	word ofs = 0;
+
+	quad *s=(quad *)src->data,
+		 *d=(quad *)dest->data+(y*dest->pitch);
+
+	int pitch = dest->pitch;
+	int pitch199 = pitch*199;
+	quad chunkindex;
+	quad lutindex;
+	quad startofs = (yofs<<8) | xofs;
+	for(int i=0;i<4;i++)
+	{
+		chunkindex = rot+i;
+		for(int xx=0;xx<80;xx++)
+		{
+			lutindex = (chunkindex%320)*100;
+			ofs = startofs;
+			int topofs = xx*4+i;
+			int botofs = xx*4+i + pitch199;
+			for(int yy=0;yy<100;yy++)
+			{
+				ofs += timeless[lutindex]+skewlines[yy];
+				lutindex++;
+				d[topofs] = s[ofs];
+				d[botofs] = s[ofs];
+				topofs += pitch;
+				botofs -= pitch;
+			}
+			chunkindex += 4;
+		}
+	}
+}
+
+//this version of timeless will dump the data table
+//void dd32_Timeless(int x, int y1, int y, image *src, image *dest)
+//{
+//	quad xofs = x < 0 ? (256-x) % 256 : x % 256;
+//	quad rot = x < 0 ? (320-x) % 320 : x % 320;
+//	quad yofs = (y1)%256;
+//	word ofs = 0;
+//
+//	for (int i=0; i<32000; i++) timeless[i] = 256;
+//	for (int i=0; i<32000; i+=100) timeless[i] = i/100;
+//	//for (int i=0; i<100; i++) skewlines[i] = -5;
+//
+//	FILE *f = fopen ("gnbgtbl.m", "w");
+//	for (int i=0; i<320; i++)
+//	{
+//		fprintf(f, "dw ");
+//		for (int j=0; j<99; j++)
+//		{
+//			fprintf(f, "%d, ", timeless[(i*100)+j]);
+//		}
+//		fprintf(f, "%d \n", timeless[(i*100)+99]);
+//	}
+//
+//	fclose(f);
+//	err("done");
+//}
+
+//this is a research version of timeless. it should implement the maths directly and work at higher resolution
+//#define PI 3.14159265
+//void dd32_Timeless(int x, int y1, int y, image *src, image *dest)
+//{
+//    quad xofs = x < 0 ? (256-x) % 256 : x % 256;
+//    quad rot = x < 0 ? (640-x) % 640 : x % 640;
+//    quad yofs = (y1)%256;
+//    word ofs = 0;
+//
+//    quad *s=(quad *)src->data,
+//         *d=(quad *)dest->data+(y*dest->pitch);
+//
+//    float curx,cury;
+//
+//    for(int x=0;x<640;x++)
+//    {
+//
+//        curx = (float)xofs;
+//        cury = (float)yofs;
+//        for(int y=0;y<240;y++)
+//        {
+//            float _y = (float)y/240.0*100.0;
+//            float factor =
+//14.35694074889504*exp(-3.78506616195507*(float)_y) +
+//0.00001183042409*exp(0.14663881138575*(float)_y) + 0.64339851673117;
+//
+//            curx += sin((float)x/640.0*2.0*PI) * factor;
+//            cury += sin((float)x/640.0*2.0*PI+0.5*PI) * factor;
+//
+//            int nx = (int)curx;
+//            if(nx>=256)             { curx-=256.0; }
+//            if(nx<0)             { curx+=256.0; }
+//            int ny = (int)cury;
+//            if(ny>=256)             { cury-=256.0;}
+//            if(ny<0)             {cury+=256.0;}
+//
+//            nx = (int)curx;
+//            ny = (int)cury;
+//
+//            d[y*dest->pitch+x] = s[ny*256+nx];
+//            d[(479-y)*dest->pitch+x] = s[ny*256+nx];
+//        }
+//    }
+//}
+
+static const unsigned short timeless[] =
 {
  3840,256,0,0,0,256,0,0,0,256,0,0,256,0,0,0,
  256,0,0,256,0,0,256,0,0,256,0,0,256,0,256,0,
@@ -2571,3 +2677,6 @@ const unsigned short timeless[] =
  768,768,768,1024,1024,1024,1024,1280,1536,1536,1792,1792,2304,2560,2816,3328,
  3840,4608,5632,6912
 };
+
+#endif
+

@@ -29,5 +29,5 @@ public:
 	void PrintCenter(char *str, int x, int y, image *dest...);
 	void PrintRight(char *str, int x, int y, image *dest ...);
 	void SetCharacterWidth(int character, int width);
-	int  Pixels(const char *str);
+	int  Pixels(const char *str, const char* end = 0);
 };
