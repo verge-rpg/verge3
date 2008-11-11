@@ -1655,10 +1655,10 @@ void T_TBlit(int x, int y, image *src, image *dest)
 }
 
 template<LUCENT_TYPE LT>
-void T_BlitTile(int x, int y, char *src, image *dest)
+void T_BlitTile(int x, int y, quad *src, image *dest)
 {
-	quad *s=(quad *) src,
-		 *d=(quad *)dest->data;
+	quad *s=src,
+		 *d=dest->data;
 	int spitch=16,
 		dpitch=dest->pitch;
 	int xlen=16,
@@ -1696,10 +1696,10 @@ void T_BlitTile(int x, int y, char *src, image *dest)
 }
 
 template<LUCENT_TYPE LT>
-void T_TBlitTile(int x, int y, char *src, image *dest)
+void T_TBlitTile(int x, int y, quad *src, image *dest)
 {
-	quad *s=(quad *) src,
-		 *d=(quad *)dest->data;
+	quad *s=src,
+		 *d=dest->data;
 	int spitch=16,
 		dpitch=dest->pitch;
 	int xlen=16,

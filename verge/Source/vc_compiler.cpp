@@ -591,7 +591,7 @@ void function_t::write(FILE *f)
 }
 
 /***************** class VCCompiler *****************/
-
+#ifdef ALLOW_SCRIPT_COMPILATION
 VCCompiler::VCCompiler(FileServer* file_server)
 : lexer_initialized(false)
 {
@@ -4918,3 +4918,5 @@ void VCCompiler::HandleSwitch()
 	Expect("}");
 	output.EmitC(opRETURN);
 }
+
+#endif

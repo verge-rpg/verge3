@@ -1525,6 +1525,8 @@ VC_LIBFUNC(vc_CompileMap) ()
 	{
 		vc->vcerr("vc_CompileMap() - Can't compile map in release mode!");
 	}
+	#ifdef ALLOW_SCRIPT_COMPILATION
+
 	StringRef filename = vc->ResolveString();
 	// Get the filename sans .map extension.
 	char *s = stripext(filename.c_str());
@@ -1540,6 +1542,7 @@ VC_LIBFUNC(vc_CompileMap) ()
 	{
 		vc->vcerr("vc_CompileMap() - could not compile %s.vc!", s);
 	}
+	#endif
 }
 
 VC_LIBFUNC(vc_ListStructMembers) ()

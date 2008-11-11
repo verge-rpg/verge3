@@ -119,10 +119,7 @@ void VCCore::ExecAutoexec()
 
 bool VCCore::ExecuteFunctionString(const StringRef &script)
 {
-	std::string s = script.str();
-	to_lower(s);
-
-	quad hash = FastHash(s.c_str());
+	quad hash = FastHash(true,script.c_str());
 	for(int i=0; i<NUM_CIMAGES; i++) {
 		TUserFuncMap find; find.hash = hash;
 		TUserFuncMap *end = userfuncMap[i]+userfuncs[i].size();
@@ -143,10 +140,7 @@ bool VCCore::ExecuteFunctionString(const StringRef &script)
 //TODO - yuck I cant believe this looks at all the strings
 bool VCCore::FunctionExists(const StringRef &script)
 {
-	std::string s = script.str();
-	to_lower(s);
-
-	quad hash = FastHash(s.c_str());
+	quad hash = FastHash(true, script.c_str());
 	for(int i=0; i<NUM_CIMAGES; i++) {
 		TUserFuncMap find; find.hash = hash;
 		TUserFuncMap *end = userfuncMap[i]+userfuncs[i].size();
@@ -258,7 +252,11 @@ void VCCore::LoadCore(VFILE *f, int cimage, bool append, bool patch_others)
 		userfuncs[cimage].push_back(func);
 		userfuncMap[cimage][i].index = i;
 		userfuncMap[cimage][i].hash = FastHash(func->name);
-		vcc->PushFunction(cimage, func);
+
+		#ifdef ALLOW_SCRIPT_COMPILATION
+		if(vcc)
+			vcc->PushFunction(cimage, func);
+		#endif
 	}
 
 	std::sort(userfuncMap[cimage],userfuncMap[cimage]+newfuncs);
@@ -301,7 +299,12 @@ void VCCore::UnloadCore(int cimage)
 	{
 		delete userfuncs[cimage][i];
 	}
-	vcc->ClearFunctionList(cimage);
+
+	#ifdef ALLOW_SCRIPT_COMPILATION
+	if(vcc)
+		vcc->ClearFunctionList(cimage);
+	#endif
+
 	userfuncs[cimage].clear();
 	delete[] userfuncMap[cimage];
 	userfuncMap[cimage] = 0;
@@ -1579,6 +1582,7 @@ bool VCCore::HandleSwitch()
 
 void VCCore::LookupOffset(int ofs, std::string &s)
 {
+	#ifdef ALLOW_SCRIPT_COMPILATION
 	for (int i=0; i<userfuncs[current_cimage].size(); i++)
 		if (ofs < userfuncs[current_cimage][i]->codeend)
 		{
@@ -1588,6 +1592,7 @@ void VCCore::LookupOffset(int ofs, std::string &s)
 			s += va("\t%s - %s(%d)\n", userfuncs[current_cimage][i]->name, debug.sourcefile, debug.linenum);
 			return;
 		}
+	#endif
 	s += va("\tUNKNOWN: %d\n", ofs);
 }
 

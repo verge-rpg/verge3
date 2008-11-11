@@ -11,6 +11,7 @@
 #ifndef XERXES_H
 #define XERXES_H
 
+#define ALLOW_SCRIPT_COMPILATION
 #define ENABLE_LUA
 
 //version info macros
@@ -143,6 +144,7 @@ typedef unsigned char  byte;
 #define _WIN32_WINNT 0x0500
 #include <crtdbg.h>
 #include <windows.h>
+#undef TRANSPARENT
 #undef MessageBox
 #include <mmsystem.h>
 #include <stdlib.h>
@@ -153,13 +155,12 @@ typedef unsigned char  byte;
 #define strlwr _strlwr
 #define strupr _strupr
 
-//mbg 114/08 adding wii support
+//mbg 04-nov-08 adding wii support
 #elif __WII__
 #include "wiisys.h"
-#undef ENABLE_LUA
 #endif
 
-/* xerxes includes */
+//xerxes includes
 
 #include "a_handle.h"
 #include "vid_manager.h"
@@ -207,18 +208,8 @@ typedef unsigned char  byte;
 
 //mbg 02-nov-08 adding wii support
 #elif __WII__
-
 #include "vid_ddbase.h"
-#include "wii_system.h"
-#include "wii_timer.h"
-#include "wii_sound.h"
-#include "wii_keyboard.h"
-#include "wii_mouse.h"
-#include "wii_joystick.h"
-#include "wii_movie.h"
-#include "wii_network.h"
-#include "wii.h"
-
+#include "wii_platform.h"
 #else
 
 #include "vid_ddbase.h"
@@ -250,7 +241,7 @@ typedef unsigned char  byte;
 #include "g_startup.h"
 
 
-/* prototypes */
+//prototypes
 
 void xmain(int argc, char *argv[]);
 void err(const char *s, ...);

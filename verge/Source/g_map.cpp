@@ -16,6 +16,7 @@
 
 #include "xerxes.h"
 
+
 /****************************** data ******************************/
 
 #define MAP_VERSION				2
@@ -72,18 +73,6 @@ void Layer::save(FILE *f)
 	fwrite(&lucent, 1, 1, f);
 
 	cfwrite(tiledata, 1, width*height*2, f);
-}
-
-int Layer::GetTile(int x, int y)
-{
-	if (x<0 || y<0 || x>=width || y>=height) return 0;
-	return tiledata[(y*width)+x];
-}
-
-void Layer::SetTile(int x, int y, int t)
-{
-	if (x<0 || y<0 || x>=width || y>=height) return;
-	tiledata[(y*width)+x] = t;
 }
 
 void Layer::SetParallaxX(double p)
@@ -414,11 +403,6 @@ void MAP::save(FILE *f)
 	fwrite(&vcfuncs, 1, 4, f);
 }
 
-int MAP::zone(int x, int y)
-{
-	if (x<0 || y<0 || x>=mapwidth || y>=mapheight) return 0;
-	return zonelayer[(y*mapwidth)+x];
-}
 
 // Overkill (2006-07-20): Add a layer.
 int MAP::addLayer(int width, int height)
@@ -426,12 +410,6 @@ int MAP::addLayer(int width, int height)
 	layers.push_back(new Layer(width, height));
 	numlayers++;
 	return numlayers - 1;
-}
-
-int MAP::obstruct(int x, int y)
-{
-	if (x<0 || y<0 || x>=mapwidth || y>=mapheight) return 1;
-	return obslayer[(y*mapwidth)+x];
 }
 
 void MAP::SetZone(int x, int y, int t)
@@ -448,66 +426,44 @@ void MAP::SetObs(int x, int y, int t)
 	obslayer[(y*mapwidth)+x] = t;
 }
 
-int MAP::obstructpixel(int x, int y)
-{
-	if (x<0 || y<0 || x/16>=mapwidth || y/16>=mapheight) return 1;
-	int t=obslayer[((y/16)*mapwidth)+(x/16)];
-	return tileset->GetObs(t, x%16, y%16);
-}
-
+template<bool TRANSPARENT>
 void MAP::BlitLayer(int l, int tx, int ty, int xwin, int ywin, image *dest)
 {
-    // we add offsets here because if the parallax changes while the
+	Layer &layer = *layers[l];
+
+	// we add offsets here because if the parallax changes while the
     // xwin and ywin are non-zero, we would jump unless we compensate
-	int oxw = layers[l]->x_offset + (int) ((float) xwin * layers[l]->parallax_x);
-	int oyw = layers[l]->y_offset + (int) ((float) ywin * layers[l]->parallax_y);
+	int oxw = layer.x_offset + (int) ((float) xwin * layer.parallax_x);
+	int oyw = layer.y_offset + (int) ((float) ywin * layer.parallax_y);
 	int xofs = -(oxw & 15);
 	int yofs = -(oyw & 15);
 	int xtc = oxw >> 4;
 	int ytc = oyw >> 4;
 
-    for (int y=0; y<ty; y++)
-	{
-		for (int x=0; x<tx; x++)
-		{
-			int c = layers[l]->GetTile(xtc+x,ytc+y);
-			tileset->Blit((x*16)+xofs, (y*16)+yofs, c, dest);
-		}
-	}
-	if (dest == screen)
-	{
-		RenderLayerSprites(l);
-	}
-}
+	if(TRANSPARENT)
+		if (layer.lucent)
+			SetLucent(layer.lucent);
 
-void MAP::TBlitLayer(int l, int tx, int ty, int xwin, int ywin, image *dest)
-{
-    // we add offsets here because if the parallax changes while the
-    // xwin and ywin are non-zero, we would jump unless we compensate
-	int oxw = layers[l]->x_offset + (int) ((float) xwin * layers[l]->parallax_x);
-	int oyw = layers[l]->y_offset + (int) ((float) ywin * layers[l]->parallax_y);
-	int xofs =- (oxw & 15);
-	int yofs =- (oyw & 15);
-	int xtc = oxw >> 4;
-	int ytc = oyw >> 4;
-
-	if (layers[l]->lucent)
-		SetLucent(layers[l]->lucent);
+	tileset->UpdateAnimations();
 
     for (int y=0; y<ty; y++)
 	{
 		for (int x=0; x<tx; x++)
 		{
-			int c = layers[l]->GetTile(xtc+x,ytc+y);
-			if (c)
+			int c = layer.GetTile(xtc+x,ytc+y);
+			if(TRANSPARENT)
 				tileset->TBlit((x*16)+xofs, (y*16)+yofs, c, dest);
+			else
+				tileset->Blit((x*16)+xofs, (y*16)+yofs, c, dest);
 		}
 	}
 	if (dest == screen)
 	{
 		RenderLayerSprites(l);
 	}
-	SetLucent(0);
+	
+	if(TRANSPARENT)
+		SetLucent(0);
 }
 
 void MAP::BlitObs(int tx, int ty, int xwin, int ywin, image *dest)
@@ -597,10 +553,10 @@ void MAP::render(int x, int y, image *dest)
 		int layer = atoi(token)-1;
 		if (first)
 		{
-			BlitLayer(layer, tx, ty, x, y, dest);
+			BlitLayer<false>(layer, tx, ty, x, y, dest);
 			first = false;
 			continue;
 		}
-		TBlitLayer(layer, tx, ty, x, y, dest);
+		BlitLayer<true>(layer, tx, ty, x, y, dest);
 	}
 }

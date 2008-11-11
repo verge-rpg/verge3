@@ -763,10 +763,11 @@ int dd_Window::set_win(int w, int h, int bpp)
 		ddpf.dwFlags = DDPF_RGB;
 		hr = dx_win_ps->GetPixelFormat(&ddpf);
 		if (hr != DD_OK) err("Could not get pixel format!");
-		if (ddpf.dwRBitMask == 0x7C00 && bpp == 16)
-			vid_bpp = 15, vid_bytesperpixel = 2;
-		else
-			vid_bpp = bpp, vid_bytesperpixel = bpp / 8;
+		//if (ddpf.dwRBitMask == 0x7C00 && bpp == 16)
+		//	vid_bpp = 15, vid_bytesperpixel = 2;
+		//else
+		//	vid_bpp = bpp, vid_bytesperpixel = bpp / 8;
+		vid_bpp = 32;
 	}
 
 	if(img) delete img;
@@ -858,10 +859,11 @@ int dd_Window::set_fullscreen(int w, int h, int bpp)
 		ddpf.dwFlags = DDPF_RGB;
 		hr = dx_ps->GetPixelFormat(&ddpf);
 		if (hr != DD_OK) err("Could not get pixel format!");
-		if (ddpf.dwRBitMask == 0x7C00 && bpp == 16)
-			vid_bpp = 15, vid_bytesperpixel = 2;
-		else
-			vid_bpp = bpp, vid_bytesperpixel = bpp / 8;
+		//if (ddpf.dwRBitMask == 0x7C00 && bpp == 16)
+		//	vid_bpp = 15, vid_bytesperpixel = 2;
+		//else
+		//	vid_bpp = bpp, vid_bytesperpixel = bpp / 8;
+		vid_bpp = 32;
 	}
 
 

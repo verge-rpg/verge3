@@ -199,6 +199,7 @@ public:
     virtual char* fetch(char* filename);
 };
 
+#ifdef ALLOW_SCRIPT_COMPILATION
 class VCCompiler : public MapScriptCompiler
 {
     FileServer* file_server;
@@ -405,3 +406,4 @@ private:
 	void HandleFor();
 	void HandleSwitch();
 };
+#endif

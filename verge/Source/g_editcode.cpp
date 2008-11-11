@@ -12,6 +12,8 @@
 #include "xerxes.h"
 extern VCCore *vc;
 
+#ifdef ALLOW_SCRIPT_COMPILATION
+
 // Runtime code compilation and loading functions
 
 // Call to run code directly. Wraps it into a function,
@@ -143,3 +145,5 @@ void reloadMap()
 	die = 1;
 	done = 1;
 }
+
+#endif

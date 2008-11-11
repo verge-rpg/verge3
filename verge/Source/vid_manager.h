@@ -76,7 +76,8 @@ public:
 	virtual void positionCommand(int command, int arg1, int arg2) =0;
 };
 
-extern int vid_bpp, vid_xres, vid_yres, vid_bytesperpixel, transColor;
+extern int vid_bpp, vid_xres, vid_yres, transColor;
+const int vid_bytesperpixel = 4;
 extern bool vid_window;
 extern image *screen;
 extern AuxWindow *gameWindow;
@@ -98,8 +99,8 @@ extern void   (*AdditiveBlit) (int x, int y, image *src, image *dest);
 extern void   (*TAdditiveBlit) (int x, int y, image *src, image *dest);
 extern void   (*SubtractiveBlit) (int x, int y, image *src, image *dest);
 extern void   (*TSubtractiveBlit) (int x, int y, image *src, image *dest);
-extern void   (*BlitTile) (int x, int y, char *src, image *dest);
-extern void   (*TBlitTile) (int x, int y, char *src, image *dest);
+extern void   (*BlitTile) (int x, int y, quad *src, image *dest);
+extern void   (*TBlitTile) (int x, int y, quad *src, image *dest);
 void   Clear (int color, image *dest);
 extern void   (*PutPixel) (int x, int y, int color, image *dest);
 int    ReadPixel (int x, int y, image *dest);

@@ -21,7 +21,7 @@
 
 bool vid_initd = false;
 bool vid_window = true;
-int vid_bpp, vid_xres, vid_yres, vid_bytesperpixel;
+int vid_bpp, vid_xres, vid_yres;
 int transColor;
 image *screen = 0;
 AuxWindow *gameWindow;
@@ -36,8 +36,8 @@ void   (*AlphaBlit) (int x, int y, image *src, image *alpha, image *dest);
 void   (*TAdditiveBlit) (int x, int y, image *src, image *dest);
 void   (*SubtractiveBlit) (int x, int y, image *src, image *dest);
 void   (*TSubtractiveBlit) (int x, int y, image *src, image *dest);
-void   (*BlitTile) (int x, int y, char *src, image *dest);
-void   (*TBlitTile) (int x, int y, char *src, image *dest);
+void   (*BlitTile) (int x, int y, quad *src, image *dest);
+void   (*TBlitTile) (int x, int y, quad *src, image *dest);
 void   (*PutPixel) (int x, int y, int color, image *dest);
 void   (*Line) (int x, int y, int xe, int ye, int color, image *dest);
 void   (*VLine) (int x, int y, int ye, int color, image *dest);

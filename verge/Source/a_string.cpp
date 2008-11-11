@@ -74,9 +74,7 @@ bool isdelim(char c, const StringRef& s) {
 	return false;
 }
 
-
-quad FastHash( char const * const s, quad seed )
-{
+quad FastHash(bool _tolower, char const * const s, quad seed) {
 	int result = seed;
 
 	if ( s == NULL ) // should this assert(false) ?
@@ -104,11 +102,19 @@ quad FastHash( char const * const s, quad seed )
 			break;
 		}
 
-		result = result * 31 + ( *pStr & ( char )( 0x5F ) );
+		if(_tolower)
+			result = result * 31 + ( tolower(*pStr) & ( char )( 0x5F ) );
+		else
+			result = result * 31 + ( *pStr & ( char )( 0x5F ) );
 		++pStr;
 	}
 
 	return result;
+}
+
+quad FastHash( char const * const s, quad seed )
+{
+	return FastHash(false,s,seed);
 }
 
 quad FastHash( const std::string& s, quad seed )

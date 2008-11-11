@@ -39,8 +39,11 @@ int gamerate = 100;
 int soundengine = 0;
 bool use_lua = false;
 
-VCCompiler *vcc;
 VCCore *vc;
+
+#ifdef ALLOW_SCRIPT_COMPILATION
+VCCompiler *vcc = 0;
+#endif
 
 /****************************** code ******************************/
 
@@ -103,6 +106,18 @@ void LoadConfig()
 		MountVFile(cfg_GetKeyValue("mount2"));
 	if (cfg_KeyPresent("mount3"))
 		MountVFile(cfg_GetKeyValue("mount3"));
+
+	void platform_ProcessConfig();
+	platform_ProcessConfig();
+
+	#ifndef ALLOW_SCRIPT_COMPILATION
+	releasemode = true;
+	editcode = false;
+	#endif
+
+	#ifndef ENABLE_LUA
+	if(use_lua) err("User asked for lua, but build does not have lua enabled!");
+	#endif
 }
 
 int getInitialWindowXres() {
@@ -157,6 +172,7 @@ void ShowPage()
 #endif
 #endif
 
+#ifdef ALLOW_SCRIPT_COMPILATION
 void DisplayCompileImage()
 {
 #ifndef NOSPLASHSCREEN
@@ -172,6 +188,7 @@ void DisplayCompileImage()
 	ShowPage();
 #endif
 }
+#endif
 
 //---
 //setup garlick to use vfile
@@ -190,7 +207,7 @@ void InitGarlick() {
 	Garlick_cb_error = Garlick_error;
 }
 
-
+#ifdef ALLOW_SCRIPT_COMPILATION
 bool CompileMaps(const char *ext, MapScriptCompiler *compiler)
 {
 	std::vector<std::string> filenames = listFilePattern("*.map");
@@ -207,7 +224,7 @@ bool CompileMaps(const char *ext, MapScriptCompiler *compiler)
 	log ("");
 	return true;
 }
-
+#endif
 
 
 //---
@@ -247,11 +264,12 @@ void xmain(int argc, char *argv[])
 		strcpy(mapname, argv[1]);
 	}
 
-	// always make a compiler, even in release mode,
-	// just so we don't need to check for its
-	// presence everywhere
-	vcc = new VCCompiler();
+	#ifdef ALLOW_SCRIPT_COMPILATION
+	if(!releasemode)
+		vcc = new VCCompiler();
+	#endif
 
+	#ifdef ALLOW_SCRIPT_COMPILATION
 	if(editcode) {
 		if(releasemode) {
 			err("Cannot edit code in release mode.");
@@ -261,6 +279,7 @@ void xmain(int argc, char *argv[])
 		}
 		InitEditCode();
 	}
+	#endif
 
 	#ifdef ENABLE_LUA
 	LUA *lua;
@@ -269,6 +288,7 @@ void xmain(int argc, char *argv[])
 		se = lua = new LUA();
 	#endif
 	
+	#ifdef ALLOW_SCRIPT_COMPILATION
 	if (!releasemode)
 	{
 		DisplayCompileImage();
@@ -286,13 +306,14 @@ void xmain(int argc, char *argv[])
 			if (!result) err(vcc->errmsg);
 		}
 	}
+	#endif
 
 	if(!use_lua) {
 		se = vc = new VCCore();
 		if (decompile)
 			vc->Decompile();
 	}
-
+	
 	se->ExecAutoexec();
 
 	while (true && strlen(mapname))

@@ -739,7 +739,6 @@ void TimedProcessSprites()
 	}
 }
 
-void timer_update();
 void Engine_Start(char *mapname)
 {
 	entities = 0;

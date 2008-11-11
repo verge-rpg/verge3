@@ -398,7 +398,10 @@ void ScriptEngine::BlitLucent(int x, int y, int lucent, int src, int dst) {
 }
 void ScriptEngine::BlitTile(int x, int y, int t, int dst) {
 	image *d = ImageForHandle(dst);
-	if (current_map) current_map->tileset->Blit(x, y, t, d);
+	if (current_map) {
+		current_map->tileset->UpdateAnimations();
+		current_map->tileset->Blit(x, y, t, d);
+	}
 }
 void ScriptEngine::BlitWrap(int x, int y, int src, int dst) {
 	image *s = ImageForHandle(src);
@@ -707,21 +710,20 @@ int ScriptEngine::LoadFont(CStringRef filename, int width, int height) {
 int ScriptEngine::LoadFontEx(CStringRef filename) { return (int) new Font(filename.c_str()); }
 //helper:
 static void print(int x, int y, image *dest, Font *font, CStringRef text, int which) {
-	char *str = va("%s",text.c_str());
 	switch(which) {
 		case 0:	
 			if (font == 0) {
 				::GotoXY(x, y);
-				::PrintString(str, dest);
-			} else font->PrintString("%s", x, y, dest, str);
+				::PrintString(text.c_str(), dest);
+			} else font->PrintString("%s", x, y, dest, text.c_str());
 			break;
 		case 1:	
-			if (font == 0) ::PrintCenter(x, y, str, dest);
-			else font->PrintCenter("%s", x, y, dest, str);
+			if (font == 0) ::PrintCenter(x, y, text.c_str(), dest);
+			else font->PrintCenter("%s", x, y, dest, text.c_str());
 			break;
 		case 2:	
-			if (font == 0) ::PrintRight(x, y, str, dest);
-			else font->PrintRight("%s", x, y, dest, str);
+			if (font == 0) ::PrintRight(x, y, text.c_str(), dest);
+			else font->PrintRight("%s", x, y, dest, text.c_str());
 			break;
 	}
 }

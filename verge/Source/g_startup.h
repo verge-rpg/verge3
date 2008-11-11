@@ -17,6 +17,9 @@ extern bool cheats;
 extern bool automax;
 extern bool releasemode;
 extern char mapname[255];
-extern VCCompiler *vcc;
 extern int gamerate;
 void ShowPage();
+
+#ifdef ALLOW_SCRIPT_COMPILATION
+extern VCCompiler *vcc;
+#endif

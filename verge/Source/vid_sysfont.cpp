@@ -46,13 +46,13 @@ void GotoXY(int x1, int y1)
 	fonty = y1;
 }
 
-void PrintRight(int x1, int y1, char *str, image* dest)
+void PrintRight(int x1, int y1, const char *str, image* dest)
 {
 	GotoXY(x1 - pixels(str), y1);
 	PrintString(str,dest);
 }
 
-void PrintCenter(int x1, int y1, char *str, image *dest, ...)
+void PrintCenter(int x1, int y1, const char *str, image *dest, ...)
 {
 	va_list argptr;
 	char msg[256];
@@ -86,7 +86,7 @@ void print_char(char c, image *dest)
 	if (c == '*' - 32) fontx -= 1;
 }
 
-void PrintString(char *str, image *dest, ...)
+void PrintString(const char *str, image *dest, ...)
 {
 	va_list argptr;
 	char msg[1024];

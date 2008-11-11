@@ -169,20 +169,25 @@ void VSP::save(FILE *f)
 	cfwrite(obs, 1, numobs*256, f);
 }
 
-void VSP::Blit(int x, int y, int index, image *dest)
+void VSP::UpdateAnimations()
 {
 	while (mytimer < systemtime)
 	{
 		AnimateTiles();
 		mytimer++;
 	}
+}
+
+void VSP::Blit(int x, int y, int index, image *dest)
+{
+
 	//if (index >= numtiles) err("VSP::BlitTile(), tile %d exceeds %d", index, numtiles);
 	if (index >= numtiles) return;
 	index = tileidx[index];
 	if (index >= numtiles) return;
 	//if (index >= numtiles) err("VSP::BlitTile(), tile %d exceeds %d", index, numtiles);
-	char *c = (char *) vspdata->data + (index * 256 * vid_bytesperpixel);
-	BlitTile(x, y, c, dest);
+	quad* tile = vspdata->data + (index<<8);
+	BlitTile(x, y, tile, dest);
 }
 
 void VSP::TBlit(int x, int y, int index, image *dest)
@@ -197,8 +202,8 @@ void VSP::TBlit(int x, int y, int index, image *dest)
 	index = tileidx[index];
 	if (index >= numtiles) return;
 	//if (index >= numtiles) err("VSP::BlitTile(), tile %d exceeds %d", index, numtiles);
-	char *c = (char *) vspdata->data + (index * 256 * vid_bytesperpixel);
-	TBlitTile(x, y, c, dest);
+	quad* tile = vspdata->data + (index<<8);
+	TBlitTile(x, y, tile, dest);
 }
 
 void VSP::BlitObs(int x, int y, int index, image *dest)
@@ -262,10 +267,3 @@ void VSP::ValidateAnimations()
 			err("VSP::ValidateAnimations() - animation %d references out of index tiles", i);
 }
 
-int VSP::GetObs(int t, int x, int y)
-{
-	if (!t) return 0;
-	if (t>=numobs || t<0) return 1;
-	if (x<0 || y<0 || x>15 || y>15) return 1;
-	return obs[(t*256)+(y*16)+x];
-}

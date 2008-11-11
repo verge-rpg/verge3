@@ -26,11 +26,9 @@ public:
 	Layer(int width, int height);
 	~Layer();
 	void save(FILE *f); // Overkill (2006-07-20): Saver functions!
-	int GetTile(int x, int y);
-	void SetTile(int x, int y, int t);
+
     void SetParallaxX(double p);
     void SetParallaxY(double p);
-	
 
 	char layername[256];
 	int lucent;
@@ -38,6 +36,19 @@ public:
     int x_offset, y_offset; // used to account for changing parallax
 	double parallax_x, parallax_y;
 	word *tiledata;
+
+	int GetTile(int x, int y)
+	{
+		if (x<0 || y<0 || x>=width || y>=height) return 0;
+		return tiledata[(y*width)+x];
+	}
+
+	void SetTile(int x, int y, int t)
+	{
+		if (x<0 || y<0 || x>=width || y>=height) return;
+		tiledata[(y*width)+x] = t;
+	}
+
 };
 
 class MAP
@@ -74,14 +85,33 @@ public:
 	void save(FILE *f); // Overkill (2006-07-20): Saver functions!
 
 	int addLayer(int width, int height); // Overkill (2006-07-20): Add a layer.
-	int zone(int x, int y);
-	int obstruct(int x, int y);
-	int obstructpixel(int x, int y);
 	void SetZone(int x, int y, int t);
 	void SetObs(int x, int y, int t);
 
+	template<bool TRANSPARENT>
 	void BlitLayer(int l, int tx, int ty, int xwin, int ywin, image *dest);
-	void TBlitLayer(int l, int tx, int ty, int xwin, int ywin, image *dest);
+	
 	void render(int x, int y, image *dest);
 	void BlitObs(int tx, int ty, int xwin, int ywin, image *dest);
+
+	int zone(int x, int y)
+	{
+		if (x<0 || y<0 || x>=mapwidth || y>=mapheight) return 0;
+		return zonelayer[(y*mapwidth)+x];
+	}
+
+
+	int obstruct(int x, int y)
+	{
+		if (x<0 || y<0 || x>=mapwidth || y>=mapheight) return 1;
+		return obslayer[(y*mapwidth)+x];
+	}
+
+	int obstructpixel(int x, int y)
+	{
+		if (x<0 || y<0 || (x>>4)>=mapwidth || (y>>4)>=mapheight) return 1;
+		int t=obslayer[((y>>4)*mapwidth)+(x>>4)];
+		return tileset->GetObs(t, x&15, y&15);
+	}
+
 };

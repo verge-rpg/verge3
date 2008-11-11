@@ -42,5 +42,14 @@ public:
 	void AnimateTile(int i, int l);
 	void AnimateTiles();
 	void ValidateAnimations();
-	int  GetObs(int t, int x, int y);
+	void UpdateAnimations();
+	
+	int GetObs(int t, int x, int y)
+	{
+		if (!t) return 0;
+		if (t>=numobs || t<0) return 1;
+		if (x<0 || y<0 || x>15 || y>15) return 1;
+		return obs[(t*256)+(y*16)+x];
+	}
+
 };

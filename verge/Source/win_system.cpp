@@ -42,8 +42,10 @@ void initConsole()
 LRESULT APIENTRY WndProc(HWND hWnd, UINT message,WPARAM wParam, LPARAM lParam);
 void HandleMessages();
 
-void LoadConfig();
-void dd_init();
+void platform_ProcessConfig()
+{
+}
+
 int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE zwhocares, LPSTR szCommandline, int nCmdShow)
 {
 	hMainInst = hCurrentInst;

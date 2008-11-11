@@ -131,6 +131,7 @@ StringRef vc_strright(const StringRef &str, int len);
 StringRef strovr(const StringRef& source, const StringRef& rep, int offset);
 bool isdelim(char c, const StringRef& s);
 
+quad FastHash(bool tolower, char const * const s, quad seed = 0);
 quad FastHash( char const * const s, quad seed = 0);
 quad FastHash( const std::string& s, quad seed = 0);
 
