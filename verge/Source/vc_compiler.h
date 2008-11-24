@@ -151,6 +151,9 @@ public:
 	char *chunk;
 	char *ptr;
 
+	typedef std::map<char*,StringRef> TStringTable;
+	TStringTable stringTable;
+
 	Chunk();
 	~Chunk();
 	void LoadChunk(FILE *f);
@@ -166,7 +169,7 @@ public:
 	byte GrabC();
 	word GrabW();
 	quad GrabD();
-	char *GrabString();
+	CStringRef GrabString();
 	char operator[](quad n) const;
 	void Expand();
 	void become(Chunk *c);

@@ -43,10 +43,10 @@ int getHour();
 int getMinute();
 int getSecond();
 
-std::vector<std::string> listFilePattern(std::string pattern);
+void listFilePattern(std::vector<std::string> &res, CStringRef pattern);
 
 
-void showMessageBox(std::string message);
-std::string GetSystemSaveDirectory(std::string name);
+void showMessageBox(CStringRef message);
+StringRef GetSystemSaveDirectory(CStringRef name);
 
 #endif

@@ -12,25 +12,25 @@
 #include "xerxes.h"
 #include "a_dict.h"
 
-std::string dict::GetString(std::string key) {
-	const std::map<std::string,std::string>::iterator i = data.find(key);
+CStringRef dict::GetString(CStringRef key) {
+	const TDict::iterator i = data.find(key);
 	if(i == data.end()) {
 		se->Error("dict::GetString: No such key (%s)", key.c_str());
-		return ""; // should never happen
+		return empty_string; // should never happen
 	}
 	return i->second;
 }
 
-void dict::SetString(std::string key, std::string val) {
+void dict::SetString(CStringRef key, CStringRef val) {
 	data[key] = val;
 }
 
-int dict::ContainsString(std::string key) {
+int dict::ContainsString(CStringRef key) {
 	return data.count(key);
 }
 
-void dict::RemoveString(std::string key) {
-	const std::map<std::string,std::string>::iterator i = data.find(key);
+void dict::RemoveString(CStringRef key) {
+	const TDict::iterator i = data.find(key);
 	if(i == data.end()) {
 		se->Error("dict::RemoveString: No such key (%s)", key.c_str());
 		return; // should never happen
@@ -38,19 +38,15 @@ void dict::RemoveString(std::string key) {
 	data.erase(i);
 }
 
-int dict::Size() {
-	return data.size();
-}
-
-std::string dict::ListKeys(std::string separator)
+StringRef dict::ListKeys(CStringRef separator)
 {
 	std::string s = "";
 
-	for(std::map<std::string,std::string>::iterator i = data.begin();
+	for(TDict::iterator i = data.begin();
 		i != data.end();
 		i++)
 	{
-		s += std::string(i->first) + separator;
+		s += i->first.str() + separator.str();
 	}
 
 	return s;

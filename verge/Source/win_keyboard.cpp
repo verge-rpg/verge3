@@ -215,7 +215,7 @@ void UpdateKeyboard()
 		// If the string gets too long, shorten it to the 255 most recent characters.
 		if (keybuffer.length() > 255)
 		{
-			keybuffer = vc_strright(keybuffer,255);
+			keybuffer = vc_strright(keybuffer,255).c_str();
 		}
 	}
 	while (result);

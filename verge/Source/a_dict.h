@@ -16,14 +16,15 @@
 
 class dict {
 	public:
-		std::string GetString(std::string key);
-		void SetString(std::string key, std::string val);
-		int ContainsString(std::string key);
-		void RemoveString(std::string key);
-		int Size();
-		std::string ListKeys(std::string separator);
+		CStringRef GetString(CStringRef key);
+		void SetString(CStringRef key, CStringRef val);
+		int ContainsString(CStringRef key);
+		void RemoveString(CStringRef key);
+		int Size() { return data.size(); }
+		StringRef ListKeys(CStringRef separator);
 	private:
-		std::map<std::string,std::string> data;
+		typedef std::map<StringRef,StringRef> TDict;
+		TDict data;
 };
 
 #endif

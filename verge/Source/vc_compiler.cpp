@@ -209,13 +209,20 @@ quad Chunk::GrabD()
 #endif
 }
 
-char *Chunk::GrabString()
+CStringRef Chunk::GrabString()
 {
-	char *retofs = ptr;
-	while (*ptr)
-		ptr++;
-	ptr++;
-	return retofs;
+	static int ctr = 0;
+	//try to find this address in the string table
+	TStringTable::iterator find = stringTable.find(ptr);
+	CStringRef ret = 
+		(find == stringTable.end()) 
+			//need to add it to the string table
+		? (stringTable[ptr] = StringRef(ptr))
+		: find->second ;
+
+	//advance code pointer
+	ptr += ret.length()+1;
+	return ret;
 }
 
 char Chunk::operator[](quad n) const

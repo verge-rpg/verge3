@@ -1,0 +1,1 @@
+upx.exe -9 ..\redist\verge.exe

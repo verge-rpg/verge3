@@ -274,12 +274,12 @@ public:
 
 	void SetInt(const char *intname, int value);
 	int  GetInt(const char *intname);
-	void SetStr(const char *strname, std::string value);
-	std::string GetStr(const char *strname);
+	void SetStr(CStringRef strname, CStringRef value);
+	CStringRef GetStr(const char *strname);
 	void SetIntArray(const char *intname, int index, int value);
 	int  GetIntArray(const char *intname, int index);
-	void SetStrArray(const char *strname, int index, std::string value);
-	std::string GetStrArray(const char *strname, int index);
+	void SetStrArray(CStringRef strname, int index, CStringRef value);
+	CStringRef GetStrArray(CStringRef strname, int index);
 
 	std::vector<function_t*>	userfuncs[NUM_CIMAGES];
 	
@@ -322,7 +322,7 @@ private:
 
 	void PushInt(int n);
 	int  PopInt();
-	void PushString(StringRef s);
+	void PushString(CStringRef s);
 	StringRef PopString();
 
 	StringRef ProcessString();
@@ -343,7 +343,7 @@ private:
 	int GetIntArgument(int index);
 	StringRef GetStringArgument(int index);
 	void SetIntArgument(int index, int value);
-	void SetStringArgument(int index, StringRef value);
+	void SetStringArgument(int index, CStringRef value);
 
 	FILE *vcd;
 	int dtablvl;

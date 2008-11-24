@@ -210,7 +210,8 @@ void InitGarlick() {
 #ifdef ALLOW_SCRIPT_COMPILATION
 bool CompileMaps(const char *ext, MapScriptCompiler *compiler)
 {
-	std::vector<std::string> filenames = listFilePattern("*.map");
+	std::vector<std::string> filenames;
+	listFilePattern(filenames, "*.map");
 	for(std::vector<std::string>::iterator i = filenames.begin();
 		i != filenames.end();
 		i++)

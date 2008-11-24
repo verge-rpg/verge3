@@ -276,11 +276,11 @@ public:
 	static void SocketSendRaw(int sh, CStringRef str);
 	static int SocketByteCount(int sh); // Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
 	//XX: unsorted functions and variables, mostly newly added and undocumented
-	static StringRef Get_EntityChr(int arg);
+	static CStringRef Get_EntityChr(int arg);
 	static void Set_EntityChr(int arg, CStringRef chr);
 	static int Get_EntityFrameW(int ofs);
 	static int Get_EntityFrameH(int ofs);
-	static StringRef Get_EntityDescription(int arg);
+	static CStringRef Get_EntityDescription(int arg);
 	static void Set_EntityDescription(int arg, CStringRef val);
 	static void Set_EntityActivateScript(int arg, CStringRef val);
 	static bool SoundIsPlaying(int chn);

@@ -499,9 +499,8 @@ int getSecond()
 	return time.wSecond	;
 }
 
-std::vector<std::string> listFilePattern(std::string pattern)
+void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
 {
-	std::vector<std::string> res;
 	_finddata_t rec;
 	int handle = _findfirst(pattern.c_str(), &rec);
 	int result = handle;
@@ -511,16 +510,16 @@ std::vector<std::string> listFilePattern(std::string pattern)
 		result = _findnext(handle, &rec);
 	}
 	_findclose(handle);
-	return res;
 }
 
 
-void showMessageBox(std::string message)
+void showMessageBox(CStringRef message)
 {
 	MessageBoxA(GetDesktopWindow(), message.c_str(), APPNAME, MB_OK | MB_TASKMODAL);
 }
 
-std::string GetSystemSaveDirectory(std::string name)
+StringRef GetSystemSaveDirectory(CStringRef name)
 {
-  return std::string("./");
+  static const StringRef dotSlash = "./";
+  return dotSlash;
 }

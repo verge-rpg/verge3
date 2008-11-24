@@ -88,7 +88,7 @@ public:
 	{}
 
 	std::string const & str() const { return get()->str; }
-	operator std::string const &() const { return str(); }
+	//operator std::string const &() const { return str(); }
 	const char* c_str() const { return str().c_str(); }
 	unsigned int length() const { return str().length(); }
 	unsigned int size() const { return str().size(); }
@@ -111,8 +111,8 @@ public:
 
 typedef const StringRef& CStringRef;
 
-
-inline StringRef empty_string() { return StringRef::empty_string; }
+extern CStringRef empty_string;
+//inline StringRef empty_string() { return StringRef::empty_string; }
 
 #include <boost/algorithm/string.hpp>
 using boost::algorithm::to_upper_copy;
@@ -123,13 +123,13 @@ using boost::algorithm::equals;
 using std::string;
 //ex: std::string x = to_lower_copy(std::string("HI"));
 
-int strcasecmp(std::string s1, std::string s2);
-StringRef vc_strsub(const StringRef &str, int pos, int len);
-StringRef vc_strmid(const StringRef &str, int pos, int len);
-StringRef vc_strleft(const StringRef &str, int len);
-StringRef vc_strright(const StringRef &str, int len);
-StringRef strovr(const StringRef& source, const StringRef& rep, int offset);
-bool isdelim(char c, const StringRef& s);
+int strcasecmp(CStringRef s1, CStringRef s2);
+StringRef vc_strsub(CStringRef str, int pos, int len);
+StringRef vc_strmid(CStringRef str, int pos, int len);
+StringRef vc_strleft(CStringRef str, int len);
+StringRef vc_strright(CStringRef str, int len);
+StringRef strovr(CStringRef source, CStringRef rep, int offset);
+bool isdelim(char c, CStringRef s);
 
 quad FastHash(bool tolower, char const * const s, quad seed = 0);
 quad FastHash( char const * const s, quad seed = 0);

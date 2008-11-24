@@ -199,15 +199,15 @@ void ___set_ent_obstructable(int ofs, bool value) { if (ofs>=0 && ofs<entities) 
 int ___get_ent_lucent(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->lucent; else return 0; }
 void ___set_ent_lucent(int ofs, int value) { if (ofs>=0 && ofs<entities) entity[ofs]->lucent = value; }
 
-std::string ___get_ent_script(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->script; else return ""; }
-void ___set_ent_script(int ofs,std::string val) { if (ofs>=0 && ofs<entities) se->Set_EntityActivateScript(ofs, val); }
+CStringRef ___get_ent_script(int ofs) { if (ofs>=0 && ofs<entities) return entity[ofs]->script; else return empty_string; }
+void ___set_ent_script(int ofs,CStringRef val) { if (ofs>=0 && ofs<entities) se->Set_EntityActivateScript(ofs, val); }
 
-std::string ___get_ent_chr(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityChr(ofs); else return ""; }
-void ___set_ent_chr(int ofs, std::string chr) { if (ofs>=0 && ofs<entities) se->Set_EntityChr(ofs,chr); }
+CStringRef ___get_ent_chr(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityChr(ofs); else return empty_string; }
+void ___set_ent_chr(int ofs, CStringRef chr) { if (ofs>=0 && ofs<entities) se->Set_EntityChr(ofs,chr); }
 int ___get_ent_framew(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityFrameW(ofs); else return 0; }
 int ___get_ent_frameh(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityFrameH(ofs); else return 0; }
-std::string ___get_ent_description(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityDescription(ofs); else return 0; }
-void ___set_ent_description(int ofs, std::string val) { if (ofs>=0 && ofs<entities) se->Set_EntityDescription(ofs, val); }
+CStringRef ___get_ent_description(int ofs) { if (ofs>=0 && ofs<entities) return se->Get_EntityDescription(ofs); else return empty_string; }
+void ___set_ent_description(int ofs, CStringRef val) { if (ofs>=0 && ofs<entities) se->Set_EntityDescription(ofs, val); }
 
 
 //------------------------------
@@ -244,10 +244,10 @@ int ___get_curmap_h() { return current_map ? current_map->mapheight : 0; }
 int ___get_curmap_startx() { return current_map ? current_map->startx : 0; }
 int ___get_curmap_starty() { return current_map ? current_map->starty : 0; }
 int ___get_curmap_tileset() { return current_map ? 2 : 0; }
-std::string ___get_curmap_name() { return current_map ? current_map->mapname : ""; }
-std::string ___get_curmap_rstring() { return current_map ? current_map->renderstring : ""; }
-std::string ___get_curmap_music() { return current_map ? current_map->musicname : ""; }
-std::string ___get_curmap_path() { return current_map ? current_map->mapfname : ""; }
+StringRef ___get_curmap_name() { return current_map ? current_map->mapname : empty_string; }
+StringRef ___get_curmap_rstring() { return current_map ? current_map->renderstring : ""; }
+StringRef ___get_curmap_music() { return current_map ? current_map->musicname : ""; }
+StringRef ___get_curmap_path() { return current_map ? current_map->mapfname : ""; }
 
 //VII.h. Layer Variables
 //todo - bounds
@@ -263,8 +263,8 @@ int ___get_layer_w(int ofs) { if (current_map && ofs>=0 && ofs<current_map->numl
 int ___get_layer_h(int ofs) { if (current_map && ofs>=0 && ofs<current_map->numlayers) return current_map->layers[ofs]->height; else return 0; }
 
 //VII.i. Zone Variables -- Overkill(2007-09-04)
-std::string ___get_zone_name(int ofs) { if (current_map && ofs >= 0 && ofs < current_map->numzones) return current_map->zones[ofs]->name; else return ""; }
-std::string ___get_zone_event(int ofs) { if (current_map && ofs >= 0 && ofs < current_map->numzones) return current_map->zones[ofs]->script; else return ""; }
+StringRef ___get_zone_name(int ofs) { if (current_map && ofs >= 0 && ofs < current_map->numzones) return current_map->zones[ofs]->name; else return empty_string; }
+StringRef ___get_zone_event(int ofs) { if (current_map && ofs >= 0 && ofs < current_map->numzones) return current_map->zones[ofs]->script; else return empty_string; }
 
 //VII.j. Event Variables
 int ___get_event_tx() { return event_tx; }

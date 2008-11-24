@@ -52,7 +52,7 @@ public:
 	void clear_stalk(); // stop following people, if we are
     int get_leader_framect();
     void set_framect_follow(int f); // set our and our follower's framect
-	void set_chr(std::string fname);
+	void set_chr(CStringRef fname);
 
 	void SetWanderZone();
 	void SetWanderBox(int x1, int y1, int x2, int y2);
@@ -78,9 +78,9 @@ public:
 	int wx1, wy1, wx2, wy2;
     int movemult;
 	int index;
-	std::string description; // Overkill - 2006-05-21
-	std::string hookrender;
-	std::string script;
+	StringRef description; // Overkill - 2006-05-21
+	StringRef hookrender;
+	StringRef script;
 	char movestr[256];
 	int moveofs;
 	Entity *follow, *follower;

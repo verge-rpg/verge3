@@ -924,7 +924,7 @@ VC_LIBFUNC(vc_strpos) ()
 	StringRef sub = vc->ResolveString();
 	StringRef source = vc->ResolveString();
 	int start = vc->ResolveOperand();
-	vc->vcreturn = source.str().find(sub, start);
+	vc->vcreturn = source.str().find(sub.str(), start);
 }
 
 // Overkill: 2005-12-28
@@ -987,7 +987,7 @@ VC_LIBFUNC(vc_TokenLeft) ()	// Excludes token.
 	int pos = vc->ResolveOperand();
 	if (pos < 1)
 	{
-		vc->vcretstr = "";
+		vc->vcretstr = empty_string;
 		return;
 	}
 	pos = GetTokenPos(full, tokens, pos, 0);
@@ -1019,7 +1019,7 @@ VC_LIBFUNC(vc_TokenRight) ()
 	pos = GetTokenPos(full, tokens, pos, 1);
 	if (pos == full.length())
 	{
-		vc->vcretstr = "";
+		vc->vcretstr = empty_string;
 		return;
 	}
 	else
@@ -1228,7 +1228,7 @@ VC_LIBFUNC(vc_SetString) ()
 {
 	StringRef strname = vc->ResolveString();
 	StringRef value = vc->ResolveString();
-	vc->SetStr(strname.c_str(), value);
+	vc->SetStr(strname, value);
 }
 
 VC_LIBFUNC(vc_GetString) ()
@@ -1257,14 +1257,14 @@ VC_LIBFUNC(vc_SetStringArray) ()
 	StringRef strname = vc->ResolveString();
 	int index = vc->ResolveOperand();
 	StringRef value = vc->ResolveString();
-	vc->SetStrArray(strname.c_str(), index, value);
+	vc->SetStrArray(strname, index, value);
 }
 
 VC_LIBFUNC(vc_GetStringArray) ()
 {
 	StringRef strname = vc->ResolveString();
 	int index = vc->ResolveOperand();
-	vc->vcretstr = vc->GetStrArray(strname.c_str(), index);
+	vc->vcretstr = vc->GetStrArray(strname, index);
 }
 
 VC_LIBFUNC(vc_FlipBlit) () {
@@ -1657,7 +1657,6 @@ VC_LIBFUNC(vc_GetUserSystemVcFunctionCount) ()
 
 VC_LIBFUNC(vc_GetUserSystemVcFunctionByIndex) ()
 {
-	vc->vcretstr = "";
 	int index = vc->ResolveOperand();
 	int maxSize = vc->userfuncs[CIMAGE_SYSTEM].size();
 

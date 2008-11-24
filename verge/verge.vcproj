@@ -190,7 +190,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine=""
+				CommandLine="&quot;..\win32\upx.exe -9 ..\redist\verge.exe&quot;"
 			/>
 		</Configuration>
 	</Configurations>

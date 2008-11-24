@@ -199,8 +199,11 @@ void ScriptEngine::Unpress(int n) {
 void ScriptEngine::UpdateControls() { ::UpdateControls(); }
 
 
-int ScriptEngine::Asc(CStringRef s) { if(s == "") return 0; else return (int)s[0]; }
-StringRef ScriptEngine::Chr(int c) { return va("%c", c); }
+int ScriptEngine::Asc(CStringRef s) { if(s.length() == 0) return 0; else return (int)s[0]; }
+StringRef ScriptEngine::Chr(int c) { 
+	char buf[2] = {(char)c,0};
+	return buf;
+}
 StringRef ScriptEngine::GetToken(CStringRef s, CStringRef d, int i) {
 	int n = 0;
 	int tokenindex = 0;
@@ -219,7 +222,7 @@ StringRef ScriptEngine::GetToken(CStringRef s, CStringRef d, int i) {
 		tokenindex++;
 	}
 
-	return empty_string();
+	return empty_string;
 }
 StringRef ScriptEngine::Left(CStringRef str, int len) { return vc_strleft(str,len); }
 int ScriptEngine::Len(CStringRef s) { return s.length(); }
@@ -229,9 +232,10 @@ StringRef ScriptEngine::Str(int d) { return va("%d", d); }
 int ScriptEngine::Strcmp(CStringRef s1, CStringRef s2) { return strcmp(s1.c_str(), s2.c_str()); }
 StringRef ScriptEngine::Strdup(CStringRef s, int times) {
 	std::string ret;
+	int slen = s.length();
 	ret.reserve(s.size()*times);
 	for (int i=0; i<times; i++)
-		ret += s;
+		memcpy(&ret[slen*i],&s[0],slen);
 	return ret;
 }
 int ScriptEngine::TokenCount(CStringRef s, CStringRef d) {
@@ -260,8 +264,8 @@ StringRef ScriptEngine::ToLower(CStringRef str) {
 
 StringRef ScriptEngine::ToUpper(CStringRef str)
 {
-	std::string temp = str.str();
-	to_upper(temp); 
+	StringRef temp = str.str();
+	to_upper(temp.dangerous_peek()); 
 	return temp;
 }
 
@@ -1049,14 +1053,13 @@ void ScriptEngine::FileWriteByte(int handle, int var) {
 	fwrite(&var, 1, 1, vcfiles[handle].fptr);
 }
 void ScriptEngine::FileWriteln(int handle, CStringRef s) {
-	std::string temp = s;
-	temp +=  "\r\n";
 	if (!handle) se->Error("FileWriteln() - Yo, you be writin' to a file that aint open, foo.");
 	if (handle > VCFILES) se->Error("FileWriteln() - given file handle is not a valid file handle.");
 	if (!vcfiles[handle].active) se->Error("FileWriteln() - given file handle is not open.");
 	if (vcfiles[handle].mode != VC_WRITE) se->Error("FileWriteln() - given file handle is a read-mode file.");
 
-	fwrite(temp.c_str(), 1, s.length(), vcfiles[handle].fptr);
+	fwrite(s.c_str(), 1, s.length(), vcfiles[handle].fptr);
+	fwrite("\r\n", 1, 2, vcfiles[handle].fptr);
 }
 void ScriptEngine::FileWriteQuad(int handle, int var) {
 	if (!handle || handle > VCFILES || !vcfiles[handle].active)
@@ -1088,7 +1091,8 @@ void ScriptEngine::FileWriteWord(int handle, int var) {
 	fwrite(&var, 1, 2, vcfiles[handle].fptr);
 }
 StringRef ScriptEngine::ListFilePattern(CStringRef pattern) {
-	std::vector<std::string> result = listFilePattern(pattern);
+	std::vector<std::string> result;
+	listFilePattern(result, pattern);
 	std::string ret;
 
 	for(std::vector<std::string>::iterator i = result.begin();
@@ -1427,11 +1431,11 @@ int ScriptEngine::SocketByteCount(int sh)
 }
 
 //XX: unsorted functions and variables, mostly newly added and undocumented
-StringRef ScriptEngine::Get_EntityChr(int arg) {
+CStringRef ScriptEngine::Get_EntityChr(int arg) {
 	if(arg >= 0 && arg < entities && entity[arg]->chr != 0)
 		return entity[arg]->chr->name;
 	else
-		return StringRef();
+		return empty_string;
 }
 void ScriptEngine::Set_EntityChr(int arg, CStringRef chr) {
 	if(arg >= 0 && arg < entities)
@@ -1444,11 +1448,11 @@ int ScriptEngine::Get_EntityFrameH(int ofs) {
 	if (ofs>=0 && ofs<entities) return entity[ofs]->chr->fysize; else return 0;
 }
 
-StringRef ScriptEngine::Get_EntityDescription(int arg) {
+CStringRef ScriptEngine::Get_EntityDescription(int arg) {
 	if(arg >= 0 && arg < entities)
 		return entity[arg]->description;
 	else
-		return StringRef();
+		return empty_string;
 }
 void ScriptEngine::Set_EntityDescription(int arg, CStringRef val) { 
 	if(arg >= 0 && arg < entities)
@@ -1545,7 +1549,7 @@ StringRef ScriptEngine::WrapText(int wt_font, CStringRef wt_s, int wt_linelen)
 }
 
 int ScriptEngine::strpos(CStringRef sub, CStringRef source, int start) {
-	return source.str().find(sub, start);
+	return source.str().find(sub.str(), start);
 }
 
 int ScriptEngine::HSV(int h, int s, int v) { return ::HSVtoColor(h,s,v); }

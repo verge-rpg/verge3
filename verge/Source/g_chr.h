@@ -23,7 +23,7 @@ public:
 	int animsize[9];
 	int *anims[9];
 
-	std::string name;                        // the filename this was loaded from
+	StringRef name;                        // the filename this was loaded from
 
 	CHR(const char *fname);
 	~CHR();

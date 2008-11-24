@@ -4,6 +4,7 @@
 //the order of these matters: StringRefs cant be constructed until the pool is created
 boost::object_pool<_StringRef> _StringRef_allocator;
 StringRef StringRef::empty_string = "";
+CStringRef empty_string = StringRef::empty_string;
 
 #ifdef __WIN32__
 
@@ -23,12 +24,12 @@ void operator delete(void* mem) throw() {
 #endif
 
 
-int strcasecmp(std::string s1, std::string s2) {
+int strcasecmp(CStringRef s1, CStringRef s2) {
 	return strcasecmp(s1.c_str(),s2.c_str());
 }
 
 //a vc-style substring operation (very kind and lenient)
-StringRef vc_strsub(const StringRef &str, int pos, int len) {
+StringRef vc_strsub(CStringRef str, int pos, int len) {
 	int strlen = str.size();
 	
 	if(strlen==0) return str; //empty strings always return empty strings
@@ -47,14 +48,14 @@ StringRef vc_strsub(const StringRef &str, int pos, int len) {
 	return str.substr(pos,len);
 }
 
-StringRef vc_strmid(const StringRef &str, int pos, int len) { return vc_strsub(str,pos,len); }
-StringRef vc_strleft(const StringRef &str, int len) { return vc_strsub(str,0,len); }
+StringRef vc_strmid(CStringRef str, int pos, int len) { return vc_strsub(str,pos,len); }
+StringRef vc_strleft(CStringRef str, int len) { return vc_strsub(str,0,len); }
 // Overkill (2007-08-25): Fixed a bug in right() where len of 0 returns str, instead of "".
-StringRef vc_strright(const StringRef &str, int len) { return len ? vc_strsub(str,str.size()-len,len) : ""; }
+StringRef vc_strright(CStringRef str, int len) { return len ? vc_strsub(str,str.size()-len,len) : empty_string; }
 
 // Overkill: 2005-12-28
 // Thank you, Zip.
-StringRef strovr(const StringRef& source, const StringRef& rep, int offset)
+StringRef strovr(CStringRef source, const StringRef& rep, int offset)
 // Pass: The offset in the source to overwrite from, the string to overwrite with, the source string
 // Return: The string after overwrite
 // Assmes: Offset is less than source length
@@ -67,7 +68,7 @@ StringRef strovr(const StringRef& source, const StringRef& rep, int offset)
 
 //VI.b. String Functions
 //helper
-bool isdelim(char c, const StringRef& s) {
+bool isdelim(char c, CStringRef s) {
 	for (int i=0; i<s.length(); i++)
 		if (c==s[i])
 			return true;

@@ -329,7 +329,7 @@ int VCCore::PopInt()
 	return int_stack[--int_stack_ptr];
 }
 
-void VCCore::PushString(StringRef s)
+void VCCore::PushString(CStringRef s)
 {
 	if (str_stack_ptr < 0 || str_stack_ptr > 1024)
 		err("VCCore::PushString() Stack overflow!");
@@ -365,7 +365,7 @@ StringRef VCCore::GetStringArgument(int index)
 {
 	if (index >= vararg_stack[vararg_stack.size() - 1].size())
 	{
-			return "";
+			return empty_string;
 	}
 	return str_stack[str_stack_base + in_func->numlocals + index];
 }
@@ -379,7 +379,7 @@ void VCCore::SetIntArgument(int index, int value)
 	int_stack[int_stack_base + in_func->numlocals + index] = value;	
 }
 
-void VCCore::SetStringArgument(int index, StringRef value)
+void VCCore::SetStringArgument(int index, CStringRef value)
 {
 	if (index >= vararg_stack[vararg_stack.size() - 1].size())
 	{
@@ -797,12 +797,12 @@ StringRef VCCore::ProcessString()
 			int idx = currentvc->GrabD();
 			switch (idx)
 			{
-			    case 84: ret = current_map ? current_map->mapname : ""; break;
-				case 85: ret = current_map ? current_map->renderstring : ""; break;
-				case 86: ret = current_map ? current_map->musicname : ""; break;
+			    case 84: ret = current_map ? current_map->mapname : empty_string; break;
+				case 85: ret = current_map ? current_map->renderstring : empty_string; break;
+				case 86: ret = current_map ? current_map->musicname : empty_string; break;
 				case 95: ret = clipboard_getText(); break;
-                case 99: ret = current_map ? current_map->mapfname : ""; break;
-				case 104: ret = current_map ? current_map->savevspname : ""; break;
+                case 99: ret = current_map ? current_map->mapfname : empty_string; break;
+				case 104: ret = current_map ? current_map->savevspname : empty_string; break;
 
 				case 121: //trigger.onStep
 						ret = _trigger_onStep;
@@ -837,7 +837,7 @@ StringRef VCCore::ProcessString()
 					}
 					else
 					{
-						ret = "";
+						ret = empty_string;
 					}
 					break;
 				case 74:
@@ -847,11 +847,11 @@ StringRef VCCore::ProcessString()
 					}
 					else
 					{
-						ret = "";
+						ret = empty_string;
 					}
 					break;
 				case 88: // Overkill (2006-06-25): Now this actually has a use!
-						ret = "";
+						ret = empty_string;
 						if (current_map)
 						{
 							if (arg >= 0 && arg < current_map->numzones)
@@ -861,7 +861,7 @@ StringRef VCCore::ProcessString()
 						}
 						break;
 				case 89: // Overkill (2006-06-25): Now this actually has a use!
-						ret = "";
+						ret = empty_string;
 						if (current_map)
 						{
 							if (arg >= 0 && arg < current_map->numzones)
@@ -883,9 +883,12 @@ StringRef VCCore::ProcessString()
 			}
 			break;
 		}
-		case strINT:
-			ret = va("%d", ResolveOperand());
+		case strINT: {
+			char buf[16];
+			_itoa(ResolveOperand(),buf,10);
+			ret = buf;
 			break;
+		}
 		case strLEFT:
 			ret = ResolveString();
 			ret = vc_strleft(ret,ResolveOperand());
@@ -1031,7 +1034,7 @@ void VCCore::ReadVararg(std::vector<argument_t>& vararg)
 		{
 			arg.type_id = c;
 			arg.int_value = ResolveOperand();
-			arg.string_value = "";
+			arg.string_value = empty_string;
 			vararg.push_back(arg);
 		}
 		else if (c == t_STRING)
@@ -1091,7 +1094,7 @@ void VCCore::ArgumentPassAddInt(int value)
 	argument_t arg;
 	arg.type_id = t_INT;
 	arg.int_value = value;
-	arg.string_value = "";
+	arg.string_value = empty_string;
 	argument_pass_list.push_back(arg);
 }
 
@@ -1165,7 +1168,7 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 					{
 						PushInt(ResolveOperand());
 					}
-					PushString("");
+					PushString(empty_string);
 					break;
 				case t_STRING:
 					PushInt(0);
@@ -1184,14 +1187,14 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 					break;
 				case t_VARARG:
 					PushInt(0);
-					PushString("");
+					PushString(empty_string);
 					break;
 			}
 		}
 		for (;n<func->numlocals; n++)				// finish off allocating locals
 		{
 			PushInt(0);
-			PushString("");
+			PushString(empty_string);
 		}
 	}
 
@@ -1220,7 +1223,7 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 			{
 				case t_INT:
 					PushInt(vararg[n].int_value);
-					PushString("");
+					PushString(empty_string);
 					break;
 				case t_STRING:
 					PushInt(0);
@@ -1596,9 +1599,9 @@ void VCCore::LookupOffset(int ofs, std::string &s)
 	s += va("\tUNKNOWN: %d\n", ofs);
 }
 
-void VCCore::DisplayError(const StringRef &msg)
+void VCCore::DisplayError(CStringRef msg)
 {
-	std::string s = msg;
+	std::string s = msg.c_str();
 	s += ": \n\n";
 	LookupOffset(currentvc->curpos(), s);
 	/*int stackentries = vcsp - vcstack;
@@ -1728,23 +1731,23 @@ int VCCore::GetInt(const char *intname)
 	return 0;
 }
 
-void VCCore::SetStr(const char *strname, std::string value)
+void VCCore::SetStr(CStringRef strname, CStringRef value)
 {
 	for (int i=0; i<global_strings.size(); i++)
-		if (!strcasecmp(global_strings[i]->name, strname))
+		if (!strcasecmp(global_strings[i]->name, strname.c_str()))
 		{
 			vcstring[global_strings[i]->ofs] = value;
 			return;
 		}
 }
 
-std::string VCCore::GetStr(const char *strname)
+CStringRef VCCore::GetStr(const char *strname)
 {
 	for (int i=0; i<global_ints.size(); i++)
 		if (!strcasecmp(global_strings[i]->name, strname))
 			return vcstring[global_strings[i]->ofs];
 
-	return "";
+	return empty_string;
 }
 
 void VCCore::SetIntArray(const char *intname, int index, int value)
@@ -1767,11 +1770,11 @@ int VCCore::GetIntArray(const char *intname, int index)
 }
 
 // aen 12/3/05 12:55am : fixed index checking against global_ints[i]->len to be global_strings[i]->len
-void VCCore::SetStrArray(const char *strname, int index, std::string value)
+void VCCore::SetStrArray(CStringRef strname, int index, CStringRef value)
 {
 	for (int i = 0; i < global_strings.size(); i++)
 	{
-		if (!strcasecmp(global_strings[i]->name, strname) && index >= 0 && index < global_strings[i]->len)
+		if (!strcasecmp(global_strings[i]->name, strname.c_str()) && index >= 0 && index < global_strings[i]->len)
 		{
 			vcstring[global_strings[i]->ofs + index] = value;
 			return;
@@ -1780,17 +1783,17 @@ void VCCore::SetStrArray(const char *strname, int index, std::string value)
 }
 
 // aen 12/3/05 12:52am : fixed looping through global_ints.size() and checking index against global_ints[i]->len
-std::string VCCore::GetStrArray(const char *strname, int index)
+CStringRef VCCore::GetStrArray(CStringRef strname, int index)
 {
 	for (int i = 0; i < global_strings.size(); i++)
 	{
-		if (!strcasecmp(global_strings[i]->name, strname) && index >= 0 && index < global_strings[i]->len)
+		if (!strcasecmp(global_strings[i]->name, strname.c_str()) && index >= 0 && index < global_strings[i]->len)
 		{
 			return vcstring[global_strings[i]->ofs + index];
 		}
 	}
 			
-	return "";
+	return empty_string;
 }
 
 /*************************** vc decompiler ***************************/
