@@ -1811,37 +1811,39 @@ void T_ScaleBlit(int x, int y, int dw, int dh, image *src, image *dest)
 			switch(LT) {
 				case NONE:
 					if(TRANSPARENT)
-						if (c == transColor) continue;
-					d[j] = c;
+						if (c != transColor)
+							d[j] = c;
 					break;
 				case HALF:
 					if(TRANSPARENT)
-						if (c == transColor) continue;
-					c = (c & tmask) + (d[j] & tmask);
-					d[j] = (c >> 1);
+						if (c != transColor) {
+							c = (c & tmask) + (d[j] & tmask);
+							d[j] = (c >> 1);
+						}
 					break;
 				case ANY: {
 					if(TRANSPARENT)
-						if (c == transColor) continue;
+						if (c != transColor) {
 
-					quad r1, g1, b1;
-					quad r2, g2, b2;
-					quad dp;
+						quad r1, g1, b1;
+						quad r2, g2, b2;
+						quad dp;
 
-					dp = d[j];
+						dp = d[j];
 
-					r1 = (c >> 16) & 0xff,
-					g1 = (c >> 8) & 0xff,
-					b1 = (c & 0xff);
+						r1 = (c >> 16) & 0xff,
+						g1 = (c >> 8) & 0xff,
+						b1 = (c & 0xff);
 
-					r2 = (dp >> 16) & 0xff,
-					g2 = (dp >> 8) & 0xff,
-					b2 = (dp & 0xff);
+						r2 = (dp >> 16) & 0xff,
+						g2 = (dp >> 8) & 0xff,
+						b2 = (dp & 0xff);
 
-					d[j] = ((((r1 * ialpha) + (r2 * alpha)) / 100) << 16) |
-						   ((((g1 * ialpha) + (g2 * alpha)) / 100) << 8) |
-						   ((((b1 * ialpha) + (b2 * alpha)) / 100));
-				}
+						d[j] = ((((r1 * ialpha) + (r2 * alpha)) / 100) << 16) |
+							   ((((g1 * ialpha) + (g2 * alpha)) / 100) << 8) |
+							   ((((b1 * ialpha) + (b2 * alpha)) / 100));
+						}
+					}
 			}
 			xerr += xadj;
 		}
