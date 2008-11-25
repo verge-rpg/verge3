@@ -97,6 +97,10 @@ public:
 	bool operator==(const char* rhs) const { return str() == rhs; }
 	bool empty() const { return size()==0; }
 
+	bool operator < (StringRef const & rhs) const {
+		return str() < rhs.str();
+	}
+
 	//same as std::string, but saves a string allocation
 	StringRef substr(int pos, int len) const {
 		pos = std::min(pos,(int)length());
