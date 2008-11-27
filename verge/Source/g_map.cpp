@@ -451,8 +451,10 @@ void MAP::BlitLayer(int l, int tx, int ty, int xwin, int ywin, image *dest)
 		for (int x=0; x<tx; x++)
 		{
 			int c = layer.GetTile(xtc+x,ytc+y);
-			if(TRANSPARENT)
-				tileset->TBlit((x*16)+xofs, (y*16)+yofs, c, dest);
+			if(TRANSPARENT) {
+				if(c)
+					tileset->TBlit((x*16)+xofs, (y*16)+yofs, c, dest);
+			}
 			else
 				tileset->Blit((x*16)+xofs, (y*16)+yofs, c, dest);
 		}
