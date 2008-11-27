@@ -90,33 +90,21 @@ HVar::~HVar()
 
 /***************** helperclass chunk *****************/
 
-#define CHUNK_UNIT 10000
-
 Chunk::Chunk()
+: ptr(0)
 {
-	chunksize = CHUNK_UNIT;
-	chunk = new char[chunksize];
-	memset(chunk, 0, CHUNK_UNIT);
-	cursize = 0;
-	ptr = chunk;
 }
 
 Chunk::~Chunk()
 {
-	delete[] chunk;
 }
 
 void Chunk::LoadChunk(FILE *f)
 {
-	fread_le(&cursize, f);
-	int temp = cursize / CHUNK_UNIT;
-	if(temp*CHUNK_UNIT != cursize)
-		temp++;
-	chunksize = temp * CHUNK_UNIT;
-	delete[] chunk;
-	chunk = new char[chunksize];
-	ptr = chunk;
-	fread(chunk, 1, cursize, f);
+	int size;
+	fread_le(&size, f);
+	chunk.resize(size);
+	fread(&chunk[0], 1, size, f);
 }
 
 void Chunk::Append(FILE *f, bool save_pos)
@@ -124,19 +112,19 @@ void Chunk::Append(FILE *f, bool save_pos)
 	int pos = curpos();
 	int size;
 	fread_le(&size, f);
-	int oldsize = cursize;
-	cursize += size;
+	int oldsize = chunk.size();
+	int cursize = chunk.size() + size;
 
-	int temp = cursize / CHUNK_UNIT;
-	if(temp*CHUNK_UNIT != cursize)
-		temp++;
-	chunksize = temp * CHUNK_UNIT;
-	char *buf = new char[chunksize];
-	memcpy(buf, chunk, oldsize);
-	delete[] chunk;
-	chunk = buf;
-	ptr = chunk;
-	fread((char*) chunk+oldsize, 1, size, f);
+	//int temp = cursize / CHUNK_UNIT;
+	//if(temp*CHUNK_UNIT != cursize)
+	//	temp++;
+	//chunksize = temp * CHUNK_UNIT;
+	//char *buf = new char[chunksize];
+	//memcpy(buf, chunk, oldsize);
+	//delete[] chunk;
+	//chunk = buf;
+	//ptr = chunk;
+	fread((char*)&chunk[0]+oldsize, 1, size, f);
 
 	if(save_pos)
 		setpos(pos);
@@ -144,45 +132,51 @@ void Chunk::Append(FILE *f, bool save_pos)
 
 void Chunk::SaveChunk(FILE *f)
 {
-	fwrite(&cursize, 1, 4, f);
-	fwrite(chunk, 1, cursize, f);
+	int size = chunk.size();
+	int tempsize = size;
+	flip(&tempsize);
+	fwrite(&tempsize, 1, 4, f);
+	fwrite(&chunk[0], 1, size, f);
 }
 
 int Chunk::curpos()
 {
-	return (int) (ptr-chunk);
+	return ptr;
 }
 
 int Chunk::setpos(int p)
 {
-	if (p<0)
-		p = 0;
-	if (p>cursize)
-		p = cursize;
+	//mbg 27-nov-08 this doesnt look helpful
+	//if (p<0)
+	//	p = 0;
+	//if (p>cursize)
+	//	p = cursize;
 
-	ptr = chunk+p;
+	ptr = p;
 	return p;
 }
 
 byte Chunk::GrabC()
 {
-	if (ptr+1>chunk+cursize)
-		return 0;
-	return *ptr++;
+	//mbg 27-nov-08 this doesnt look helpful
+	//if (ptr+1>chunk+cursize)
+	//	return 0;
+	return (byte)refc();
 }
 
 word Chunk::GrabW()
 {
-	if (ptr+2>chunk+cursize)
-		return 0;
+	//mbg 27-nov-08 this doesnt look helpful
+	//if (ptr+2>chunk+cursize)
+	//	return 0;
 
 #ifdef CRIPPLED
 	char buf[2];
-	buf[0] = *ptr++;
-	buf[1] = *ptr++;
+	buf[0] = readc();
+	buf[1] = readc();
 	return *(word *)buf;
 #else
-	word x = *(word *)(ptr);
+	word x = *(word *)(&chunk[ptr]);
 	flip(&x);
 	ptr += 2;
 	return x;
@@ -191,18 +185,19 @@ word Chunk::GrabW()
 
 quad Chunk::GrabD()
 {
-	if (ptr+4>chunk+cursize)
-		return 0;
+	//mbg 27-nov-08 this doesnt look helpful
+	//if (ptr+4>chunk+cursize)
+	//	return 0;
 
 #ifdef CRIPPLED
 	char buf[4];
-	buf[0] = *ptr++;
-	buf[1] = *ptr++;
-	buf[2] = *ptr++;
-	buf[3] = *ptr++;
+	buf[0] = refc();
+	buf[1] = refc();
+	buf[2] = refc();
+	buf[3] = refc();
 	return *(quad *)buf;
 #else
-	quad x = *(quad *)(ptr);
+	quad x = *(quad *)(&chunk[ptr]);
 	flip(&x);
 	ptr+=4;
 	return x;
@@ -217,7 +212,7 @@ CStringRef Chunk::GrabString()
 	CStringRef ret = 
 		(find == stringTable.end()) 
 			//need to add it to the string table
-		? (stringTable[ptr] = StringRef(ptr))
+		? (stringTable[ptr] = StringRef(&chunk[ptr]))
 		: find->second ;
 
 	//advance code pointer
@@ -227,63 +222,78 @@ CStringRef Chunk::GrabString()
 
 char Chunk::operator[](quad n) const
 {
-	return (n>=cursize) ? 0 : chunk[n];
+	//mbg 27-nov-08 this didnt look like helpful error checking,
+	//BUT this is used for EOF detection by the compiler.
+	//so, i leave it
+	if(n<chunk.size())
+		return chunk[n];
+	else return 0;
 }
 
 void Chunk::EmitC(byte c)
 {
-	if (cursize+2>=chunksize)
-		Expand();
-	*ptr++ = c;
-	if ((int) (ptr-chunk) > cursize)
-		cursize++;
+	Expand(1);
+	refc() = c;
 }
 
 void Chunk::EmitW(word w)
 {
-	if (cursize+3>=chunksize)
-		Expand();
+	Expand(2);
 #ifdef CRIPPLED
-	*ptr += w;
-	*ptr += (w>>8);
+	refc() = w;
+	refc() = (w>>8);
 #else
-	*(word *)(ptr) = w;
+	*(word *)(&chunk[ptr]) = w;
 	ptr += 2;
 #endif
-	if ((int) (ptr-chunk) > cursize)
-		cursize += 2;
-
 }
 
 void Chunk::EmitD(quad d)
 {
-	if (cursize+5>=chunksize)
-		Expand();
+	Expand(4);
 #ifdef CRIPPLED
-	*ptr += d;
-	*ptr += (d>>8);
-	*ptr += (d>>16);
-	*ptr += (d>>24);
+	refc() = d;
+	refc() = (d>>8);
+	refc() = (d>>16);
+	refc() = (d>>24);
 #else
-	*(quad *)(ptr) = d;
+	*(quad *)(&chunk[ptr]) = d;
 	ptr += 4;
 #endif
-
-	if ((int) (ptr-chunk) > cursize)
-		cursize += 4;
 }
 
 void Chunk::EmitString(char *s)
 {
-	if (cursize+strlen(s)+1>=chunksize)
-		Expand();
+	//mbg 27-nov-08 i wanted to do something clever here, but it broke other things.
+
+	int string_len = strlen(s);
+	int todolen = string_len+1;
+
+	Expand(todolen);
+
 	while (*s)
-	{
-		*ptr++ = *s++;
-		cursize++;
-	}
-	*ptr++='\0';
-	cursize++;
+		refc() = *s++;
+
+	//null terminate
+	refc()='\0';
+
+	////allocate room for at least a pointer. also, make it 4B aligned
+	//int string_len = strlen(s);
+	//int todolen = string_len+1;
+	//todolen = std::max(todolen,4);
+	//quad sptr = (quad)ptr;
+	//quad xptr = sptr + todolen;
+	//xptr = (xptr+3)&~3;
+	//todolen = xptr-sptr;
+	//
+	//Expand(todolen);
+
+	//while (*s)
+	//	refc() = *s++;
+
+	////null terminate and pad
+	//for(int i=string_len;i<todolen;i++)
+	//	refc()='\0';
 }
 
 void Chunk::SetD(int ofs, quad d)
@@ -291,36 +301,21 @@ void Chunk::SetD(int ofs, quad d)
 	*((int *)&(chunk[ofs])) = d;
 }
 
-void Chunk::Expand()
+void Chunk::Expand(int amount)
 {
-	int loc = ptr-chunk;
-	char *buffer = new char[chunksize+CHUNK_UNIT];
-	memcpy(buffer, chunk, chunksize);
-	memset(buffer + chunksize, 0, CHUNK_UNIT);
-	chunksize = chunksize+CHUNK_UNIT;
-	delete[] chunk;
-	chunk = buffer;
-	ptr = chunk+loc;
+	chunk.resize(chunk.size()+amount);
 }
 
 void Chunk::become(Chunk *c)
 {
-	delete[] chunk;
-	chunksize = c->chunksize;
-	chunk = new char[chunksize];
-	cursize = c->cursize;
-	memcpy(chunk, c->chunk, chunksize);
-	ptr = chunk+cursize;
+	chunk = c->chunk;
+	ptr = chunk.size();
 }
 
 void Chunk::clear()
 {
-	delete[] chunk;
-	chunksize = CHUNK_UNIT;
-	chunk = new char[chunksize];
-	memset(chunk, 0, CHUNK_UNIT);
-	cursize = 0;
-	ptr = chunk;
+	chunk.clear();
+	ptr = 0;
 }
 
 /***************** struct utility classes *****************/
@@ -864,9 +859,9 @@ bool VCCompiler::CompileMap(const char *f)
 		for (i=0; i < s; i++)
 			funcs[CIMAGE_MAP][i]->write(mo);
 		log("Compiled %s.map, (%d lines), %d functions", f, pp_total_lines, s);
-		int z = output.cursize;
+		int z = output.chunk.size();
 		fwrite(&z, 1, 4, mo);
-		fwrite(output.chunk, 1, z, mo);
+		fwrite(&output.chunk[0], 1, z, mo);
 		fclose(mo);
 	}
 
@@ -943,10 +938,12 @@ bool VCCompiler::CompileOther(char *f, int cimage, bool append, bool dups, std::
 
 		// we also only write compiled code made after
 		// the core we're appending to unless we're not appending
-		int previous_size = append  ? vc->GetCore(target_cimage)->cursize
+		int previous_size = append  ? vc->GetCore(target_cimage)->size()
 									: 0;
-		int z = output.cursize - previous_size;
-		fwrite(&z, 1, 4, out);
+		int z = output.size() - previous_size;
+		int tempz = z;
+		flip(&tempz);
+		fwrite(&tempz, 1, 4, out);
 		fwrite(&output.chunk[previous_size], 1, z, out);
 		fclose(out);
 	}
@@ -2836,7 +2833,7 @@ void VCCompiler::CompileOtherPass(bool append)
 	else
 		output.clear();
 
-	output.setpos(output.cursize);
+	output.setpos(output.size());
 
 	source.setpos(0);
 	srcofs = 0;
@@ -2879,9 +2876,10 @@ void VCCompiler::CompileGlobalInitializers()
 		source.clear();
 		srcofs=0;
 		sprintf(buffer, "%s%s;", global_ints[i]->name, global_ints[i]->initializer.c_str());
-		for (j=0, p=buffer; *p; p++, j++)
+		for (j=0, p=buffer; *p; p++, j++) {
+			source.Expand(1);
 			source.chunk[j] = *p;
-		source.cursize = j;
+		}
 		CompileStatement();
 	}
 
@@ -2894,8 +2892,10 @@ void VCCompiler::CompileGlobalInitializers()
 		srcofs=0;
 		sprintf(buffer, "%s%s;", global_strings[i]->name, global_strings[i]->initializer.c_str());
 		for (j=0, p=buffer; *p; p++, j++)
+		{
+			source.Expand(1);
 			source.chunk[j] = *p;
-		source.cursize = j;
+		}
 		CompileStatement();
 	}
 
@@ -3061,7 +3061,7 @@ void VCCompiler::CheckIdentifier(char *s)
 
 	// check library functions first
 	for (i=0; i<NUM_LIBFUNCS; i++)
-		if (streq(s, libfuncs[i].name))
+		if (streq(s, libfuncs[i].name.c_str()))
 		{
 			id_type = ID_LIBFUNC;
 			id_index = i;

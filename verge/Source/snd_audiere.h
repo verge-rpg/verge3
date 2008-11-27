@@ -14,7 +14,7 @@ class SoundEngine_Audiere : public SoundEngine, public audiere::Mutex {
 public:
 	AudioDevicePtr device;
 	OutputStream *music;
-	Handle::HandleSet<OutputStream*> songHandles;
+	Handle::HandleSet<OutputStream> songHandles;
 
 	class AudiereFile : public RefImplementation<File> {
 	private:

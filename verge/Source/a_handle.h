@@ -30,7 +30,7 @@ public:
 	class HandleSet {
 	public:
 		std::stack<int> handles;
-		std::vector<T> handleVals;
+		std::vector<T*> handleVals;
 		int handleCount;
 		HandleSet() {
 			handleCount = 0;
@@ -40,7 +40,7 @@ public:
 			for(int i=0;i<count;i++)
 				handleVals.push_back(0);
 		}
-		int alloc(T ptr) {
+		int alloc(T* ptr) {
 			//expand if necessary
 			if(handles.empty())
 				for(int i=0;i<16;i++,handleCount++) {
@@ -59,16 +59,70 @@ public:
 			handles.push(handle);
 		}
 
-		T getPointer(int handle) { return handleVals[handle]; }
-		void setPointer(int handle, T ptr) { handleVals[handle] = ptr; }
+		T* getPointer(int handle) { return handleVals[handle]; }
+		void setPointer(int handle, T* ptr) { handleVals[handle] = ptr; }
 		int getHandleCount() { return handleCount; }
 		bool isValid(int handle) { return handle < getHandleCount() && handle >= 0; }
 
-		T operator[](int handle) { return getPointer(handle); }
+		T* operator[](int handle) { return getPointer(handle); }
 
+
+		class iterator {
+		public:
+			iterator(HandleSet<T> *_set)
+				: set(_set)
+				, index(0)
+			{
+			}
+			iterator(HandleSet<T> *_set, int _index) 
+				: set(_set)
+				, index(_index)
+			{
+			}
+
+		
+			T* operator*() { return set->handleVals[index]; }
+
+			bool operator==(const iterator& other) {
+				return set == other.set && index == other.index;
+			}
+
+			bool operator!=(const iterator& other) {
+				return !(*this == other);
+			}
+
+			iterator operator++() {
+				if(index != set->getHandleCount()) {
+					index++;
+					advance();
+				}
+				return *this;
+			}
+
+			iterator operator++(int) {
+				iterator temp = *this;
+				if(index != set->getHandleCount()) {
+					index++;
+					advance();
+				}
+				return temp;
+			}
+
+			void advance() {
+				while(!set->getPointer(index) && index != set->getHandleCount())
+					index++;
+			}
+
+		private:
+			HandleSet<T> *set;
+			int index;
+		};
+
+		iterator begin() { return iterator(this); }
+		iterator end() { return iterator(this,getHandleCount()); }
 	};
 
-	typedef HandleSet<void*> VoidHandleSet;
+	typedef HandleSet<void> VoidHandleSet;
 	static std::vector<VoidHandleSet> handleTypes;
 	
 
@@ -99,10 +153,10 @@ public:
 	//this will reserve handles 0,1,etc...
 	static void forceAlloc(int type, int count) { handleTypes[type].forceAlloc(count); }
 
-	//note:
-	//getSet will return valid handle ptrs intermixed with null handle ptrs
-	//be sure you ignore the null ones!
-	static std::vector<void *> *getSet(int type) { return &handleTypes[type].handleVals; }
+	class iterator : public VoidHandleSet::iterator {};
+
+	static iterator begin(int type) { return *reinterpret_cast<iterator*>(&handleTypes[type].begin()); }
+	static iterator end(int type) { return *reinterpret_cast<iterator*>(&handleTypes[type].end()); }
 };
 
 

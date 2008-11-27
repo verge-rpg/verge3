@@ -9,8 +9,8 @@
 /// changes you made below this line.
 
 
-#include <vector>
 #include <map>
+#include <vector>
 #include <string>
 #ifndef MYTYPES
   typedef unsigned int   quad;
@@ -146,12 +146,22 @@ public:
 class Chunk
 {
 public:
-	int chunksize;
-	int cursize;
-	char *chunk;
-	char *ptr;
+	std::vector<char> chunk;
+	int ptr;
+	int size() { return chunk.size(); }
 
-	typedef std::map<char*,StringRef> TStringTable;
+	//struct Smasher {
+	//	size_t operator()(const char*& x) const { return (size_t)x; }
+
+	//   bool operator()( const char* &that1, const char*& that2 ) const 
+	//	{ 
+	//	  return that1 == that2;
+	//	} 
+
+	//};
+
+
+	typedef std::map<int,StringRef> TStringTable;
 	TStringTable stringTable;
 
 	Chunk();
@@ -171,9 +181,10 @@ public:
 	quad GrabD();
 	CStringRef GrabString();
 	char operator[](quad n) const;
-	void Expand();
+	void Expand(int amount);
 	void become(Chunk *c);
 	void clear();
+	char& refc() { return chunk[ptr++]; }
 };
 
 struct debuginfo

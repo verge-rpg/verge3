@@ -451,13 +451,10 @@ signed char F_CALLBACKAPI win_movie_fmod_streamCallback(FSOUND_STREAM *stream, v
 
 void win_movie_update()
 {
-	std::vector<void *> *set = Handle::getSet(HANDLE_TYPE_MOVIE);
-	for(std::vector<void*>::iterator it = set->begin(); it != set->end(); it++)
+	for(Handle::iterator it(Handle::begin(HANDLE_TYPE_MOVIE)); it != Handle::end(HANDLE_TYPE_MOVIE); ++it)
 	{
-		if(*it) {
-			win_movie_Rec *m = (win_movie_Rec *)*it;
-			m->update();
-		}
+		win_movie_Rec *m = (win_movie_Rec *)*it;
+		m->update();
 	}
 }
 
