@@ -83,16 +83,6 @@ VCCore::~VCCore()
 {
 	int i, j;
 
-	// Free ints.
-	for (i=0; i<global_ints.size(); i++)
-		delete global_ints[i];
-	global_ints.clear();
-
-	// Free strings.
-	for (i=0; i<global_strings.size(); i++)
-		delete global_strings[i];
-	global_strings.clear();
-
 	// Free struct instances
 	for (i=0; i<struct_instances.size(); i++)
 		delete struct_instances[i];
@@ -181,14 +171,14 @@ void VCCore::LoadSystemXVC()
 
 	int size, i;
 	fread_le(&size, f);
-	for (i=0; i<size; i++)
-		global_ints.push_back(new int_t(f));
-	maxint = size ? global_ints[size-1]->ofs + global_ints[size-1]->len : 1;
+	for (int i=0; i<size; i++)
+		global_ints.push_back(int_t(f));
+	maxint = size ? global_ints[size-1].ofs + global_ints[size-1].len : 1;
 
 	fread_le(&size, f);
 	for (i=0; i<size; i++)
-		global_strings.push_back(new string_t(f));
-	maxstr = size ? global_strings[size-1]->ofs + global_strings[size-1]->len : 1;
+		global_strings.push_back(string_t(f));
+	maxstr = size ? global_strings[size-1].ofs + global_strings[size-1].len : 1;
 
 	fread_le(&size, f);
 	for (i=0; i<size; i++)
@@ -656,21 +646,21 @@ int VCCore::ProcessOperand()
 			return ReadInt(op, d, ofs);
 		case intGLOBAL:
 			d = currentvc->GrabD();
-			return ReadInt(op, global_ints[d]->ofs, 0);
+			return ReadInt(op, global_ints[d].ofs, 0);
 		case intARRAY:
 		{
 			int idx = currentvc->GrabD();
-			d = global_ints[idx]->ofs;
+			d = global_ints[idx].ofs;
 			ofs = 0;
-			for (int i=0; i<global_ints[idx]->dim; i++)
+			for (int i=0; i<global_ints[idx].dim; i++)
 			{
 				int dimofs = ResolveOperand();
 				int old = dimofs;
-				for (int j=i+1; j<global_ints[idx]->dim; j++)
-					dimofs *= global_ints[idx]->dims[j];
+				for (int j=i+1; j<global_ints[idx].dim; j++)
+					dimofs *= global_ints[idx].dims[j];
 				ofs += dimofs;
-				if (dimofs >= global_ints[idx]->len)
-					vcerr("Bad offset on reading array %s (%d/%d)", global_ints[idx]->name, ofs, global_ints[idx]->len);
+				if (dimofs >= global_ints[idx].len)
+					vcerr("Bad offset on reading array %s (%d/%d)", global_ints[idx].name, ofs, global_ints[idx].len);
 			}
 			return ReadInt(op, d+ofs, 0);
 		}
@@ -766,29 +756,29 @@ StringRef VCCore::ProcessString()
 		case strGLOBAL:
 		{
 			int idx = currentvc->GrabD();
-			d = global_strings[idx]->ofs;
+			d = global_strings[idx].ofs;
 			if (d >= 0 && d < maxstr)
 				ret = vcstring[d];
 			else
-				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strGLOBAL) %d, valid range [0,%d) \n global string name: '%s' ", d, maxstr, global_strings[idx]->name);
+				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strGLOBAL) %d, valid range [0,%d) \n global string name: '%s' ", d, maxstr, global_strings[idx].name);
 			break;
 		}
 		case strARRAY:
 		{
 			int idx = currentvc->GrabD();
-			d = global_strings[idx]->ofs;
+			d = global_strings[idx].ofs;
 
-			for (int i=0; i<global_strings[idx]->dim; i++)
+			for (int i=0; i<global_strings[idx].dim; i++)
 			{
 				int dimofs = ResolveOperand();
-				for (int j=i+1; j<global_strings[idx]->dim; j++)
-					dimofs *= global_strings[idx]->dims[j];
+				for (int j=i+1; j<global_strings[idx].dim; j++)
+					dimofs *= global_strings[idx].dims[j];
 				d += dimofs;
 			}
 			if (d>=0 && d<maxstr)
 				ret = vcstring[d];
 			else {
-				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strARRAY) %d, valid range [0,%d).\n global string name: '%s'", d, maxstr, global_strings[idx]->name);
+				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strARRAY) %d, valid range [0,%d).\n global string name: '%s'", d, maxstr, global_strings[idx].name);
 			}
 			break;
 		}
@@ -1383,7 +1373,7 @@ void VCCore::HandleAssign()
 	if (c == strGLOBAL)
 	{
 		offset = currentvc->GrabD();
-		offset = global_strings[offset]->ofs;
+		offset = global_strings[offset].ofs;
 		c = currentvc->GrabC();
 		if (c != aSET)
 			vcerr("VC execution error: Corrupt string assignment");
@@ -1397,13 +1387,13 @@ void VCCore::HandleAssign()
 	if (c == strARRAY)
 	{
 		int idx = currentvc->GrabD();
-		base = global_strings[idx]->ofs;
+		base = global_strings[idx].ofs;
 		offset = 0;
-		for (int i=0; i<global_strings[idx]->dim; i++)
+		for (int i=0; i<global_strings[idx].dim; i++)
 		{
 			int dimofs = ResolveOperand();
-			for (int j=i+1; j<global_strings[idx]->dim; j++)
-				dimofs *= global_strings[idx]->dims[j];
+			for (int j=i+1; j<global_strings[idx].dim; j++)
+				dimofs *= global_strings[idx].dims[j];
 			offset += dimofs;
 		}
 		base += offset;
@@ -1434,18 +1424,18 @@ void VCCore::HandleAssign()
 	switch (c)
 	{
 		case intGLOBAL:
-			base = global_ints[currentvc->GrabD()]->ofs;
+			base = global_ints[currentvc->GrabD()].ofs;
 			break;
 		case intARRAY:
 		{
 			int idx = currentvc->GrabD();
-			base = global_ints[idx]->ofs;
+			base = global_ints[idx].ofs;
 			offset = 0;
-			for (int i=0; i<global_ints[idx]->dim; i++)
+			for (int i=0; i<global_ints[idx].dim; i++)
 			{
 				int dimofs = ResolveOperand();
-				for (int j=i+1; j<global_ints[idx]->dim; j++)
-					dimofs *= global_ints[idx]->dims[j];
+				for (int j=i+1; j<global_ints[idx].dim; j++)
+					dimofs *= global_ints[idx].dims[j];
 				offset += dimofs;
 			}
 			base += offset;
@@ -1637,12 +1627,12 @@ bool VCCore::CopyArray(const char *srcname, const char *destname)
 	// Look for int arrays that match src or dest
 	for (int i=0; i<global_ints.size(); i++)
 	{
-		if (!strcasecmp(global_ints[i]->name, srcname))
+		if (!strcasecmp(global_ints[i].name, srcname))
 		{
 			src = i;
 			src_type = t_INT;
 		}
-		else if (!strcasecmp(global_ints[i]->name, destname))
+		else if (!strcasecmp(global_ints[i].name, destname))
 		{
 			dest = i;
 			dest_type = t_INT;
@@ -1652,12 +1642,12 @@ bool VCCore::CopyArray(const char *srcname, const char *destname)
 	// Look for string arrays that match src or dest
 	for (int i=0; i<global_strings.size(); i++)
 	{
-		if (!strcasecmp(global_strings[i]->name, srcname))
+		if (!strcasecmp(global_strings[i].name, srcname))
 		{
 			src = i;
 			src_type = t_STRING;
 		}
-		else if (!strcasecmp(global_strings[i]->name, destname))
+		else if (!strcasecmp(global_strings[i].name, destname))
 		{
 			dest = i;
 			dest_type = t_STRING;
@@ -1676,35 +1666,35 @@ bool VCCore::CopyArray(const char *srcname, const char *destname)
 	if (src_type == t_INT)
 	{
 		// If arrays aren't same dimensions, return.
-		for (int i = 0; i < global_ints[src]->dim; i++)
+		for (int i = 0; i < global_ints[src].dim; i++)
 		{
-			if (global_ints[src]->dims[i] != global_ints[dest]->dims[i])
+			if (global_ints[src].dims[i] != global_ints[dest].dims[i])
 			{
 				return false;
 			}
 		}
 		// Copy!
-		for (int i = 0; i < global_ints[src]->len; i++)
+		for (int i = 0; i < global_ints[src].len; i++)
 		{
-			vcint[global_ints[dest]->ofs + i]
-				= vcint[global_ints[src]->ofs + i];
+			vcint[global_ints[dest].ofs + i]
+				= vcint[global_ints[src].ofs + i];
 		}
 	}
 	else if (src_type == t_STRING)
 	{
 		// If arrays aren't same dimensions, return.
-		for (int i = 0; i < global_strings[src]->dim; i++)
+		for (int i = 0; i < global_strings[src].dim; i++)
 		{
-			if (global_strings[src]->dims[i] != global_strings[dest]->dims[i])
+			if (global_strings[src].dims[i] != global_strings[dest].dims[i])
 			{
 				return false;
 			}
 		}
 		// Copy!
-		for (int i = 0; i < global_strings[src]->len; i++)
+		for (int i = 0; i < global_strings[src].len; i++)
 		{
-			vcstring[global_strings[dest]->ofs + i]
-				= vcstring[global_strings[src]->ofs + i];
+			vcstring[global_strings[dest].ofs + i]
+				= vcstring[global_strings[src].ofs + i];
 		}
 	}
 
@@ -1715,9 +1705,9 @@ bool VCCore::CopyArray(const char *srcname, const char *destname)
 void VCCore::SetInt(const char *intname, int value)
 {
 	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_ints[i]->name, intname))
+		if (!strcasecmp(global_ints[i].name, intname))
 		{
-			vcint[global_ints[i]->ofs] = value;
+			vcint[global_ints[i].ofs] = value;
 			return;
 		}
 }
@@ -1725,8 +1715,8 @@ void VCCore::SetInt(const char *intname, int value)
 int VCCore::GetInt(const char *intname)
 {
 	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_ints[i]->name, intname))
-			return vcint[global_ints[i]->ofs];
+		if (!strcasecmp(global_ints[i].name, intname))
+			return vcint[global_ints[i].ofs];
 
 	return 0;
 }
@@ -1734,9 +1724,9 @@ int VCCore::GetInt(const char *intname)
 void VCCore::SetStr(CStringRef strname, CStringRef value)
 {
 	for (int i=0; i<global_strings.size(); i++)
-		if (!strcasecmp(global_strings[i]->name, strname.c_str()))
+		if (!strcasecmp(global_strings[i].name, strname.c_str()))
 		{
-			vcstring[global_strings[i]->ofs] = value;
+			vcstring[global_strings[i].ofs] = value;
 			return;
 		}
 }
@@ -1744,8 +1734,8 @@ void VCCore::SetStr(CStringRef strname, CStringRef value)
 CStringRef VCCore::GetStr(const char *strname)
 {
 	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_strings[i]->name, strname))
-			return vcstring[global_strings[i]->ofs];
+		if (!strcasecmp(global_strings[i].name, strname))
+			return vcstring[global_strings[i].ofs];
 
 	return empty_string;
 }
@@ -1753,9 +1743,9 @@ CStringRef VCCore::GetStr(const char *strname)
 void VCCore::SetIntArray(const char *intname, int index, int value)
 {
 	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_ints[i]->name, intname) && index>=0 && index<global_ints[i]->len)
+		if (!strcasecmp(global_ints[i].name, intname) && index>=0 && index<global_ints[i].len)
 		{
-			vcint[global_ints[i]->ofs+index] = value;
+			vcint[global_ints[i].ofs+index] = value;
 			return;
 		}
 }
@@ -1763,8 +1753,8 @@ void VCCore::SetIntArray(const char *intname, int index, int value)
 int VCCore::GetIntArray(const char *intname, int index)
 {
 	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_ints[i]->name, intname) && index>=0 && index<global_ints[i]->len)
-			return vcint[global_ints[i]->ofs+index];
+		if (!strcasecmp(global_ints[i].name, intname) && index>=0 && index<global_ints[i].len)
+			return vcint[global_ints[i].ofs+index];
 
 	return 0;
 }
@@ -1774,9 +1764,9 @@ void VCCore::SetStrArray(CStringRef strname, int index, CStringRef value)
 {
 	for (int i = 0; i < global_strings.size(); i++)
 	{
-		if (!strcasecmp(global_strings[i]->name, strname.c_str()) && index >= 0 && index < global_strings[i]->len)
+		if (!strcasecmp(global_strings[i].name, strname.c_str()) && index >= 0 && index < global_strings[i].len)
 		{
-			vcstring[global_strings[i]->ofs + index] = value;
+			vcstring[global_strings[i].ofs + index] = value;
 			return;
 		}
 	}
@@ -1787,9 +1777,9 @@ CStringRef VCCore::GetStrArray(CStringRef strname, int index)
 {
 	for (int i = 0; i < global_strings.size(); i++)
 	{
-		if (!strcasecmp(global_strings[i]->name, strname.c_str()) && index >= 0 && index < global_strings[i]->len)
+		if (!strcasecmp(global_strings[i].name, strname.c_str()) && index >= 0 && index < global_strings[i].len)
 		{
-			return vcstring[global_strings[i]->ofs + index];
+			return vcstring[global_strings[i].ofs + index];
 		}
 	}
 			
@@ -1811,18 +1801,18 @@ void VCCore::WriteGlobalVars()
 {
 	for (int i=0; i<global_ints.size(); i++)
 	{
-		fprintf(vcd, "int %s", global_ints[i]->name);
-		for (int j=0; j<global_ints[i]->dim; j++)
-			fprintf(vcd,"[%d]",global_ints[i]->dims[j]);
+		fprintf(vcd, "int %s", global_ints[i].name);
+		for (int j=0; j<global_ints[i].dim; j++)
+			fprintf(vcd,"[%d]",global_ints[i].dims[j]);
 		fprintf(vcd, ";\n");
 	}
 	fprintf(vcd, "\n");
 
 	for (int i=0; i<global_strings.size(); i++)
 	{
-		fprintf(vcd, "string %s", global_strings[i]->name);
-		for (int j=0; j<global_strings[i]->dim; j++)
-			fprintf(vcd,"[%d]",global_strings[i]->dims[j]);
+		fprintf(vcd, "string %s", global_strings[i].name);
+		for (int j=0; j<global_strings[i].dim; j++)
+			fprintf(vcd,"[%d]",global_strings[i].dims[j]);
 		fprintf(vcd, ";\n");
 	}
 	fprintf(vcd, "\n");

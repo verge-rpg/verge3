@@ -326,8 +326,8 @@ int_t::int_t()
 	ofs = 0;
 	len = 0;
 	dim = 0;
-	initializer = "";
 }
+
 
 int_t::int_t(FILE *f)
 {
@@ -342,7 +342,6 @@ int_t::int_t(FILE *f)
 		fread_le(&mydimsize, f);
 		dims[i] = mydimsize;
 	}
-	initializer = "";
 }
 
 void int_t::write(FILE *f)
@@ -364,7 +363,6 @@ string_t::string_t()
 	ofs = 0;
 	len = 0;
 	dim = 0;
-	initializer = "";
 }
 
 string_t::string_t(FILE *f)
@@ -380,7 +378,6 @@ string_t::string_t(FILE *f)
 		fread_le(&mydimsize, f);
 		dims[i] = mydimsize;
 	}
-	initializer = "";
 }
 
 void string_t::write(FILE *f)
@@ -522,10 +519,10 @@ bool struct_definition::equals(struct_definition *rhs)
 }
 
 struct_instance::struct_instance()
+: is(0)
+, dim(0)
 {
-	memset(name, 0, IDENTIFIER_LEN);
-	is = NULL;
-	dim = 0;
+	name[0] = 0;
 }
 
 struct_instance::struct_instance(FILE *f)

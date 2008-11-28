@@ -67,7 +67,7 @@ public:
 	int ofs, len;
 	int dim;
 	std::vector<int> dims;
-	std::string initializer;
+	StringRef initializer;
 	int_t();
 	int_t(FILE *f);
 	void write(FILE *f);
@@ -80,7 +80,7 @@ public:
 	int ofs, len;
 	int dim;
 	std::vector<int> dims;
-	std::string initializer;
+	StringRef initializer;
 	string_t();
 	string_t(FILE *f);
 	void write(FILE *f);
