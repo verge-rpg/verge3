@@ -41,11 +41,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../win32;../dumb/include;&quot;../lua/lua-5.1.2&quot;;&quot;../boost-1.34.0&quot;;../lua/luabind;&quot;../flac-1.1.4/include&quot;;../audiere/src;../UnitTest++/src"
+				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../win32;../dumb/include;&quot;../lua/lua-5.1.2&quot;;&quot;../boost-1.34.0&quot;;../lua/luabind;&quot;../flac-1.1.4/include&quot;;../audiere/src;&quot;../UnitTest++/src&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;MIKMOD_STATIC;_CRT_SECURE_NO_DEPRECATE;USE_DUMB;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				FloatingPointModel="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
@@ -129,13 +130,14 @@
 				OmitFramePointers="true"
 				WholeProgramOptimization="true"
 				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../dumb/include;../win32;&quot;../lua/lua-5.1.2&quot;;&quot;../boost-1.34.0&quot;;../lua/luabind;&quot;../flac-1.1.4/include&quot;;../audiere/src"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_DUMB"
-				StringPooling="false"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;USE_DUMB;_SECURE_SCL=0"
+				StringPooling="true"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="0"
 				StructMemberAlignment="0"
 				BufferSecurityCheck="false"
 				EnableFunctionLevelLinking="false"
+				FloatingPointModel="2"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile=""
@@ -190,7 +192,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="&quot;..\win32\upx.exe -9 ..\redist\verge.exe&quot;"
+				CommandLine=""
 			/>
 		</Configuration>
 	</Configurations>
