@@ -33,3 +33,4 @@ bool CleanupCHRs();
 CHR *RequestCHR(const char *fname);
 
 void onEntityCollision();
+void afterPlayerMove();

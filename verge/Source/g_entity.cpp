@@ -134,11 +134,13 @@ void Entity::set_waypoint_relative(int x1, int y1, bool changeface)
 	}
 }
 
-bool Entity::ready()
-{ return (x/65536 == waypointx && y/65536 == waypointy); }
+bool Entity::ready() { 
+	
+	return (x/65536 == waypointx && y/65536 == waypointy); 
+}
 
-bool Entity::leaderidle()
-{
+bool Entity::leaderidle(){
+
 	if (follow) return follow->leaderidle();
 	return (x/65536 == waypointx && y/65536 == waypointy);
 }
@@ -501,36 +503,38 @@ void Entity::do_movescript()
 	} else {
 		// no directions, check other possible letters:
 		switch(toupper(movestr[moveofs])) {
-		case 'S': moveofs++;
-			setspeed(atoi(&movestr[moveofs]));
-			break;
-		case 'W': moveofs++;
-			delay = systemtime + atoi(&movestr[moveofs]);
-			break;
-		case 'F': moveofs++;
-			setface(vc2me[atoi(&movestr[moveofs])]);
-			break;
-		case 'B': moveofs = 0; break;
-		case 'X': moveofs++;
-			arg = atoi(&movestr[moveofs]);
-			set_waypoint(arg*16, gety());
-			break;
-		case 'Y': moveofs++;
-			arg = atoi(&movestr[moveofs]);
-			set_waypoint(getx(), arg*16);
-			break;
-		case 'Z': moveofs++;
-			specframe = atoi(&movestr[moveofs]);
-			break;
-		case 'P': movemult = 1;
-			moveofs++;
-			break;
-		case 'T': movemult = 16;
-			moveofs++;
-			break;
-		case 'H':
-		case 0:  movemult = 0; moveofs = 0; movecode = 0; framect = 0; return;
-		default: err("Entity::do_movescript(), unidentify movescript command");
+			case 'S': moveofs++;
+				setspeed(atoi(&movestr[moveofs]));
+				break;
+			case 'W': moveofs++;
+				delay = systemtime + atoi(&movestr[moveofs]);
+				break;
+			case 'F': moveofs++;
+				setface(vc2me[atoi(&movestr[moveofs])]);
+				break;
+			case 'B': moveofs = 0; break;
+			case 'X': moveofs++;
+				arg = atoi(&movestr[moveofs]);
+				set_waypoint(arg*16, gety());
+				break;
+			case 'Y': moveofs++;
+				arg = atoi(&movestr[moveofs]);
+				set_waypoint(getx(), arg*16);
+				break;
+			case 'Z': moveofs++;
+				specframe = atoi(&movestr[moveofs]);
+				break;
+			case 'P': movemult = 1;
+				moveofs++;
+				break;
+			case 'T': movemult = 16;
+				moveofs++;
+				break;
+			case 'H':
+			case 0:  
+				movemult = 0; moveofs = 0; movecode = 0; framect = 0; 
+				return;
+			default: err("Entity::do_movescript(), unidentify movescript command");
 		}
 	}
 }

@@ -336,15 +336,26 @@ void ScriptEngine::HookEntityRender(int i, CStringRef s) {
 	entity[i]->hookrender = s;
 }
 void ScriptEngine::PlayerMove(CStringRef s) {
-    if (!myself) return;
-	myself->SetMoveScript(s.c_str());
-	while (myself->movecode)
+	if (!myself) return;
+	myself->SetMoveScript( s.c_str() );
+
+	while( myself->movecode )
 	{
 		::TimedProcessEntities();
 		::Render();
 		::ShowPage();
 	}
+
+	PlayerEntityMoveCleanup();
 }
+
+void ScriptEngine::PlayerEntityMoveCleanup() {
+	if (!myself) return;
+
+	myself->movecode = 0;
+	afterPlayerMove();
+}
+
 void ScriptEngine::SetEntitiesPaused(int i) {
 	entitiespaused = i ? true : false;
 	if (!entitiespaused)

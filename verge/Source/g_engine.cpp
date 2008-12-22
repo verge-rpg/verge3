@@ -298,6 +298,12 @@ void afterStep() {
 	}
 }
 
+void afterPlayerMove() {
+	if( !_trigger_afterPlayerMove.empty() ) {
+		se->ExecuteFunctionString( _trigger_afterPlayerMove );
+	}
+}
+
 void beforeEntityActivation() {
 	if( !_trigger_beforeEntityScript.empty() ) {
 		se->ExecuteFunctionString( _trigger_beforeEntityScript );
@@ -319,7 +325,13 @@ void onEntityCollision() {
 void ProcessControls()
 {
 	UpdateControls();
-	if (!myself || !myself->ready()) return;
+	if( !myself || !myself->ready() ) {
+		return;
+	}
+
+	if( myself->movecode == 3 ) {
+		ScriptEngine::PlayerEntityMoveCleanup();
+	}
 
 	// kill contradictory input
 	if (up && down) up = down = false;

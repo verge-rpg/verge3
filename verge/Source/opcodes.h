@@ -105,7 +105,7 @@
 #define t_STRUCT			6
 
 #define NUM_LIBFUNCS		276
-#define NUM_HVARS			127
+#define NUM_HVARS			128
 #define NUM_HDEFS			104
 
 struct VcFunctionDecl {

@@ -101,6 +101,7 @@ public:
 	static void EntityStop(int e);
 	static void HookEntityRender(int i, CStringRef s);
 	static void PlayerMove(CStringRef s);
+	static void PlayerEntityMoveCleanup();
 	static void SetEntitiesPaused(int i);
 	static void SetPlayer(int e);
 	static int GetPlayer();

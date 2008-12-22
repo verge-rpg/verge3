@@ -60,6 +60,7 @@ StringRef event_str;
 StringRef _trigger_onStep, _trigger_afterStep;
 StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
 StringRef _trigger_onEntityCollide;
+StringRef _trigger_afterPlayerMove;
 
 extern void VcBuildLibraryDispatchTable ();
 
@@ -809,6 +810,9 @@ StringRef VCCore::ProcessString()
 				case 125: //trigger.onEntityCollide
 						ret = _trigger_onEntityCollide;
 						break;
+				case 127:
+						ret = _trigger_afterPlayerMove;
+						break;
 
 				default: vcerr("VCCore::ProcessString() - bad HSTR0 (%d)", idx);
 			}
@@ -1327,6 +1331,10 @@ void VCCore::HandleAssign()
 			case 125: //trigger.onEntityCollide
 					_trigger_onEntityCollide = ResolveString();
 					break;
+			case 127: //trigger.afterPlayerMove
+					_trigger_afterPlayerMove = ResolveString();
+					break;
+					
 
 			default: vcerr("VCCore::HandleAssign() - bad HSTR0 (%d)", idx);
 		}

@@ -385,3 +385,4 @@ extern int invc;
 extern StringRef _trigger_onStep, _trigger_afterStep;
 extern StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
 extern StringRef _trigger_onEntityCollide;
+extern StringRef _trigger_afterPlayerMove;
