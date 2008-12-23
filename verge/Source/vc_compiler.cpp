@@ -4125,7 +4125,8 @@ int VCCompiler::HandleVariable()
 			break;
 		case intHVAR0:
 			output.EmitC(vartype);
-			output.EmitD((char) id_index);
+			// Overkill (2008-12-21): this was casting to char before writing as an int anyway, whyyyy.
+			output.EmitD(id_index);
 			break;
 		case intHVAR1:
 		{
@@ -4160,7 +4161,8 @@ int VCCompiler::HandleVariable()
 			break;
 		case strHSTR0:
 			output.EmitC(vartype);
-			output.EmitD((char) id_index);
+			// Overkill (2008-12-21): this was casting to char before writing as an int anyway, whyyyy.
+			output.EmitD(id_index);
 			break;
 		case strHSTR1:
 		{
