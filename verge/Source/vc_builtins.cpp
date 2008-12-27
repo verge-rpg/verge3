@@ -289,6 +289,10 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"5", "SocketSendRaw", "13"},
 	{"1", "SocketByteCount", "1"}, // Overkill (2008-04-20}: Peek at how many bytes are in buffer. Requested by ustor.
 	{"3", "GetSystemSaveDir", "3"},
+	{"1", "GetInputKillSwitch", ""},
+	{"5", "SetInputKillSwitch", "1"},
+	{"1", "IntExists", "3"},		// Grue, (2008-12-26)
+	{"1", "StrExists", "3"}
 };
 
 VcFunction *libfuncs;
@@ -429,7 +433,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"3", "trigger.afterEntityScript", "" },// index 124
 	{"3", "trigger.onEntityCollide", "" },// index 125
 	{"1", "event.entity_hit", "" }, //126
-	{"3", "trigger.after_playermove", "" } //127
+	{"3", "trigger.after_playermove", "" }, //127
 
 }; //when adding, remember to increment NUM_HVARS
 
@@ -539,4 +543,15 @@ char* hdefs[NUM_HDEFS][2] = {
     {"CF_BLUE",     "6"  },
 	{"CF_CUSTOM",   "7"  },
 	{"FIXED_PI",	"205887"	},
+
+	{"FACE_UP",		"1"	},
+	{"FACE_DOWN",	"2"	},
+	{"FACE_LEFT",	"3"	},
+	{"FACE_RIGHT",	"4"	},
+
+	{"TRUE",		"1"	},
+	{"FALSE",		"0"	},
+
+	{"UNPRESS_ALL",	"9"	},
+
 };

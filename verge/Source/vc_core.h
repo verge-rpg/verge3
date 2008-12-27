@@ -278,6 +278,8 @@ public:
 	CStringRef GetStr(const char *strname);
 	void SetIntArray(const char *intname, int index, int value);
 	int  GetIntArray(const char *intname, int index);
+	bool IntExists(const char *intname);
+	bool StrExists(const char *strname);
 	void SetStrArray(CStringRef strname, int index, CStringRef value);
 	CStringRef GetStrArray(CStringRef strname, int index);
 

@@ -39,10 +39,16 @@ byte k_up = SCAN_UP,
 byte j_b1=0, j_b2=1, j_b3=2, j_b4=3;
 
 /***************************** code *****************************/
-
+extern int _input_killswitch;
 void UpdateControls()
 {
 	HandleMessages();
+
+	if( _input_killswitch ) {
+		b4 = b3 = b2 = b1 = right = left = down = up = false;
+		return;
+	}
+
 	joy_Update();
 	mouse_Update();
 	UpdateKeyboard();

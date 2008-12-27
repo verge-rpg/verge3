@@ -104,9 +104,9 @@
 #define t_VOID				5
 #define t_STRUCT			6
 
-#define NUM_LIBFUNCS		276
+#define NUM_LIBFUNCS		280
 #define NUM_HVARS			128
-#define NUM_HDEFS			104
+#define NUM_HDEFS			111
 
 struct VcFunctionDecl {
 	const char* returnType;

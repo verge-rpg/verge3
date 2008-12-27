@@ -1224,6 +1224,28 @@ VC_LIBFUNC(vc_GetInt) ()
 	vc->vcreturn = vc->GetInt(intname.c_str());
 }
 
+VC_LIBFUNC(vc_IntExists) ()
+{
+	StringRef intname = vc->ResolveString();
+
+	if( vc->IntExists(intname.c_str()) ) {
+		vc->vcreturn = 1;
+	} else {
+		vc->vcreturn = 0;
+	}
+}
+
+VC_LIBFUNC(vc_StrExists) ()
+{
+	StringRef strname = vc->ResolveString();
+
+	if( vc->StrExists(strname.c_str()) ) {
+		vc->vcreturn = 1;
+	} else {
+		vc->vcreturn = 0;
+	}
+}
+
 VC_LIBFUNC(vc_SetString) ()
 {
 	StringRef strname = vc->ResolveString();
@@ -1705,6 +1727,19 @@ VC_LIBFUNC(vc_GetSystemSaveDir)()
   StringRef appname = vc->ResolveString();
   vc->vcretstr = GetSystemSaveDirectory(appname);
 }
+
+extern int _input_killswitch;
+VC_LIBFUNC(vc_GetInputKillSwitch) ()
+{
+	vc->vcreturn = _input_killswitch;
+}
+
+VC_LIBFUNC(vc_SetInputKillSwitch) ()
+{
+	int kill = vc->ResolveOperand();
+	_input_killswitch = kill;
+}
+
 
 // ===================== End VC Standard Function Library =====================
 

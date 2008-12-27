@@ -62,6 +62,8 @@ StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
 StringRef _trigger_onEntityCollide;
 StringRef _trigger_afterPlayerMove;
 
+int _input_killswitch = 0;
+
 extern void VcBuildLibraryDispatchTable ();
 
 /****************************** code ******************************/
@@ -609,8 +611,10 @@ void VCCore::WriteInt(int category, int loc, int ofs, int value)
 				case 112: if (ofs>=0 && ofs<256) sprites[ofs].timer = value; return; // Overkill (2006-07-28)
 				//case 113: ent.framew
 				//case 114: ent.frameh
+
 				// Overkill (2007-05-02): Variable argument lists.
 				case 117: return SetIntArgument(ofs, value);
+
 				default: vcerr("Unknown HVAR1 (%d, %d) (set %d)", loc, ofs, value);
 			}
 			break;
@@ -1746,6 +1750,24 @@ CStringRef VCCore::GetStr(const char *strname)
 			return vcstring[global_strings[i].ofs];
 
 	return empty_string;
+}
+
+bool VCCore::StrExists(const char *strname)
+{
+	for (int i=0; i<global_ints.size(); i++)
+		if (!strcasecmp(global_strings[i].name, strname))
+			return true;
+
+	return false;
+}
+
+bool VCCore::IntExists(const char *intname)
+{
+	for (int i=0; i<global_ints.size(); i++)
+		if (!strcasecmp(global_ints[i].name, intname))
+			return true;
+
+	return false;
 }
 
 void VCCore::SetIntArray(const char *intname, int index, int value)
