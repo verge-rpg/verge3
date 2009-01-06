@@ -8,9 +8,9 @@
 /// If you have altered this source file, please log your name, date, and what
 /// changes you made below this line.
 
+#include "xerxes.h"
 
 #define _G_SOUND_CPP
-#include "xerxes.h"
 #include "garlick.h"
 #ifdef __WIN32__
 #include <delayimp.h>
