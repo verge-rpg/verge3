@@ -1730,6 +1730,66 @@ VC_LIBFUNC(vc_SetInputKillSwitch) ()
 	_input_killswitch = kill;
 }
 
+VC_LIBFUNC(vc_LoadSong) ()
+{
+	se->vcreturn = se->LoadSong(se->ResolveString());
+}
+
+VC_LIBFUNC(vc_PlaySong) ()
+{
+	se->vcreturn = se->LoadSong(se->ResolveString());
+}
+
+VC_LIBFUNC(vc_StopSong) ()
+{
+	se->StopSong(se->ResolveOperand());
+}
+
+VC_LIBFUNC(vc_PlayMusic) ()
+{
+	se->PlayMusic(se->ResolveString());
+}
+
+VC_LIBFUNC(vc_StopMusic) ()
+{
+	se->StopMusic();
+}
+
+VC_LIBFUNC(vc_StopSound) ()
+{
+	se->StopSound(se->ResolveOperand());
+}
+
+VC_LIBFUNC(vc_FreeSong) ()
+{
+	se->FreeSong(se->ResolveOperand());
+}
+
+VC_LIBFUNC(vc_GetSongVolume) ()
+{
+	se->vcreturn = se->GetSongVolume(se->ResolveOperand());
+}
+
+VC_LIBFUNC(vc_GetSongPos) ()
+{
+	se->vcreturn = se->GetSongPos(se->ResolveOperand());
+}
+
+VC_LIBFUNC(vc_SetRandSeed) ()
+{
+	se->SetRandSeed(se->ResolveOperand());
+}
+
+VC_LIBFUNC(vc_Sleep) ()
+{
+	Sleep(se->ResolveOperand());
+}
+
+VC_LIBFUNC(vc_MessageBox) ()
+{
+	showMessageBox(se->ResolveString());
+}
+
 
 // ===================== End VC Standard Function Library =====================
 
@@ -1746,21 +1806,13 @@ void VCCore::HandleLibFunc()
 		return;
 	}
 
+	// HEY YOU! Only add to here if:
+	// 1) you only need it in VC, ie. a language feature or something not useful in Lua,
+	// 2) it's short.
+	// Otherwise make a function, mmkay.
 	switch (c)
-	{
-		case 33: se->vcreturn = se->LoadSong(se->ResolveString()); break;
-		case 34: se->PlaySong(se->ResolveOperand()); break;
-		case 35: se->StopSong(se->ResolveOperand()); break;
-		case 36: se->PlayMusic(se->ResolveString()); break;
-		case 37: se->StopMusic(); break;
-		case 38: se->StopSound(se->ResolveOperand()); break;
-		case 39: se->FreeSong(se->ResolveOperand()); break;
+	{		
 		case 64: DebugBreakpoint("User breakpoint"); break;
-		case 108: showMessageBox(se->ResolveString()); break;
-		case 139: se->vcreturn = se->GetSongVolume(se->ResolveOperand()); break;
-		case 140: se->vcreturn = se->GetSongPos(se->ResolveOperand()); break;
-		case 174: se->SetRandSeed(se->ResolveOperand()); break;
-		case 200: Sleep(se->ResolveOperand()); break;
 		default:
 			se->vcerr("VC Execution error: Invalid vc STDLIB index. (%d)", (int) c);
 	}
