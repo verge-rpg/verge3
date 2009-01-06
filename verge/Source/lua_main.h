@@ -57,6 +57,26 @@ public:
 		return ret;
 	}
 
+	virtual int ResolveOperand()
+	{
+		return 0;	
+	}
+
+	virtual StringRef ResolveString()
+	{
+		return "";
+	}
+
+	virtual bool CheckForVarargs()
+	{
+		return false;
+	}
+
+	virtual void ReadVararg(std::vector<argument_t>& vararg)
+	{
+
+	}
+
 private:
 	lua_State *L;
 

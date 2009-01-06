@@ -1,6 +1,7 @@
 //all script engine common api functionality (between lua and vc) is spammed into here
 
 #include "xerxes.h"
+#include "opcodes.h"
 #include "g_script.h"
 #include "sincos.h"
 
@@ -36,6 +37,29 @@ void ScriptEngine::Error(const char *str, ...) {
 	vsprintf(msg, str, argptr);
 	va_end(argptr);
 	DisplayError(msg);
+}
+
+void ScriptEngine::ArgumentPassAddInt(int value)
+{
+	argument_t arg;
+	arg.type_id = t_INT;
+	arg.int_value = value;
+	arg.string_value = empty_string;
+	argument_pass_list.push_back(arg);
+}
+
+void ScriptEngine::ArgumentPassAddString(StringRef value)
+{
+	argument_t arg;
+	arg.type_id = t_STRING;
+	arg.int_value = 0;
+	arg.string_value = value;
+	argument_pass_list.push_back(arg);
+}
+
+void ScriptEngine::ArgumentPassClear()
+{
+	argument_pass_list.clear();
 }
 
 void EnforceNoDirectories(StringRef s)

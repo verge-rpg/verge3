@@ -221,13 +221,6 @@ public:
 
 };
 
-struct argument_t
-{
-	byte type_id;
-	int int_value;
-	StringRef string_value;
-};
-
 class VCCore : public ScriptEngine {
 public:
 	VCCore();
@@ -245,18 +238,6 @@ public:
 	int ResolveOperand();
 	StringRef ResolveString();
 	void DisplayError(const StringRef &msg);
-	void vcerr(char *str, ...) {
-	  	va_list argptr;
-		char msg[256];
-
-		va_start(argptr, str);
-		vsprintf(msg, str, argptr);
-		va_end(argptr);
-		Error("%s",msg);
-	}
-
-	int vcreturn;
-	StringRef vcretstr;
 
 	void ListStructMembers(std::vector<StringRef> &result, const char *structname);
 
@@ -265,12 +246,6 @@ public:
 	bool CheckForVarargs();
 	void ReadVararg(std::vector<argument_t>& vararg);
 	void IgnoreVararg();
-
-	std::vector<argument_t> argument_pass_list;
-
-	void ArgumentPassAddInt(int value);
-	void ArgumentPassAddString(StringRef value);
-	void ArgumentPassClear();
 
 	void SetInt(const char *intname, int value);
 	int  GetInt(const char *intname);

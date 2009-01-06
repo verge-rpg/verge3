@@ -17,8 +17,18 @@ public:
 	virtual bool CompileMap(const char *fname) = 0;
 };
 
+struct argument_t
+{
+	byte type_id;
+	int int_value;
+	StringRef string_value;
+};
+
 class ScriptEngine {
 public:
+	int vcreturn;
+	StringRef vcretstr;
+
 	void Error(const char *s, ...);
 
 	virtual bool ExecuteFunctionString(CStringRef script) = 0;
@@ -26,6 +36,26 @@ public:
 	virtual void ExecAutoexec() = 0;
 	virtual void LoadMapScript(VFILE *f, CStringRef filename) = 0;
 	virtual void DisplayError(CStringRef msg) = 0;
+	virtual int ResolveOperand() = 0;
+	virtual StringRef ResolveString() = 0;
+	virtual bool CheckForVarargs() = 0;
+	virtual void ReadVararg(std::vector<argument_t>& vararg) = 0;
+	void vcerr(char *str, ...) {
+	  	va_list argptr;
+		char msg[256];
+
+		va_start(argptr, str);
+		vsprintf(msg, str, argptr);
+		va_end(argptr);
+		Error("%s",msg);
+	}
+
+	// Varargs support!
+	std::vector<argument_t> argument_pass_list;
+
+	void ArgumentPassAddInt(int value);
+	void ArgumentPassAddString(StringRef value);
+	void ArgumentPassClear();
 
 	//script services
 	//VI.a. General Utility Functions

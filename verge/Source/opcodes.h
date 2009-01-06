@@ -164,6 +164,8 @@ struct VcFunctionBinding {
 };
 
 extern VcFunction* libfuncs;
+extern VcFunctionImplTable implTable;
+extern VcFunctionDispatchTable dispatchTable;
 extern char* libvars[NUM_HVARS][3];
 extern char* hdefs[NUM_HDEFS][2];
 

@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C++ Express 2008
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "verge", "verge\verge.vcproj", "{607215A8-486D-4862-8E9D-08DA26E7A90F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E5195361-63CD-4C1B-8DD7-3E579779B1F6} = {E5195361-63CD-4C1B-8DD7-3E579779B1F6}

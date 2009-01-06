@@ -221,14 +221,20 @@ int LuaVerge_InvokeBuiltinFunc(lua_State* L)
 
 	LuaVerge_VerifySignature(L, functionIndex);
 
-	// Pretend to call a function for now.
-	// TODO: Actually call things.
 	// TODO: ResolveOperand/ResolveString copycats but for Lua.
 	// TODO: Varariadic functions in Lua.
 	// TODO:	Make t_BOOL signatures for functions/vars, that are the same as t_INT in Verge,
 	//			but have proper coercion and validation in Lua.
-	err("Woo! Calling function (index %d) %s", functionIndex, libfuncs[functionIndex].name.c_str());
 
+	// Calls the function by looking up in the dispatch table.
+	VcFunctionImpl ptr = dispatchTable[functionIndex];
+	if (ptr) {
+		ptr();
+	}
+
+	//err("Woo! Calling function (index %d) %s", functionIndex, libfuncs[functionIndex].name.c_str());
+
+	// TODO: Push return values onto the stack.
 	// TODO: Return number of arguments returned by the callback we're wrapping.
 	return 0;
 }

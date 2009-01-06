@@ -862,6 +862,11 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\verge-logo.ico"
+				DeploymentContent="true"
+				>
+			</File>
+			<File
 				RelativePath="Source\vid_ddbase.cpp"
 				>
 				<FileConfiguration
@@ -1535,11 +1540,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\verge-logo.ico"
-			DeploymentContent="true"
-			>
-		</File>
 		<File
 			RelativePath=".\verge.rc"
 			>

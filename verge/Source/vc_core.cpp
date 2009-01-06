@@ -1086,29 +1086,6 @@ bool VCCore::CheckForVarargs()
 	return false;
 }
 
-void VCCore::ArgumentPassAddInt(int value)
-{
-	argument_t arg;
-	arg.type_id = t_INT;
-	arg.int_value = value;
-	arg.string_value = empty_string;
-	argument_pass_list.push_back(arg);
-}
-
-void VCCore::ArgumentPassAddString(StringRef value)
-{
-	argument_t arg;
-	arg.type_id = t_STRING;
-	arg.int_value = 0;
-	arg.string_value = value;
-	argument_pass_list.push_back(arg);
-}
-
-void VCCore::ArgumentPassClear()
-{
-	argument_pass_list.clear();
-}
-
 void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 {
 	bool check_for_patch = true;
