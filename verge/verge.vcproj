@@ -855,6 +855,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
+						GeneratePreprocessedFile="0"
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="xerxes.h"
 					/>
@@ -864,6 +865,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
+						GeneratePreprocessedFile="0"
 						UsePrecompiledHeader="2"
 						PrecompiledHeaderThrough="xerxes.h"
 						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
@@ -1214,7 +1216,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="1"
 						PrecompiledHeaderThrough="xerxes.h"
 						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
 					/>
