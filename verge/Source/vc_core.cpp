@@ -260,10 +260,9 @@ void VCCore::LoadCore(VFILE *f, int cimage, bool append, bool patch_others)
 		coreimages[cimage].LoadChunk(f->fp);
 }
 
-void VCCore::LoadMapScript(VFILE *f)
+void VCCore::LoadMapScript(VFILE *f, CStringRef filename)
 {
 	LoadCore(f, CIMAGE_MAP, false, false);
-	
 }
 
 void VCCore::UnloadCore(int cimage)

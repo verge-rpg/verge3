@@ -237,7 +237,7 @@ public:
 	void UnloadCore(int cimage);
 	Chunk *GetCore(int cimage);
 
-	void LoadMapScript(VFILE *f);
+	void LoadMapScript(VFILE *f, CStringRef filename);
 	void ExecAutoexec();
 	void Decompile();
 	bool ExecuteFunctionString(const StringRef& script);

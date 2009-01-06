@@ -24,7 +24,7 @@ public:
 	virtual bool ExecuteFunctionString(CStringRef script) = 0;
 	virtual bool FunctionExists(CStringRef func) = 0;
 	virtual void ExecAutoexec() = 0;
-	virtual void LoadMapScript(VFILE *f) = 0;
+	virtual void LoadMapScript(VFILE *f, CStringRef filename) = 0;
 	virtual void DisplayError(CStringRef msg) = 0;
 
 	//script services

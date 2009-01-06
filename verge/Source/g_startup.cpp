@@ -236,7 +236,17 @@ void xmain(int argc, char *argv[])
 
 	InitGarlick();
 	Handle::init();
+
+	strcpy(mapname,"");
+
 	LoadConfig();
+	if (argc == 2)
+	{
+		if (strlen(argv[1]) > 254)
+			err("Mapname argument too long!");
+		strcpy(mapname, argv[1]);
+	}
+
 	InitVideo();
 
 	mouse_Init();
@@ -256,14 +266,6 @@ void xmain(int argc, char *argv[])
 	win_movie_init();
 	ResetSprites();
 	timer_Init(gamerate);
-
-	strcpy(mapname,"");
-	if (argc == 2)
-	{
-		if (strlen(argv[1]) > 254)
-			err("Mapname argument too long!");
-		strcpy(mapname, argv[1]);
-	}
 
 	#ifdef ALLOW_SCRIPT_COMPILATION
 	if(!releasemode)

@@ -257,7 +257,7 @@ MAP::MAP(char *fname)
 		if (method == ENT_WANDERBOX) entity[idx]->SetWanderBox(x1, y1, x2, y2);*/
 	}
 	current_map = this;
-	se->LoadMapScript(f);
+	se->LoadMapScript(f, mapfname);
 	vclose(f);
 	se->ExecuteFunctionString(startupscript);
 }

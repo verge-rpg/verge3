@@ -56,13 +56,17 @@ void LUA::compileSystem() {
 	loadFile("system.lua");
 }
 
-void LUA::LoadMapScript(VFILE *f) {
+void LUA::LoadMapScript(VFILE *f, CStringRef filename) {
 	int scriptsize;
 	vread(&scriptsize,4,f);
 	std::auto_ptr<char> temp(new char[scriptsize+1]);
 	vread(temp.get(),scriptsize,f);
 	temp.get()[scriptsize] = 0;
-	luaL_dostring(L,temp.get());
+
+	if(luaL_loadbuffer(L, temp.get(), strlen(temp.get()), filename.c_str()))
+		err("Error loading " + filename.str());
+	if(lua_pcall(L, 0, LUA_MULTRET, 0))
+		err("Error compiling " + filename.str());
 }
 
 void LUA::loadFile(const char *fname) {
@@ -88,7 +92,7 @@ void LUA::ExecAutoexec() {
 std::string strtolower(std::string val) { std::transform(val.begin(), val.end(), val.begin(), tolower); return val; }
 
 // Error handler. Don't shove this in a package, since this is important to the Lua environment.
-int InitErrorHandler(lua_State *L)
+int LuaVerge_InitErrorHandler(lua_State *L)
 {
 	return luaL_dostring(L,"function __err(e)\n\
 		local level = 1 \n\
@@ -255,6 +259,8 @@ void LuaVerge_BindFunction(lua_State* L, int functionIndex)
 void LUA::bindApi()
 {
 	int i;
+
+	LuaVerge_InitErrorHandler(L);
 
 	// Create an empty table!
 	lua_newtable(L);

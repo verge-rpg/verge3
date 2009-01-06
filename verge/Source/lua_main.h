@@ -33,7 +33,7 @@ public:
 		::err(msg.c_str());
 	}
 	
-	virtual void LoadMapScript(VFILE *f);
+	virtual void LoadMapScript(VFILE *f, CStringRef filename);
 	virtual void ExecAutoexec();
 	virtual bool ExecuteFunctionString(const StringRef& func) {
 		//the gettop/settop is to recover the stack from the user having returned a value from the callback function (we dont want one)
