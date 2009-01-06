@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../boost-1.34.0;&quot;lua-5.1.2&quot;;luabind"
+				AdditionalIncludeDirectories="&quot;../boost-1.37.0&quot;;&quot;lua-5.1.2&quot;;luabind"
 				PreprocessorDefinitions="_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -108,7 +108,7 @@
 				OmitFramePointers="true"
 				EnableFiberSafeOptimizations="false"
 				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories="../boost-1.34.0;&quot;lua-5.1.2&quot;;luabind"
+				AdditionalIncludeDirectories="&quot;../boost-1.37.0&quot;;&quot;lua-5.1.2&quot;;luabind"
 				PreprocessorDefinitions="_CRT_SECURE_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				RuntimeLibrary="0"
 				WarningLevel="3"
@@ -509,86 +509,6 @@
 						CompileAs="0"
 					/>
 				</FileConfiguration>
-			</File>
-		</Filter>
-		<Filter
-			Name="luabind"
-			>
-			<File
-				RelativePath=".\luabind\src\class.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\class_info.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\class_registry.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\class_rep.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\create_class.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\error.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\find_best_match.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\function.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\implicit_cast.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\link_compatibility.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\object_rep.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\open.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\overload_rep.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\pcall.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\ref.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\scope.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\stack_content_by_name.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\weak_ref.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\luabind\src\wrapper_base.cpp"
-				>
 			</File>
 		</Filter>
 		<File
