@@ -231,6 +231,9 @@ int LuaVerge_InvokeBuiltinFunc(lua_State* L)
 	if (ptr) {
 		ptr();
 	}
+	else {
+		err("Error calling function (index %d) '%s'", functionIndex, libfuncs[functionIndex].name.c_str());
+	}
 
 	//err("Woo! Calling function (index %d) %s", functionIndex, libfuncs[functionIndex].name.c_str());
 

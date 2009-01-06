@@ -38,14 +38,6 @@ int _bind_decl_ctr = 0;
 VcFunctionImplTable implTable;
 VcFunctionDispatchTable dispatchTable;
 
-void vc_initLibrary() {
-	for(int i=0;i<_bind_decl_ctr;i++) {
-		std::string name = _bind_decl[i].name;
-		std::transform(name.begin(), name.end(), name.begin(), tolower);
-		implTable[name] = _bind_decl[i].fn;
-	}
-}
-
 void VcBuildLibraryDispatchTable () {
 	for (int i = 0; i < NUM_LIBFUNCS; i++) {
 		VcFunction & theFunc = libfuncs[i];
@@ -59,6 +51,15 @@ void VcBuildLibraryDispatchTable () {
 		VcFunctionImpl ptr = implTable[key];
 		dispatchTable[i] = ptr;
 	}
+}
+
+void vc_initLibrary() {
+	for(int i=0;i<_bind_decl_ctr;i++) {
+		std::string name = _bind_decl[i].name;
+		std::transform(name.begin(), name.end(), name.begin(), tolower);
+		implTable[name] = _bind_decl[i].fn;
+	}
+	VcBuildLibraryDispatchTable();
 }
 
 /****************************** code ******************************/

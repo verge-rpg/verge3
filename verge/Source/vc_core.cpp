@@ -71,7 +71,6 @@ extern void VcBuildLibraryDispatchTable ();
 VCCore::VCCore()
 {
 	userfuncMap[0] = userfuncMap[1] = userfuncMap[2] = 0;
-	VcBuildLibraryDispatchTable();
 
 	int_stack_base = 0;
 	int_stack_ptr = 0;
