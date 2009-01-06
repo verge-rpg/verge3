@@ -1,12 +1,14 @@
 #include "xerxes.h"
+#include "opcodes.h"
 
 #ifdef ENABLE_LUA
 
 #include "g_script.h"
-#include <luabind/luabind.hpp>
 
 extern "C" {
+#include <lua.h>
 #include <lualib.h>
+#include <lauxlib.h>
 }
 
 class LUA : public ScriptEngine, public MapScriptCompiler {
@@ -68,7 +70,6 @@ private:
 	}
 
 	void bindApi();
-
 };
 
 #endif

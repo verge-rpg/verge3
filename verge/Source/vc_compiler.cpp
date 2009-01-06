@@ -3880,7 +3880,14 @@ void VCCompiler::HandleLibraryFunc()
 	}
 	if (i < libfuncs[myindex].argumentTypes.size() || (i > libfuncs[myindex].argumentTypes.size() && !varargs))
 	{
-		throw va("%s(%d) %s() expects %d arguments. (Got %d)", sourcefile, linenum, libfuncs[myindex].name, libfuncs[myindex].argumentTypes.size(), i);
+		int size = libfuncs[myindex].argumentTypes.size();
+
+		// Varargs need not be specified so don't include in the count here.
+		if(libfuncs[myindex].argumentTypes[size - 1] == t_VARARG)
+		{
+			size--;
+		}
+		throw va("%s(%d) Built in function %s() expects %d arguments. (Got %d)", sourcefile, linenum, libfuncs[myindex].name.c_str(), size, i);
 	}
 
 	id_index = myindex;
@@ -3983,7 +3990,15 @@ void VCCompiler::HandleUserFunc()
 	}
 	if (i < func->numargs || (i > func->numargs && !varargs))
 	{
-		throw va("%s(%d) %s() expects %d arguments. (Got %d)", sourcefile, linenum, func->name, func->numargs, i);
+		int size = func->numargs;
+
+		// Varargs need not be specified so don't include in the count here.
+		if(func->argtype[size - 1] == t_VARARG)
+		{
+			size--;
+		}
+
+		throw va("%s(%d) User function %s() expects %d arguments. (Got %d)", sourcefile, linenum, func->name, size, i);
 	}
 
 	id_index = myindex;
