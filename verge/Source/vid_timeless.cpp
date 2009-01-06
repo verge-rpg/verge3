@@ -1,6 +1,6 @@
-#ifndef NOTIMELESS
-
 #include "xerxes.h"
+
+#ifndef NOTIMELESS
 
 extern const unsigned short timeless[];
 int skewlines[100] = { 0 };

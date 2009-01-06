@@ -1,7 +1,9 @@
 //see accompanying garlick.h
 
-#define _GARLICK_C_
 #include "xerxes.h"
+
+#define _GARLICK_C_
+
 #include "garlick.h"
 #include <stdio.h>
 #include <stdlib.h>

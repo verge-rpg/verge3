@@ -8,6 +8,7 @@
 /// If you have altered this source file, please log your name, date, and what
 /// changes you made below this line.
 
+#include "xerxes.h"
 
 #include "a_handle.h"
 
