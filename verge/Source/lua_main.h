@@ -28,6 +28,9 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 		static int Get_Hvar(lua_State* L);
 		static int Set_Hvar(lua_State* L);
 
+		// hdefs
+		static void BindHdef(lua_State* L, int index);
+
 		LUA()
 		{
 			L = lua_open();

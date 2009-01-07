@@ -328,7 +328,7 @@ int LUA::Get_Hvar(lua_State* L)
 	LUA* lua = (LUA*)lua_topointer(L, lua_upvalueindex(2));
 	
 	int ret = lua->ReadHvar(intHVAR0, index, 0);
-	lua_pushinteger(L,ret);
+	lua_pushinteger(L, ret);
 	return 1;
 }
 
@@ -339,6 +339,17 @@ int LUA::Set_Hvar(lua_State* L)
 	return 0;
 }
 
+void LUA::BindHdef(lua_State* L, int index)
+{
+	char* definition = hdefs[index][0];
+	char* value = hdefs[index][1];
+
+	lua_getglobal(L, "v3");
+	lua_pushstring(L, definition);
+	lua_pushstring(L, value); // Lua auto-coerces numeric strings to numbers, cool!
+	lua_settable(L, -3); // v3.def = value
+	lua_pop(L, -1);
+}
 
 void LUA::bindApi()
 {
@@ -361,6 +372,12 @@ void LUA::bindApi()
 	for(i = 0; i < NUM_HVARS; i++)
 	{
 		LUA::BindHvar(L, i);
+	}
+
+	// Bind hdefs
+	for(i = 0; i < NUM_HDEFS; i++)
+	{
+		LUA::BindHdef(L, i);
 	}
 }
 
