@@ -233,8 +233,6 @@ int LUA::InvokeBuiltinFunction(lua_State* L)
 
 	LUA::VerifyFunctionSignature(L, functionIndex);
 
-	// TODO: ResolveOperand/ResolveString copycats but for Lua.
-	// TODO: Varariadic functions in Lua.
 	// TODO:	Make t_BOOL signatures for functions/vars, that are the same as t_INT in Verge,
 	//			but have proper coercion and validation in Lua.
 
@@ -247,11 +245,21 @@ int LUA::InvokeBuiltinFunction(lua_State* L)
 		::err("Error calling function (index %d) '%s'", functionIndex, libfuncs[functionIndex].name.c_str());
 	}
 
-	//err("Woo! Calling function (index %d) %s", functionIndex, libfuncs[functionIndex].name.c_str());
-
-	// TODO: Push return values onto the stack.
-	// TODO: Return number of arguments returned by the callback we're wrapping.
-	return 0;
+	// Push return values onto the stack.
+	if(libfuncs[functionIndex].returnType == t_INT)
+	{
+		lua_pushnumber(L, se->vcreturn);
+		return 1; // Single return value
+	}
+	else if(libfuncs[functionIndex].returnType == t_STRING)
+	{
+		lua_pushstring(L, se->vcretstr.c_str());
+		return 1; // Single return value
+	}
+	else
+	{
+		return 0; // No return value
+	}
 }
 
 void LUA::BindFunction(lua_State* L, int functionIndex)
