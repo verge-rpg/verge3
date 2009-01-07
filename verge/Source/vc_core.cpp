@@ -14,12 +14,13 @@
  * copyright (c) 2002 vecna                                       *
  ******************************************************************/
 
-#include <stdarg.h>
-#include <algorithm>
+
 #include "xerxes.h"
 #include "opcodes.h"
 
 #include <sstream>
+#include <stdarg.h>
+#include <algorithm>
 
 /****************************** data ******************************/
 
@@ -38,31 +39,7 @@ std::map<std::string,VCPlugins::Function*> VCPlugins::functions;
 std::map<std::string,VCPlugins::Variable*> VCPlugins::variables;
 std::vector<VCPlugins::Plugin*> VCPlugins::plugins;
 
-/******************* vc engine state variables ********************/
 
-int cur_stick = 0;
-StringRef renderfunc,timerfunc;
-
-int event_tx;
-int event_ty;
-int event_zone;
-int event_entity;
-int event_param;
-int event_sprite;
-
-int event_entity_hit;
-
-int __grue_actor_index;
-
-
-StringRef event_str;
-
-StringRef _trigger_onStep, _trigger_afterStep;
-StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
-StringRef _trigger_onEntityCollide;
-StringRef _trigger_afterPlayerMove;
-
-int _input_killswitch = 0;
 
 extern void VcBuildLibraryDispatchTable ();
 
@@ -334,15 +311,6 @@ StringRef VCCore::PopString()
 	return str_stack[--str_stack_ptr];
 }
 
-int vc_GetYear();
-int vc_GetMonth();
-int vc_GetDay();
-int vc_GetDayOfWeek();
-int vc_GetHour();
-int vc_GetMinute();
-int vc_GetSecond();
-
-
 int VCCore::GetIntArgument(int index)
 {
 	if (index >= vararg_stack[vararg_stack.size() - 1].size())
@@ -391,133 +359,13 @@ int VCCore::ReadInt(int category, int loc, int ofs)
 			if (loc<0 || loc>=maxint)
 				vcerr("ReadInt: bad offset to globalint (arr)");
 			return vcint[loc];
-		case intHVAR0:   // _READINT
-			switch (loc)
-			{
-				case 0: return systemtime;
-				case 1: return vctimer;
-				case 3: return lastpressed;
-				case 4: return mouse_x;
-				case 5: return mouse_y;
-				case 6: return mouse_l;
-				case 7: return mouse_r;
-				case 8: return mouse_m;
-				case 9: return (int) mwheel;
-				case 10: return vc_GetYear();
-				case 11: return vc_GetMonth();
-				case 12: return vc_GetDay();
-				case 13: return vc_GetDayOfWeek();
-				case 14: return vc_GetHour();
-				case 15: return vc_GetMinute();
-				case 16: return vc_GetSecond();
-				case 17: return cur_stick;
-				case 18: return sticks[cur_stick].active;
-				case 19: return sticks[cur_stick].up;
-				case 20: return sticks[cur_stick].down;
-				case 21: return sticks[cur_stick].left;
-				case 22: return sticks[cur_stick].right;
-				case 23: return sticks[cur_stick].analog_x;
-				case 24: return sticks[cur_stick].analog_y;
-				case 26: return up;
-				case 27: return down;
-				case 28: return left;
-				case 29: return right;
-				case 30: return b1;
-				case 31: return b2;
-				case 32: return b3;
-				case 33: return b4;
-				case 34: return event_tx;
-				case 35: return event_ty;
-				case 36: return event_zone;
-				case 37: return event_entity;
-				case 38: return event_param;
-				case 39: return xwin;
-				case 40: return ywin;
-				case 41: return cameratracking;
-				case 42: return entities;
-				case 51: return transColor;
-				case 59: return gameWindow->getHandle();
-				case 60: return lastkey;
-				case 80: return current_map ? current_map->mapwidth : 0;
-				case 81: return current_map ? current_map->mapheight : 0;
-				case 82: return current_map ? current_map->startx : 0;
-				case 83: return current_map ? current_map->starty : 0;
-				case 87: return current_map ? 2 : 0;
-				case 90: return event_sprite; // Overkill (2006-07-28): No more HVAR error.
-				case 96: return cameratracker;
-				case 101: return playerstep;
-				case 102: return playerdiagonals;
-				case 103: return AppIsForeground;
-				// Overkill (2007-05-02): Variable argument lists.
-				case 116: return vararg_stack[vararg_stack.size() - 1].size();
-
-				case 126: return event_entity_hit;
-
-				default: vcerr("Unknown HVAR0 (%d)", loc);
-			}
-			break;
-		case intHVAR1:
-			switch (loc)
-			{
-				case 2: return keys[max(ofs,256)]; break;
-				case 25: if(ofs<0 || ofs>31) vcerr("Invalid button number: 0..31 inclusive are valid."); else return sticks[cur_stick].button[max(ofs,32)];
-				case 43: if (ofs>=0 && ofs<entities) return entity[ofs]->getx(); return 0;
-				case 44: if (ofs>=0 && ofs<entities) return entity[ofs]->gety(); return 0;
-				case 45: if (ofs>=0 && ofs<entities) return entity[ofs]->specframe; return 0;
-				case 46: if (ofs>=0 && ofs<entities) return entity[ofs]->frame; return 0;
-				case 47: if (ofs>=0 && ofs<entities) return entity[ofs]->chr->hx; return 0;
-				case 48: if (ofs>=0 && ofs<entities) return entity[ofs]->chr->hy; return 0;
-				case 49: if (ofs>=0 && ofs<entities) return entity[ofs]->chr->hw; return 0;
-				case 50: if (ofs>=0 && ofs<entities) return entity[ofs]->chr->hh; return 0;
-				#ifndef NOTIMELESS
-				case 52: return skewlines[ofs];
-				#endif
-				case 53: return (int) (*(byte *)ofs);
-				case 54: return (int) (*(word *)ofs);
-				case 55: return (int) (*(quad *)ofs);
-				case 56: return (int) (*(char *)ofs);
-				case 57: return (int) (*(short*)ofs);
-				case 58: return (int) (*(int  *)ofs);
-				case 59: vcerr("Cannot write to gameWindow!");
-				case 61: if (ofs>=0 && ofs<entities) return entity[ofs]->movecode; return 0;
-				case 62: if (ofs>=0 && ofs<entities) return entity[ofs]->face; return 0;
-				case 63: if (ofs>=0 && ofs<entities) return entity[ofs]->speed; return 0;
-				case 64: if (ofs>=0 && ofs<entities) return entity[ofs]->visible; return 0;
-				case 66: if (ofs>=0 && ofs<256) return sprites[ofs].x; return 0;
-				case 67: if (ofs>=0 && ofs<256) return sprites[ofs].y; return 0;
-				case 68: if (ofs>=0 && ofs<256) return sprites[ofs].sc; return 0;
-				case 69: if (ofs>=0 &&	ofs<256) return sprites[ofs].image; return 0;
-				case 70: if (ofs>=0 && ofs<256) return sprites[ofs].lucent; return 0;
-				case 71: if (ofs>=0 && ofs<256) return sprites[ofs].addsub; return 0;
-				case 72: if (ofs>=0 && ofs<256) return sprites[ofs].alphamap; return 0;
-				case 73: if (ofs>=0 && ofs<256) return sprites[ofs].thinkrate; return 0; // Overkill (2006-07-28)
-				case 78: if (ofs>=0 && ofs<entities) return entity[ofs]->obstruction; return 0;
-				case 79: if (ofs>=0 && ofs<entities) return entity[ofs]->obstructable; return 0;
-				case 94: if (current_map && ofs>=0 && ofs<current_map->numlayers) return current_map->layers[ofs]->lucent;
-                case 97: if (current_map && ofs>=0 && ofs<current_map->numlayers) return (int)(current_map->layers[ofs]->parallax_x * 65536);
-                case 98: if (current_map && ofs>=0 && ofs<current_map->numlayers) return (int)(current_map->layers[ofs]->parallax_y * 65536);
-				case 105: if (ofs>=0 && ofs<256) return sprites[ofs].ent; return 0; // Overkill (2006-07-28)
-				case 106: if (ofs>=0 && ofs<256) return sprites[ofs].silhouette; return 0; // Overkill (2006-07-28)
-				case 107: if (ofs>=0 && ofs<256) return sprites[ofs].color; return 0; // Overkill (2006-07-28)
-				case 108: if (ofs>=0 && ofs<256) return sprites[ofs].wait; return 0; // Overkill (2006-07-28)
-				case 109: if (ofs>=0 && ofs<256) return sprites[ofs].onmap; return 0; // Overkill (2006-07-28)
-				case 110: if (ofs>=0 && ofs<256) return sprites[ofs].layer; return 0; // Overkill (2006-07-28)
-				case 111: if (ofs>=0 && ofs<entities) return entity[ofs]->lucent; return 0; // Overkill (2006-07-28)
-				case 112: if (ofs>=0 && ofs<256) return sprites[ofs].timer; return 0; // Overkill (2006-07-28)
-				case 113: return ScriptEngine::Get_EntityFrameW(ofs); // Overkill (2006-07-28)
-				case 114: return ScriptEngine::Get_EntityFrameH(ofs); // Overkill (2006-07-28)
-				// Overkill (2007-05-02): Variable argument lists.
-				case 117: return GetIntArgument(ofs);
-				case 118: if (ofs >= 0 && ofs < vararg_stack[vararg_stack.size() - 1].size()) { return vararg_stack[vararg_stack.size() - 1][ofs].type_id == t_INT; } return 0;
-				case 119: if (ofs >= 0 && ofs < vararg_stack[vararg_stack.size() - 1].size()) { return vararg_stack[vararg_stack.size() - 1][ofs].type_id == t_STRING; } return 0;
-                return -1;
-				default: vcerr("Unknown HVAR1 (%d, %d)", loc, ofs);
-			}
-			break;
 		case intLOCAL:
 			if (loc<0 || loc>99)
 				vcerr("VCCore::ReadInt() - bad offset to local ints: %d", loc);
 			return int_stack[int_stack_base+loc];
+		case intHVAR0:
+		case intHVAR1:
+			return ReadHvar(category,loc,ofs);
 		default:
 			vcerr("VC Execution error: Invalid ReadInt category %d", (int) category);
 	}
@@ -1920,3 +1768,34 @@ void VCCore::DecompileLibFunc()
 	}
 	fprintf(vcd, ");\n");
 }
+
+int VCCore::ReadHvar_derived(int category, int loc, int ofs)
+{
+	switch(category)
+	{
+		case intHVAR0:
+			switch(loc) {
+				// Overkill (2007-05-02): Variable argument lists.
+				case 116: return vararg_stack[vararg_stack.size() - 1].size();
+				default: vcerr("Unknown HVAR0 (%d)", loc); 
+			}
+			return -1;
+		case intHVAR1:
+			switch(loc) {
+				// Overkill (2007-05-02): Variable argument lists.
+				case 117: return GetIntArgument(ofs);
+				case 118: if (ofs >= 0 && ofs < vararg_stack[vararg_stack.size() - 1].size()) { return vararg_stack[vararg_stack.size() - 1][ofs].type_id == t_INT; } return 0;
+				case 119: if (ofs >= 0 && ofs < vararg_stack[vararg_stack.size() - 1].size()) { return vararg_stack[vararg_stack.size() - 1][ofs].type_id == t_STRING; } return 0;
+			default:
+				vcerr("Unknown HVAR1 (%d, %d)", loc, ofs); 
+			}
+			return -1;
+
+		default:
+			vcerr("Fatal Error Code Eskimo");
+			return -1;
+	}
+}
+				
+
+

@@ -448,41 +448,6 @@ VC_LIBFUNC(vc_val) () { se->vcreturn = se->Val(se->ResolveString()); }
 
 VC_LIBFUNC(vc_Unpress) () { se->Unpress(se->ResolveOperand()); }
 
-int vc_GetYear()
-{
-	return getYear();
-}
-
-int vc_GetMonth()
-{
-	return getMonth();
-}
-
-int vc_GetDay()
-{
-	return getDay();
-}
-
-int vc_GetDayOfWeek()
-{
-	return getDayOfWeek();
-}
-
-int vc_GetHour()
-{
-	return getHour();
-}
-
-int vc_GetMinute()
-{
-	return getMinute();
-}
-
-int vc_GetSecond()
-{
-	return getSecond();
-}
-
 VC_LIBFUNC(vc_FileOpen) () {
 	StringRef fname = se->ResolveString();
 	int mode = se->ResolveOperand();

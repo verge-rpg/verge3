@@ -23,6 +23,11 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 		static int InvokeBuiltinFunction(lua_State* L);
 		static int InitErrorHandler(lua_State* L);
 
+		//hvars
+		void BindHvar(lua_State* L, int index);
+		static int Get_Hvar(lua_State* L);
+		static int Set_Hvar(lua_State* L);
+
 		LUA()
 		{
 			L = lua_open();

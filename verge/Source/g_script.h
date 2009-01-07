@@ -26,6 +26,8 @@ struct argument_t
 
 class ScriptEngine {
 public:
+	ScriptEngine();
+
 	int vcreturn;
 	StringRef vcretstr;
 
@@ -50,6 +52,9 @@ public:
 		Error("%s",msg);
 	}
 
+	int ReadHvar(int category, int loc, int ofs);
+	virtual int ReadHvar_derived(int category, int loc, int ofs);
+
 	// Varargs support!
 	std::vector<argument_t> argument_pass_list;
 
@@ -68,8 +73,8 @@ public:
 	//TODO(GetStringArray);
 	static void HookButton(int b, CStringRef s);
 	static void HookKey(int k, CStringRef s);
-	static void HookTimer(CStringRef s);
-	static void HookRetrace(CStringRef s);
+	void HookTimer(CStringRef s);
+	void HookRetrace(CStringRef s);
 	static void Log(CStringRef s);
 	static void MessageBox(CStringRef msg);
 	static int Random(int min, int max);
@@ -331,6 +336,33 @@ public:
 	static StringRef GetKeyBuffer();
 	static void FlushKeyBuffer();
 	static void SetKeyDelay(int d);
+
+	//------------------- script engine state variables ----------------
+	int cur_stick;
+	StringRef renderfunc,timerfunc;
+
+	int event_tx;
+	int event_ty;
+	int event_zone;
+	int event_entity;
+	int event_param;
+	int event_sprite;
+
+	int event_entity_hit;
+
+	int __grue_actor_index;
+
+
+	StringRef event_str;
+
+	StringRef _trigger_onStep, _trigger_afterStep;
+	StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
+	StringRef _trigger_onEntityCollide;
+	StringRef _trigger_afterPlayerMove;
+
+	int _input_killswitch;
+	//------------------------------------
+
 };
 
 

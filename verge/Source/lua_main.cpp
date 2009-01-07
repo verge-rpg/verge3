@@ -285,6 +285,61 @@ void LUA::BindFunction(lua_State* L, int functionIndex)
 	lua_pop(L, -1);
 }
 
+
+void LUA::BindHvar(lua_State* L, int index)
+{
+	const char* type = libvars[index][0];
+	const char* name = libvars[index][1];
+	const char* dimlist = libvars[index][1];
+
+	//transform dots in names to underscores
+	char namebuf[256] = "get_";
+	strcat(namebuf,name);
+	char* tmp = namebuf;
+	while(*tmp) *tmp++ = (*tmp=='.'?'_':*tmp);
+
+	lua_getglobal(L, "v3");
+	
+	//setup the getter
+	lua_pushstring(L, namebuf);
+	lua_pushinteger (L, index);
+	lua_pushlightuserdata (L, (void*)this);
+	lua_pushcclosure(L, &LUA::Get_Hvar, 2);
+	lua_settable (L, -3); //v3.[xform] = LuaVerge_Get_Hvar
+
+	//change name to set_
+	namebuf[0] = 's';
+
+	//setup the setter
+	lua_pushstring(L, namebuf);
+	lua_pushinteger (L, index);
+	lua_pushlightuserdata (L, (void*)this);
+	lua_pushcclosure(L, &LUA::Set_Hvar, 2);
+	lua_settable (L, -3); //v3.[xform] = LuaVerge_Get_Hvar
+	
+	
+	lua_pop(L, -1); //pop v3 namespace
+}
+
+
+int LUA::Get_Hvar(lua_State* L)
+{
+	int index = lua_tointeger(L, lua_upvalueindex(1));
+	LUA* lua = (LUA*)lua_topointer(L, lua_upvalueindex(2));
+	
+	int ret = lua->ReadHvar(intHVAR0, index, 0);
+	lua_pushinteger(L,ret);
+	return 1;
+}
+
+int LUA::Set_Hvar(lua_State* L)
+{
+	// Grab the index upvalue
+	int index = lua_tointeger(L, lua_upvalueindex(1));
+	return 0;
+}
+
+
 void LUA::bindApi()
 {
 	int i;
@@ -300,6 +355,12 @@ void LUA::bindApi()
 	for(i = 0; i < NUM_LIBFUNCS; i++)
 	{
 		LUA::BindFunction(L, i);
+	}
+
+	// Bind hvars
+	for(i = 0; i < NUM_HVARS; i++)
+	{
+		LUA::BindHvar(L, i);
 	}
 }
 
