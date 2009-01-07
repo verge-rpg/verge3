@@ -12,10 +12,11 @@
 #include <memory>
 
 
+int LUA::activeFunctionIndex;
+int LUA::activeFunctionStackOffset;
+
 //http://www.codeproject.com/cpp/luaincpp.asp
-
 bool LUA::CompileMap(const char *f) {
-
 	VFILE *si = vopen(va("%s.lua", f));
 	if (!si) ::err("unable to open %s.lua", f);
 	int scriptlen = filesize(si);
@@ -92,7 +93,7 @@ void LUA::ExecAutoexec() {
 std::string strtolower(std::string val) { std::transform(val.begin(), val.end(), val.begin(), tolower); return val; }
 
 // Error handler. Don't shove this in a package, since this is important to the Lua environment.
-int LuaVerge_InitErrorHandler(lua_State *L)
+int LUA::InitErrorHandler(lua_State *L)
 {
 	return luaL_dostring(L,"function __err(e)\n\
 		local level = 1 \n\
@@ -154,12 +155,18 @@ int LuaVerge_InitErrorHandler(lua_State *L)
 }
 
 // Ensures that the arguments passed to a function are correct.
-void LuaVerge_VerifySignature(lua_State* L, int functionIndex)
+void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 {
 	int providedArgumentCount = lua_gettop(L);
 	int declaredArgumentCount = libfuncs[functionIndex].argumentTypes.size();
 	int i = 0;
 	bool varargs = false;
+
+	// No args, don't verify
+	if(declaredArgumentCount == 0)
+	{
+		return;
+	}
 
 	// Varargs functions, need to decrease "expected" args by one.
 	if(libfuncs[functionIndex].argumentTypes[declaredArgumentCount - 1] == t_VARARG)
@@ -214,12 +221,17 @@ void LuaVerge_VerifySignature(lua_State* L, int functionIndex)
 	}
 }
 
-int LuaVerge_InvokeBuiltinFunc(lua_State* L)
+// Careful, this needs to be static and return an int so it can be bound to Lua.
+int LUA::InvokeBuiltinFunction(lua_State* L)
 {
 	// Grab the function index upvalue
 	int functionIndex = lua_tonumber(L, lua_upvalueindex(1));
 
-	LuaVerge_VerifySignature(L, functionIndex);
+	// Track the active function
+	activeFunctionIndex = functionIndex;
+	activeFunctionStackOffset = 0;
+
+	LUA::VerifyFunctionSignature(L, functionIndex);
 
 	// TODO: ResolveOperand/ResolveString copycats but for Lua.
 	// TODO: Varariadic functions in Lua.
@@ -232,7 +244,7 @@ int LuaVerge_InvokeBuiltinFunc(lua_State* L)
 		ptr();
 	}
 	else {
-		err("Error calling function (index %d) '%s'", functionIndex, libfuncs[functionIndex].name.c_str());
+		::err("Error calling function (index %d) '%s'", functionIndex, libfuncs[functionIndex].name.c_str());
 	}
 
 	//err("Woo! Calling function (index %d) %s", functionIndex, libfuncs[functionIndex].name.c_str());
@@ -242,7 +254,7 @@ int LuaVerge_InvokeBuiltinFunc(lua_State* L)
 	return 0;
 }
 
-void LuaVerge_BindFunction(lua_State* L, int functionIndex)
+void LUA::BindFunction(lua_State* L, int functionIndex)
 {
 	// Don't bind all those empty name functions.
 	if(libfuncs[functionIndex].name.length() == 0)
@@ -257,7 +269,7 @@ void LuaVerge_BindFunction(lua_State* L, int functionIndex)
 	// Push the function index as an upvalue so we can dispatch this function later.
 	lua_pushnumber (L, (lua_Number) functionIndex);
 	// Push a callback function. Pops the function index upvalue with it.
-	lua_pushcclosure(L, &LuaVerge_InvokeBuiltinFunc, 1);
+	lua_pushcclosure(L, LUA::InvokeBuiltinFunction, 1);
 	// Pop the function value and then pop string name.
 	// Translates to v3[func.name] = fptr
 	lua_settable (L, -3);
@@ -269,7 +281,7 @@ void LUA::bindApi()
 {
 	int i;
 
-	LuaVerge_InitErrorHandler(L);
+	LUA::InitErrorHandler(L);
 
 	// Create an empty table!
 	lua_newtable(L);
@@ -279,7 +291,7 @@ void LUA::bindApi()
 	// Bind the functions to the v3 namespace.
 	for(i = 0; i < NUM_LIBFUNCS; i++)
 	{
-		LuaVerge_BindFunction(L, i);
+		LUA::BindFunction(L, i);
 	}
 }
 
