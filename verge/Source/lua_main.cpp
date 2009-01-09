@@ -280,7 +280,7 @@ void LUA::BindFunction(lua_State* L, int functionIndex)
 	lua_pushcclosure(L, LUA::InvokeBuiltinFunction, 1);
 	// Pop the function value and then pop string name.
 	// Translates to v3[func.name] = fptr
-	lua_settable (L, -3);
+	lua_rawset (L, -3);
 	// And after that assignment, the v3 namespace is popped off.
 	lua_pop(L, -1);
 }
@@ -305,7 +305,7 @@ void LUA::BindHvar(lua_State* L, int index)
 	lua_pushinteger (L, index);
 	lua_pushlightuserdata (L, (void*)this);
 	lua_pushcclosure(L, &LUA::Get_Hvar, 2);
-	lua_settable (L, -3); //v3.[xform] = LuaVerge_Get_Hvar
+	lua_rawset (L, -3); //v3.[xform] = LuaVerge_Get_Hvar
 
 	//change name to set_
 	namebuf[0] = 's';
@@ -315,8 +315,7 @@ void LUA::BindHvar(lua_State* L, int index)
 	lua_pushinteger (L, index);
 	lua_pushlightuserdata (L, (void*)this);
 	lua_pushcclosure(L, &LUA::Set_Hvar, 2);
-	lua_settable (L, -3); //v3.[xform] = LuaVerge_Get_Hvar
-	
+	lua_rawset (L, -3); //v3.[xform] = LuaVerge_Set_Hvar
 	
 	lua_pop(L, -1); //pop v3 namespace
 }
@@ -341,26 +340,69 @@ int LUA::Set_Hvar(lua_State* L)
 
 void LUA::BindHdef(lua_State* L, int index)
 {
-	char* definition = hdefs[index][0];
+	char* name = hdefs[index][0];
 	char* value = hdefs[index][1];
 
 	lua_getglobal(L, "v3");
-	lua_pushstring(L, definition);
+
+	lua_pushstring(L, "hdef");
+	lua_gettable(L, -2);
+
+	lua_pushstring(L, name);
 	lua_pushstring(L, value); // Lua auto-coerces numeric strings to numbers, cool!
 	lua_settable(L, -3); // v3.def = value
-	lua_pop(L, -1);
+	lua_pop(L, -1); // pop hdef
+
+	lua_pop(L, -1); // pop v3 namespace
 }
 
 void LUA::bindApi()
 {
 	int i;
+	int status = 0;
 
-	LUA::InitErrorHandler(L);
+	status = LUA::InitErrorHandler(L);
+	if(status)
+	{
+		::err("Error function couldn't be initialized! The irony.");
+	}
 
 	// Create an empty table!
 	lua_newtable(L);
 	// Put the table we created into the global namespace as v3.
 	lua_setglobal(L, "v3");
+	// Metatable boilerplate that basically handles variable handling magic.
+	status = luaL_dostring(L,
+		"v3.get_hvar0 = {}\n"
+		"v3.set_hvar0 = {}\n"
+		"v3.hdef = {}\n"
+
+		"local getter = v3.get_hvar0\n" // Now we can pass a scoped variable, instead of having to lookup a global tons of times.
+		"local setter = v3.set_hvar0\n"
+		"local hdef = v3.hdef\n"
+
+		"local meta = {}\n"
+		"setmetatable(v3, meta)\n"
+
+		"function meta:__index(name)\n"
+		"	local f = getter[name]\n"
+		"	return (f and f()) or hdef[name] or rawget(self, name)\n"
+		"end\n"
+
+		"function meta:__newindex(name, value)\n"
+		"	local f = setter[name]\n"
+		"	if f then\n"
+		"		f(value)\n"
+		"	elseif hdef[name] then\n"
+		"		error('Tried to write to v3.' .. name .. ', which is a readonly constant.')\n"
+		"	else\n"
+		"		rawset(self, name, value)\n"
+		"	end\n"
+		"end\n");
+	if(status)
+	{
+		::err("Failed to load v3 metatables.");
+	}
 
 	// Bind the functions to the v3 namespace.
 	for(i = 0; i < NUM_LIBFUNCS; i++)
