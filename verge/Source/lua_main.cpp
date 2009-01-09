@@ -273,7 +273,7 @@ void LUA::BindFunction(lua_State* L, int functionIndex)
 	// Push the v3 namespace
 	lua_getglobal(L, "v3");
 	// Push the name associated with the function
-	lua_pushstring (L, libfuncs[functionIndex].name.c_str());
+	lua_pushstring (L, strtolower(libfuncs[functionIndex].name).c_str());
 	// Push the function index as an upvalue so we can dispatch this function later.
 	lua_pushnumber (L, (lua_Number) functionIndex);
 	// Push a callback function. Pops the function index upvalue with it.
@@ -296,7 +296,7 @@ void LUA::BindHvar(lua_State* L, int index)
 	char namebuf[256] = "get_";
 	strcat(namebuf,name);
 	char* tmp = namebuf;
-	while(*tmp) *tmp++ = (*tmp=='.'?'_':*tmp);
+	while(*tmp) *tmp++ = (*tmp=='.'?'_':tolower(*tmp));
 
 	lua_getglobal(L, "v3");
 	
@@ -340,7 +340,7 @@ int LUA::Set_Hvar(lua_State* L)
 
 void LUA::BindHdef(lua_State* L, int index)
 {
-	char* name = hdefs[index][0];
+	std::string name = strtolower(hdefs[index][0]);
 	char* value = hdefs[index][1];
 
 	lua_getglobal(L, "v3");
@@ -348,7 +348,7 @@ void LUA::BindHdef(lua_State* L, int index)
 	lua_pushstring(L, "hdef");
 	lua_gettable(L, -2);
 
-	lua_pushstring(L, name);
+	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, value); // Lua auto-coerces numeric strings to numbers, cool!
 	lua_settable(L, -3); // v3.def = value
 	lua_pop(L, -1); // pop hdef
@@ -377,7 +377,8 @@ void LUA::bindApi()
 		"v3.set_hvar0 = {}\n"
 		"v3.hdef = {}\n"
 
-		"local getter = v3.get_hvar0\n" // Now we can pass a scoped variable, instead of having to lookup a global tons of times.
+		// Now we can pass a scoped variable, instead of having to lookup a nested table tons of times.
+		"local getter = v3.get_hvar0\n"
 		"local setter = v3.set_hvar0\n"
 		"local hdef = v3.hdef\n"
 
@@ -385,11 +386,13 @@ void LUA::bindApi()
 		"setmetatable(v3, meta)\n"
 
 		"function meta:__index(name)\n"
+		"	name = string.lower(name)"
 		"	local f = getter[name]\n"
 		"	return (f and f()) or hdef[name] or rawget(self, name)\n"
 		"end\n"
 
 		"function meta:__newindex(name, value)\n"
+		"	name = string.lower(name)"
 		"	local f = setter[name]\n"
 		"	if f then\n"
 		"		f(value)\n"
