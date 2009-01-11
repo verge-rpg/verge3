@@ -3356,7 +3356,7 @@ void VCCompiler::CompileAtom()
 	}
     if (id_type == ID_LIBFUNC)
     {
-		if (libfuncs[id_index].returnType != t_INT)
+		if (libfuncs[id_index].returnType != t_INT && libfuncs[id_index].returnType != t_BOOL)
 			throw va("%s(%d): %s does not return an int", sourcefile, linenum, token);
         output.EmitC(intLIBFUNC);
         HandleLibraryFunc();
@@ -3824,6 +3824,7 @@ void VCCompiler::HandleLibraryFunc()
 			switch (libfuncs[myindex].argumentTypes[i])
 			{
 				case t_INT:
+				case t_BOOL:
 					CompileOperand();
 					if (NextIs(",")) GetToken();
 					break;
@@ -4076,7 +4077,8 @@ int VCCompiler::HandleVariable()
 			case ID_HVAR:
 			{
 				int pt = libvars[id_index][0][0];
-				if (pt == '1')
+				if (pt == '0' + t_INT
+					|| pt == '0' + t_BOOL)
 				{
 					vartype = (id_array ? intHVAR1 : intHVAR0);
 					type = t_INT;

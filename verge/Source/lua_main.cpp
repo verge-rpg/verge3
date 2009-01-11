@@ -211,6 +211,11 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 			{
 				LuaError(L,"Problem invoking %s: Argument #%d to function must be a int.", libfuncs[functionIndex].name.c_str(), i + 1);
 			}
+			// Booleans.  Need to check i + 1th stack index because Lua indices start at 1
+			else if(libfuncs[functionIndex].argumentTypes[i] == t_BOOL && !lua_isboolean(L, i + 1))
+			{
+				LuaError(L,"Problem invoking %s: Argument #%d to function must be a boolean (true/false value).", libfuncs[functionIndex].name.c_str(), i + 1);
+			}
 			// Strings.  Need to check i + 1th stack index because Lua indices start at 1
 			else if(libfuncs[functionIndex].argumentTypes[i] == t_STRING && !lua_isstring(L, i + 1))
 			{
@@ -224,7 +229,7 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 			// (For verification, checking if a string catches both).
 			if(!lua_isstring(L, i + 1))
 			{
-				LuaError(L,"Problem invoking %s: Argument #%d to function must be a string or number.", libfuncs[functionIndex].name.c_str(), i);
+				LuaError(L,"Problem invoking %s: Argument #%d to function must be a string or number.", libfuncs[functionIndex].name.c_str(), i + 1);
 			}
 		}
 		i++;
@@ -264,6 +269,11 @@ int LUA::InvokeBuiltinFunction(lua_State* L)
 	if(libfuncs[functionIndex].returnType == t_INT)
 	{
 		lua_pushnumber(L, se->vcreturn);
+		return 1; // Single return value
+	}
+	else if(libfuncs[functionIndex].returnType == t_BOOL)
+	{
+		lua_pushboolean(L, se->vcreturn);
 		return 1; // Single return value
 	}
 	else if(libfuncs[functionIndex].returnType == t_STRING)
@@ -353,12 +363,17 @@ int LUA::Get_Hvar(lua_State* L)
 		if(args != 1) lua->LuaError("getting v3 system variable `%s` requires a subscript",name);
 		if(!lua_isnumber(L, 1)) lua->LuaError("subscript on v3 system variable `%s` is not an integer", name);
 		int ofs = lua_tointeger(L,1);
-		if(*type == '1')
+		if(*type == '0' + t_INT)
 		{
 			int ret = lua->ReadHvar(intHVAR1, index, ofs);
 			lua_pushinteger(L, ret);
 		} 
-		else if(*type == '3')
+		else if(*type == '0' + t_BOOL)
+		{
+			int ret = lua->ReadHvar(intHVAR1, index, ofs);
+			lua_pushboolean(L, ret);
+		} 
+		else if(*type == '0' + t_STRING)
 		{
 			StringRef ret = lua->ReadHvar_str(strHSTR1, index, ofs);
 			lua_pushstring(L, ret.c_str());
@@ -368,12 +383,17 @@ int LUA::Get_Hvar(lua_State* L)
 	else if(*dimlist == 0)
 	{
 		if(args != 0) lua->LuaError("v3 system variable `%s` accessed with unexpected parameter. None are necessary.",name);
-		if(*type == '1')
+		if(*type == '0' + t_INT)
 		{
 			int ret = lua->ReadHvar(intHVAR0, index, 0);
 			lua_pushinteger(L, ret);
 		}
-		else if(*type == '3')
+		else if(*type == '0' + t_BOOL)
+		{
+			int ret = lua->ReadHvar(intHVAR0, index, 0);
+			lua_pushboolean(L, ret);
+		} 
+		else if(*type == '0' + t_STRING)
 		{
 			StringRef ret = lua->ReadHvar_str(strHSTR0, index, 0);
 			lua_pushstring(L, ret.c_str());
@@ -400,13 +420,19 @@ int LUA::Set_Hvar(lua_State* L)
 		if(args != 2) lua->LuaError("setting v3 system variable `%s` requires parameters subscript and value",name);
 		if(!lua_isnumber(L, 1)) lua->LuaError("subscript on v3 system variable `%s` is not an integer", name);
 		int ofs = lua_tointeger(L,1);
-		if(*type == '1')
+		if(*type == '0'  + t_INT)
 		{
 			if(!lua_isnumber(L, 2)) lua->LuaError("value for v3 system variable `%s` must be an integer", name);
 			int value = lua_tointeger(L, 2);
 			lua->WriteHvar(intHVAR1, index, ofs, value);
+		}
+		else if(*type == '0' + t_BOOL)
+		{
+			if(!lua_isboolean(L, 2)) lua->LuaError("value for v3 system variable `%s` must be an boolean", name);
+			int value = lua_toboolean(L, 2);
+			lua->WriteHvar(intHVAR1, index, ofs, value);
 		} 
-		else if(*type == '3')
+		else if(*type == '0' + t_STRING)
 		{
 			if(!lua_isstring(L, 2)) lua->LuaError("value for v3 system variable `%s` must be a string", name);
 			StringRef value = lua_tostring(L, 2);
@@ -416,13 +442,19 @@ int LUA::Set_Hvar(lua_State* L)
 	else if(*dimlist == 0)
 	{
 		if(args != 1) lua->LuaError("setting v3 system variable `%s` requires a value parameter",name);
-		if(*type == '1')
+		if(*type == '0' + t_INT)
 		{
 			if(!lua_isnumber(L, 1)) lua->LuaError("value for v3 system variable `%s` must be an integer", name);
 			int value = lua_tointeger(L, 1);
 			lua->WriteHvar(intHVAR0, index, 0, value);
+		}
+		else if(*type == '0' + t_BOOL)
+		{
+			if(!lua_isboolean(L, 1)) lua->LuaError("value for v3 system variable `%s` must be an boolean", name);
+			int value = lua_toboolean(L, 1);
+			lua->WriteHvar(intHVAR0, index, 0, value);
 		} 
-		else if(*type == '3')
+		else if(*type == '0' + t_STRING)
 		{
 			if(!lua_isstring(L, 1)) lua->LuaError("value for v3 system variable `%s` must be a string", name);
 			StringRef value = lua_tostring(L, 1);

@@ -103,6 +103,7 @@
 #define t_VARARG			4
 #define t_VOID				5
 #define t_STRUCT			6
+#define t_BOOL				7 // For better lua compatibility with builtins.
 
 #define NUM_LIBFUNCS		280
 #define NUM_HVARS			128

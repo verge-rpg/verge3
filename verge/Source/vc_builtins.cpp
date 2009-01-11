@@ -308,7 +308,7 @@ char* libvars[NUM_HVARS][3] = {
 // type,    identifier,    dimlist
 	{"1", "systemtime", "" }, // index 0
 	{"1", "timer", "" },
-	{"1", "key", "1" },
+	{"7", "key", "1" }, // Now a "boolean" in Lua.
 	{"1", "lastpressed", "" },
 	{"1", "mouse.x", "" },
 	{"1", "mouse.y", "" },
