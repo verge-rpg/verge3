@@ -384,85 +384,9 @@ void VCCore::WriteInt(int category, int loc, int ofs, int value)
 			if (loc<0 || loc>=maxint)
 				vcerr("WriteInt: bad offset to array globalint (%d)", loc);
 			vcint[loc]=value; break;
-		case intHVAR0:    // _WRITEINT
-			switch (loc)
-			{
-				case 1: vctimer = value; break;
-				case 3: lastpressed = value; break;
-				case 4: mouse_set(value,mouse_y); break;
-				case 5: mouse_set(mouse_x,value); break;
-				case 6: mouse_l = value; break;
-				case 7: mouse_r = value; break;
-				case 8: mouse_m = value; break;
-				case 9: mwheel = (float) value; break;
-				case 17: cur_stick = value<4 ? value : 0; break;
-				case 26: up = value; break;
-				case 27: down = value; break;
-				case 28: left = value; break;
-				case 29: right = value; break;
-				case 30: b1 = value; break;
-				case 31: b2 = value; break;
-				case 32: b3 = value; break;
-				case 33: b4 = value; break;
-				case 39: xwin = value; break;
-				case 40: ywin = value; break;
-				case 41: cameratracking = value; break;
-				case 51: transColor = value; break;
-				case 60: lastkey = value; break;
-				case 96: cameratracker = value; break;
-				case 101: playerstep = value >= 1 ? value : 1; break;
-				case 102: playerdiagonals = value ? 1 : 0; break;
-				default: vcerr("Unknown HVAR0 (%d) (set %d)", loc, value);
-			}
-			break;
+		case intHVAR0:
 		case intHVAR1:
-			switch (loc)
-			{
-				case 2: keys[ofs] = value; break;
-				case 43: if (ofs>=0 && ofs<entities) entity[ofs]->setxy(value, entity[ofs]->gety()); break;
-				case 44: if (ofs>=0 && ofs<entities) entity[ofs]->setxy(entity[ofs]->getx(), value); break;
-				case 45: if (ofs>=0 && ofs<entities) entity[ofs]->specframe = value; break;
-				#ifndef NOTIMELESS
-				case 52: skewlines[ofs] = value; break;
-				#endif
-				case 53: (*(byte *)ofs)=(byte) value; return;
-				case 54: (*(word *)ofs)=(word) value; return;
-				case 55: (*(quad *)ofs)=(quad) value; return;
-				case 56: (*(char *)ofs)=(byte) value; return;
-				case 57: (*(short*)ofs)=(word) value; return;
-				case 58: (*(int  *)ofs)=(quad) value; return;
-				case 62: if (ofs>=0 && ofs<entities) entity[ofs]->setface(value); break;
-				case 63: if (ofs>=0 && ofs<entities) entity[ofs]->setspeed(value); break;
-				case 64: if (ofs>=0 && ofs<entities) entity[ofs]->visible = value ? true : false; break;
-				case 66: if (ofs>=0 && ofs<256) sprites[ofs].x = value; return;
-				case 67: if (ofs>=0 && ofs<256) sprites[ofs].y = value; return;
-				case 68: if (ofs>=0 && ofs<256) sprites[ofs].sc = value; return;
-				case 69: if (ofs>=0 && ofs<256) sprites[ofs].image = value; return;
-				case 70: if (ofs>=0 && ofs<256) sprites[ofs].lucent = value; return;
-				case 71: if (ofs>=0 && ofs<256) sprites[ofs].addsub = value; return;
-				case 72: if (ofs>=0 && ofs<256) sprites[ofs].alphamap = value; return;
-				case 73: if (ofs>=0 && ofs<256) sprites[ofs].thinkrate = value; return; // Overkill (2006-07-28)
-				case 78: if (ofs>=0 && ofs<entities) entity[ofs]->obstruction = (value!=0); return;
-				case 79: if (ofs>=0 && ofs<entities) entity[ofs]->obstructable = (value!=0); return;
-				case 94: if (current_map && ofs>=0 && ofs<current_map->numlayers) current_map->layers[ofs]->lucent = value; return;
-                case 97: if (current_map && ofs>=0 && ofs<current_map->numlayers) current_map->layers[ofs]->SetParallaxX(value / 65536.0); return;
-                case 98: if (current_map && ofs>=0 && ofs<current_map->numlayers) current_map->layers[ofs]->SetParallaxY(value / 65536.0); return;
-				case 105: if (ofs>=0 && ofs<256) sprites[ofs].ent = value; return; // Overkill (2006-07-28)
-				case 106: if (ofs>=0 && ofs<256) sprites[ofs].silhouette = value; return; // Overkill (2006-07-28)
-				case 107: if (ofs>=0 && ofs<256) sprites[ofs].color = value; return; // Overkill (2006-07-28)
-				case 108: if (ofs>=0 && ofs<256) sprites[ofs].wait = value; return; // Overkill (2006-07-28)
-				case 109: if (ofs>=0 && ofs<256) sprites[ofs].onmap = value; return; // Overkill (2006-07-28)
-				case 110: if (ofs>=0 && ofs<256) sprites[ofs].layer = value; return; // Overkill (2006-07-28)
-				case 111: if (ofs>=0 && ofs<entities) entity[ofs]->lucent = value; return; // Overkill (2006-07-28)
-				case 112: if (ofs>=0 && ofs<256) sprites[ofs].timer = value; return; // Overkill (2006-07-28)
-				//case 113: ent.framew
-				//case 114: ent.frameh
-
-				// Overkill (2007-05-02): Variable argument lists.
-				case 117: return SetIntArgument(ofs, value);
-
-				default: vcerr("Unknown HVAR1 (%d, %d) (set %d)", loc, ofs, value);
-			}
+			WriteHvar(category,loc,ofs,value);
 			break;
 		case intLOCAL:
 			if (loc<0 || loc>99)
@@ -636,95 +560,14 @@ StringRef VCCore::ProcessString()
 		case strHSTR0:   // _READSTR
 		{
 			int idx = currentvc->GrabD();
-			switch (idx)
-			{
-			    case 84: ret = current_map ? current_map->mapname : empty_string; break;
-				case 85: ret = current_map ? current_map->renderstring : empty_string; break;
-				case 86: ret = current_map ? current_map->musicname : empty_string; break;
-				case 95: ret = clipboard_getText(); break;
-                case 99: ret = current_map ? current_map->mapfname : empty_string; break;
-				case 104: ret = current_map ? current_map->savevspname : empty_string; break;
-
-				case 121: //trigger.onStep
-						ret = _trigger_onStep;
-						break;
-				case 122: //trigger.afterStep
-						ret = _trigger_afterStep;
-						break;
-				case 123: //trigger.beforeEntityScript
-						ret = _trigger_beforeEntityScript;
-						break;
-				case 124: //trigger.afterEntityScript
-						ret = _trigger_afterEntityScript;
-						break;
-				case 125: //trigger.onEntityCollide
-						ret = _trigger_onEntityCollide;
-						break;
-				case 127:
-						ret = _trigger_afterPlayerMove;
-						break;
-
-				default: vcerr("VCCore::ProcessString() - bad HSTR0 (%d)", idx);
-			}
+			ret = ReadHvar_str(c,idx,0);
 			break;
 		}
 		case strHSTR1:
 		{
 			int idx = currentvc->GrabD();
 			int arg = ResolveOperand();
-			switch (idx)
-			{
-				case 65:
-					if(arg >= 0 && arg < entities)
-					{
-						ret = entity[arg]->script;
-					}
-					else
-					{
-						ret = empty_string;
-					}
-					break;
-				case 74:
-					if(arg >= 0 && arg < 256)
-					{
-						ret = sprites[arg].thinkproc; // Overkill (2006-07-28): No more HSTR error 4 u.
-					}
-					else
-					{
-						ret = empty_string;
-					}
-					break;
-				case 88: // Overkill (2006-06-25): Now this actually has a use!
-						ret = empty_string;
-						if (current_map)
-						{
-							if (arg >= 0 && arg < current_map->numzones)
-							{
-								ret = current_map->zones[arg]->name;
-							}
-						}
-						break;
-				case 89: // Overkill (2006-06-25): Now this actually has a use!
-						ret = empty_string;
-						if (current_map)
-						{
-							if (arg >= 0 && arg < current_map->numzones)
-							{
-								ret = current_map->zones[arg]->script;
-							}
-						}
-						break;
-				case 100: //entity.chr
-					ret = ScriptEngine::Get_EntityChr(arg);
-					break;
-				case 115:
-					// Overkill (2006-07-30): Entity description
-					return ScriptEngine::Get_EntityDescription(arg);
-				case 120: // Overkill (2007-02-05): Variable argument lists.
-					ret = GetStringArgument(arg);
-					break;
-				default: vcerr("VCCore::ProcessString() - bad HSTR1 (%d, %d)", idx, arg);
-			}
+			ret = ReadHvar_str(c,idx,arg);
 			break;
 		}
 		case strINT: {
@@ -1769,6 +1612,27 @@ void VCCore::DecompileLibFunc()
 	fprintf(vcd, ");\n");
 }
 
+void VCCore::WriteHvar_derived(int category, int loc, int ofs, int value)
+{
+	switch (category)
+	{
+		case intHVAR0:
+			vcerr("Unknown HVAR0 (%d) (set %d)", loc, value);
+			break;
+		case intHVAR1:
+			switch (loc)
+			{
+				// Overkill (2007-05-02): Variable argument lists.
+				case 117: return SetIntArgument(ofs, value);
+
+				default: vcerr("Unknown HVAR1 (%d, %d) (set %d)", loc, ofs, value);
+			}
+			break;
+		default:
+			vcerr("Fatal Error Code Steamboat");
+	}
+}
+
 int VCCore::ReadHvar_derived(int category, int loc, int ofs)
 {
 	switch(category)
@@ -1798,4 +1662,48 @@ int VCCore::ReadHvar_derived(int category, int loc, int ofs)
 }
 				
 
+StringRef VCCore::ReadHvar_str_derived(int category, int loc, int ofs)
+{
+	switch(category)
+	{
+		case strHSTR0:
+			vcerr("Unknown HSTR0 (%d)", loc); 
+			break;
+		case strHSTR1:
+			switch (loc)
+			{
+				case 120: // Overkill (2007-02-05): Variable argument lists.
+					return GetStringArgument(ofs);
+				default:
+					vcerr("Unknown HSTR1 (%d, %d)", loc, ofs); 
+					break;
+			}
+			break;
+		default:
+			vcerr("Fatal Error Code Snail"); 
+	}
+	return empty_string;
+}
 
+void VCCore::WriteHvar_str_derived(int category, int loc, int ofs, CStringRef value)
+{
+	switch(category)
+	{
+		case strHSTR0:
+			vcerr("Unknown HSTR0 (%d)", loc); 
+			break;
+		case strHSTR1:
+			switch (loc)
+			{
+				case 120: // Overkill (2007-05-02): Variable argument lists.
+					SetStringArgument(ofs, value);
+					break;
+				default:
+					vcerr("Unknown HSTR1 (%d, %d)", loc, ofs); 
+					break;
+			}
+			break;
+		default:
+			vcerr("Fatal Error Code Truculent"); 
+	}
+}

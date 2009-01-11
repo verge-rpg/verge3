@@ -227,6 +227,9 @@ public:
 	~VCCore();
 
 	virtual int ReadHvar_derived(int category, int loc, int ofs);
+	virtual void WriteHvar_derived(int category, int loc, int ofs, int value);
+	virtual StringRef ReadHvar_str_derived(int category, int loc, int ofs);
+	virtual void WriteHvar_str_derived(int category, int loc, int ofs, CStringRef value);
 
 	void LoadCore(VFILE *f, int cimage, bool append = false, bool patch_others = false);
 	void UnloadCore(int cimage);

@@ -74,8 +74,10 @@ char *clipboard_getText()
 	OpenClipboard(0);
 	HANDLE h = GetClipboardData(CF_TEXT);
 	char *cp = (char *)GlobalLock(h);
-	strncpy(buf, cp, 4096);
-	GlobalUnlock(h);
+	if(cp) {
+		strncpy(buf, cp, 4096);
+		GlobalUnlock(h);
+	} else buf[0] = 0;
 	CloseClipboard();
 	return buf;
 }

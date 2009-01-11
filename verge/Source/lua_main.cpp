@@ -154,6 +154,33 @@ int LUA::InitErrorHandler(lua_State *L)
 	end\n");
 }
 
+void LUA::LuaError(const char *text, ...)
+{
+	va_list argptr;
+	char msg[4096];
+
+	va_start(argptr, text);
+	vsnprintf(msg, 4096, text, argptr);
+	va_end(argptr);
+
+	lua_pushstring(L, msg);
+	lua_error(L);
+}
+
+void LUA::LuaError(lua_State *L, const char *text, ...)
+{
+	va_list argptr;
+	char msg[4096];
+
+	va_start(argptr, text);
+	vsnprintf(msg, 4096, text, argptr);
+	va_end(argptr);
+
+	lua_pushstring(L, msg);
+	lua_error(L);
+}
+
+
 // Ensures that the arguments passed to a function are correct.
 void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 {
@@ -182,18 +209,12 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 			// Ints. Need to check i + 1th stack index because Lua indices start at 1
 			if(libfuncs[functionIndex].argumentTypes[i] == t_INT && !lua_isnumber(L, i + 1))
 			{
-				char errorMessage[4096];
-				sprintf(errorMessage, "Problem invoking %s: Argument #%d to function must be a int.", libfuncs[functionIndex].name.c_str(), i + 1);
-				lua_pushstring(L, errorMessage);
-				lua_error(L);
+				LuaError(L,"Problem invoking %s: Argument #%d to function must be a int.", libfuncs[functionIndex].name.c_str(), i + 1);
 			}
 			// Strings.  Need to check i + 1th stack index because Lua indices start at 1
 			else if(libfuncs[functionIndex].argumentTypes[i] == t_STRING && !lua_isstring(L, i + 1))
 			{
-				char errorMessage[4096];
-				sprintf(errorMessage, "Problem invoking %s: Argument #%d to function must be a string.", libfuncs[functionIndex].name.c_str(), i + 1);
-				lua_pushstring(L, errorMessage);
-				lua_error(L);
+				LuaError(L,"Problem invoking %s: Argument #%d to function must be a string.", libfuncs[functionIndex].name.c_str(), i + 1);
 			}
 		}
 		// Now for varargs and stuff, we'll error if this is 'too many' args afterwards.
@@ -203,10 +224,7 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 			// (For verification, checking if a string catches both).
 			if(!lua_isstring(L, i + 1))
 			{
-				char errorMessage[4096];
-				sprintf(errorMessage, "Problem invoking %s: Argument #%d to function must be a string or number.", libfuncs[functionIndex].name.c_str(), i);
-				lua_pushstring(L, errorMessage);
-				lua_error(L);
+				LuaError(L,"Problem invoking %s: Argument #%d to function must be a string or number.", libfuncs[functionIndex].name.c_str(), i);
 			}
 		}
 		i++;
@@ -214,10 +232,7 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 
 	if (i < declaredArgumentCount || (i > declaredArgumentCount && !varargs))
 	{
-		char errorMessage[4096];
-		sprintf(errorMessage, "Problem invoking %s: Function expects %d arguments. (Got %d)", libfuncs[functionIndex].name.c_str(), declaredArgumentCount, i);
-		lua_pushstring(L, errorMessage);
-		lua_error(L);
+		LuaError(L,"Problem invoking %s: Function expects %d arguments. (Got %d)", libfuncs[functionIndex].name.c_str(), declaredArgumentCount, i);
 	}
 }
 
@@ -290,7 +305,7 @@ void LUA::BindHvar(lua_State* L, int index)
 {
 	const char* type = libvars[index][0];
 	const char* name = libvars[index][1];
-	const char* dimlist = libvars[index][1];
+	const char* dimlist = libvars[index][2];
 
 	//transform dots in names to underscores
 	char namebuf[256] = "get_";
@@ -323,18 +338,99 @@ void LUA::BindHvar(lua_State* L, int index)
 
 int LUA::Get_Hvar(lua_State* L)
 {
+	//Grab the upvalues
 	int index = lua_tointeger(L, lua_upvalueindex(1));
 	LUA* lua = (LUA*)lua_topointer(L, lua_upvalueindex(2));
-	
-	int ret = lua->ReadHvar(intHVAR0, index, 0);
-	lua_pushinteger(L, ret);
-	return 1;
+
+	const char* type = libvars[index][0];
+	const char* name = libvars[index][1];
+	const char* dimlist = libvars[index][2];
+
+	int args = lua_gettop(L);
+
+	if(*dimlist == '1')
+	{
+		if(args != 1) lua->LuaError("getting v3 system variable `%s` requires a subscript",name);
+		if(!lua_isnumber(L, 1)) lua->LuaError("subscript on v3 system variable `%s` is not an integer", name);
+		int ofs = lua_tointeger(L,1);
+		if(*type == '1')
+		{
+			int ret = lua->ReadHvar(intHVAR1, index, ofs);
+			lua_pushinteger(L, ret);
+		} 
+		else if(*type == '3')
+		{
+			StringRef ret = lua->ReadHvar_str(strHSTR1, index, ofs);
+			lua_pushstring(L, ret.c_str());
+		} else lua->LuaError("Fatal Error Code Haberdasher");
+		return 1;
+	}
+	else if(*dimlist == 0)
+	{
+		if(args != 0) lua->LuaError("v3 system variable `%s` accessed with unexpected parameter. None are necessary.",name);
+		if(*type == '1')
+		{
+			int ret = lua->ReadHvar(intHVAR0, index, 0);
+			lua_pushinteger(L, ret);
+		}
+		else if(*type == '3')
+		{
+			StringRef ret = lua->ReadHvar_str(strHSTR0, index, 0);
+			lua_pushstring(L, ret.c_str());
+		} else lua->LuaError("Fatal Error Code Sandman");
+		return 1;
+	} else lua->LuaError("Fatal Error Code Spaniard");
 }
 
 int LUA::Set_Hvar(lua_State* L)
 {
-	// Grab the index upvalue
+	//Grab the upvalues
 	int index = lua_tointeger(L, lua_upvalueindex(1));
+	LUA* lua = (LUA*)lua_topointer(L, lua_upvalueindex(2));
+
+	const char* type = libvars[index][0];
+	const char* name = libvars[index][1];
+	const char* dimlist = libvars[index][2];
+
+	//count and validate the arguments
+	int args = lua_gettop(L);
+
+	if(*dimlist == '1')
+	{
+		if(args != 2) lua->LuaError("setting v3 system variable `%s` requires parameters subscript and value",name);
+		if(!lua_isnumber(L, 1)) lua->LuaError("subscript on v3 system variable `%s` is not an integer", name);
+		int ofs = lua_tointeger(L,1);
+		if(*type == '1')
+		{
+			if(!lua_isnumber(L, 2)) lua->LuaError("value for v3 system variable `%s` must be an integer", name);
+			int value = lua_tointeger(L, 2);
+			lua->WriteHvar(intHVAR1, index, ofs, value);
+		} 
+		else if(*type == '3')
+		{
+			if(!lua_isstring(L, 2)) lua->LuaError("value for v3 system variable `%s` must be a string", name);
+			StringRef value = lua_tostring(L, 2);
+			lua->WriteHvar_str(strHSTR1, index, ofs, value);
+		}
+	} 
+	else if(*dimlist == 0)
+	{
+		if(args != 1) lua->LuaError("setting v3 system variable `%s` requires a value parameter",name);
+		if(*type == '1')
+		{
+			if(!lua_isnumber(L, 1)) lua->LuaError("value for v3 system variable `%s` must be an integer", name);
+			int value = lua_tointeger(L, 1);
+			lua->WriteHvar(intHVAR0, index, 0, value);
+		} 
+		else if(*type == '3')
+		{
+			if(!lua_isstring(L, 1)) lua->LuaError("value for v3 system variable `%s` must be a string", name);
+			StringRef value = lua_tostring(L, 1);
+			lua->WriteHvar_str(strHSTR0, index, 0, value);
+		}
+	}
+	else lua->LuaError("Fatal Error Code Antarctica");
+	
 	return 0;
 }
 

@@ -52,8 +52,15 @@ public:
 		Error("%s",msg);
 	}
 
+	StringRef ReadHvar_str(int category, int loc, int ofs);
+	virtual StringRef ReadHvar_str_derived(int category, int loc, int ofs);
+	void WriteHvar_str(int category, int loc, int arg, CStringRef value);
+	virtual void WriteHvar_str_derived(int category, int loc, int arg, CStringRef value);
+
 	int ReadHvar(int category, int loc, int ofs);
 	virtual int ReadHvar_derived(int category, int loc, int ofs);
+	void WriteHvar(int category, int loc, int ofs, int value);
+	virtual void WriteHvar_derived(int category, int loc, int ofs, int value);
 
 	// Varargs support!
 	std::vector<argument_t> argument_pass_list;

@@ -1,6 +1,8 @@
 #include "xerxes.h"
 #include "opcodes.h"
 
+#include <stdarg.h>
+
 #ifdef ENABLE_LUA
 
 #include "g_script.h"
@@ -42,6 +44,9 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 		{
 			lua_close(L);
 		}
+
+		static void LuaError(lua_State *L, const char *text, ...);
+		void LuaError(const char *text, ...);
 
 		void loadFile(const char *fname);
 		void compileSystem();
