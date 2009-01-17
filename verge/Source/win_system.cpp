@@ -65,11 +65,11 @@ void setWindowTitle(const char *str) {
 	SetWindowText(hMainWnd, str);
 }
 
-char *clipboard_getText()
+StringRef clipboard_getText()
 {
 	static char buf[4096];
 	if(!IsClipboardFormatAvailable(CF_TEXT))
-		return 0;
+		return empty_string;
 
 	OpenClipboard(0);
 	HANDLE h = GetClipboardData(CF_TEXT);
@@ -79,7 +79,8 @@ char *clipboard_getText()
 		GlobalUnlock(h);
 	} else buf[0] = 0;
 	CloseClipboard();
-	return buf;
+	if(!buf[0]) return empty_string;
+	else return buf;
 }
 
 void clipboard_setText(const char *text)
