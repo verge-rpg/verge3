@@ -703,7 +703,7 @@ void LUA::bindApi()
 	
 	luaL_dostring(L,
 		"local function _dovfile(modulename)\n"
-		"	-- Find source\n"
+			// Find the source in a vpk.
 		"	local modulepath = string.gsub(modulename, '%.', '/')\n"
 		"	for path in string.gmatch(package.path, '([^;]+)') do\n"
 		"		local filename = string.gsub(path, '%?', modulepath)\n"
@@ -713,18 +713,22 @@ void LUA::bindApi()
 		"				return v3.FileEOF(f) and '' or v3.FileReadLn(f)\n"
 		"			end\n"
 		"			\n"
-		"			-- Read and compile the module\n"
+					// Read and compile the chunk.
 		"			chunk = assert(load(reader, filename))\n"
 		"			\n"
-		"			-- Compile and return the module\n"
+					// Success?
 		"			return chunk\n"
 		"		end\n"
 		"	end\n"
+			// Failed to open it.
 		"	return '\\n\\tno vpk\\'d module \\'' .. modulename .. '\\''\n"
 		"end\n"
 		"\n"
-		"-- Install the loader so that it's called just before the normal Lua loader\n"
+
+		// Install the loader so that it's called just before the normal Lua loader
 		"table.insert(package.loaders, 2, _dovfile)\n"
+		// Add a few more package path rules that agree with our loader a lot more.
+		"package.path = package.path .. ';?.lua;?/init.lua'\n"
 	);
 	// Boilerplate: Add a packfile loader.
 	if(status) ::err("Failed to load the LuaVerge packfile loader!");
