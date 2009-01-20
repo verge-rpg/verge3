@@ -116,7 +116,7 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"5", "HookButton", "13" },
 	{"5", "BlitEntityFrame", "11111" },
 	{"5", "SetEntitiesPaused", "1" },
-	{"1", "GetObsPixel", "11" },
+	{"7", "GetObsPixel", "11" },
 	{"1", "GetTile", "111" },
 	{"5", "SetTile", "1111" },
 	{"1", "GetZone", "11" },
@@ -224,14 +224,14 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"5", "SocketSendFile", "13" },
 	{"3", "SocketGetFile", "13" },
 	{"3", "ListFilePattern", "3" },
-	{"1", "ImageValid", "1"},
+	{"7", "ImageValid", "1"},
 	{"1", "asc", "3"},
-	{"1", "FileEOF", "1"},
+	{"7", "FileEOF", "1"},
 	{"1", "DictNew", ""},
 	{"5", "DictFree", "1"},
 	{"3", "DictGetString", "13"},
 	{"5", "DictSetString", "133"},
-	{"1", "DictContains", "13"},
+	{"7", "DictContains", "13"},
 	{"1", "DictSize", "1"},
 	{"1", "DictGetInt", "13"},
 	{"5", "DictSetInt", "131"},
@@ -312,9 +312,9 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "lastpressed", "" },
 	{"1", "mouse.x", "" },
 	{"1", "mouse.y", "" },
-	{"1", "mouse.l", "" },
-	{"1", "mouse.r", "" },
-	{"1", "mouse.m", "" },
+	{"7", "mouse.l", "" },
+	{"7", "mouse.r", "" },
+	{"7", "mouse.m", "" },
 	{"1", "mouse.w", "" },
 	{"1", "sysdate.year", "" },// index 10
 	{"1", "sysdate.month", "" },
@@ -324,14 +324,14 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "systime.minute", "" },
 	{"1", "systime.second", "" },
 	{"1", "joystick", "" },
-	{"1", "joy.active", "" },
-	{"1", "joy.up", "" },
-	{"1", "joy.down" ,"" },// index 20
-	{"1", "joy.left", "" },
-	{"1", "joy.right", "" },
+	{"7", "joy.active", "" },
+	{"7", "joy.up", "" },
+	{"7", "joy.down" ,"" },// index 20
+	{"7", "joy.left", "" },
+	{"7", "joy.right", "" },
 	{"1", "joy.analogx", "" },
 	{"1", "joy.analogy", "" },
-	{"1", "joy.button", "1" },
+	{"7", "joy.button", "1" },
 	{"1", "up", "" },
 	{"1", "down", "" },
 	{"1", "left", "" },
@@ -370,7 +370,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "entity.movecode", "1"},
 	{"1", "entity.face", "1"},
 	{"1", "entity.speed", "1"},
-	{"1", "entity.visible", "1"},
+	{"7", "entity.visible", "1"},
 	{"3", "entity.script", "1" },
 	{"1", "sprite.x", "1" },
 	{"1", "sprite.y", "1" },
@@ -384,8 +384,8 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "sprite.xflip", "1"}, //ni 75
 	{"1", "sprite.yflip", "1"}, //ni 76
 	{"1", "sprite.ybase", "1"}, //ni 77
-	{"1", "entity.obstruct", "1"},
-	{"1", "entity.obstructable", "1"},	//79
+	{"7", "entity.obstruct", "1"},
+	{"7", "entity.obstructable", "1"},	//79
 	{"1", "curmap.w", ""},// index 80
 	{"1", "curmap.h", ""},
 	{"1", "curmap.startx", ""},
@@ -399,7 +399,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "event.sprite", ""},// index 90
 	{"1", "layer.w", "1" },
 	{"1", "layer.h", "1" },
-	{"1", "layer.visible", "1" },
+	{"7", "layer.visible", "1" },
 	{"1", "layer.lucent", "1" },
 	{"3", "clipboard.text", "" },
 	{"1", "cameratracker", "" },//96
@@ -409,7 +409,7 @@ char* libvars[NUM_HVARS][3] = {
     {"3", "entity.chr", "1"},// index 100
 	{"1", "playerstep", ""},
 	{"1", "playerdiagonals", ""},
-	{"1", "window.active", ""},
+	{"7", "window.active", ""},
 	{"3", "curmap.savevsp", "" }, // Overkill (2006-07-20): The VSP to save as.
 	{"1", "sprite.ent", "1" },
 	{"1", "sprite.silhouette", "1" },

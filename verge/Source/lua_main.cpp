@@ -616,11 +616,7 @@ void LUA::bindApi()
 		"	return t\n"
 		"end\n"
 	);
-
-	if(status)
-	{
-		::err("Failed to load LuaVerge's v3 metatables.");
-	}
+	if(status) ::err("Failed to load LuaVerge's v3 metatables.");
 
 	// Bind the functions to the v3 namespace.
 	for(i = 0; i < NUM_LIBFUNCS; i++)
@@ -640,8 +636,8 @@ void LUA::bindApi()
 		LUA::BindHdef(L, i);
 	}
 
+	// Boilerplate: Bind a bunch of HVARs
 	status = luaL_dostring(L,
-		// Bind a bunch of hvar0 types.
 		"function bind_hvar(dim, name, ...)\n"
 		"	local a = { ... }\n"
 		"	local t = (name and v3[name]) or v3\n"
@@ -703,11 +699,35 @@ void LUA::bindApi()
 		"	'after_entityscript', 'on_entitycollide', 'after_playermove' \n"
 		")\n"
 	);
-
-	if(status)
-	{
-		::err("Failed to load the LuaVerge boilerplates!");
-	}
+	if(status) ::err("Failed to load the LuaVerge hvar boilerplates!");
+	
+	luaL_dostring(L,
+		"local function _dovfile(modulename)\n"
+		"	-- Find source\n"
+		"	local modulepath = string.gsub(modulename, '%.', '/')\n"
+		"	for path in string.gmatch(package.path, '([^;]+)') do\n"
+		"		local filename = string.gsub(path, '%?', modulepath)\n"
+		"		local f = v3.FileOpen(filename, v3.FILE_READ)\n"
+		"		if f ~= 0 then\n"
+		"			local function reader()\n"
+		"				return v3.FileEOF(f) and '' or v3.FileReadLn(f)\n"
+		"			end\n"
+		"			\n"
+		"			-- Read and compile the module\n"
+		"			chunk = assert(load(reader, filename))\n"
+		"			\n"
+		"			-- Compile and return the module\n"
+		"			return chunk\n"
+		"		end\n"
+		"	end\n"
+		"	return '\\n\\tno vpk\\'d module \\'' .. modulename .. '\\''\n"
+		"end\n"
+		"\n"
+		"-- Install the loader so that it's called just before the normal Lua loader\n"
+		"table.insert(package.loaders, 2, _dovfile)\n"
+	);
+	// Boilerplate: Add a packfile loader.
+	if(status) ::err("Failed to load the LuaVerge packfile loader!");
 }
 
 #endif
