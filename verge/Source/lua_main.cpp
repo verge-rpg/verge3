@@ -529,10 +529,97 @@ void LUA::bindApi()
 		"	else\n"
 		"		rawset(self, name, value)\n"
 		"	end\n"
-		"end\n");
+		"end\n"
+
+		// Create a table with getters and setters to v3's hvars on the backend.
+		"function _builtin_struct()\n"
+		"	local t = {}\n"
+		"	\n"
+		"	local getter = {}\n"
+		"	local setter = {}\n"
+		"	local meta = {}\n"
+		"	\n"
+		"	setmetatable(t, meta)\n"
+		"	\n"
+		"	t.get_hvar0 = getter\n"
+		"	t.set_hvar0 = setter\n"
+		"	\n"
+		"	function meta:__index(name)\n"
+		"		name = string.lower(name)"
+		"		local f = getter[name]\n"
+		"		return (f and f()) or rawget(self, name)\n"
+		"	end\n"
+		"	\n"
+		"	function meta:__newindex(name, value)\n"
+		"		name = string.lower(name)"
+		"		local f = setter[name]\n"
+		"		if f then\n"
+		"			f(value)\n"
+		"		else\n"
+		"			rawset(self, name, value)\n"
+		"		end\n"
+		"	end\n"
+		"	\n"
+		"	return t\n"
+		"end\n"
+
+		// Create an numerically indexed table that caches its entries.
+		"function _builtin_struct_collection()\n"
+		"	local t = {}\n"
+		"	\n"
+		"	local getter = {}\n"
+		"	local setter = {}\n"
+		"	local cache = {}\n"
+		"	local meta = {}\n"
+		"	\n"
+		"	setmetatable(t, meta)\n"
+		"	\n"
+		"	t.get_hvar1 = getter\n"
+		"	t.set_hvar1 = setter\n"
+		"	\n"
+		"	local function get_entry(i)\n"
+		"		local handle = { index = i } \n"
+		"		\n"
+		"		local handle_meta = {}\n"
+		"		setmetatable(handle, handle_meta)\n"
+		"		\n"
+		"		function handle_meta:__index(name)\n"
+		"			name = string.lower(name)\n"
+		"			local f = getter[name]\n"
+		"			return (f and f(i)) or rawget(self, name)\n"
+		"		end\n"
+		"		\n"
+		"		function handle_meta:__newindex(name, value)\n"
+		"			name = string.lower(name)"
+		"			local f = setter[name]\n"
+		"			if f then\n"
+		"				f(i, value)\n"
+		"			else\n"
+		"				rawset(self, name, value)\n"
+		"			end\n"
+		"		end\n"
+		"		cache[i] = handle\n"
+		"		return handle\n"
+		"	end\n"
+		"	\n"
+		"	\n"
+		"	function meta:__index(i)\n"
+		"		return cache[i]\n"
+		"				or (tonumber(i) and get_entry(i))\n"
+		"				or error('Attempt to index hvar array by non-numeric \\'' .. i .. '\\' index.') \n"
+		"	end\n"
+		"	\n"
+		"	function meta:__newindex(name, value)\n"
+		"		error('Attempt to reassign an internal hvar array to something else. Bad you.')\n"
+		"	end\n"
+		"	\n"
+		"	return t\n"
+		"end\n"
+	);
+
 	if(status)
 	{
-		::err("Failed to load v3 metatables.");
+		::err("Failed to load LuaVerge's v3 metatables.");
 	}
 
 	// Bind the functions to the v3 namespace.
@@ -551,6 +638,75 @@ void LUA::bindApi()
 	for(i = 0; i < NUM_HDEFS; i++)
 	{
 		LUA::BindHdef(L, i);
+	}
+
+	status = luaL_dostring(L,
+		// Bind a bunch of hvar0 types.
+		"function bind_hvar(dim, name, ...)\n"
+		"	local a = { ... }\n"
+		"	local t = (name and v3[name]) or v3\n"
+		"	local name = name and (name .. '_') or ''\n"
+		"	for i, v in ipairs(a) do\n"
+		"		t['get_hvar' .. dim][v] = v3['get_' .. name .. v]\n"
+		"		t['set_hvar' .. dim][v] = v3['set_' .. name .. v]\n"
+		"		print('set_hvar0' .. dim .. '[\\'' .. v .. '\\'] = v3.set_' .. name .. v)\n"
+		"	end\n"
+		"end\n"
+		"\n"
+
+		// Bind the global builtins
+		"bind_hvar(0, false,\n"
+		"	'systemtime', 'timer', 'lastpressed', 'joystick', \n"
+		"	'up', 'down', 'left', 'right', 'b1', 'b2', 'b3', 'b4',\n"
+		"	'xwin', 'ywin', 'cameratracking', 'entities', 'cameratracker',\n"
+		"	'transcolor', '_skewlines', 'gamewindow', 'lastkey',\n"
+		"	'playerstep', 'playerdiagonals'\n"
+		")\n"
+
+		// Bind the clipboard builtins.
+		"v3.clipboard = _builtin_struct()\n"
+		"bind_hvar(0, 'clipboard', 'text')\n"
+		
+		// Bind the mouse related builtins
+		"v3.mouse = _builtin_struct()\n"
+		"bind_hvar(0, 'mouse', 'x', 'y', 'l', 'r', 'm', 'w')\n"
+
+		// Bind the system date and time builtins
+		"v3.sysdate = _builtin_struct()\n"
+		"v3.systime = _builtin_struct()\n"
+		"bind_hvar(0, 'sysdate', 'year', 'month', 'day', 'dayofweek')\n"
+		"bind_hvar(0, 'systime', 'hour', 'minute', 'second')\n"
+
+		// Bind the event builtins
+		"v3.event = _builtin_struct()\n"
+		"bind_hvar(0, 'event', 'tx', 'ty', 'zone', 'entity', 'param', 'entity_hit')\n"
+
+		// Bind the entity builtins
+		"v3.entity = _builtin_struct_collection()\n"
+		"bind_hvar(1, 'entity',\n"
+		"	'x', 'y', 'specframe', 'frame', 'hotx', 'hoty', 'hotw', 'hoth',\n"
+		"	'framew', 'frameh', 'lucent', 'visible', 'movecode', 'face', 'speed',\n"
+		"	'script', 'obstruct', 'obstructable', 'chr', 'description'\n"
+		")\n"
+
+		// Bind the current map builtins
+		"v3.curmap = _builtin_struct()\n"
+		"bind_hvar(0, 'curmap',\n"
+		"	'w', 'h', 'startx', 'starty', 'name', 'rstring', \n"
+		"	'music', 'tileset', 'path', 'savevsp' \n"
+		")\n"
+
+		// Bind trigger builtins
+		"v3.trigger = _builtin_struct()\n"
+		"bind_hvar(0, 'trigger',\n"
+		"	'on_step', 'after_step', 'before_entityscript', \n"
+		"	'after_entityscript', 'on_entitycollide', 'after_playermove' \n"
+		")\n"
+	);
+
+	if(status)
+	{
+		::err("Failed to load the LuaVerge boilerplates!");
 	}
 }
 
