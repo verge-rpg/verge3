@@ -115,7 +115,7 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"5", "HookKey", "13" },
 	{"5", "HookButton", "13" },
 	{"5", "BlitEntityFrame", "11111" },
-	{"5", "SetEntitiesPaused", "1" },
+	{"5", "SetEntitiesPaused", "7" },
 	{"7", "GetObsPixel", "11" },
 	{"1", "GetTile", "111" },
 	{"5", "SetTile", "1111" },
@@ -150,7 +150,7 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"1", "WindowGetWidth", "1" },
 	{"1", "WindowGetHeight", "1" },
 	{"5", "WindowPositionCommand", "1111" },
-	{"5", "SetSongPaused", "11" },
+	{"5", "SetSongPaused", "17" },
 	{"5", "SetSongVolume", "11" },
 	{"1", "GetSongVolume", "1" },
 	{"1", "GetSongPos", "1" },
@@ -193,7 +193,7 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"5", "RenderMap", "111" },
 	{"5", "SetButtonKey", "11" },
 	{"5", "SetButtonJB", "11" },
-	{"1", "FunctionExists", "3" },
+	{"7", "FunctionExists", "3" },
 	{"1", "atan2", "11" },
 	{"5", "CopyImageToClipboard", "1" },
 	{"1", "GetImageFromClipboard", "" },
@@ -205,11 +205,11 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"1", "GetIntArray", "31" },
 	{"5", "SetStringArray", "313" },
 	{"3", "GetStringArray", "31" },
-	{"5", "FlipBlit", "111111" },
+	{"5", "FlipBlit", "117711" },
 	{"1", "Connect", "3" },
 	{"1", "GetConnection", "" },
-	{"1", "SocketConnected", "1" },
-	{"1", "SocketHasData", "1" },
+	{"7", "SocketConnected", "1" },
+	{"7", "SocketHasData", "1" },
 	{"3", "SocketGetString", "1" },
 	{"5", "SocketSendString", "13" },
 	{"5", "SocketClose", "1" },
@@ -254,15 +254,15 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"3", "GetKeyBuffer", ""}, // Overkill (2006-06-30}: Gets the contents of the key buffer.
 	{"5", "FlushKeyBuffer", ""}, // Overkill (2006-06-30}: Clears the contents of the key buffer.
 	{"5", "SetKeyDelay", "1"}, // Overkill (2006-06-30}: Sets the delay in centiseconds before key repeat.
-	{"1", "FileWriteCHR", "11"}, // Overkill (2006-07-20}: Saves a CHR file, using an open file handle, saving the specified entity.
-	{"1", "FileWriteMAP", "1"}, // Overkill (2006-07-20}: Saves a MAP file, using an open file handle, saving the current map.
-	{"1", "FileWriteVSP", "1"}, // Overkill (2006-07-20}: Saves a VSP file, using an open file handle, saving the current map's VSP.
-	{"1", "CompileMap", "3"}, // Overkill (2006-07-20}: Compiles the specified MAP filename.
+	{"5", "FileWriteCHR", "11"}, // Overkill (2006-07-20}: Saves a CHR file, using an open file handle, saving the specified entity.
+	{"5", "FileWriteMAP", "1"}, // Overkill (2006-07-20}: Saves a MAP file, using an open file handle, saving the current map.
+	{"5", "FileWriteVSP", "1"}, // Overkill (2006-07-20}: Saves a VSP file, using an open file handle, saving the current map's VSP.
+	{"5", "CompileMap", "3"}, // Overkill (2006-07-20}: Compiles the specified MAP filename.
 	{"5", "RectRGrad", "1111111"}, // janus (2006-07-22}: Radial gradient
 	{"5", "Rect4Grad", "111111111"}, // janus (2006-07-22}: 4-point (4-corner} gradient
 	{"3", "ListStructMembers", "3"}, // Overkill (2006-08-16}: Lists the members of a struct.
 	{"1", "CopyArray", "33"}, // Overkill (2006-08-16}: Copies an array to another array.
-	{"1", "SoundIsPlaying", "1"}, // Overkill (2006-11-20}: Determines whether or not a given sound channel is in use.
+	{"7", "SoundIsPlaying", "1"}, // Overkill (2006-11-20}: Determines whether or not a given sound channel is in use.
 	{"1", "GetH", "1"}, // Overkill (2007-05-04}: Gets the hue of a color
 	{"1", "GetS", "1"}, // Overkill (2007-05-04}: Gets the saturation of a color
 	{"1", "GetV", "1"}, // Overkill (2007-05-04}: Gets the value/brightness of a color
@@ -291,8 +291,8 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"3", "GetSystemSaveDir", "3"},
 	{"1", "GetInputKillSwitch", ""},
 	{"5", "SetInputKillSwitch", "1"},
-	{"1", "IntExists", "3"},		// Grue, (2008-12-26)
-	{"1", "StrExists", "3"}
+	{"7", "IntExists", "3"},		// Grue, (2008-12-26)
+	{"7", "StrExists", "3"}
 };
 
 VcFunction *libfuncs;
