@@ -360,7 +360,8 @@ int LUA::Get_Hvar(lua_State* L)
 
 	if(*dimlist == '1')
 	{
-		if(args != 1) lua->LuaError("getting v3 system variable `%s` requires a subscript",name);
+		if(args < 1) lua->LuaError("getting v3 system variable `%s` requires a subscript",name);
+		if(args > 1) lua->LuaError("getting v3 system variable `%s` with too many parameters",name);
 		if(!lua_isnumber(L, 1)) lua->LuaError("subscript on v3 system variable `%s` is not an integer", name);
 		int ofs = lua_tointeger(L,1);
 		if(*type == '0' + t_INT)
@@ -417,7 +418,8 @@ int LUA::Set_Hvar(lua_State* L)
 
 	if(*dimlist == '1')
 	{
-		if(args != 2) lua->LuaError("setting v3 system variable `%s` requires parameters subscript and value",name);
+		if(args < 2) lua->LuaError("setting v3 system variable `%s` requires parameters subscript and value",name);
+		if(args > 2) lua->LuaError("setting v3 system variable `%s` has too many parameters", name);
 		if(!lua_isnumber(L, 1)) lua->LuaError("subscript on v3 system variable `%s` is not an integer", name);
 		int ofs = lua_tointeger(L,1);
 		if(*type == '0'  + t_INT)
@@ -441,7 +443,8 @@ int LUA::Set_Hvar(lua_State* L)
 	} 
 	else if(*dimlist == 0)
 	{
-		if(args != 1) lua->LuaError("setting v3 system variable `%s` requires a value parameter",name);
+		if(args < 1) lua->LuaError("setting v3 system variable `%s` requires a value parameter",name);
+		if(args > 1) lua->LuaError("setting v3 system variable `%s` has too many parameters",name);
 		if(*type == '0' + t_INT)
 		{
 			if(!lua_isnumber(L, 1)) lua->LuaError("value for v3 system variable `%s` must be an integer", name);
@@ -563,6 +566,29 @@ void LUA::bindApi()
 		"	return t\n"
 		"end\n"
 
+		// Create a builtin that is numerically indexed and calls the getter/setter bound to it.
+		"function _builtin_array(getter, setter)\n"
+		"	local t = {}\n"
+		"	\n"
+		"	local meta = {}\n"
+		"	setmetatable(t, meta)\n"
+		"	\n"
+		"	function meta:__index(i)\n"
+		"		if tonumber(i) then\n"
+		"			return getter(i)\n"
+		"		end\n"
+		"		error('Attempt to index hvar array by non-numeric \\'' .. tostring(i) .. '\\' value.') \n"
+		"	end\n"
+		"	\n"
+		"	function meta:__newindex(i, value)\n"
+		"		if tonumber(i) then\n"
+		"			setter(i, value)\n"
+		"		end\n"
+		"		error('Attempt to index hvar array by non-numeric \\'' .. tostring(i) .. '\\' value.') \n"
+		"	end\n"
+		"	return t\n"
+		"end\n"
+
 		// Create an numerically indexed table that caches its entries.
 		"function _builtin_struct_collection()\n"
 		"	local t = {}\n"
@@ -570,8 +596,8 @@ void LUA::bindApi()
 		"	local getter = {}\n"
 		"	local setter = {}\n"
 		"	local cache = {}\n"
-		"	local meta = {}\n"
 		"	\n"
+		"	local meta = {}\n"
 		"	setmetatable(t, meta)\n"
 		"	\n"
 		"	t.get_hvar1 = getter\n"
@@ -606,11 +632,11 @@ void LUA::bindApi()
 		"	function meta:__index(i)\n"
 		"		return cache[i]\n"
 		"				or (tonumber(i) and get_entry(i))\n"
-		"				or error('Attempt to index hvar array by non-numeric \\'' .. i .. '\\' index.') \n"
+		"				or error('Attempt to index hvar array by non-numeric \\'' .. tostring(i) .. '\\' value.') \n"
 		"	end\n"
 		"	\n"
 		"	function meta:__newindex(name, value)\n"
-		"		error('Attempt to reassign an internal hvar array to something else. Bad you.')\n"
+		"		error('Attempt to reassign an internal structured array to something else. Bad you.')\n"
 		"	end\n"
 		"	\n"
 		"	return t\n"
@@ -645,10 +671,18 @@ void LUA::bindApi()
 		"	for i, v in ipairs(a) do\n"
 		"		t['get_hvar' .. dim][v] = v3['get_' .. name .. v]\n"
 		"		t['set_hvar' .. dim][v] = v3['set_' .. name .. v]\n"
-		"		print('set_hvar0' .. dim .. '[\\'' .. v .. '\\'] = v3.set_' .. name .. v)\n"
 		"	end\n"
 		"end\n"
 		"\n"
+
+		"function bind_array(name, ...)\n"
+		"	local a = { ... }\n"
+		"	local t = (name and v3[name]) or v3\n"
+		"	local name = name and (name .. '_') or ''\n"
+		"	for i, v in ipairs(a) do\n"
+		"		t[v] = _builtin_array(v3['get_' .. name .. v], v3['set_' .. name .. v])\n"
+		"	end\n"
+		"end\n"
 
 		// Bind the global builtins
 		"bind_hvar(0, false,\n"
@@ -658,6 +692,7 @@ void LUA::bindApi()
 		"	'transcolor', '_skewlines', 'gamewindow', 'lastkey',\n"
 		"	'playerstep', 'playerdiagonals'\n"
 		")\n"
+		"bind_array(false, 'key')\n"
 
 		// Bind the clipboard builtins.
 		"v3.clipboard = _builtin_struct()\n"
@@ -675,7 +710,16 @@ void LUA::bindApi()
 
 		// Bind the event builtins
 		"v3.event = _builtin_struct()\n"
-		"bind_hvar(0, 'event', 'tx', 'ty', 'zone', 'entity', 'param', 'entity_hit')\n"
+		"bind_hvar(0, 'event', 'tx', 'ty', 'zone', 'entity', 'sprite', 'param', 'entity_hit')\n"
+
+		// Bind the joy builtins
+		"v3.joy = _builtin_struct()\n"
+		"bind_hvar(0, 'joy', 'active', 'up', 'down', 'left', 'right', 'analogx', 'analogy')\n"
+		"bind_array('joy', 'button')\n"
+
+		// Bind the dma builtins that almost nobody will use.
+		"v3.dma = _builtin_struct()\n"
+		"bind_array('dma', 'byte', 'word', 'quad', 'sbyte', 'sword', 'squad')\n"
 
 		// Bind the entity builtins
 		"v3.entity = _builtin_struct_collection()\n"
@@ -690,6 +734,24 @@ void LUA::bindApi()
 		"bind_hvar(0, 'curmap',\n"
 		"	'w', 'h', 'startx', 'starty', 'name', 'rstring', \n"
 		"	'music', 'tileset', 'path', 'savevsp' \n"
+		")\n"
+
+		// Bind the layer builtins
+		"v3.layer = _builtin_struct_collection()\n"
+		"bind_hvar(1, 'layer',\n"
+		"	'w', 'h', 'visible', 'lucent', 'parallaxx', 'parallaxy' \n"
+		")\n"
+
+		// Bind the zone builtins
+		"v3.zone = _builtin_struct_collection()\n"
+		"bind_hvar(1, 'zone', 'name', 'event')\n"
+
+		// Bind the sprite builtins
+		"v3.sprite = _builtin_struct_collection()\n"
+		"bind_hvar(1, 'sprite',\n"
+		"	'x', 'y', 'sc', 'image', 'lucent', 'addsub', 'alphamap', \n"
+		"	'thinkrate', 'thinkproc', 'xflip', 'yflip', 'ybase', 'addsub', 'alphamap', \n"
+		"	'ent', 'silhouette', 'color', 'wait', 'onmap', 'layer', 'timer'\n"
 		")\n"
 
 		// Bind trigger builtins
