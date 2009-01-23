@@ -764,7 +764,7 @@ void LUA::bindApi()
 	if(status) ::err("Failed to load the LuaVerge hvar boilerplates!");
 	
 	luaL_dostring(L,
-		"local function _dovfile(modulename)\n"
+		"local function v3.vpkloader(modulename)\n"
 			// Find the source in a vpk.
 		"	local modulepath = string.gsub(modulename, '%.', '/')\n"
 		"	for path in string.gmatch(package.path, '([^;]+)') do\n"
@@ -781,16 +781,16 @@ void LUA::bindApi()
 					// Success?
 		"			return chunk\n"
 		"		end\n"
-		"	end\n"
+		"6	end\n"
 			// Failed to open it.
 		"	return '\\n\\tno vpk\\'d module \\'' .. modulename .. '\\''\n"
 		"end\n"
 		"\n"
 
-		// Install the loader so that it's called just before the normal Lua loader
-		"table.insert(package.loaders, 2, _dovfile)\n"
 		// Add a few more package path rules that agree with our loader a lot more.
-		"package.path = package.path .. ';?.lua;?/init.lua'\n"
+		"package.path = package.path .. ';?.lua;?/init.lua;?\\\\init.lua'\n"
+		// Install the loader so that it's called just before the DLL loader
+		"table.insert(package.loaders, 3, v3.vpkloader)\n"
 	);
 	// Boilerplate: Add a packfile loader.
 	if(status) ::err("Failed to load the LuaVerge packfile loader!");

@@ -295,7 +295,7 @@ void Sleep(unsigned int msec)
 void err(const char *str, ...)
 {
 	va_list argptr;
-	char msg[256];
+	char msg[4096];
 
 	va_start(argptr, str);
 	vsprintf(msg, str, argptr);

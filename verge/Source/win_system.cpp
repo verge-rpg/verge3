@@ -427,7 +427,7 @@ LRESULT APIENTRY win_gameWindowProc(HWND hWnd, UINT message,WPARAM wParam, LPARA
 void err(const char *str, ...)
 {
 	va_list argptr;
-	char msg[256];
+	char msg[4096];
 
 	va_start(argptr, str);
 	vsprintf(msg, str, argptr);
