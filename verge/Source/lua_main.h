@@ -108,7 +108,14 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 			if(activeFunctionStackOffset < lua_gettop(L))
 			{
 				activeFunctionStackOffset++;
-				return lua_tonumber(L, activeFunctionStackOffset);
+				if(lua_isboolean(L, activeFunctionStackOffset))
+				{
+					return lua_toboolean(L, activeFunctionStackOffset);
+				}
+				else
+				{
+					return lua_tonumber(L, activeFunctionStackOffset);
+				}
 			}
 			else
 			{
