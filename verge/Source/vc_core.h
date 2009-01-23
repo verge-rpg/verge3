@@ -347,24 +347,3 @@ private:
 	static std::string _vcplugins_functioncontext_pop_str(void *tag) { return std::string(((VCCore *)tag)->PopString().c_str()); }
 
 };
-
-extern bool die;
-extern int vc_paranoid, vc_arraycheck;
-extern StringRef renderfunc, timerfunc;
-
-extern int event_tx;
-extern int event_ty;
-extern int event_zone;
-extern int event_entity;
-extern int event_param;
-extern int event_sprite;
-extern int event_entity_hit;
-
-extern int __grue_actor_index;
-
-extern int invc;
-
-extern StringRef _trigger_onStep, _trigger_afterStep;
-extern StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
-extern StringRef _trigger_onEntityCollide;
-extern StringRef _trigger_afterPlayerMove;
