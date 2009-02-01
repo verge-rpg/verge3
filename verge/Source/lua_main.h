@@ -33,9 +33,10 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 		static int InitErrorHandler(lua_State* L);
 
 		// GC Handles
-		static int InitGCHandleSystem(lua_State* L);
+		static void InitGCHandleSystem(lua_State* L);
 		static int GCHandleConstruct(lua_State* L);
 		static int GCHandleDestruct(lua_State* L);
+		static int GCHandleToString(lua_State* L);
 
 		//hvars
 		void BindHvar(lua_State* L, int index);

@@ -66,7 +66,7 @@ void LUA::LoadMapScript(VFILE *f, CStringRef filename) {
 
 	if(luaL_loadbuffer(L, temp.get(), strlen(temp.get()), filename.c_str()))
 		err("Error loading " + filename.str());
-	if(lua_pcall(L, 0, LUA_MULTRET, 0))
+	if(lua_pcall(L, 0, 0, 0))
 		err("Error compiling " + filename.str());
 }
 
@@ -487,7 +487,13 @@ void LUA::BindHdef(lua_State* L, int index)
 	lua_pop(L, -1); // pop v3 namespace
 }
 
-int LUA::InitGCHandleSystem(lua_State* L)
+static const luaL_reg luaGCHandleMeta[] = {
+    {"__gc", LUA::GCHandleDestruct},
+	{"__tostring", LUA::GCHandleToString},
+    {0, 0}
+};
+
+void LUA::InitGCHandleSystem(lua_State* L)
 {
 	// Load v3 namespace
 	lua_getglobal(L, "v3");
@@ -496,20 +502,12 @@ int LUA::InitGCHandleSystem(lua_State* L)
 	lua_pushstring(L, "GCHandle");
 	lua_pushcclosure(L, LUA::GCHandleConstruct, 0);
 	lua_settable(L, -3); // v3.GCHandle = value
-
-	// Bind the private destructor.
-	lua_pushstring(L, "__DestroyGCHandle");
-	lua_pushcclosure(L, LUA::GCHandleDestruct, 0);
-	lua_settable(L, -3); // v3.__DestroyGCHandle = value
-
 	lua_pop(L, -1); // pop v3 namespace
 
-	// Setup the metatable
-	return luaL_dostring(L,
-		"__gchtable = {}\n"
-		"function __gchtable:__tostring() return 'luaverge internal gc handle' end\n"
-		"__gchtable.__gc = v3.__DestroyGCHandle\n"
-	);
+	// Bind the metatable junk
+	luaL_newmetatable(L, "GCHandleInternal");
+	luaL_openlib(L, 0, luaGCHandleMeta, 0);
+	lua_pop(L, 1);
 }
 
 int LUA::GCHandleConstruct(lua_State* L)
@@ -518,13 +516,12 @@ int LUA::GCHandleConstruct(lua_State* L)
 	const char* destructor_name = lua_tostring(L, 2);
 
 	LUA::GCHandle* gch = (LUA::GCHandle*) lua_newuserdata(L, sizeof(LUA::GCHandle));
-	lua_getglobal(L, "__gchtable");
+	luaL_getmetatable(L, "GCHandleInternal");
 	lua_setmetatable(L, -2);
 
 	gch->handle = handle;
 	strcpy(gch->destructor_name, destructor_name);
-
-	return 0;
+	return 1;
 }
 
 int LUA::GCHandleDestruct(lua_State* L)
@@ -544,8 +541,15 @@ int LUA::GCHandleDestruct(lua_State* L)
 	// Call v3[destructor_name](handle)
 	lua_call(L, 1, 0);
 
-
 	return 0;
+}
+
+int LUA::GCHandleToString(lua_State *L)
+{
+	//LUA::GCHandle* gch = (LUA::GCHandle*) lua_touserdata(L, 1);
+	lua_pushfstring(L, "GCHandle: %p", lua_touserdata(L, 1));
+	//lua_pushfstring(L, "GCHandle: %p (handle %d, free with %s)", gch, gch->handle, gch->destructor_name);
+	return 1;
 }
 
 void LUA::bindApi()
@@ -856,11 +860,7 @@ void LUA::bindApi()
 	// Boilerplate: Add a packfile loader.
 	if(status) ::err("Failed to load the LuaVerge packfile loader!");
 
-	status = LUA::InitGCHandleSystem(L);
-	if(status)
-	{
-		::err("Failed to init GC Handle system!");
-	}
+	LUA::InitGCHandleSystem(L);
 }
 
 #endif
