@@ -481,10 +481,71 @@ void LUA::BindHdef(lua_State* L, int index)
 
 	lua_pushstring(L, name.c_str());
 	lua_pushstring(L, value); // Lua auto-coerces numeric strings to numbers, cool!
-	lua_settable(L, -3); // v3.def = value
+	lua_settable(L, -3); // v3.hdef[def] = value
 	lua_pop(L, -1); // pop hdef
 
 	lua_pop(L, -1); // pop v3 namespace
+}
+
+int LUA::InitGCHandleSystem(lua_State* L)
+{
+	// Load v3 namespace
+	lua_getglobal(L, "v3");
+
+	// Bind the public constructor.
+	lua_pushstring(L, "GCHandle");
+	lua_pushcclosure(L, LUA::GCHandleConstruct, 0);
+	lua_settable(L, -3); // v3.GCHandle = value
+
+	// Bind the private destructor.
+	lua_pushstring(L, "__DestroyGCHandle");
+	lua_pushcclosure(L, LUA::GCHandleDestruct, 0);
+	lua_settable(L, -3); // v3.__DestroyGCHandle = value
+
+	lua_pop(L, -1); // pop v3 namespace
+
+	// Setup the metatable
+	return luaL_dostring(L,
+		"__gchtable = {}\n"
+		"function __gchtable:__tostring() return 'luaverge internal gc handle' end\n"
+		"__gchtable.__gc = v3.__DestroyGCHandle\n"
+	);
+}
+
+int LUA::GCHandleConstruct(lua_State* L)
+{
+	int handle = (int) lua_tonumber(L, 1);
+	const char* destructor_name = lua_tostring(L, 2);
+
+	LUA::GCHandle* gch = (LUA::GCHandle*) lua_newuserdata(L, sizeof(LUA::GCHandle));
+	lua_getglobal(L, "__gchtable");
+	lua_setmetatable(L, -2);
+
+	gch->handle = handle;
+	strcpy(gch->destructor_name, destructor_name);
+
+	return 0;
+}
+
+int LUA::GCHandleDestruct(lua_State* L)
+{
+	LUA::GCHandle* gch = (LUA::GCHandle*) lua_touserdata(L, 1);
+	
+	// Push v3 namespace
+	lua_getglobal(L, "v3");
+
+	// Get the value of v3[destructor_name]
+	lua_getfield(L, -1, gch->destructor_name);
+	// remove v3 namespace from stack
+	lua_remove(L, -2);	
+
+	// Push the argument
+	lua_pushinteger(L, gch->handle);
+	// Call v3[destructor_name](handle)
+	lua_call(L, 1, 0);
+
+
+	return 0;
 }
 
 void LUA::bindApi()
@@ -764,7 +825,7 @@ void LUA::bindApi()
 	if(status) ::err("Failed to load the LuaVerge hvar boilerplates!");
 	
 	luaL_dostring(L,
-		"local function v3.vpkloader(modulename)\n"
+		"function v3.vpkloader(modulename)\n"
 			// Find the source in a vpk.
 		"	local modulepath = string.gsub(modulename, '%.', '/')\n"
 		"	for path in string.gmatch(package.path, '([^;]+)') do\n"
@@ -781,7 +842,7 @@ void LUA::bindApi()
 					// Success?
 		"			return chunk\n"
 		"		end\n"
-		"6	end\n"
+		"	end\n"
 			// Failed to open it.
 		"	return '\\n\\tno vpk\\'d module \\'' .. modulename .. '\\''\n"
 		"end\n"
@@ -794,6 +855,12 @@ void LUA::bindApi()
 	);
 	// Boilerplate: Add a packfile loader.
 	if(status) ::err("Failed to load the LuaVerge packfile loader!");
+
+	status = LUA::InitGCHandleSystem(L);
+	if(status)
+	{
+		::err("Failed to init GC Handle system!");
+	}
 }
 
 #endif

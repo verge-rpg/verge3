@@ -18,12 +18,24 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 	private:
 		lua_State *L;
 	public:
+		// Internal userdata pointer with a gc metamethod that calls v3[destructor_name](handle)
+		struct GCHandle
+		{
+			char destructor_name[256];
+			int handle;
+		};
+
 		static int activeFunctionStackOffset;
 		static int activeFunctionIndex;
 		static void VerifyFunctionSignature(lua_State* L, int functionIndex);
 		static void BindFunction(lua_State* L, int functionIndex);
 		static int InvokeBuiltinFunction(lua_State* L);
 		static int InitErrorHandler(lua_State* L);
+
+		// GC Handles
+		static int InitGCHandleSystem(lua_State* L);
+		static int GCHandleConstruct(lua_State* L);
+		static int GCHandleDestruct(lua_State* L);
 
 		//hvars
 		void BindHvar(lua_State* L, int index);
