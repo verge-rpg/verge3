@@ -95,11 +95,11 @@ public:
 
 	void PlayMusic(const std::string &sng) {
 		AudiereFile *af = AudiereFile::tryOpen(sng);
-		if(!af) err("Could not open specified music file: %s",sng);
+		if(!af) err("Could not open specified music file: %s",sng.c_str());
 		
 		StopMusic();
 		music = OpenSound(device,FilePtr(af),true);
-		if(!music) err("Could not open specified music file: %s",sng);
+		if(!music) err("Could not open specified music file: %s",sng.c_str());
 		music->ref();
 		music->setRepeat(true);
 		music->play();
@@ -146,11 +146,11 @@ public:
 
 	int LoadSong(const std::string &sng) {
 		AudiereFile *af = AudiereFile::tryOpen(sng);
-		if(!af) err("Could not load specified music file: %s",sng);
+		if(!af) err("Could not load specified music file: %s",sng.c_str());
 		
 		StopMusic();
 		OutputStream *os = OpenSound(device,FilePtr(af),true);
-		if(!os) err("Could not load specified music file: %s",sng);
+		if(!os) err("Could not load specified music file: %s",sng.c_str());
 		os->ref();
 		os->setRepeat(true);
 		int h = songHandles.alloc(os);
