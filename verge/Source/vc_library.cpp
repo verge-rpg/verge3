@@ -1702,7 +1702,7 @@ VC_LIBFUNC(vc_LoadSong) ()
 
 VC_LIBFUNC(vc_PlaySong) ()
 {
-	se->vcreturn = se->LoadSong(se->ResolveString());
+	se->PlaySong(se->ResolveOperand());
 }
 
 VC_LIBFUNC(vc_StopSong) ()
