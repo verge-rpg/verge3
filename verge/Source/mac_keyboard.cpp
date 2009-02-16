@@ -347,9 +347,14 @@ void ParseKeyEvent(SDL_KeyboardEvent keyEvent)
 	{
 		keys[scanCode]=0;
 	}
-
+#ifdef __APPLE__
 	// check for command-q or command-enter
 	if(keys[SCAN_ALT] && keys[SCAN_Q]) err("");
+#elif __LINUX__
+	// alt-x quits
+	if(keys[SCAN_ALT] && keys[SCAN_X]) err("");
+#endif
+
 	if(keys[SCAN_ALT] && keys[SCAN_ENTER])
 	{
 		keys[SCAN_M]=0;
