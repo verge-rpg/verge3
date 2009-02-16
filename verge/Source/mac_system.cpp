@@ -47,6 +47,8 @@ void doMessageBox(std::string msg)
 {
 	GtkWidget* w = GTK_WIDGET(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", msg.c_str()));
 	gtk_window_set_title(GTK_WINDOW(w), "verge3");
+	gtk_dialog_set_default_response(GTK_DIALOG(w), GTK_RESPONSE_CLOSE);
+
 	gtk_dialog_run(GTK_DIALOG(w));
 
 	gtk_widget_destroy(w);
@@ -168,6 +170,12 @@ void handleActive(SDL_ActiveEvent e)
 /* Run the SDL event loop to get waiting messages */
 void HandleMessages(void)
 {
+#ifdef __LINUX__
+	while (gtk_events_pending())
+	{
+		gtk_main_iteration();
+	}
+#endif
 	SDL_Event event;
 	while ( SDL_PollEvent(&event) ) {
 		if(IgnoreEvents) {
