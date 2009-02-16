@@ -35,17 +35,27 @@ bool IgnoreEvents = false;
 #ifdef __LINUX__
 void InitEditCode()
 {
-	log("InitEditCode() is TODO in Linux");
+	err("Edit code mode is TODO in Linux");
 }
 
 void AddSourceFile(std::string s)
 {
-	log("AddSourceFile() is TODO in Linux");
+	//log("AddSourceFile() is TODO in Linux");
 }
 
 void doMessageBox(std::string msg)
 {
-	log("MessageBox() is TODO in Linux: \"%s\"", msg.c_str());
+	GtkWidget* w = GTK_WIDGET(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", msg.c_str()));
+	gtk_window_set_title(GTK_WINDOW(w), "verge3");
+	gtk_dialog_run(GTK_DIALOG(w));
+
+	gtk_widget_destroy(w);
+}
+
+StringRef GetSystemSaveDirectory(CStringRef name)
+{
+	static const StringRef dotSlash = "./";
+	return dotSlash;
 }
 #endif
 
@@ -61,6 +71,9 @@ int getCurrentBpp();
 
 int main(int argc, char **argv)
 {
+#ifdef __LINUX__
+	gtk_init(&argc, &argv);
+#endif
 	srand(timeGetTime());
 	log_Init(true);
 

@@ -1,7 +1,5 @@
 loading image __temp__img$$$.gif
-AddSourceFile() is TODO in Linux
 VC System Compilation stats: 
-0 ints (8178 expanded), 0 strings (0 expanded), 0 functions, 0 total lines
+0 ints (0 expanded), 0 strings (0 expanded), 0 functions, 0 total lines
 
-MessageBox() is TODO in Linux: "preprocess step: could not open system.vc"
 Exiting: preprocess step: could not open system.vc

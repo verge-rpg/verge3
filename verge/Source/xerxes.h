@@ -130,6 +130,7 @@ typedef unsigned char  byte;
 #include <SDL.h>
 #include <fmod.h>
 #include <corona.h>
+#include <gtk/gtk.h>
 
 //mbg 9/5/05 adding psp support
 #elif __PSP__

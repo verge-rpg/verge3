@@ -5,13 +5,12 @@ V3SRC = ../verge/Source/
 ZLIBSRC = ../zlib/
 CORSRC = ../corona/
 LUASRC = ../lua/lua-5.1.2/
-LUABINDSRC = ../lua/luabind/
 
 OBJS = \
-	$(V3SRC)a_common.o $(V3SRC)a_dict.o $(V3SRC)a_vfile.o $(V3SRC)a_codec.o $(V3SRC)a_config.o $(V3SRC)a_handle.o $(V3SRC)a_image.o \
+	$(V3SRC)a_common.o $(V3SRC)a_dict.o $(V3SRC)a_vfile.o $(V3SRC)a_codec.o $(V3SRC)a_config.o $(V3SRC)a_handle.o $(V3SRC)a_image.o $(V3SRC)a_string.o \
 	$(V3SRC)g_script.o $(V3SRC)g_startup.o $(V3SRC)g_chr.o $(V3SRC)g_font.o $(V3SRC)g_controls.o $(V3SRC)g_engine.o $(V3SRC)g_editcode.o $(V3SRC)g_sound.o $(V3SRC)snd_fmod.o $(V3SRC)g_entity.o $(V3SRC)g_sprites.o $(V3SRC)g_map.o $(V3SRC)g_vsp.o $(V3SRC)garlick.o $(V3SRC)lua_main.o \
 	$(V3SRC)vc_builtins.o $(V3SRC)vc_core.o $(V3SRC)vc_compiler.o $(V3SRC)vc_library.o $(V3SRC)vc_debug.o \
-	$(V3SRC)vid_manager.o $(V3SRC)vid_sysfont.o $(V3SRC)vid_ddblit.o \
+	$(V3SRC)vid_manager.o $(V3SRC)vid_sysfont.o $(V3SRC)vid_ddblit.o $(V3SRC)vid_timeless.o $(V3SRC)vid_fbfx.o \
 	$(V3SRC)vid_macbase.o $(V3SRC)mac_joystick.o $(V3SRC)mac_network.o $(V3SRC)mac_keyboard.o $(V3SRC)mac_mouse.o $(V3SRC)mac_system.o $(V3SRC)mac_timer.o $(V3SRC)mac_movie.o  \
 
 LUAOBJS = $(LUASRC)lapi.o \
@@ -44,27 +43,6 @@ LUAOBJS = $(LUASRC)lapi.o \
 	$(LUASRC)lvm.o \
 	$(LUASRC)lzio.o \
 	$(LUASRC)print.o
-
-LUABINDOBJS = \
-	$(LUABINDSRC)src/class.o \
-	$(LUABINDSRC)src/class_info.o \
-	$(LUABINDSRC)src/class_registry.o \
-	$(LUABINDSRC)src/class_rep.o \
-	$(LUABINDSRC)src/create_class.o \
-	$(LUABINDSRC)src/error.o \
-	$(LUABINDSRC)src/find_best_match.o \
-	$(LUABINDSRC)src/function.o \
-	$(LUABINDSRC)src/implicit_cast.o \
-	$(LUABINDSRC)src/link_compatibility.o \
-	$(LUABINDSRC)src/object_rep.o \
-	$(LUABINDSRC)src/open.o \
-	$(LUABINDSRC)src/overload_rep.o \
-	$(LUABINDSRC)src/pcall.o \
-	$(LUABINDSRC)src/ref.o \
-	$(LUABINDSRC)src/scope.o \
-	$(LUABINDSRC)src/stack_content_by_name.o \
-	$(LUABINDSRC)src/weak_ref.o \
-	$(LUABINDSRC)src/wrapper_base.o
 
 ZLIBOBJS = \
 	$(ZLIBSRC)adler32.o $(ZLIBSRC)compress.o $(ZLIBSRC)crc32.o $(ZLIBSRC)gzio.o $(ZLIBSRC)uncompr.o $(ZLIBSRC)deflate.o $(ZLIBSRC)trees.o \
@@ -149,7 +127,7 @@ LIBJPEGOBJS=	\
 	
 	
 
-verge3: libzlib.a libcorona.a liblua.a libluabind.a $(OBJS)
+verge3: libzlib.a libcorona.a liblua.a $(OBJS)
 	g++ $(CXXFLAGS) $(OBJS) -o verge3 -L$(LIBDIR) $(LDFLAGS)
 
 libzlib.a: $(ZLIBOBJS)
@@ -163,18 +141,16 @@ liblua.a: $(LUAOBJS)
 	$(AR) r $@  $(LUAOBJS)
 	$(RANLIB) $@
 
-libluabind.a: $(LUABINDOBJS)
-	$(AR) r $@  $(LUABINDOBJS)
-	$(RANLIB) $@
-
 clean:
-	rm libzlib.a libcorona.a liblua.a libluabind.a verge3 $(OBJS) $(COROBJS) $(LIBJPEGOBJS) $(LIBPNGOBJS) $(LIBUNGIFOBJS)
+	rm libzlib.a libcorona.a liblua.a verge3 $(OBJS) $(COROBJS) $(LIBJPEGOBJS) $(LIBPNGOBJS) $(LIBUNGIFOBJS)
 
 INCDIR = $(ZLIBSRC) $(V3SRC) $(CORSRC)jpeg-6b $(CORSRC)libungif-4.1.0 $(CORSRC)libpng-1.2.1 $(CORSRC)SDL_CFLAGS = $(shell sdl-config --cflags)
 SDL_LDFLAGS = $(shell sdl-config --libs)
-CFLAGS = $(SDL_CFLAGS) -O -Wall
+GTK_CFLAGS = $(shell pkg-config --cflags gtk+-2.0)
+GTK_LDFLAGS = $(shell pkg-config --libs gtk+-2.0)
+CFLAGS = $(SDL_CFLAGS) $(GTK_CFLAGS) -O3 -Wall
 LIBDIR = .
-LDFLAGS = -lm -lc -lcorona -lzlib -llua -lluabind -lfmod-3.75 $(SDL_LDFLAGS)
-CXXFLAGS = $(CFLAGS) -D__LINUX__ -I$(ZLIBSRC) -I$(CORSRC) -I$(CORSRC)jpeg-6b -I$(CORSRC)libungif-4.1.0/ -I$(CORSRC)libpng-1.2.1/ -I../boost-1.34.0/ -I../sdl/include/ -I../fmod/ -I$(LUASRC) -I$(LUABINDSRC)
+LDFLAGS = -lm -lc -lcorona -lzlib -llua -lluabind -lfmod-3.75 $(SDL_LDFLAGS) $(GTK_LDFLAGS)
+CXXFLAGS = $(CFLAGS) -D__LINUX__ -I$(ZLIBSRC) -I$(CORSRC) -I$(CORSRC)jpeg-6b -I$(CORSRC)libungif-4.1.0/ -I$(CORSRC)libpng-1.2.1/ -I../boost-1.37.0/ -I../sdl/include/ -I../fmod/ -I$(LUASRC)
 ASFLAGS = $(CFLAGS)
 
