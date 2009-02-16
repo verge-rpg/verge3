@@ -1377,22 +1377,24 @@ int ScriptEngine::FileOpen(CStringRef fname, int filemode) {
 			break;
 	if (index == VCFILES)
 		se->Error("FileOpen() - Out of file handles! \nTry closing files you're done with, or if you really need more, \nemail vecna@verge-rpg.com and pester me!");
+	
+	const char* cpfname = fname.c_str();
 
 	#ifdef __APPLE__
 	// swap backslashes in path for forward slashes
 	// (windows -> unix/max)
-	string converted = fname;
+	string converted = fname.str();
 	boost::algorithm::replace_all(converted, "\\", "/");
-	fname = converted.c_str();
+	cpfname = converted.c_str();
 	#endif
 
 	switch (filemode)
 	{
 		case VC_READ:
-			vcfiles[index].vfptr = vopen(fname.c_str());
+			vcfiles[index].vfptr = vopen(cpfname);
 			if (!vcfiles[index].vfptr)
 			{
-				log("opening of %s for reading failed.", fname.c_str());
+				log("opening of %s for reading failed.", cpfname);
 				return 0;
 			}
 			vcfiles[index].active = true;
@@ -1401,11 +1403,11 @@ int ScriptEngine::FileOpen(CStringRef fname, int filemode) {
 		case VC_WRITE:
 		case VC_WRITE_APPEND: // Overkill (2006-07-05): Append mode added.
 			if(filemode == VC_WRITE)
-				vcfiles[index].fptr = fopen(fname.c_str(), "wb");
-			else vcfiles[index].fptr = fopen(fname.c_str(), "ab");
+				vcfiles[index].fptr = fopen(cpfname, "wb");
+			else vcfiles[index].fptr = fopen(cpfname, "ab");
 			if (!vcfiles[index].fptr)
 			{
-				::log("opening of %s for writing/appending failed.", fname.c_str());
+				::log("opening of %s for writing/appending failed.", cpfname);
 				return 0;
 			}
 			vcfiles[index].active = true;

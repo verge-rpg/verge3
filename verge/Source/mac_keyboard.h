@@ -25,7 +25,7 @@ extern byte key_ascii_tbl[128];
 extern byte key_shift_tbl[128];
 extern byte lastkey;
 
-extern std::string bindarray[256];
+extern StringRef bindarray[256];
 
 #endif
 

@@ -572,7 +572,7 @@ StringRef VCCore::ProcessString()
 		}
 		case strINT: {
 			char buf[16];
-			_itoa(ResolveOperand(),buf,10);
+			sprintf(buf,"%d",ResolveOperand());
 			ret = buf;
 			break;
 		}
@@ -1597,9 +1597,9 @@ void VCCore::DecompileLibFunc()
 {
 	PrintTab();
 	byte c = currentvc->GrabC();
-	fprintf(vcd, "%s(", libfuncs[c].name);
+	fprintf(vcd, "%s(", libfuncs[c].name.c_str());
 
-	for (int i=0; i<libfuncs[c].argumentTypes.size(); i++)
+	for (quad i=0; i<libfuncs[c].argumentTypes.size(); i++)
 	{
 		switch (libfuncs[c].argumentTypes[i])
 		{

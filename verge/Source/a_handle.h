@@ -153,10 +153,11 @@ public:
 	//this will reserve handles 0,1,etc...
 	static void forceAlloc(int type, int count) { handleTypes[type].forceAlloc(count); }
 
-	class iterator : public VoidHandleSet::iterator {};
+	//class iterator : public VoidHandleSet::iterator {};
+	typedef VoidHandleSet::iterator iterator;
 
-	static iterator begin(int type) { return *reinterpret_cast<iterator*>(&handleTypes[type].begin()); }
-	static iterator end(int type) { return *reinterpret_cast<iterator*>(&handleTypes[type].end()); }
+	static iterator begin(int type) { return handleTypes[type].begin(); }
+	static iterator end(int type) { return handleTypes[type].end(); }
 };
 
 

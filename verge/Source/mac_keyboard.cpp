@@ -21,7 +21,7 @@
 char keys[256];
 byte lastpressed;
 byte lastkey;
-string bindarray[256];
+StringRef bindarray[256];
 
 byte key_ascii_tbl[128] =
 {

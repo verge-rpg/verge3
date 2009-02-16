@@ -54,7 +54,7 @@ void doMessageBox(string message)
 
 // call to retrieve a url's text
 // Returns the empty string on error
-string getUrlText(string inUrl) 
+string getUrlText(CStringRef inUrl) 
 {
 	NSURL * url = [NSURL URLWithString: [NSString stringWithCString: inUrl.c_str()]];
 	NSString * contents = [NSString stringWithContentsOfURL: url];
@@ -67,7 +67,7 @@ string getUrlText(string inUrl)
 // returns 0 if the URL is not reachable,
 // and will signal an err() if the image
 // is not loadable.
-int getUrlImage(string inUrl)
+int getUrlImage(CStringRef inUrl)
 {
 	NSURL * url = [NSURL URLWithString: [NSString stringWithCString: inUrl.c_str()]];
 	NSString * contents = [NSString stringWithContentsOfURL: url];
@@ -84,17 +84,17 @@ int getUrlImage(string inUrl)
 	return toReturn;
 }
 
-std::string GetSystemSaveDirectory(std::string name)
+StringRef GetSystemSaveDirectory(CStringRef name)
 {
   NSArray *arr = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, true);
   if([arr count] == 0 || !MAC_USE_VERGE_RES_DIR)
   {
-    return std::string("./");
+    return "./";
   }
   else
   {
-    name = "com.verge-rpg." + name;
-    NSString *prefsDirName = [NSString stringWithUTF8String:name.c_str()];
+	  StringRef temp = (std::string)"com.verge-rpg." + name.c_str();
+    NSString *prefsDirName = [NSString stringWithUTF8String:temp.c_str()];
     
     NSString *libDir = [arr objectAtIndex:0];
     NSString *vergeDir = [[libDir stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:prefsDirName];

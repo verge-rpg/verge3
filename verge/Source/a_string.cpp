@@ -2,9 +2,17 @@
 #include <stdio.h>
 
 //the order of these matters: StringRefs cant be constructed until the pool is created
-boost::object_pool<_StringRef> _StringRef_allocator;
-StringRef StringRef::empty_string = "";
-CStringRef empty_string = StringRef::empty_string;
+boost::object_pool<_StringRef> &StringRef::get_StringRef_allocator()
+{
+	static boost::object_pool<_StringRef> _StringRef_allocator;
+	return _StringRef_allocator;
+}
+CStringRef empty_string = StringRef::empty_string();
+
+const StringRef& StringRef::empty_string() {
+	static StringRef empty_string = "";
+	return empty_string;
+}
 
 #ifdef __WIN32__
 
@@ -75,7 +83,7 @@ bool isdelim(char c, CStringRef s) {
 	return false;
 }
 
-quad FastHash(bool _tolower, char const * const s, quad seed) {
+unsigned int FastHash(bool _tolower, char const * const s, unsigned int seed) {
 	int result = seed;
 
 	if ( s == NULL ) // should this assert(false) ?
@@ -113,12 +121,12 @@ quad FastHash(bool _tolower, char const * const s, quad seed) {
 	return result;
 }
 
-quad FastHash( char const * const s, quad seed )
+unsigned int FastHash( char const * const s, unsigned int seed )
 {
 	return FastHash(false,s,seed);
 }
 
-quad FastHash( const std::string& s, quad seed )
+unsigned int FastHash( const std::string& s, unsigned int seed )
 {
 	return FastHash( s.c_str(), seed );
 }

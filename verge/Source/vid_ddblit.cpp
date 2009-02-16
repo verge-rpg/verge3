@@ -174,6 +174,129 @@ void dd_ColorReplace(int color_find, int color_replace, image *img)
 			}
 		}
 	}
+}  
+
+
+template<bool CLIP>
+void dd32_PutPixel(int x, int y, int color, image *dest)
+{
+	int *ptr = (int *)dest->data;
+	if(CLIP)
+		if (x<dest->cx1 || x>dest->cx2 || y<dest->cy1 || y>dest->cy2)
+			return;
+	ptr[(y * dest->pitch) + x] = color;
+}
+
+template<bool CLIP>
+void dd32_PutPixel_50lucent(int x, int y, int color, image *dest)
+{
+	quad s, c;
+	int *d=(int *)dest->data;
+
+	if(CLIP)
+		if (x<dest->cx1 || x>dest->cx2 || y<dest->cy1 || y>dest->cy2)
+			return;
+
+	s=d[(y * dest->pitch) + x];
+	c=(s & tmask) + (color & tmask);
+	d[(y * dest->pitch) + x] = (int) (c >> 1);
+}
+
+template<bool CLIP>
+void dd32_PutPixel_lucent(int x, int y, int color, image *dest)
+{
+	byte *d, *c;
+
+	if(CLIP)
+		if (x<dest->cx1 || x>dest->cx2 || y<dest->cy1 || y>dest->cy2)
+			return;
+
+	c = (byte *) &color;
+	d = (byte *) dest->data;
+	d += ((y*dest->pitch)+x)<<2;
+	//MBG TODO - THIS LOOKS LIKE A HACK THAT WILL BREAK ALPHA CHANNEL
+#ifdef __BIG_ENDIAN__
+	d++;
+	c++;
+#endif
+	*d = ((*d * alpha) + (*c * ialpha)) / 100; d++; c++;
+	*d = ((*d * alpha) + (*c * ialpha)) / 100; d++; c++;
+	*d = ((*d * alpha) + (*c * ialpha)) / 100;
+}
+
+
+
+
+template<LUCENT_TYPE LT, bool CLIP> 
+static void T_PutPixel(int x, int y, int color, image *dest)
+{
+	switch(LT) {
+		case NONE: dd32_PutPixel<CLIP>(x,y,color,dest); break;
+		case HALF: dd32_PutPixel_50lucent<CLIP>(x,y,color,dest); break;
+		case ANY:  dd32_PutPixel_lucent<CLIP>(x,y,color,dest); break;
+	}
+}
+
+template<LUCENT_TYPE LT, bool CLIP>
+void T_HLine(int x, int y, int xe, int color, image *dest)
+{
+	int *d = (int *) dest->data;
+	
+	if(CLIP) {
+		int cx1=0, cy1=0, cx2=0, cy2=0;
+		if (xe<x) SWAP(x,xe);
+		dest->GetClip(cx1, cy1, cx2, cy2);
+		if (x>cx2 || y>cy2 || xe<cx1 || y<cy1)
+			return;
+		if (xe>cx2) xe=cx2;
+		if (x<cx1)  x =cx1;
+	}
+
+	d += (y * dest->pitch) + x;
+	for (; x<=xe; x++) {
+		switch(LT) {
+			case NONE: *d++ = color; break;
+			case HALF: {
+				int s=*d;
+				s=(s & tmask) + (color & tmask);
+				*d++ = (s >> 1);
+				break;
+			}
+			case ANY:
+				T_PutPixel<ANY,false>(x, y, color, dest);
+				break;
+		}
+	}
+}
+
+
+template<LUCENT_TYPE LT>
+void T_VLine(int x, int y, int ye, int color, image *dest)
+{
+	int *d = (int *) dest->data;
+	int cx1=0, cy1=0, cx2=0, cy2=0;
+	if (ye<y) SWAP(y,ye);
+	dest->GetClip(cx1, cy1, cx2, cy2);
+	if (x>cx2 || y>cy2 || x<cx1 || ye<cy1)
+		return;
+	if (ye>cy2) ye=cy2;
+	if (y<cy1)  y =cy1;
+
+	d += (y * dest->pitch) + x;
+	for (; y<=ye; y++, d+=dest->pitch) {
+		switch(LT) {
+			case NONE: *d = color; break;
+			case HALF: {
+				int s=*d;
+				s=(s & tmask) + (color & tmask);
+				*d = (s >> 1);
+				break;
+			}
+			case ANY:
+				T_PutPixel<ANY,false>(x, y, color, dest);
+				break;
+		}
+	}
 }
 
 template<LUCENT_TYPE LT>
@@ -575,63 +698,6 @@ void Clear(int color, image *dest)
 		*d++ = color;
 }
 
-template<bool CLIP>
-void dd32_PutPixel(int x, int y, int color, image *dest)
-{
-	int *ptr = (int *)dest->data;
-	if(CLIP)
-		if (x<dest->cx1 || x>dest->cx2 || y<dest->cy1 || y>dest->cy2)
-			return;
-	ptr[(y * dest->pitch) + x] = color;
-}
-
-template<bool CLIP>
-void dd32_PutPixel_50lucent(int x, int y, int color, image *dest)
-{
-	quad s, c;
-	int *d=(int *)dest->data;
-
-	if(CLIP)
-		if (x<dest->cx1 || x>dest->cx2 || y<dest->cy1 || y>dest->cy2)
-			return;
-
-	s=d[(y * dest->pitch) + x];
-	c=(s & tmask) + (color & tmask);
-	d[(y * dest->pitch) + x] = (int) (c >> 1);
-}
-
-template<bool CLIP>
-void dd32_PutPixel_lucent(int x, int y, int color, image *dest)
-{
-	byte *d, *c;
-
-	if(CLIP)
-		if (x<dest->cx1 || x>dest->cx2 || y<dest->cy1 || y>dest->cy2)
-			return;
-
-	c = (byte *) &color;
-	d = (byte *) dest->data;
-	d += ((y*dest->pitch)+x)<<2;
-	//MBG TODO - THIS LOOKS LIKE A HACK THAT WILL BREAK ALPHA CHANNEL
-#ifdef __BIG_ENDIAN__
-	d++;
-	c++;
-#endif
-	*d = ((*d * alpha) + (*c * ialpha)) / 100; d++; c++;
-	*d = ((*d * alpha) + (*c * ialpha)) / 100; d++; c++;
-	*d = ((*d * alpha) + (*c * ialpha)) / 100;
-}
-
-template<LUCENT_TYPE LT, bool CLIP> 
-static void T_PutPixel(int x, int y, int color, image *dest)
-{
-	switch(LT) {
-		case NONE: dd32_PutPixel<CLIP>(x,y,color,dest); break;
-		case HALF: dd32_PutPixel_50lucent<CLIP>(x,y,color,dest); break;
-		case ANY:  dd32_PutPixel_lucent<CLIP>(x,y,color,dest); break;
-	}
-}
-
 template<LUCENT_TYPE LT, int FILTER>
 static void _T_ColorFilter(image *img) {
 	int rr, gg, bb, z, c;
@@ -687,68 +753,6 @@ static void T_ColorFilter(int filter, image *img)
 }
 
 
-
-template<LUCENT_TYPE LT, bool CLIP>
-void T_HLine(int x, int y, int xe, int color, image *dest)
-{
-	int *d = (int *) dest->data;
-	
-	if(CLIP) {
-		int cx1=0, cy1=0, cx2=0, cy2=0;
-		if (xe<x) SWAP(x,xe);
-		dest->GetClip(cx1, cy1, cx2, cy2);
-		if (x>cx2 || y>cy2 || xe<cx1 || y<cy1)
-			return;
-		if (xe>cx2) xe=cx2;
-		if (x<cx1)  x =cx1;
-	}
-
-	d += (y * dest->pitch) + x;
-	for (; x<=xe; x++) {
-		switch(LT) {
-			case NONE: *d++ = color; break;
-			case HALF: {
-				int s=*d;
-				s=(s & tmask) + (color & tmask);
-				*d++ = (s >> 1);
-				break;
-			}
-			case ANY:
-				T_PutPixel<ANY,false>(x, y, color, dest);
-				break;
-		}
-	}
-}
-
-
-template<LUCENT_TYPE LT>
-void T_VLine(int x, int y, int ye, int color, image *dest)
-{
-	int *d = (int *) dest->data;
-	int cx1=0, cy1=0, cx2=0, cy2=0;
-	if (ye<y) SWAP(y,ye);
-	dest->GetClip(cx1, cy1, cx2, cy2);
-	if (x>cx2 || y>cy2 || x<cx1 || ye<cy1)
-		return;
-	if (ye>cy2) ye=cy2;
-	if (y<cy1)  y =cy1;
-
-	d += (y * dest->pitch) + x;
-	for (; y<=ye; y++, d+=dest->pitch) {
-		switch(LT) {
-			case NONE: *d = color; break;
-			case HALF: {
-				int s=*d;
-				s=(s & tmask) + (color & tmask);
-				*d = (s >> 1);
-				break;
-			}
-			case ANY:
-				T_PutPixel<ANY,false>(x, y, color, dest);
-				break;
-		}
-	}
-}
 
 
 

@@ -2,46 +2,7 @@
 
 #ifndef NOTIMELESS
 
-extern const unsigned short timeless[];
 int skewlines[100] = { 0 };
-
-void Timeless(int x, int y1, int y, image *src, image *dest)
-{
-	quad xofs = x < 0 ? (256-x) % 256 : x % 256;
-	quad rot = x < 0 ? (320-x) % 320 : x % 320;
-	quad yofs = (y1)%256;
-	word ofs = 0;
-
-	quad *s=(quad *)src->data,
-		 *d=(quad *)dest->data+(y*dest->pitch);
-
-	int pitch = dest->pitch;
-	int pitch199 = pitch*199;
-	quad chunkindex;
-	quad lutindex;
-	quad startofs = (yofs<<8) | xofs;
-	for(int i=0;i<4;i++)
-	{
-		chunkindex = rot+i;
-		for(int xx=0;xx<80;xx++)
-		{
-			lutindex = (chunkindex%320)*100;
-			ofs = startofs;
-			int topofs = xx*4+i;
-			int botofs = xx*4+i + pitch199;
-			for(int yy=0;yy<100;yy++)
-			{
-				ofs += timeless[lutindex]+skewlines[yy];
-				lutindex++;
-				d[topofs] = s[ofs];
-				d[botofs] = s[ofs];
-				topofs += pitch;
-				botofs -= pitch;
-			}
-			chunkindex += 4;
-		}
-	}
-}
 
 //this version of timeless will dump the data table
 //void dd32_Timeless(int x, int y1, int y, image *src, image *dest)
@@ -2677,6 +2638,45 @@ static const unsigned short timeless[] =
  768,768,768,1024,1024,1024,1024,1280,1536,1536,1792,1792,2304,2560,2816,3328,
  3840,4608,5632,6912
 };
+
+void Timeless(int x, int y1, int y, image *src, image *dest)
+{
+	quad xofs = x < 0 ? (256-x) % 256 : x % 256;
+	quad rot = x < 0 ? (320-x) % 320 : x % 320;
+	quad yofs = (y1)%256;
+	word ofs = 0;
+	
+	quad *s=(quad *)src->data,
+	*d=(quad *)dest->data+(y*dest->pitch);
+	
+	int pitch = dest->pitch;
+	int pitch199 = pitch*199;
+	quad chunkindex;
+	quad lutindex;
+	quad startofs = (yofs<<8) | xofs;
+	for(int i=0;i<4;i++)
+	{
+		chunkindex = rot+i;
+		for(int xx=0;xx<80;xx++)
+		{
+			lutindex = (chunkindex%320)*100;
+			ofs = startofs;
+			int topofs = xx*4+i;
+			int botofs = xx*4+i + pitch199;
+			for(int yy=0;yy<100;yy++)
+			{
+				ofs += timeless[lutindex]+skewlines[yy];
+				lutindex++;
+				d[topofs] = s[ofs];
+				d[botofs] = s[ofs];
+				topofs += pitch;
+				botofs -= pitch;
+			}
+			chunkindex += 4;
+		}
+	}
+}
+
 
 #endif
 

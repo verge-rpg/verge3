@@ -155,7 +155,6 @@
 		66743AE007AF194500765A03 /* opcodes.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A9807AF194500765A03 /* opcodes.h */; };
 		66743AE107AF194500765A03 /* resource.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A9907AF194500765A03 /* resource.h */; };
 		66743AE207AF194500765A03 /* sincos.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A9A07AF194500765A03 /* sincos.h */; };
-		66743AE307AF194500765A03 /* timeless.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A9B07AF194500765A03 /* timeless.h */; };
 		66743AE407AF194500765A03 /* vc_builtins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743A9C07AF194500765A03 /* vc_builtins.cpp */; };
 		66743AE507AF194500765A03 /* vc_compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743A9D07AF194500765A03 /* vc_compiler.cpp */; };
 		66743AE607AF194500765A03 /* vc_compiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A9E07AF194500765A03 /* vc_compiler.h */; };
@@ -264,28 +263,7 @@
 		66CDFA280C4EA63900420943 /* lzio.c in Sources */ = {isa = PBXBuildFile; fileRef = 66CDF9F30C4EA63900420943 /* lzio.c */; };
 		66CDFA290C4EA63900420943 /* lzio.h in Headers */ = {isa = PBXBuildFile; fileRef = 66CDF9F40C4EA63900420943 /* lzio.h */; };
 		66CDFA2A0C4EA63900420943 /* print.c in Sources */ = {isa = PBXBuildFile; fileRef = 66CDF9F50C4EA63900420943 /* print.c */; };
-		66CDFA3C0C4EA6E000420943 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CDF9BA0C4EA62A00420943 /* liblua.a */; };
 		66CDFA410C4EA6FC00420943 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CDF9BA0C4EA62A00420943 /* liblua.a */; };
-		66CDFA420C4EA6FC00420943 /* libluabind.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CDFA330C4EA6A700420943 /* libluabind.a */; };
-		66CDFA600C4EA72000420943 /* class_info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA4D0C4EA71F00420943 /* class_info.cpp */; };
-		66CDFA610C4EA72000420943 /* class_registry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA4E0C4EA71F00420943 /* class_registry.cpp */; };
-		66CDFA620C4EA72000420943 /* class_rep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA4F0C4EA71F00420943 /* class_rep.cpp */; };
-		66CDFA630C4EA72000420943 /* class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA500C4EA71F00420943 /* class.cpp */; };
-		66CDFA640C4EA72000420943 /* create_class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA510C4EA71F00420943 /* create_class.cpp */; };
-		66CDFA650C4EA72000420943 /* error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA520C4EA71F00420943 /* error.cpp */; };
-		66CDFA660C4EA72000420943 /* find_best_match.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA530C4EA71F00420943 /* find_best_match.cpp */; };
-		66CDFA670C4EA72000420943 /* function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA540C4EA71F00420943 /* function.cpp */; };
-		66CDFA680C4EA72000420943 /* implicit_cast.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA550C4EA71F00420943 /* implicit_cast.cpp */; };
-		66CDFA690C4EA72000420943 /* link_compatibility.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA560C4EA71F00420943 /* link_compatibility.cpp */; };
-		66CDFA6A0C4EA72000420943 /* object_rep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA570C4EA71F00420943 /* object_rep.cpp */; };
-		66CDFA6B0C4EA72000420943 /* open.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA580C4EA72000420943 /* open.cpp */; };
-		66CDFA6C0C4EA72000420943 /* overload_rep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA590C4EA72000420943 /* overload_rep.cpp */; };
-		66CDFA6D0C4EA72000420943 /* pcall.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA5A0C4EA72000420943 /* pcall.cpp */; };
-		66CDFA6E0C4EA72000420943 /* ref.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA5B0C4EA72000420943 /* ref.cpp */; };
-		66CDFA6F0C4EA72000420943 /* scope.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA5C0C4EA72000420943 /* scope.cpp */; };
-		66CDFA700C4EA72000420943 /* stack_content_by_name.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA5D0C4EA72000420943 /* stack_content_by_name.cpp */; };
-		66CDFA710C4EA72000420943 /* weak_ref.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA5E0C4EA72000420943 /* weak_ref.cpp */; };
-		66CDFA720C4EA72000420943 /* wrapper_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66CDFA5F0C4EA72000420943 /* wrapper_base.cpp */; };
 		66CE20D707B54EBA00C42922 /* vid_macbase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B3754D07B2A4130068C75B /* vid_macbase.cpp */; };
 		66CE215607B5552D00C42922 /* mac_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B3754507B2A4130068C75B /* mac_network.cpp */; };
 		66CE220D07B55A6300C42922 /* mac_movie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B3754307B2A4130068C75B /* mac_movie.cpp */; };
@@ -294,6 +272,10 @@
 		66DE5FE60A6FA92400D6CEEA /* garlick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DE5FE40A6FA92400D6CEEA /* garlick.cpp */; };
 		66DE5FE70A6FA92400D6CEEA /* garlick.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DE5FE50A6FA92400D6CEEA /* garlick.h */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		AAC5C5380F49201E00A8D3E0 /* a_string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC5C5370F49201E00A8D3E0 /* a_string.cpp */; };
+		AAC5C53A0F49203700A8D3E0 /* vid_timeless.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC5C5390F49203700A8D3E0 /* vid_timeless.cpp */; };
+		AAC5C5440F4920CE00A8D3E0 /* vid_fbfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC5C5420F4920CE00A8D3E0 /* vid_fbfx.cpp */; };
+		AAC5C5450F4920CE00A8D3E0 /* vid_fbfx.h in Headers */ = {isa = PBXBuildFile; fileRef = AAC5C5430F4920CE00A8D3E0 /* vid_fbfx.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -324,20 +306,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 66B8DC5B08D513420062487B;
 			remoteInfo = libungif;
-		};
-		66CDFA3D0C4EA6E800420943 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 66CDF9B90C4EA62A00420943;
-			remoteInfo = lua;
-		};
-		66CDFA3F0C4EA6EE00420943 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 66CDFA320C4EA6A700420943;
-			remoteInfo = luabind;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -504,7 +472,6 @@
 		66743A9807AF194500765A03 /* opcodes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = opcodes.h; path = ../verge/Source/opcodes.h; sourceTree = SOURCE_ROOT; };
 		66743A9907AF194500765A03 /* resource.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = resource.h; path = ../verge/Source/resource.h; sourceTree = SOURCE_ROOT; };
 		66743A9A07AF194500765A03 /* sincos.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sincos.h; path = ../verge/Source/sincos.h; sourceTree = SOURCE_ROOT; };
-		66743A9B07AF194500765A03 /* timeless.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = timeless.h; path = ../verge/Source/timeless.h; sourceTree = SOURCE_ROOT; };
 		66743A9C07AF194500765A03 /* vc_builtins.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vc_builtins.cpp; path = ../verge/Source/vc_builtins.cpp; sourceTree = SOURCE_ROOT; };
 		66743A9D07AF194500765A03 /* vc_compiler.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vc_compiler.cpp; path = ../verge/Source/vc_compiler.cpp; sourceTree = SOURCE_ROOT; };
 		66743A9E07AF194500765A03 /* vc_compiler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = vc_compiler.h; path = ../verge/Source/vc_compiler.h; sourceTree = SOURCE_ROOT; };
@@ -618,7 +585,6 @@
 		66CDF9F30C4EA63900420943 /* lzio.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = lzio.c; path = "../lua/lua-5.1.2/lzio.c"; sourceTree = SOURCE_ROOT; };
 		66CDF9F40C4EA63900420943 /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = lzio.h; path = "../lua/lua-5.1.2/lzio.h"; sourceTree = SOURCE_ROOT; };
 		66CDF9F50C4EA63900420943 /* print.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = print.c; path = "../lua/lua-5.1.2/print.c"; sourceTree = SOURCE_ROOT; };
-		66CDFA330C4EA6A700420943 /* libluabind.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libluabind.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		66CDFA4D0C4EA71F00420943 /* class_info.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = class_info.cpp; path = ../lua/luabind/src/class_info.cpp; sourceTree = SOURCE_ROOT; };
 		66CDFA4E0C4EA71F00420943 /* class_registry.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = class_registry.cpp; path = ../lua/luabind/src/class_registry.cpp; sourceTree = SOURCE_ROOT; };
 		66CDFA4F0C4EA71F00420943 /* class_rep.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = class_rep.cpp; path = ../lua/luabind/src/class_rep.cpp; sourceTree = SOURCE_ROOT; };
@@ -642,6 +608,10 @@
 		66DE5FE40A6FA92400D6CEEA /* garlick.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = garlick.cpp; path = ../verge/Source/garlick.cpp; sourceTree = SOURCE_ROOT; };
 		66DE5FE50A6FA92400D6CEEA /* garlick.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = garlick.h; path = ../verge/Source/garlick.h; sourceTree = SOURCE_ROOT; };
 		8D1107320486CEB800E47090 /* verge3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = verge3.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AAC5C5370F49201E00A8D3E0 /* a_string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = a_string.cpp; path = ../verge/Source/a_string.cpp; sourceTree = SOURCE_ROOT; };
+		AAC5C5390F49203700A8D3E0 /* vid_timeless.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vid_timeless.cpp; path = ../verge/Source/vid_timeless.cpp; sourceTree = SOURCE_ROOT; };
+		AAC5C5420F4920CE00A8D3E0 /* vid_fbfx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vid_fbfx.cpp; path = ../verge/Source/vid_fbfx.cpp; sourceTree = SOURCE_ROOT; };
+		AAC5C5430F4920CE00A8D3E0 /* vid_fbfx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vid_fbfx.h; path = ../verge/Source/vid_fbfx.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -659,20 +629,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		66CDFA310C4EA6A700420943 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				66CDFA3C0C4EA6E000420943 /* liblua.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8D11072E0486CEB800E47090 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				66CDFA410C4EA6FC00420943 /* liblua.a in Frameworks */,
-				66CDFA420C4EA6FC00420943 /* libluabind.a in Frameworks */,
 				66743A5C07AF191700765A03 /* libcorona.a in Frameworks */,
 				66743A5D07AF191700765A03 /* liblibjpeg.a in Frameworks */,
 				66743A5E07AF191700765A03 /* liblibpng.a in Frameworks */,
@@ -719,7 +680,6 @@
 				667438FF07AF149100765A03 /* liblibpng.a */,
 				66B8DC5C08D513420062487B /* liblibungif.a */,
 				66CDF9BA0C4EA62A00420943 /* liblua.a */,
-				66CDFA330C4EA6A700420943 /* libluabind.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -897,6 +857,10 @@
 		66743A7207AF192A00765A03 /* verge3 */ = {
 			isa = PBXGroup;
 			children = (
+				AAC5C5420F4920CE00A8D3E0 /* vid_fbfx.cpp */,
+				AAC5C5430F4920CE00A8D3E0 /* vid_fbfx.h */,
+				AAC5C5390F49203700A8D3E0 /* vid_timeless.cpp */,
+				AAC5C5370F49201E00A8D3E0 /* a_string.cpp */,
 				66CDF7C20C4E8EB900420943 /* g_script.cpp */,
 				66CDF7C30C4E8EB900420943 /* g_script.h */,
 				66CDF7C40C4E8EB900420943 /* lua_main.cpp */,
@@ -965,7 +929,6 @@
 				66743A9807AF194500765A03 /* opcodes.h */,
 				66743A9907AF194500765A03 /* resource.h */,
 				66743A9A07AF194500765A03 /* sincos.h */,
-				66743A9B07AF194500765A03 /* timeless.h */,
 				66743A9C07AF194500765A03 /* vc_builtins.cpp */,
 				66743A9D07AF194500765A03 /* vc_compiler.cpp */,
 				66743A9E07AF194500765A03 /* vc_compiler.h */,
@@ -1191,13 +1154,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		66CDFA2F0C4EA6A700420943 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8D1107270486CEB800E47090 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -1222,7 +1178,6 @@
 				66743AE007AF194500765A03 /* opcodes.h in Headers */,
 				66743AE107AF194500765A03 /* resource.h in Headers */,
 				66743AE207AF194500765A03 /* sincos.h in Headers */,
-				66743AE307AF194500765A03 /* timeless.h in Headers */,
 				66743AE607AF194500765A03 /* vc_compiler.h in Headers */,
 				66743AE907AF194500765A03 /* vc_core.h in Headers */,
 				66743AEB07AF194500765A03 /* vc_debug.h in Headers */,
@@ -1251,6 +1206,7 @@
 				662B8C4D090B2F8B00E910BF /* a_dict.h in Headers */,
 				66DE5FE70A6FA92400D6CEEA /* garlick.h in Headers */,
 				66CDF7C60C4E8EB900420943 /* g_script.h in Headers */,
+				AAC5C5450F4920CE00A8D3E0 /* vid_fbfx.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1342,24 +1298,6 @@
 			productReference = 66CDF9BA0C4EA62A00420943 /* liblua.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		66CDFA320C4EA6A700420943 /* luabind */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 66CDFA380C4EA6C900420943 /* Build configuration list for PBXNativeTarget "luabind" */;
-			buildPhases = (
-				66CDFA2F0C4EA6A700420943 /* Headers */,
-				66CDFA300C4EA6A700420943 /* Sources */,
-				66CDFA310C4EA6A700420943 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				66CDFA3E0C4EA6E800420943 /* PBXTargetDependency */,
-			);
-			name = luabind;
-			productName = luabind;
-			productReference = 66CDFA330C4EA6A700420943 /* libluabind.a */;
-			productType = "com.apple.product-type.library.static";
-		};
 		8D1107260486CEB800E47090 /* verge3 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66DE5FD70A6FA8AF00D6CEEA /* Build configuration list for PBXNativeTarget "verge3" */;
@@ -1374,7 +1312,6 @@
 			);
 			dependencies = (
 				66B3792007B2B8600068C75B /* PBXTargetDependency */,
-				66CDFA400C4EA6EE00420943 /* PBXTargetDependency */,
 			);
 			name = verge3;
 			productInstallPath = "$(HOME)/Applications";
@@ -1400,7 +1337,6 @@
 				667438FE07AF149100765A03 /* libpng */,
 				66B8DC5B08D513420062487B /* libungif */,
 				66CDF9B90C4EA62A00420943 /* lua */,
-				66CDFA320C4EA6A700420943 /* luabind */,
 			);
 		};
 /* End PBXProject section */
@@ -1565,32 +1501,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		66CDFA300C4EA6A700420943 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				66CDFA600C4EA72000420943 /* class_info.cpp in Sources */,
-				66CDFA610C4EA72000420943 /* class_registry.cpp in Sources */,
-				66CDFA620C4EA72000420943 /* class_rep.cpp in Sources */,
-				66CDFA630C4EA72000420943 /* class.cpp in Sources */,
-				66CDFA640C4EA72000420943 /* create_class.cpp in Sources */,
-				66CDFA650C4EA72000420943 /* error.cpp in Sources */,
-				66CDFA660C4EA72000420943 /* find_best_match.cpp in Sources */,
-				66CDFA670C4EA72000420943 /* function.cpp in Sources */,
-				66CDFA680C4EA72000420943 /* implicit_cast.cpp in Sources */,
-				66CDFA690C4EA72000420943 /* link_compatibility.cpp in Sources */,
-				66CDFA6A0C4EA72000420943 /* object_rep.cpp in Sources */,
-				66CDFA6B0C4EA72000420943 /* open.cpp in Sources */,
-				66CDFA6C0C4EA72000420943 /* overload_rep.cpp in Sources */,
-				66CDFA6D0C4EA72000420943 /* pcall.cpp in Sources */,
-				66CDFA6E0C4EA72000420943 /* ref.cpp in Sources */,
-				66CDFA6F0C4EA72000420943 /* scope.cpp in Sources */,
-				66CDFA700C4EA72000420943 /* stack_content_by_name.cpp in Sources */,
-				66CDFA710C4EA72000420943 /* weak_ref.cpp in Sources */,
-				66CDFA720C4EA72000420943 /* wrapper_base.cpp in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8D11072C0486CEB800E47090 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1636,6 +1546,9 @@
 				668634090A80F2BD00E20C3E /* p_datastructs.cpp in Sources */,
 				66CDF7C50C4E8EB900420943 /* g_script.cpp in Sources */,
 				66CDF7C70C4E8EB900420943 /* lua_main.cpp in Sources */,
+				AAC5C5380F49201E00A8D3E0 /* a_string.cpp in Sources */,
+				AAC5C53A0F49203700A8D3E0 /* vid_timeless.cpp in Sources */,
+				AAC5C5440F4920CE00A8D3E0 /* vid_fbfx.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1661,16 +1574,6 @@
 			isa = PBXTargetDependency;
 			target = 66B8DC5B08D513420062487B /* libungif */;
 			targetProxy = 66B8DC5F08D513500062487B /* PBXContainerItemProxy */;
-		};
-		66CDFA3E0C4EA6E800420943 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 66CDF9B90C4EA62A00420943 /* lua */;
-			targetProxy = 66CDFA3D0C4EA6E800420943 /* PBXContainerItemProxy */;
-		};
-		66CDFA400C4EA6EE00420943 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 66CDFA320C4EA6A700420943 /* luabind */;
-			targetProxy = 66CDFA3F0C4EA6EE00420943 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -1732,78 +1635,6 @@
 				INSTALL_PATH = /usr/local/lib;
 				PREBINDING = NO;
 				PRODUCT_NAME = lua;
-				ZERO_LINK = YES;
-			};
-			name = Default;
-		};
-		66CDFA390C4EA6C900420943 /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
-				GCC_MODEL_TUNING = G5;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../lua/lua",
-					"$(SRCROOT)/../lua/luabind",
-					"$(SRCROOT)/../boost-1.34.0/",
-				);
-				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Deployment\"";
-				PREBINDING = NO;
-				PRODUCT_NAME = luabind;
-				ZERO_LINK = YES;
-			};
-			name = Development;
-		};
-		66CDFA3A0C4EA6C900420943 /* Deployment */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../lua/lua",
-					"$(SRCROOT)/../lua/luabind",
-					"$(SRCROOT)/../boost-1.34.0/",
-				);
-				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Deployment\"";
-				PREBINDING = NO;
-				PRODUCT_NAME = luabind;
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
-		66CDFA3B0C4EA6C900420943 /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				GCC_ENABLE_FIX_AND_CONTINUE = YES;
-				GCC_MODEL_TUNING = G5;
-				HEADER_SEARCH_PATHS = (
-					"$(SRCROOT)/../lua/lua",
-					"$(SRCROOT)/../lua/luabind",
-					"$(SRCROOT)/../boost-1.34.0/",
-				);
-				INSTALL_PATH = /usr/local/lib;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/build/Deployment\"";
-				PREBINDING = NO;
-				PRODUCT_NAME = luabind;
 				ZERO_LINK = YES;
 			};
 			name = Default;
@@ -2123,8 +1954,7 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)",
-					"$(SRCROOT)/../boost-1.34.0",
-					"$(SRCROOT)/../lua/luabind",
+					"$(SRCROOT)/../boost-1.37.0",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -2257,6 +2087,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = ../sdl/;
+				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
+				HEADER_SEARCH_PATHS = "../../boost-1.37.0/";
 				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
@@ -2293,16 +2125,6 @@
 				66CDF9BE0C4EA63000420943 /* Development */,
 				66CDF9BF0C4EA63000420943 /* Deployment */,
 				66CDF9C00C4EA63000420943 /* Default */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
-		};
-		66CDFA380C4EA6C900420943 /* Build configuration list for PBXNativeTarget "luabind" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				66CDFA390C4EA6C900420943 /* Development */,
-				66CDFA3A0C4EA6C900420943 /* Deployment */,
-				66CDFA3B0C4EA6C900420943 /* Default */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Default;

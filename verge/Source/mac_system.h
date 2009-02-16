@@ -39,9 +39,9 @@ int getSecond();
 void strupr(char *c);
 void strlwr(char *c);
 
-std::vector<std::string> listFilePattern(std::string pattern);
+void listFilePattern(std::vector<std::string> &res, CStringRef pattern);
 
-void showMessageBox(std::string message);
+void showMessageBox(CStringRef message);
 
 unsigned int timeGetTime();
 
@@ -50,6 +50,6 @@ void Sleep(unsigned int msec);
 void InitEditCode(); // impl in mac_cocoa_util.mm
 void AddSourceFile(std::string s); // impl in mac_cocoa_util.mm
 
-std::string GetSystemSaveDirectory(std::string name); // impl in mac_cocoa_util.mm 
+StringRef GetSystemSaveDirectory(CStringRef name); // impl in mac_cocoa_util.mm 
 
 #endif

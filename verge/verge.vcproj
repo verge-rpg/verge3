@@ -1536,10 +1536,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\timeless.h"
-				>
-			</File>
-			<File
 				RelativePath="Source\vc_compiler.h"
 				>
 			</File>

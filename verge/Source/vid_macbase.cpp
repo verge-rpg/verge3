@@ -442,7 +442,7 @@ int sdl_Window::set_win(int w, int h, int bpp)
 	back_surface = SDL_CreateRGBSurfaceFrom(back_buffer, w, h, 32, w * 4, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
 
 	vid_bpp = bpp;
-	vid_bytesperpixel = bpp / 8;
+	//vid_bytesperpixel = bpp / 8;
 
 	if(img) delete img;
 	img = new image();
@@ -455,9 +455,9 @@ int sdl_Window::set_win(int w, int h, int bpp)
 		screen = img;
 	}
 
-	img->data = back_buffer;
+	img->data = (quad*)back_buffer;
 //	img->alphamap = 0;
-	img->bpp = bpp;
+//	img->bpp = bpp;
 	img->width = w;
 	img->height = h;
 	img->pitch = w;

@@ -49,6 +49,10 @@ void doMessageBox(std::string msg)
 }
 #endif
 
+void platform_ProcessConfig()
+{
+}
+
 // internal use, in mac_cocoa_util.mm
 void doMessageBox(std::string msg);
 
@@ -240,10 +244,8 @@ int getSecond()
 // Returns a vector of filenames that match the given pattern.
 // As you can see, it uses glob to get them, so this will now
 // match any pattern intelligently.
-std::vector<string> listFilePattern(std::string pattern)
+void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
 {
-	std::vector<string> res;
-	
 	glob_t pglob;
 	
 	glob(pattern.c_str(),0,0,&pglob);
@@ -257,8 +259,6 @@ std::vector<string> listFilePattern(std::string pattern)
 	}
 	
 	globfree(&pglob);
-
-	return res;
 }
 
 // replacement for windows string functions
@@ -318,7 +318,7 @@ void err(const char *str, ...)
 // show a message box to the user. Handles
 // mouse showing (and re-hiding if you ask for it)
 // and turns full screen off if it's on.
-void showMessageBox(string msg)
+void showMessageBox(CStringRef msg)
 {
 	if(!vid_window)
 		sdl_toggleFullscreen();
@@ -329,7 +329,7 @@ void showMessageBox(string msg)
 	// need to show cursor so they can click on it
 	SDL_ShowCursor(SDL_ENABLE);
 
-	doMessageBox(msg);
+	doMessageBox(msg.c_str());
 
 	// now restore it back to the old state
 	SDL_ShowCursor(cursorState);

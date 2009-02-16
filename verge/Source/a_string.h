@@ -28,7 +28,6 @@ public:
 		: str(stdstr)
 		, mRefcount(0)
 	{
-		int zzz=9;
 	}
 
 	_StringRef(const char* cstr)
@@ -48,43 +47,30 @@ public:
 	int mRefcount;
 };
 
-extern boost::object_pool<_StringRef> _StringRef_allocator;
-
-
-namespace boost
-{
-	inline void intrusive_ptr_add_ref(_StringRef * ptr) { 
-		++ptr->mRefcount; 
-	}
-
-	inline void intrusive_ptr_release(_StringRef * ptr) { 
-		if(--ptr->mRefcount == 0)
-			_StringRef_allocator.destroy(ptr);
-	}
-};
 
 typedef boost::intrusive_ptr<_StringRef> X_StringRef;
 class StringRef : public X_StringRef {
 public:
 	
-	static StringRef empty_string;
+	static const StringRef& empty_string();
+	static boost::object_pool<_StringRef> & get_StringRef_allocator();
 
 	StringRef()
-		: X_StringRef(empty_string.get())
+		: X_StringRef(empty_string().get())
 	{
 		//just adds a reference to the empty string
 	}
 
 	StringRef(const std::string &stdstr)
-		: X_StringRef(_StringRef_allocator.construct(stdstr))
+		: X_StringRef(get_StringRef_allocator().construct(stdstr))
 	{}
 
 	StringRef(const char* cstr)
-		: X_StringRef(_StringRef_allocator.construct(cstr))
+		: X_StringRef(get_StringRef_allocator().construct(cstr))
 	{}
 
 	StringRef(const char* cstr, const char* cstrend)
-		: X_StringRef(_StringRef_allocator.construct(cstr,cstrend))
+		: X_StringRef(get_StringRef_allocator().construct(cstr,cstrend))
 	{}
 
 	std::string const & str() const { return get()->str; }
@@ -113,10 +99,23 @@ public:
 	std::string & dangerous_peek() { return get()->str; }
 };
 
+
+namespace boost
+{
+	inline void intrusive_ptr_add_ref(_StringRef * ptr) { 
+		++ptr->mRefcount; 
+	}
+
+	inline void intrusive_ptr_release(_StringRef * ptr) { 
+		if(--ptr->mRefcount == 0)
+			StringRef::get_StringRef_allocator().destroy(ptr);
+	}
+};
+
+
 typedef const StringRef& CStringRef;
 
 extern CStringRef empty_string;
-//inline StringRef empty_string() { return StringRef::empty_string; }
 
 #include <boost/algorithm/string.hpp>
 using boost::algorithm::to_upper_copy;
@@ -135,9 +134,9 @@ StringRef vc_strright(CStringRef str, int len);
 StringRef strovr(CStringRef source, CStringRef rep, int offset);
 bool isdelim(char c, CStringRef s);
 
-quad FastHash(bool tolower, char const * const s, quad seed = 0);
-quad FastHash( char const * const s, quad seed = 0);
-quad FastHash( const std::string& s, quad seed = 0);
+unsigned int FastHash(bool tolower, char const * const s, unsigned int seed = 0);
+unsigned int FastHash( char const * const s, unsigned int seed = 0);
+unsigned int FastHash( const std::string& s, unsigned int seed = 0);
 
 
 #endif
