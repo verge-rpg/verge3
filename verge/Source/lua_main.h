@@ -127,7 +127,7 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 				}
 				else
 				{
-					return lua_tonumber(L, activeFunctionStackOffset);
+					return (int)lua_tonumber(L, activeFunctionStackOffset);
 				}
 			}
 			else
@@ -171,7 +171,7 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 			for(int i = start; i <= argumentCount; i++)
 			{
 				argument_t argument;
-				argument.int_value = lua_tonumber(L, i);
+				argument.int_value = (int)lua_tonumber(L, i);
 				argument.string_value = lua_tostring(L, i);
 
 				// Whatever, doesn't really matter, coercion is 100% possible

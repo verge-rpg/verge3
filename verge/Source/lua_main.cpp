@@ -245,7 +245,7 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 int LUA::InvokeBuiltinFunction(lua_State* L)
 {
 	// Grab the function index upvalue
-	int functionIndex = lua_tonumber(L, lua_upvalueindex(1));
+	int functionIndex = (int)lua_tonumber(L, lua_upvalueindex(1));
 
 	// Track the active function
 	activeFunctionIndex = functionIndex;
@@ -401,6 +401,7 @@ int LUA::Get_Hvar(lua_State* L)
 		} else lua->LuaError("Fatal Error Code Sandman");
 		return 1;
 	} else lua->LuaError("Fatal Error Code Spaniard");
+	return -1;
 }
 
 int LUA::Set_Hvar(lua_State* L)
