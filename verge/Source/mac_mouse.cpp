@@ -49,7 +49,7 @@ void mouse_Update()
 {
 	int x, y;
 
-	SDL_GetMouseState(&x, &y);
+	SDL_GetMouseState(0, &x, &y);
 
 	sdl_Window *window = dynamic_cast<sdl_Window*>(gameWindow);
 	

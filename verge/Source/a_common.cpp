@@ -31,7 +31,6 @@ byte* ImageTo24bpp(image *img)
 	// Tripled, because we want a seperate byte for each R, G, or B channel.
 	byte *dest = new byte[img->width * img->height * 3];
 	byte *out = dest;
-	quad *src = (quad *) img->data;
 
 	for (int y=img->cy1; y<=img->cy2; y++)
 	{

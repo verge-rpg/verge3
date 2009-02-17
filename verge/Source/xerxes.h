@@ -14,6 +14,15 @@
 #define ALLOW_SCRIPT_COMPILATION
 #define ENABLE_LUA
 
+#ifdef __APPLE__
+#include "TargetConditionals.h"
+	#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+	#define __IPHONE__
+	#else
+	#define __OSX__
+	#endif
+#endif
+
 //version info macros
 #define DEF_VERSION "\"Verge 3.14 2008.09.29\""
 #define DEF_BUILD "20070708"
@@ -23,6 +32,8 @@
 #define DEF_OS "\"linux\""
 #elif __WII__
 #define DEF_OS "\"wii\""
+#elif __IPHONE__
+#define DEF_OS "\"iphone\""
 #else
 #define DEF_OS "\"win\""
 #endif
@@ -42,7 +53,8 @@
 #define GARLICK_USE_FLAC
 #endif
 
-#ifdef __APPLE__
+#ifdef __OSX__
+#include "../fmod/fmod.h"
 #define SND_USE_FMOD
 #endif
 
@@ -117,7 +129,6 @@ typedef unsigned char  byte;
 #include <stdarg.h>
 #include <unistd.h>
 #include "SDL.h"
-#include "../fmod/fmod.h"
 #include "../corona/corona.h"
 
 #elif __LINUX__

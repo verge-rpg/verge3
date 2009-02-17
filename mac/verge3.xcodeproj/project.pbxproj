@@ -585,25 +585,6 @@
 		66CDF9F30C4EA63900420943 /* lzio.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = lzio.c; path = "../lua/lua-5.1.2/lzio.c"; sourceTree = SOURCE_ROOT; };
 		66CDF9F40C4EA63900420943 /* lzio.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = lzio.h; path = "../lua/lua-5.1.2/lzio.h"; sourceTree = SOURCE_ROOT; };
 		66CDF9F50C4EA63900420943 /* print.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = print.c; path = "../lua/lua-5.1.2/print.c"; sourceTree = SOURCE_ROOT; };
-		66CDFA4D0C4EA71F00420943 /* class_info.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = class_info.cpp; path = ../lua/luabind/src/class_info.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA4E0C4EA71F00420943 /* class_registry.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = class_registry.cpp; path = ../lua/luabind/src/class_registry.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA4F0C4EA71F00420943 /* class_rep.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = class_rep.cpp; path = ../lua/luabind/src/class_rep.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA500C4EA71F00420943 /* class.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = class.cpp; path = ../lua/luabind/src/class.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA510C4EA71F00420943 /* create_class.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = create_class.cpp; path = ../lua/luabind/src/create_class.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA520C4EA71F00420943 /* error.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = error.cpp; path = ../lua/luabind/src/error.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA530C4EA71F00420943 /* find_best_match.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = find_best_match.cpp; path = ../lua/luabind/src/find_best_match.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA540C4EA71F00420943 /* function.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = function.cpp; path = ../lua/luabind/src/function.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA550C4EA71F00420943 /* implicit_cast.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = implicit_cast.cpp; path = ../lua/luabind/src/implicit_cast.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA560C4EA71F00420943 /* link_compatibility.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = link_compatibility.cpp; path = ../lua/luabind/src/link_compatibility.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA570C4EA71F00420943 /* object_rep.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = object_rep.cpp; path = ../lua/luabind/src/object_rep.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA580C4EA72000420943 /* open.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = open.cpp; path = ../lua/luabind/src/open.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA590C4EA72000420943 /* overload_rep.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = overload_rep.cpp; path = ../lua/luabind/src/overload_rep.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA5A0C4EA72000420943 /* pcall.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = pcall.cpp; path = ../lua/luabind/src/pcall.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA5B0C4EA72000420943 /* ref.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = ref.cpp; path = ../lua/luabind/src/ref.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA5C0C4EA72000420943 /* scope.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = scope.cpp; path = ../lua/luabind/src/scope.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA5D0C4EA72000420943 /* stack_content_by_name.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = stack_content_by_name.cpp; path = ../lua/luabind/src/stack_content_by_name.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA5E0C4EA72000420943 /* weak_ref.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = weak_ref.cpp; path = ../lua/luabind/src/weak_ref.cpp; sourceTree = SOURCE_ROOT; };
-		66CDFA5F0C4EA72000420943 /* wrapper_base.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = wrapper_base.cpp; path = ../lua/luabind/src/wrapper_base.cpp; sourceTree = SOURCE_ROOT; };
 		66DBFDC407B8085F00CB0A24 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		66DE5FE40A6FA92400D6CEEA /* garlick.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = garlick.cpp; path = ../verge/Source/garlick.cpp; sourceTree = SOURCE_ROOT; };
 		66DE5FE50A6FA92400D6CEEA /* garlick.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = garlick.h; path = ../verge/Source/garlick.h; sourceTree = SOURCE_ROOT; };
@@ -687,7 +668,6 @@
 		29B97314FDCFA39411CA2CEA /* verge3 */ = {
 			isa = PBXGroup;
 			children = (
-				66CDFA2E0C4EA67F00420943 /* luabind */,
 				66CDF9B50C4EA5FC00420943 /* lua */,
 				66743A7207AF192A00765A03 /* verge3 */,
 				66B2B41407B3EB88000E3414 /* SDL Wrapper */,
@@ -1039,32 +1019,6 @@
 				66CDF9F50C4EA63900420943 /* print.c */,
 			);
 			name = lua;
-			sourceTree = "<group>";
-		};
-		66CDFA2E0C4EA67F00420943 /* luabind */ = {
-			isa = PBXGroup;
-			children = (
-				66CDFA4D0C4EA71F00420943 /* class_info.cpp */,
-				66CDFA4E0C4EA71F00420943 /* class_registry.cpp */,
-				66CDFA4F0C4EA71F00420943 /* class_rep.cpp */,
-				66CDFA500C4EA71F00420943 /* class.cpp */,
-				66CDFA510C4EA71F00420943 /* create_class.cpp */,
-				66CDFA520C4EA71F00420943 /* error.cpp */,
-				66CDFA530C4EA71F00420943 /* find_best_match.cpp */,
-				66CDFA540C4EA71F00420943 /* function.cpp */,
-				66CDFA550C4EA71F00420943 /* implicit_cast.cpp */,
-				66CDFA560C4EA71F00420943 /* link_compatibility.cpp */,
-				66CDFA570C4EA71F00420943 /* object_rep.cpp */,
-				66CDFA580C4EA72000420943 /* open.cpp */,
-				66CDFA590C4EA72000420943 /* overload_rep.cpp */,
-				66CDFA5A0C4EA72000420943 /* pcall.cpp */,
-				66CDFA5B0C4EA72000420943 /* ref.cpp */,
-				66CDFA5C0C4EA72000420943 /* scope.cpp */,
-				66CDFA5D0C4EA72000420943 /* stack_content_by_name.cpp */,
-				66CDFA5E0C4EA72000420943 /* weak_ref.cpp */,
-				66CDFA5F0C4EA72000420943 /* wrapper_base.cpp */,
-			);
-			name = luabind;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
