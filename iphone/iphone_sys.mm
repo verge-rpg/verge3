@@ -36,6 +36,11 @@ void InitEditCode() {
 	//[sdlmain->macCocoaUtil showWindow];
 }
 
+extern "C++"
+void iphone_m_HideStatusBar() {
+	[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
+}
+
 // called to add a file to the pop-up
 void AddSourceFile(string s) {
 	// retrieve SDLMain object from the NSApp
@@ -52,7 +57,7 @@ void AddSourceFile(string s) {
 void doMessageBox(string message)
 {
 	//NSRunAlertPanel(@"Verge Message:",[NSString stringWithCString: message.c_str()],@"OK",NULL,NULL);
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Verge Message:" message:[NSString stringWithCString: message.c_str()] delegate:nil cancelButtonTitle:nil otherButtonTitles:nil];
+	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Verge Message:" message:[NSString stringWithCString: message.c_str()] delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
 	[alert show];
 	[alert release];
 	

@@ -13,6 +13,7 @@
 
 
 void sdl_toggleFullscreen();
+void iphone_m_HideStatusBar();
 
 /*
 @interface MacCocoaUtil : NSObject {
