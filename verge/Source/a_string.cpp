@@ -21,7 +21,7 @@ void* operator new(size_t n)
 	static int ctr = 0;
 	ctr++;
 	if(ctr%1000==0)
-		printf("%d\n",ctr);
+		printf("news: %d x1000\n",ctr);
 	return malloc(n);
 }
 

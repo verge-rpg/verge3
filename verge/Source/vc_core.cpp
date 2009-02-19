@@ -232,8 +232,10 @@ void VCCore::LoadCore(VFILE *f, int cimage, bool append, bool patch_others)
 
 	if(append)
 		coreimages[cimage].Append(f->fp, true);
-	else
+	else {
+		new(&coreimages[cimage])Chunk(); //inplace construct a new chunk to make sure everything is zapped
 		coreimages[cimage].LoadChunk(f->fp);
+	}
 }
 
 void VCCore::LoadMapScript(VFILE *f, CStringRef filename)
@@ -623,9 +625,15 @@ StringRef VCCore::ProcessString()
 	return ret;
 }
 
+int ctr =0;
+
 StringRef VCCore::ResolveString()
 {
+	ctr++;
 	byte c;
+	if(ctr==6) {
+		int zzz=9;
+	}
 	StringRef ret = ProcessString();
 	std::string temp;
 	bool useTemp = false;
