@@ -71,6 +71,8 @@ void doMessageBox(std::string msg);
 // internal use
 int getCurrentBpp();
 
+void iphone_m_HideStatusBar();
+
 int main(int argc, char **argv)
 {
 #ifdef __LINUX__
@@ -84,8 +86,13 @@ int main(int argc, char **argv)
 			 SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
 		err("Couldn't start up SDL.");
 
+#ifdef __IPHONE__
+	iphone_m_HideStatusBar();
+#endif
+
 	// create video window
 	sdl_video_init();
+	SDL_GL_SetAttribute(SDL_GL_RETAINED_BACKING,0);
 
 	// hide the cursor while we're open -
 	// SDL shows it when it moves outside of window
