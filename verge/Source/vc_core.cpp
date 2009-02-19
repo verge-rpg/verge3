@@ -625,15 +625,9 @@ StringRef VCCore::ProcessString()
 	return ret;
 }
 
-int ctr =0;
-
 StringRef VCCore::ResolveString()
 {
-	ctr++;
 	byte c;
-	if(ctr==6) {
-		int zzz=9;
-	}
 	StringRef ret = ProcessString();
 	std::string temp;
 	bool useTemp = false;
