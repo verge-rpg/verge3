@@ -1,0 +1,152 @@
+// !$*UTF8*$!
+{
+	1D6058900D05DD3D006BFB54 /* iphone */ = {
+		activeExec = 0;
+		executables = (
+			AAE513430F4D51370046A6DA /* iphone */,
+		);
+	};
+	29B97313FDCFA39411CA2CEA /* Project object */ = {
+		activeBuildConfigurationName = Release;
+		activeExecutable = AAE513430F4D51370046A6DA /* iphone */;
+		activeSDKPreference = iphoneos2.2.1;
+		activeTarget = 1D6058900D05DD3D006BFB54 /* iphone */;
+		codeSenseManager = AAE5135F0F4D51700046A6DA /* Code sense */;
+		executables = (
+			AAE513430F4D51370046A6DA /* iphone */,
+		);
+		perUserDictionary = {
+			PBXConfiguration.PBXFileTableDataSource3.PBXFileTableDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					834,
+					20,
+					48,
+					43,
+					43,
+					20,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+					PBXFileDataSource_Target_ColumnID,
+				);
+			};
+			PBXConfiguration.PBXTargetDataSource.PBXTargetDataSource = {
+				PBXFileTableDataSourceColumnSortingDirectionKey = "-1";
+				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
+				PBXFileTableDataSourceColumnWidthsKey = (
+					20,
+					794,
+					60,
+					20,
+					48,
+					43,
+					43,
+				);
+				PBXFileTableDataSourceColumnsKey = (
+					PBXFileDataSource_FiletypeID,
+					PBXFileDataSource_Filename_ColumnID,
+					PBXTargetDataSource_PrimaryAttribute,
+					PBXFileDataSource_Built_ColumnID,
+					PBXFileDataSource_ObjectSize_ColumnID,
+					PBXFileDataSource_Errors_ColumnID,
+					PBXFileDataSource_Warnings_ColumnID,
+				);
+			};
+			PBXPerProjectTemplateStateSaveDate = 256725303;
+			PBXWorkspaceStateSaveDate = 256725303;
+		};
+		perUserProjectItems = {
+			AAE513720F4D52320046A6DA /* PBXTextBookmark */ = AAE513720F4D52320046A6DA /* PBXTextBookmark */;
+			AAE513730F4D52320046A6DA /* PBXTextBookmark */ = AAE513730F4D52320046A6DA /* PBXTextBookmark */;
+		};
+		sourceControlManager = AAE5135E0F4D51700046A6DA /* Source Control */;
+		userBuildSettings = {
+		};
+	};
+	AA315C970F4A8B5600B85147 /* vid_ddblit.cpp */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {1012, 41524}}";
+			sepNavSelRange = "{63214, 42}";
+			sepNavVisRange = "{63035, 497}";
+		};
+	};
+	AAE06FA70F4A82EB00927080 /* lua */ = {
+		activeExec = 0;
+	};
+	AAE06FE70F4A83AE00927080 /* libjpeg */ = {
+		activeExec = 0;
+	};
+	AAE070B60F4A862C00927080 /* libpng */ = {
+		activeExec = 0;
+	};
+	AAE070D60F4A864E00927080 /* libungif */ = {
+		activeExec = 0;
+	};
+	AAE0710C0F4A86D400927080 /* corona */ = {
+		activeExec = 0;
+	};
+	AAE513430F4D51370046A6DA /* iphone */ = {
+		isa = PBXExecutable;
+		activeArgIndices = (
+		);
+		argumentStrings = (
+		);
+		autoAttachOnCrash = 1;
+		breakpointsEnabled = 1;
+		configStateDict = {
+		};
+		customDataFormattersEnabled = 1;
+		debuggerPlugin = GDBDebugging;
+		disassemblyDisplayState = 0;
+		dylibVariantSuffix = "";
+		enableDebugStr = 1;
+		environmentEntries = (
+		);
+		executableSystemSymbolLevel = 0;
+		executableUserSymbolLevel = 0;
+		libgmallocEnabled = 0;
+		name = iphone;
+		sourceDirectories = (
+		);
+	};
+	AAE5135E0F4D51700046A6DA /* Source Control */ = {
+		isa = PBXSourceControlManager;
+		fallbackIsa = XCSourceControlManager;
+		isSCMEnabled = 0;
+		scmConfiguration = {
+		};
+	};
+	AAE5135F0F4D51700046A6DA /* Code sense */ = {
+		isa = PBXCodeSenseManager;
+		indexTemplatePath = "";
+	};
+	AAE513720F4D52320046A6DA /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		comments = "instantiated from here";
+		fRef = AA315C970F4A8B5600B85147 /* vid_ddblit.cpp */;
+		rLen = 1;
+		rLoc = 2966;
+		rType = 1;
+	};
+	AAE513730F4D52320046A6DA /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = AA315C970F4A8B5600B85147 /* vid_ddblit.cpp */;
+		name = "vid_ddblit.cpp: 2967";
+		rLen = 42;
+		rLoc = 63214;
+		rType = 0;
+		vrLen = 497;
+		vrLoc = 63035;
+	};
+	AAEF28860F4CF5D3006C5FC9 /* sdl1.3 */ = {
+		activeExec = 0;
+	};
+}
