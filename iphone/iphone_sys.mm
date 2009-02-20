@@ -24,31 +24,18 @@ image *xLoadImage(const char *fname);
 // in a window other than the SDL window)
 extern bool IgnoreEvents;
 
-// called to initialize editing code
-// Shows the edit-code window.
-// Doesn't check if code editing is possible
-// accoring to current config.
-void InitEditCode() {
-	// retrieve SDLMain object from the NSApp
-	// then get the reloadController outlet
-	// (These are both hooked up in the nib file)
-	//SDLMain *sdlmain = [NSApp delegate];
-	//[sdlmain->macCocoaUtil showWindow];
-}
 
-extern "C++"
-void iphone_m_HideStatusBar() {
+extern "C++" {
+const char *iphone_appBundlePath;
+void iphone_m_init() {
 	[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
+	NSString *bPath = [[NSBundle mainBundle] bundlePath];
+	iphone_appBundlePath = [bPath cString];
+	[bPath release];
+}
 }
 
-// called to add a file to the pop-up
-void AddSourceFile(string s) {
-	// retrieve SDLMain object from the NSApp
-	// then get the reloadController outlet
-	// (These are both hooked up in the nib file)
-   // SDLMain *sdlmain = [NSApp delegate];
-    //[sdlmain->macCocoaUtil addFile:[NSString stringWithCString:s.c_str()]];
-}
+
 
 // call to show an alert panel. 
 // Other parts of verge should call

@@ -710,7 +710,7 @@ static void _T_ColorFilter(image *img) {
 
 	for (int y=y1; y<=y2; y++)
 	{
-		int* data_end = data+x2+1;
+		//int* data_end = data+x2+1;
 		for(int x=x1;x<=x2;x++,data++) {
 			int col = *data;
 			if (col == transColor) continue; // Overkill (2006-07-27): Ignore trans pixels

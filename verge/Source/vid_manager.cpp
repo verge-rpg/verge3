@@ -87,7 +87,9 @@ AuxWindow * (*vid_findAuxWindow)(int handle);
 int vid_SetMode(int xres, int yres, int bpp, int window, int mode)
 {
 	int (*doModeSet)(int xres, int yres, int bpp, bool windowflag);
-#ifdef __APPLE__
+#ifdef __IPHONE__
+	doModeSet = iphone_SetMode;
+#elif __APPLE__
 	doModeSet = sdl_SetMode;
 #elif __LINUX__
 	doModeSet = sdl_SetMode;
