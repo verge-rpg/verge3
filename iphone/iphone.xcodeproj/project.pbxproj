@@ -11,6 +11,7 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
+		AA137A610F4E769A00295F78 /* GLView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA137A600F4E769A00295F78 /* GLView.m */; settings = {COMPILER_FLAGS = "-DPLEASE_NO_XERXES_H"; }; };
 		AA315CB30F4A8B9E00B85147 /* g_startup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C6A0F4A8B5600B85147 /* g_startup.cpp */; };
 		AA315CBA0F4A8D4800B85147 /* a_codec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C450F4A8B5600B85147 /* a_codec.cpp */; };
 		AA315CBC0F4A8D4800B85147 /* a_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C470F4A8B5600B85147 /* a_common.cpp */; };
@@ -316,6 +317,8 @@
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA137A590F4E754800295F78 /* GLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLView.h; sourceTree = "<group>"; };
+		AA137A600F4E769A00295F78 /* GLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLView.m; sourceTree = "<group>"; };
 		AA315C450F4A8B5600B85147 /* a_codec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = a_codec.cpp; path = ../verge/Source/a_codec.cpp; sourceTree = SOURCE_ROOT; };
 		AA315C460F4A8B5600B85147 /* a_codec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = a_codec.h; path = ../verge/Source/a_codec.h; sourceTree = SOURCE_ROOT; };
 		AA315C470F4A8B5600B85147 /* a_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = a_common.cpp; path = ../verge/Source/a_common.cpp; sourceTree = SOURCE_ROOT; };
@@ -844,6 +847,8 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
+				AA137A600F4E769A00295F78 /* GLView.m */,
+				AA137A590F4E754800295F78 /* GLView.h */,
 				AACF7B190F4E575A00A2B5DB /* iphone.cpp */,
 				AACF7B1A0F4E575A00A2B5DB /* iphone_input.cpp */,
 				AACF7B1B0F4E575A00A2B5DB /* iphone_keyboard.cpp */,
@@ -1877,6 +1882,7 @@
 				AACF7B240F4E575A00A2B5DB /* iphone_network.cpp in Sources */,
 				AACF7B250F4E575A00A2B5DB /* iphone_sound.cpp in Sources */,
 				AACF7B260F4E575A00A2B5DB /* iphone_system.cpp in Sources */,
+				AA137A610F4E769A00295F78 /* GLView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

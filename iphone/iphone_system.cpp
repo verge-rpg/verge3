@@ -142,14 +142,6 @@ int iphone_SetMode(int xres, int yres, int bpp, bool windowflag) {
 
 	if(bpp != 32) return 0;
 
-	//for now, no mode is allowed except for 320x240x16
-	//xres = 320;
-	//yres = 240;
-	//int txres = 512;
-	//int tyres = 256;
-	//psp_tyres = tyres;
-
-
 	delete screen;
 	image *img = new image();
 	img->shell = true;
@@ -205,16 +197,24 @@ public:
 void iphone_VidFlip(void) {
 }
 
-extern const char *iphone_appBundlePath;
+static void initvideo() {
 
-int main(int argc, char *argv[])
+}
+
+void iphone_m_main(int argc, char *argv[]);
+extern "C" int main(int argc, char * argv[]) 
 {
-	iphone_m_init();
-	chdir(iphone_appBundlePath);
+	iphone_m_main(argc,argv);
+	return 0;
+}
 
+void iphone_c_main()
+{
 	srand(timeGetTime());
 	log_Init(true);
 
+
+	initvideo();
 
 	//init video hooks
 	gameWindow = new IphoneWindow();
@@ -224,8 +224,7 @@ int main(int argc, char *argv[])
 	vid_findAuxWindow = iphone_findAuxWindow;
 
 
-	xmain(argc,argv);
+	xmain(0,0);
 	
 	err("");
-	return 0;
 }
