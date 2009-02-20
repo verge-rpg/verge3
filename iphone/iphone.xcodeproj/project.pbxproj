@@ -2425,7 +2425,7 @@
 				OTHER_CFLAGS = "";
 				PREBINDING = NO;
 				SDKROOT = iphoneos2.2.1;
-				SYMROOT = /tmp/v3iphone/build;
+				SYMROOT = build;
 			};
 			name = Release;
 		};

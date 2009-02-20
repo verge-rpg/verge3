@@ -82,7 +82,8 @@ int main(int argc, char **argv)
 	log_Init(true);
 
 	// we must init SDL before any other sdl stuff
-	if(SDL_Init(SDL_INIT_TIMER |
+	//if(SDL_Init(SDL_INIT_TIMER |
+	if(SDL_Init(
 			 SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
 		err("Couldn't start up SDL.");
 
