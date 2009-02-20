@@ -140,7 +140,7 @@
 
 - (void)startAnimation
 {
-	animationTimer = [NSTimer scheduledTimerWithTimeInterval:animationInterval target:self selector:@selector(drawView) userInfo:nil repeats:YES];
+	//animationTimer = [NSTimer scheduledTimerWithTimeInterval:animationInterval target:self selector:@selector(drawView) userInfo:nil repeats:YES];
 }
 
 - (void)stopAnimation
@@ -160,29 +160,44 @@
 	}
 }
 
-// Updates the OpenGL view when the timer fires
-- (void)drawView
-{
-	// Make sure that you are drawing to the current context
-	[EAGLContext setCurrentContext:context];
-	
-	// If our drawing delegate needs to have the view setup, then call -setupView: and flag that it won't need to be called again.
-	if(!delegateSetup)
-	{
-		[delegate setupView:self];
-		delegateSetup = YES;
-	}
-	
-	glBindFramebufferOES(GL_FRAMEBUFFER_OES, viewFramebuffer);
 
-	[delegate drawView:self];
-	
+- (void)drawView {
+	const GLfloat squareVertices[] = {
+	-0.5f, -0.5f,
+	0.5f,  -0.5f,
+	-0.5f,  0.5f,
+	0.5f,   0.5f,
+	};
+	const GLubyte squareColors[] = {
+	255, 255,   0, 255,
+	0,   255, 255, 255,
+	0,     0,   0,   0,
+	255,   0, 255, 255,
+	};
+
+	[EAGLContext setCurrentContext:context];
+
+	glBindFramebufferOES(GL_FRAMEBUFFER_OES, viewFramebuffer);
+	glViewport(0, 0, backingWidth, backingHeight);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrthof(-1.0f, 1.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+	glMatrixMode(GL_MODELVIEW);
+	glRotatef(3.0f, 0.0f, 0.0f, 1.0f);
+
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glVertexPointer(2, GL_FLOAT, 0, squareVertices);
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glColorPointer(4, GL_UNSIGNED_BYTE, 0, squareColors);
+	glEnableClientState(GL_COLOR_ARRAY);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
 	glBindRenderbufferOES(GL_RENDERBUFFER_OES, viewRenderbuffer);
 	[context presentRenderbuffer:GL_RENDERBUFFER_OES];
-	
-	GLenum err = glGetError();
-	if(err)
-		NSLog(@"%x error", err);
 }
 
 // Stop animating and release resources when they are no longer needed.

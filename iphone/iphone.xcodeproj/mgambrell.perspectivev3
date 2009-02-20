@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>ActivePerspectiveName</key>
-	<string>Project</string>
+	<string>Debug</string>
 	<key>AllowedModules</key>
 	<array>
 		<dict>
@@ -300,8 +300,6 @@
 							<string>MainColumn</string>
 							<real>185</real>
 						</array>
-						<key>RubberWindowFrame</key>
-						<string>0 119 1280 883 0 0 1280 1002 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXSmartGroupTreeModule</string>
@@ -317,7 +315,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>AAE513580F4D51700046A6DA</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>vid_ddblit.cpp</string>
+								<string>iphone_sys.mm</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -325,19 +323,19 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>AAE513590F4D51700046A6DA</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>vid_ddblit.cpp</string>
+										<string>iphone_sys.mm</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>AA137AC00F4E807800295F78</string>
+										<string>AA137AFA0F4E8A0400295F78</string>
 										<key>history</key>
 										<array>
 											<string>AA137A9D0F4E7CF800295F78</string>
 											<string>AA137AA20F4E7D5000295F78</string>
 											<string>AA137AA30F4E7D5000295F78</string>
 											<string>AA137AB50F4E805D00295F78</string>
-											<string>AA137ABF0F4E807800295F78</string>
-											<string>AA137ABB0F4E805D00295F78</string>
+											<string>AA137ACA0F4E82F800295F78</string>
+											<string>AA137ACB0F4E82F800295F78</string>
 										</array>
 										<key>prevStack</key>
 										<array>
@@ -346,6 +344,7 @@
 											<string>AA137AA60F4E7D5000295F78</string>
 											<string>AA137AA80F4E7D5000295F78</string>
 											<string>AA137ABA0F4E805D00295F78</string>
+											<string>AA137ACC0F4E82F800295F78</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -360,8 +359,6 @@
 							<dict>
 								<key>Frame</key>
 								<string>{{0, 0}, {1073, 539}}</string>
-								<key>RubberWindowFrame</key>
-								<string>0 119 1280 883 0 0 1280 1002 </string>
 							</dict>
 							<key>Module</key>
 							<string>PBXNavigatorGroup</string>
@@ -424,8 +421,6 @@
 									<string>PBXCVSModule</string>
 								</dict>
 								<dict>
-									<key>BecomeActive</key>
-									<true/>
 									<key>ContentConfiguration</key>
 									<dict>
 										<key>PBXProjectModuleGUID</key>
@@ -441,8 +436,6 @@
 									<dict>
 										<key>Frame</key>
 										<string>{{10, 27}, {1073, 271}}</string>
-										<key>RubberWindowFrame</key>
-										<string>0 119 1280 883 0 0 1280 1002 </string>
 									</dict>
 									<key>Module</key>
 									<string>PBXBuildResultsModule</string>
@@ -524,6 +517,8 @@
 					<dict>
 						<key>Frame</key>
 						<string>{{0, 0}, {1280, 0}}</string>
+						<key>RubberWindowFrame</key>
+						<string>0 119 1280 883 0 0 1280 1002 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugCLIModule</string>
@@ -547,8 +542,8 @@
 								<string>yes</string>
 								<key>sizes</key>
 								<array>
-									<string>{{0, 0}, {625, 408}}</string>
-									<string>{{625, 0}, {655, 408}}</string>
+									<string>{{0, 0}, {625, 410}}</string>
+									<string>{{625, 0}, {655, 410}}</string>
 								</array>
 							</dict>
 							<key>VerticalSplitView</key>
@@ -563,8 +558,8 @@
 								<string>yes</string>
 								<key>sizes</key>
 								<array>
-									<string>{{0, 0}, {1280, 408}}</string>
-									<string>{{0, 408}, {1280, 429}}</string>
+									<string>{{0, 0}, {1280, 410}}</string>
+									<string>{{0, 410}, {1280, 427}}</string>
 								</array>
 							</dict>
 						</dict>
@@ -597,8 +592,12 @@
 								<real>363</real>
 							</array>
 							<key>Frame</key>
-							<string>{{625, 0}, {655, 408}}</string>
+							<string>{{625, 0}, {655, 410}}</string>
+							<key>RubberWindowFrame</key>
+							<string>0 119 1280 883 0 0 1280 1002 </string>
 						</dict>
+						<key>RubberWindowFrame</key>
+						<string>0 119 1280 883 0 0 1280 1002 </string>
 					</dict>
 					<key>Module</key>
 					<string>PBXDebugSessionModule</string>
@@ -621,14 +620,14 @@
 			</array>
 			<key>TableOfContents</key>
 			<array>
-				<string>AA1379B60F4E627000295F78</string>
+				<string>AA137B060F4E8A0800295F78</string>
 				<string>1CCC7628064C1048000F2A68</string>
 				<string>1CCC7629064C1048000F2A68</string>
-				<string>AA1379B70F4E627000295F78</string>
-				<string>AA1379B80F4E627000295F78</string>
-				<string>AA1379B90F4E627000295F78</string>
-				<string>AA1379BA0F4E627000295F78</string>
-				<string>AA1379BB0F4E627000295F78</string>
+				<string>AA137B070F4E8A0800295F78</string>
+				<string>AA137B080F4E8A0800295F78</string>
+				<string>AA137B090F4E8A0800295F78</string>
+				<string>AA137B0A0F4E8A0800295F78</string>
+				<string>AA137B0B0F4E8A0800295F78</string>
 			</array>
 			<key>ToolbarConfiguration</key>
 			<string>xcode.toolbar.config.debugV3</string>
@@ -658,8 +657,6 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>AA1379D60F4E63EF00295F78</string>
-		<string>AA1379D00F4E63CE00295F78</string>
 		<string>/Volumes/c$/svn/v3iphone/trunk/iphone/iphone.xcodeproj</string>
 	</array>
 	<key>WindowString</key>

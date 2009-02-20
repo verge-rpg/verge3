@@ -10,6 +10,14 @@
 //#include "mac_cocoa_util.h"
 #import "iphone_sys.h"
 
+void runloop() {
+	int result;
+	do {
+	result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, TRUE);
+	} while(result == kCFRunLoopRunHandledSource);
+}
+
+
 // include C parts we can use directly
 extern "C++" {
 #include "SDL.h"
@@ -90,27 +98,45 @@ int getUrlImage(CStringRef inUrl)
 
 extern "C++" void iphone_c_main();
 
+
 UIWindow*				window;
+GLView *glView ;
+
+void init() {
+	//(try to) hide the status bar
+	[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
+	
+	//capture the bundle path and chdir to it
+	NSString *bPath = [[NSBundle mainBundle] bundlePath];
+	const char* iphone_appBundlePath = [bPath cString];
+	chdir(iphone_appBundlePath);
+	[bPath release];
+	
+	
+	CGRect	rect = [[UIScreen mainScreen] bounds];
+	
+	window = [[UIWindow alloc] initWithFrame:rect];
+	
+	glView = [[GLView alloc] initWithFrame:rect]; 
+	[window addSubview:glView];
+
+	//glView.delegate = self;
+	//glView.animationInterval = 1.0 / kRenderingFrequency;
+	//[glView startAnimation];
+	//[glView release];
+	
+	[window makeKeyAndVisible];
+	
+}
+
+
+
 extern "C++" void iphone_m_main(int argc, char *argv[])
 {
 	NSAutoreleasePool *pool = [NSAutoreleasePool new];
 	UIApplicationMain(argc, argv,@"UIApplication",@"AppDelegate"); 
 	
-	/*CGRect	rect = [[UIScreen mainScreen] bounds];
-	
-	window = [[UIWindow alloc] initWithFrame:rect];
-	
-	GLView *glView = [[GLView alloc] initWithFrame:rect];
-	[window addSubview:glView];
-
-	//glView.delegate = self;
-	//glView.animationInterval = 1.0 / kRenderingFrequency;
-	[glView startAnimation];
-	[glView release];
-	
-	[window makeKeyAndVisible];
-	
-	iphone_c_main();*/
+	//init();
 	
 	[pool release];
 }
@@ -142,16 +168,6 @@ StringRef GetSystemSaveDirectory(CStringRef name)
   return dotSlash;
 }
 
-void init() {
-	//(try to) hide the status bar
-	[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
-	
-	//capture the bundle path and chdir to it
-	NSString *bPath = [[NSBundle mainBundle] bundlePath];
-	const char* iphone_appBundlePath = [bPath cString];
-	chdir(iphone_appBundlePath);
-	[bPath release];
-}
 
 
 @implementation AppDelegate
@@ -160,23 +176,12 @@ void init() {
 - (void)applicationDidFinishLaunching:(UIApplication*)application
 {
 	init();
-	//[UIApplication sharedApplication].idleTimerDisabled = YES;
+	//iphone_c_main();
+	for(;;) {
+		[glView drawView];
+		runloop();
+	}
 	
-	CGRect	rect = [[UIScreen mainScreen] bounds];
-	
-	window = [[UIWindow alloc] initWithFrame:rect];
-	
-	GLView *glView = [[GLView alloc] initWithFrame:rect];
-	[window addSubview:glView];
-
-	glView.delegate = self;
-	//glView.animationInterval = 1.0 / kRenderingFrequency;
-	[glView startAnimation];
-	[glView release];
-	
-	[window makeKeyAndVisible]; 
-	
-	iphone_c_main();
 }
 
 
