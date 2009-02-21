@@ -122,20 +122,15 @@ typedef unsigned char  byte;
 
 /* system includes */
 
-
-
 #ifdef __APPLE__
 #include <stdlib.h>
 #include <stdio.h>
 #include <strings.h>
 #include <stdarg.h>
 #include <unistd.h>
-
-	#ifndef __IPHONE__
-	#include "SDL.h"
-	#endif
-
+#include "SDL.h"
 #include "../corona/corona.h"
+
 #elif __LINUX__
 #include <ctype.h>
 #include <stdlib.h>
@@ -190,11 +185,7 @@ typedef unsigned char  byte;
 #include "a_codec.h"
 #include "a_dict.h"
 
-#ifdef __IPHONE__
-#include "vid_ddbase.h"
-#include "iphone_platform.h"
-
-#elif __APPLE__
+#ifdef __APPLE__
 #include "vid_macbase.h"
 #include "mac_joystick.h"
 #include "mac_network.h"

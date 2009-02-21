@@ -30,6 +30,11 @@
 #include "SDL_rect_c.h"
 #include "SDL_yuv_sw_c.h"
 
+		#ifndef GL_BGRA
+#define GL_BGRA 0x80E1
+#endif
+
+
 /* OpenGL ES 1.1 renderer implementation, based on the OpenGL renderer */
 
 static const float inv255f = 1.0f / 255.0f;
@@ -397,6 +402,10 @@ GLES_CreateTexture(SDL_Renderer * renderer, SDL_Texture * texture)
         return -1;
     }
 
+	internalFormat = GL_RGB;
+	format = GL_RGB;
+	type = GL_UNSIGNED_SHORT_5_6_5;
+
     data = (GLES_TextureData *) SDL_calloc(1, sizeof(*data));
     if (!data) {
         SDL_OutOfMemory();
@@ -726,7 +735,10 @@ GLES_RenderCopy(SDL_Renderer * renderer, SDL_Texture * texture,
 
         SetupTextureUpdate(data, texture, pitch);
 
-        data->glBindTexture(texturedata->type, texturedata->texture);
+
+		//mbg 20-feb-2009 - this isnt necessary since SetupTextureUpdate does it
+        //data->glBindTexture(texturedata->type, texturedata->texture);
+
         for (dirty = texturedata->dirty.list; dirty; dirty = dirty->next) {
             SDL_Rect *rect = &dirty->rect;
             pixels =
@@ -741,10 +753,17 @@ GLES_RenderCopy(SDL_Renderer * renderer, SDL_Texture * texture,
 			
 			/* mbg 18-feb-2009 - dont bother with this if the transformation is unnecessary due to pitch == width */
 			if(rect->w * bpp == pitch) {
-				data->glTexSubImage2D(texturedata->type, 0, rect->x, rect->y,
-									  rect->w, rect->h, texturedata->format,
-									  texturedata->formattype, pixels);
-			} else {
+				data->glTexImage2D(texturedata->type, 0, GL_RGB, 256, 256, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pixels);
+
+	//				internalFormat = GL_RGB;
+	//format = GL_RGB;
+	//type = GL_UNSIGNED_SHORT_5_6_5;
+				
+				//data->glTexSubImage2D(texturedata->type, 0, rect->x, rect->y,
+				//					  rect->w, rect->h, GL_BGRA,
+				//					  texturedata->formattype, pixels);
+			} else 
+			{
 				temp_buffer = SDL_malloc(rect->w * rect->h * bpp);
 				temp_ptr = temp_buffer;
 				for	(i = 0; i < rect->h; i++) {
@@ -765,7 +784,7 @@ GLES_RenderCopy(SDL_Renderer * renderer, SDL_Texture * texture,
         SDL_ClearDirtyRects(&texturedata->dirty);
     }
 
-    data->glBindTexture(texturedata->type, texturedata->texture);
+    //data->glBindTexture(texturedata->type, texturedata->texture);
     data->glEnable(GL_TEXTURE_2D);
 
     if (texture->modMode) {

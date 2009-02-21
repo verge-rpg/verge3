@@ -11,7 +11,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
-		AA137A610F4E769A00295F78 /* GLView.m in Sources */ = {isa = PBXBuildFile; fileRef = AA137A600F4E769A00295F78 /* GLView.m */; settings = {COMPILER_FLAGS = "-DPLEASE_NO_XERXES_H"; }; };
 		AA315CB30F4A8B9E00B85147 /* g_startup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C6A0F4A8B5600B85147 /* g_startup.cpp */; };
 		AA315CBA0F4A8D4800B85147 /* a_codec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C450F4A8B5600B85147 /* a_codec.cpp */; };
 		AA315CBC0F4A8D4800B85147 /* a_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C470F4A8B5600B85147 /* a_common.cpp */; };
@@ -33,6 +32,13 @@
 		AA315CF20F4A901C00B85147 /* g_vsp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C6C0F4A8B5600B85147 /* g_vsp.cpp */; };
 		AA315CF40F4A901C00B85147 /* garlick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C6E0F4A8B5600B85147 /* garlick.cpp */; };
 		AA315CF60F4A901C00B85147 /* lua_main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C700F4A8B5600B85147 /* lua_main.cpp */; };
+		AA315CF90F4A901C00B85147 /* mac_joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C730F4A8B5600B85147 /* mac_joystick.cpp */; };
+		AA315CFB0F4A901C00B85147 /* mac_keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C750F4A8B5600B85147 /* mac_keyboard.cpp */; };
+		AA315CFD0F4A901C00B85147 /* mac_mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C770F4A8B5600B85147 /* mac_mouse.cpp */; };
+		AA315CFF0F4A901C00B85147 /* mac_movie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C790F4A8B5600B85147 /* mac_movie.cpp */; };
+		AA315D010F4A901C00B85147 /* mac_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C7B0F4A8B5600B85147 /* mac_network.cpp */; };
+		AA315D030F4A901C00B85147 /* mac_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C7D0F4A8B5600B85147 /* mac_system.cpp */; };
+		AA315D050F4A901C00B85147 /* mac_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C7F0F4A8B5600B85147 /* mac_timer.cpp */; };
 		AA315D0D0F4A901C00B85147 /* snd_fmod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C870F4A8B5600B85147 /* snd_fmod.cpp */; };
 		AA315D100F4A901C00B85147 /* vc_builtins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C8A0F4A8B5600B85147 /* vc_builtins.cpp */; };
 		AA315D110F4A901C00B85147 /* vc_compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C8B0F4A8B5600B85147 /* vc_compiler.cpp */; };
@@ -41,6 +47,7 @@
 		AA315D180F4A901C00B85147 /* vc_library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C920F4A8B5600B85147 /* vc_library.cpp */; };
 		AA315D1A0F4A901C00B85147 /* vid_ddblit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C970F4A8B5600B85147 /* vid_ddblit.cpp */; };
 		AA315D1B0F4A901C00B85147 /* vid_fbfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C980F4A8B5600B85147 /* vid_fbfx.cpp */; };
+		AA315D1D0F4A901C00B85147 /* vid_macbase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C9A0F4A8B5600B85147 /* vid_macbase.cpp */; };
 		AA315D1F0F4A901C00B85147 /* vid_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C9C0F4A8B5600B85147 /* vid_manager.cpp */; };
 		AA315D210F4A901C00B85147 /* vid_sysfont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315C9E0F4A8B5600B85147 /* vid_sysfont.cpp */; };
 		AA315D230F4A901C00B85147 /* vid_timeless.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AA315CA00F4A8B5600B85147 /* vid_timeless.cpp */; };
@@ -54,13 +61,6 @@
 		AA8DA6C60F4AA1B10076C551 /* liblibungif.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE070D70F4A864E00927080 /* liblibungif.a */; };
 		AA8DA6C70F4AA1B10076C551 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE06FA80F4A82EB00927080 /* liblua.a */; };
 		AA8DA6CC0F4AA37D0076C551 /* iphone_sys.mm in Sources */ = {isa = PBXBuildFile; fileRef = AA8DA6CB0F4AA37D0076C551 /* iphone_sys.mm */; settings = {COMPILER_FLAGS = "-DPLEASE_NO_XERXES_H"; }; };
-		AACF7B200F4E575A00A2B5DB /* iphone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B190F4E575A00A2B5DB /* iphone.cpp */; };
-		AACF7B210F4E575A00A2B5DB /* iphone_input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B1A0F4E575A00A2B5DB /* iphone_input.cpp */; };
-		AACF7B220F4E575A00A2B5DB /* iphone_keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B1B0F4E575A00A2B5DB /* iphone_keyboard.cpp */; };
-		AACF7B230F4E575A00A2B5DB /* iphone_movie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B1C0F4E575A00A2B5DB /* iphone_movie.cpp */; };
-		AACF7B240F4E575A00A2B5DB /* iphone_network.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B1D0F4E575A00A2B5DB /* iphone_network.cpp */; };
-		AACF7B250F4E575A00A2B5DB /* iphone_sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B1E0F4E575A00A2B5DB /* iphone_sound.cpp */; };
-		AACF7B260F4E575A00A2B5DB /* iphone_system.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B1F0F4E575A00A2B5DB /* iphone_system.cpp */; };
 		AAE06FAB0F4A82F900927080 /* lapi.c in Sources */ = {isa = PBXBuildFile; fileRef = AAE06F4C0F4A81E200927080 /* lapi.c */; };
 		AAE06FAD0F4A82F900927080 /* lauxlib.c in Sources */ = {isa = PBXBuildFile; fileRef = AAE06F4E0F4A81E200927080 /* lauxlib.c */; };
 		AAE06FAF0F4A82F900927080 /* lbaselib.c in Sources */ = {isa = PBXBuildFile; fileRef = AAE06F500F4A81E200927080 /* lbaselib.c */; };
@@ -255,6 +255,7 @@
 		AAEF2D7C0F4CF70D006C5FC9 /* SDL_uikitvideo.m in Sources */ = {isa = PBXBuildFile; fileRef = AAEF2B080F4CF70C006C5FC9 /* SDL_uikitvideo.m */; };
 		AAEF2D7E0F4CF70D006C5FC9 /* SDL_uikitview.m in Sources */ = {isa = PBXBuildFile; fileRef = AAEF2B0A0F4CF70C006C5FC9 /* SDL_uikitview.m */; };
 		AAEF2D800F4CF70D006C5FC9 /* SDL_uikitwindow.m in Sources */ = {isa = PBXBuildFile; fileRef = AAEF2B0C0F4CF70C006C5FC9 /* SDL_uikitwindow.m */; };
+		AAEF2DEC0F4CF917006C5FC9 /* libsdl1.3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAEF28870F4CF5D3006C5FC9 /* libsdl1.3.a */; };
 		FD779EDE0E26BA1200F39101 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD779EDD0E26BA1200F39101 /* CoreAudio.framework */; };
 		FD77A0850E26BDB800F39101 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FD77A0840E26BDB800F39101 /* AudioToolbox.framework */; };
 		FDB8BFC60E5A0F6A00980157 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FDB8BFC50E5A0F6A00980157 /* CoreGraphics.framework */; };
@@ -296,6 +297,13 @@
 			remoteGlobalIDString = AAE06FA70F4A82EB00927080;
 			remoteInfo = lua;
 		};
+		AAEF2DEA0F4CF913006C5FC9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = AAEF28860F4CF5D3006C5FC9;
+			remoteInfo = sdl1.3;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -317,8 +325,6 @@
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		AA137A590F4E754800295F78 /* GLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLView.h; sourceTree = "<group>"; };
-		AA137A600F4E769A00295F78 /* GLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GLView.m; sourceTree = "<group>"; };
 		AA315C450F4A8B5600B85147 /* a_codec.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = a_codec.cpp; path = ../verge/Source/a_codec.cpp; sourceTree = SOURCE_ROOT; };
 		AA315C460F4A8B5600B85147 /* a_codec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = a_codec.h; path = ../verge/Source/a_codec.h; sourceTree = SOURCE_ROOT; };
 		AA315C470F4A8B5600B85147 /* a_common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = a_common.cpp; path = ../verge/Source/a_common.cpp; sourceTree = SOURCE_ROOT; };
@@ -412,13 +418,6 @@
 		AA8DA6730F4A9BD80076C551 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		AA8DA6CB0F4AA37D0076C551 /* iphone_sys.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iphone_sys.mm; sourceTree = "<group>"; };
 		AA8DA6CF0F4AA3E80076C551 /* iphone_sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iphone_sys.h; sourceTree = "<group>"; };
-		AACF7B190F4E575A00A2B5DB /* iphone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone.cpp; sourceTree = "<group>"; };
-		AACF7B1A0F4E575A00A2B5DB /* iphone_input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone_input.cpp; sourceTree = "<group>"; };
-		AACF7B1B0F4E575A00A2B5DB /* iphone_keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone_keyboard.cpp; sourceTree = "<group>"; };
-		AACF7B1C0F4E575A00A2B5DB /* iphone_movie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone_movie.cpp; sourceTree = "<group>"; };
-		AACF7B1D0F4E575A00A2B5DB /* iphone_network.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone_network.cpp; sourceTree = "<group>"; };
-		AACF7B1E0F4E575A00A2B5DB /* iphone_sound.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone_sound.cpp; sourceTree = "<group>"; };
-		AACF7B1F0F4E575A00A2B5DB /* iphone_system.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone_system.cpp; sourceTree = "<group>"; };
 		AAE06F4C0F4A81E200927080 /* lapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lapi.c; path = "../lua/lua-5.1.2/lapi.c"; sourceTree = SOURCE_ROOT; };
 		AAE06F4D0F4A81E200927080 /* lapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lapi.h; path = "../lua/lua-5.1.2/lapi.h"; sourceTree = SOURCE_ROOT; };
 		AAE06F4E0F4A81E200927080 /* lauxlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = lauxlib.c; path = "../lua/lua-5.1.2/lauxlib.c"; sourceTree = SOURCE_ROOT; };
@@ -782,6 +781,7 @@
 				AA8DA6C50F4AA1B10076C551 /* liblibpng.a in Frameworks */,
 				AA8DA6C60F4AA1B10076C551 /* liblibungif.a in Frameworks */,
 				AA8DA6C70F4AA1B10076C551 /* liblua.a in Frameworks */,
+				AAEF2DEC0F4CF917006C5FC9 /* libsdl1.3.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -847,21 +847,13 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				AA137A600F4E769A00295F78 /* GLView.m */,
-				AA137A590F4E754800295F78 /* GLView.h */,
-				AACF7B190F4E575A00A2B5DB /* iphone.cpp */,
-				AACF7B1A0F4E575A00A2B5DB /* iphone_input.cpp */,
-				AACF7B1B0F4E575A00A2B5DB /* iphone_keyboard.cpp */,
-				AACF7B1C0F4E575A00A2B5DB /* iphone_movie.cpp */,
-				AACF7B1D0F4E575A00A2B5DB /* iphone_network.cpp */,
-				AACF7B1E0F4E575A00A2B5DB /* iphone_sound.cpp */,
-				AACF7B1F0F4E575A00A2B5DB /* iphone_system.cpp */,
 				AA8DA6CF0F4AA3E80076C551 /* iphone_sys.h */,
 				AA8DA6CB0F4AA37D0076C551 /* iphone_sys.mm */,
 				AA315C370F4A8B3E00B85147 /* verge3 */,
 				AAEF288B0F4CF6EB006C5FC9 /* sdl1.3 */,
 				AAE06FEB0F4A83CB00927080 /* corona */,
 				AAE06F490F4A801100927080 /* lua */,
+				29B97315FDCFA39411CA2CEA /* Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				FD779EC50E26B99E00F39101 /* Libraries */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -869,6 +861,13 @@
 				AA8DA6730F4A9BD80076C551 /* libz.dylib */,
 			);
 			name = CustomTemplate;
+			sourceTree = "<group>";
+		};
+		29B97315FDCFA39411CA2CEA /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Sources;
 			sourceTree = "<group>";
 		};
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
@@ -1674,6 +1673,7 @@
 			dependencies = (
 				AAE071420F4A879500927080 /* PBXTargetDependency */,
 				AAEF275E0F4C017C006C5FC9 /* PBXTargetDependency */,
+				AAEF2DEB0F4CF913006C5FC9 /* PBXTargetDependency */,
 			);
 			name = iphone;
 			productName = iphone;
@@ -1860,6 +1860,13 @@
 				AA315CF20F4A901C00B85147 /* g_vsp.cpp in Sources */,
 				AA315CF40F4A901C00B85147 /* garlick.cpp in Sources */,
 				AA315CF60F4A901C00B85147 /* lua_main.cpp in Sources */,
+				AA315CF90F4A901C00B85147 /* mac_joystick.cpp in Sources */,
+				AA315CFB0F4A901C00B85147 /* mac_keyboard.cpp in Sources */,
+				AA315CFD0F4A901C00B85147 /* mac_mouse.cpp in Sources */,
+				AA315CFF0F4A901C00B85147 /* mac_movie.cpp in Sources */,
+				AA315D010F4A901C00B85147 /* mac_network.cpp in Sources */,
+				AA315D030F4A901C00B85147 /* mac_system.cpp in Sources */,
+				AA315D050F4A901C00B85147 /* mac_timer.cpp in Sources */,
 				AA315D0D0F4A901C00B85147 /* snd_fmod.cpp in Sources */,
 				AA315D100F4A901C00B85147 /* vc_builtins.cpp in Sources */,
 				AA315D110F4A901C00B85147 /* vc_compiler.cpp in Sources */,
@@ -1868,6 +1875,7 @@
 				AA315D180F4A901C00B85147 /* vc_library.cpp in Sources */,
 				AA315D1A0F4A901C00B85147 /* vid_ddblit.cpp in Sources */,
 				AA315D1B0F4A901C00B85147 /* vid_fbfx.cpp in Sources */,
+				AA315D1D0F4A901C00B85147 /* vid_macbase.cpp in Sources */,
 				AA315D1F0F4A901C00B85147 /* vid_manager.cpp in Sources */,
 				AA315D210F4A901C00B85147 /* vid_sysfont.cpp in Sources */,
 				AA315D230F4A901C00B85147 /* vid_timeless.cpp in Sources */,
@@ -1875,14 +1883,6 @@
 				AA315D280F4A904B00B85147 /* g_font.cpp in Sources */,
 				AA315D2A0F4A906800B85147 /* p_datastructs.cpp in Sources */,
 				AA8DA6CC0F4AA37D0076C551 /* iphone_sys.mm in Sources */,
-				AACF7B200F4E575A00A2B5DB /* iphone.cpp in Sources */,
-				AACF7B210F4E575A00A2B5DB /* iphone_input.cpp in Sources */,
-				AACF7B220F4E575A00A2B5DB /* iphone_keyboard.cpp in Sources */,
-				AACF7B230F4E575A00A2B5DB /* iphone_movie.cpp in Sources */,
-				AACF7B240F4E575A00A2B5DB /* iphone_network.cpp in Sources */,
-				AACF7B250F4E575A00A2B5DB /* iphone_sound.cpp in Sources */,
-				AACF7B260F4E575A00A2B5DB /* iphone_system.cpp in Sources */,
-				AA137A610F4E769A00295F78 /* GLView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2150,6 +2150,11 @@
 			target = AAE06FA70F4A82EB00927080 /* lua */;
 			targetProxy = AAEF275D0F4C017C006C5FC9 /* PBXContainerItemProxy */;
 		};
+		AAEF2DEB0F4CF913006C5FC9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = AAEF28860F4CF5D3006C5FC9 /* sdl1.3 */;
+			targetProxy = AAEF2DEA0F4CF913006C5FC9 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
@@ -2399,7 +2404,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "";
 				LIBRARY_SEARCH_PATHS = ./lib;
-				OBJROOT = "~/temp/v3iphonebuild";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
 				PREBINDING = NO;
@@ -2415,6 +2419,7 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_THUMB_SUPPORT = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = ./include;

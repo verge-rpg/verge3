@@ -1,7 +1,0 @@
-#include "iphone_system.h"
-#include "iphone_timer.h"
-#include "iphone_sound.h"
-#include "iphone_keyboard.h"
-#include "iphone_input.h"
-#include "iphone_movie.h"
-#include "iphone_network.h"

@@ -356,65 +356,9 @@ void sdl_Window::flip_win()
 	if(!img)
 		return;
 
-	// gather information about the back-buffer and
-	// front buffer sizes
-	const int dst_w = winw;
-	const int dst_h = winh;
-	const int src_w = xres;
-	const int src_h = yres;
-	
-	if(shouldclear) {
-		// fill it with black
-		SDL_FillRect(screen_surface,NULL,SDL_MapRGB(screen_surface->format, 0, 0, 0));
-		shouldclear = false;
-	}
-	
-	if(dst_w == src_w && dst_h == src_h) {
-		// same size - no scaling needed
-		SDL_BlitSurface(back_surface, NULL, screen_surface, NULL);
-	} else {
-		
-		int out_h, out_w; // the eventual size of the image
-		int off_h, off_w; // the eventual placement of the image
-
-		get_displayed_area(out_w, out_h, off_w, off_h);
-		
-		// run the actual scaling, using algorithm from vid_ddblit's dd32_ScaleBlit
-		// with some parts removed because we know the whole image is blitted
-		// (ie no clipping)
-		int xadj = (src_w << 16) / out_w;
-		int yadj = (src_h << 16) / out_h;
-		int xerr;
-		int yerr = 0;
-		
-		// these pitches are in pixels, instead of bytes as SDL
-		int src_pitch = back_surface->pitch / 4;
-		int dst_pitch = screen_surface->pitch / 4;
-		quad *d, *s;
-		
-		SDL_LockSurface(screen_surface);
-		SDL_LockSurface(back_surface);
-		
-		s = (quad *) back_surface->pixels;
-		d = ((quad *) screen_surface->pixels) + (off_h * dst_pitch) + off_w;
-		
-		for(int i = 0; i < out_h; i++) {
-			xerr = 0;
-			for(int j = 0; j < out_w; j++) {
-				d[j] = s[(xerr >> 16)];
-				xerr += xadj;
-			}
-			d    += dst_pitch;
-			yerr += yadj;
-			s    += (yerr >> 16) * src_pitch;
-			yerr &= 0xffff;
-		}
-		
-		SDL_UnlockSurface(back_surface);
-		SDL_UnlockSurface(screen_surface);
-	}
-	
+	SDL_UnlockSurface(screen_surface);
 	SDL_Flip(screen_surface);	
+	SDL_LockSurface(screen_surface);
 }
 
 
@@ -422,29 +366,24 @@ void sdl_Window::flip_win()
 // verge draws into, not the window on the screen)
 int sdl_Window::set_win(int w, int h, int bpp)
 {
-	if(back_buffer) {
-		if(w == xres &&
-		   h == yres &&
-		   bpp == vid_bpp)
-			return 1; // no changes to be made
-	}
-	if(back_buffer) {
-		delete back_buffer;
-		SDL_FreeSurface(back_surface);
-	}
-
-	try {
-		back_buffer = new char[w * h * bpp/8];
-	} catch(std::bad_alloc&) {
-		err("Couldn't make back buffer of %dx%d at %d bpp", w, h, bpp);
-	}
-
-	back_surface = SDL_CreateRGBSurfaceFrom(back_buffer, w, h, 32, w * 4, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
-
-	vid_bpp = bpp;
 	//vid_bytesperpixel = bpp / 8;
 
-	if(img) delete img;
+	//if I use this, then SDL tries to do some 565 -> 8888 conversion. oddly enough. or maybe its vice-versa
+	//SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
+	//SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
+	//SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE,8);
+	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,0);
+
+	screen_surface = SDL_SetVideoMode(512, 512, 0, (vid_window ? SDL_RESIZABLE : SDL_FULLSCREEN) | SDL_SWSURFACE); // SWSURFACE because we may need to scale into it in flip_win
+	SDL_LockSurface(screen_surface);
+
+	w = 320;
+	h = 480;
+	bpp = 32;
+
+	vid_bpp = bpp;
+
+	delete img;
 	img = new image();
 	img->shell = true;
 	SetHandleImage(imgHandle,img);
@@ -455,12 +394,12 @@ int sdl_Window::set_win(int w, int h, int bpp)
 		screen = img;
 	}
 
-	img->data = (quad*)back_buffer;
+	img->data = (quad*)screen_surface->pixels;
 //	img->alphamap = 0;
 //	img->bpp = bpp;
 	img->width = w;
 	img->height = h;
-	img->pitch = w;
+	img->pitch = 512; //TODO - change pitch to a constant for iphone, that should speed up some blitting. maybe have to code special cases
 	img->cx1 = 0;
 	img->cx2 = w-1;
 	img->cy1 = 0;
@@ -508,32 +447,11 @@ sdl_Window::sdl_Window(bool bGameWindow) : AuxWindow()
 
 sdl_Window::~sdl_Window()
 {
-	if(back_buffer) {
-		delete back_buffer;		
-		SDL_FreeSurface(back_surface);
-	}
 
 }
 
 // Sets actual window dimensions & attrs
 void sdl_Window::adjust(int w, int h)
 {
-	// we're never going to get a 320x240 window back from SDL,
-	// so just ask for a 640x480 one and we'll scale it up when we flip
-	if(!vid_window && w == 320 && h == 240 )
-	{
-		w = 640;
-		h = 480;
-	}
-	
-	screen_surface = SDL_SetVideoMode(w, h, vid_bpp, (vid_window ? SDL_RESIZABLE : SDL_FULLSCREEN) | SDL_SWSURFACE); // SWSURFACE because we may need to scale into it in flip_win
-	shouldclear = true;
 
-	if(!screen_surface) {
-		err("Could not get SDL window: %s.", SDL_GetError());
-	}
-	// set to resulting video height/width, not requested
-	// so that blitting knows the actual dimensions
-	this->winw = screen_surface->w;
-	this->winh = screen_surface->h;
 }

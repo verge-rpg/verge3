@@ -54,22 +54,12 @@ void timer_Init(int hz)
 
 /****************************************************************/
 
-#include <pthread.h>
-
 xTimer::xTimer(int hz, SDL_NewTimerCallback TimeProc)
 {
-	pthread_t self = pthread_self();
-	sched_param param;
-	int policy;
-	pthread_getschedparam(self,&policy,&param);
-	param.sched_priority=0x7FFFFFFF;
-	policy = 0;
-	pthread_setschedparam(self,policy,&param);
-	pthread_getschedparam(self,&policy,&param);
 	// timer set in ms
-//	timer_id = SDL_AddTimer(1000/hz, TimeProc, NULL);
-//	if(!timer_id)
-//		err("SDL_AddTimer failed");
+	timer_id = SDL_AddTimer(1000/hz, TimeProc, NULL);
+	if(!timer_id)
+		err("SDL_AddTimer failed");
 
 	xTimer::hz=hz;
 }

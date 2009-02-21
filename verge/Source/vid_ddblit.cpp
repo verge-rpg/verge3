@@ -1501,12 +1501,20 @@ void dd32_TSubtractBlit_lucent(int x, int y, image *src, image *dest)
 	}
 }
 
-inline void COPY_PIXELS(quad* dst, quad* src, int num) {
+inline void COPY_PIXELS(quad* dst, quad* src, const int num) {
 	for(int i=0;i<num;i++)
 		*dst++=*src++;
 }
-inline void COPY_PIXELS(int* dst, int* src, int num) {
+inline void COPY_PIXELS(int* dst, int* src, const int num) {
 	COPY_PIXELS((quad*)dst,(quad*)src,num);
+}
+
+inline void COPY_PIXELS_320_480(int* dst, int* src) {
+	memcpy(dst,src,320*480*4);
+}
+
+inline void COPY_PIXELS_320(int* dst, int* src) {
+	memcpy(dst,src,320*4);
 }
 
 
@@ -1541,8 +1549,17 @@ void T_Blit(int x, int y, image *src, image *dest)
 	d += (y * dpitch) + x;
 	switch(LT) {
 		case NONE: 
-			for (; ylen--; s+=spitch, d+=dpitch)
-				COPY_PIXELS(d,s,xlen); break;
+			//iphone optimization
+			if(xlen == 320) {
+				if(ylen == 480 && dpitch == 320 && spitch == 320)
+					COPY_PIXELS_320_480(d,s);
+				else
+					for (; ylen--; s+=spitch, d+=dpitch)
+						COPY_PIXELS_320(d,s);
+			}
+			else
+				for (; ylen--; s+=spitch, d+=dpitch)
+					COPY_PIXELS(d,s,xlen);
 			break;
 		case HALF: {
 			for (; ylen; ylen--) {
