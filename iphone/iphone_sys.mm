@@ -1,9 +1,22 @@
 
 #import <UiKit/UiKit.h>
-//#import "SDLMain.h"
+
+#import <QuartzCore/QuartzCore.h>
+#import <OpenGLES/EAGLDrawable.h>
+#import <OpenGLES/EAGL.h>
+#import <OpenGLES/ES1/gl.h>
+#import <OpenGLES/ES1/glext.h>
 
 //#include "mac_cocoa_util.h"
-#include "iphone_sys.h"
+#import "iphone_sys.h"
+
+extern "C++" void runloop() {
+	int result;
+	do {
+	result = CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, TRUE);
+	} while(result == kCFRunLoopRunHandledSource);
+}
+
 
 // include C parts we can use directly
 extern "C++" {
@@ -24,33 +37,18 @@ image *xLoadImage(const char *fname);
 // in a window other than the SDL window)
 extern bool IgnoreEvents;
 
-// called to initialize editing code
-// Shows the edit-code window.
-// Doesn't check if code editing is possible
-// accoring to current config.
-void InitEditCode() {
-	// retrieve SDLMain object from the NSApp
-	// then get the reloadController outlet
-	// (These are both hooked up in the nib file)
-	//SDLMain *sdlmain = [NSApp delegate];
-	//[sdlmain->macCocoaUtil showWindow];
-}
-
-extern "C++"
-void iphone_m_HideStatusBar() {
+/*void m_main({
+	//(try to) hide the status bar
 	[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
-}
+	
+	//capture the bundle path and chdir to it
+	NSString *bPath = [[NSBundle mainBundle] bundlePath];
+	const char* iphone_appBundlePath = [bPath cString];
+	chdir(iphone_appBundlePath);
+	[bPath release];
+}*/
 
-// called to add a file to the pop-up
-void AddSourceFile(string s) {
-	// retrieve SDLMain object from the NSApp
-	// then get the reloadController outlet
-	// (These are both hooked up in the nib file)
-   // SDLMain *sdlmain = [NSApp delegate];
-    //[sdlmain->macCocoaUtil addFile:[NSString stringWithCString:s.c_str()]];
-}
 
-// call to show an alert panel. 
 // Other parts of verge should call
 // showMessageBox instead, which handles
 // details like what to do for full-screen.
@@ -98,9 +96,55 @@ int getUrlImage(CStringRef inUrl)
 	return toReturn;
 }
 
+extern "C++" void iphone_c_main();
+
+
+UIWindow*				window;
+GLView *glView ;
+
+void init() {
+	//(try to) hide the status bar
+	//[[UIApplication sharedApplication] setStatusBarHidden:YES animated:NO];
+	
+	//capture the bundle path and chdir to it
+	NSString *bPath = [[NSBundle mainBundle] bundlePath];
+	const char* iphone_appBundlePath = [bPath cString];
+	chdir(iphone_appBundlePath);
+	[bPath release];
+	
+	
+	CGRect	rect = [[UIScreen mainScreen] bounds];
+	
+	window = [[UIWindow alloc] initWithFrame:rect];
+	
+	glView = [[GLView alloc] initWithFrame:rect]; 
+	glView.opaque = YES;
+	[window addSubview:glView];
+
+	//glView.delegate = self;
+	//glView.animationInterval = 1.0 / kRenderingFrequency;
+	//[glView startAnimation];
+	//[glView release];
+	
+	[window makeKeyAndVisible];
+	
+}
+
+
+
+extern "C++" void iphone_m_main(int argc, char *argv[])
+{
+	NSAutoreleasePool *pool = [NSAutoreleasePool new];
+	UIApplicationMain(argc, argv,@"UIApplication",@"AppDelegate"); 
+	
+	//init();
+	
+	[pool release];
+}
+
 StringRef GetSystemSaveDirectory(CStringRef name)
 {
-  NSArray *arr = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, true);
+  /*NSArray *arr = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, true);
   if([arr count] == 0 || !MAC_USE_VERGE_RES_DIR)
   {
     return "./";
@@ -120,73 +164,33 @@ StringRef GetSystemSaveDirectory(CStringRef name)
     }
     
     return std::string([vergeDir UTF8String]) + "/";
-  }
-}
-/*
-// The MacCocoaUtil handles user input
-// from the code-editing window, other Cocoa stuff
-@implementation MacCocoaUtil
-
-// called to reload the code in the file selector
--(IBAction)reload:(id)sender {
-	runReload((char *)[[fileSelector titleOfSelectedItem] cString]);
+  }*/
+  static const StringRef dotSlash = "./";
+  return dotSlash;
 }
 
-// called to reload the current map
--(IBAction)reloadMap:(id)sender {
-	reloadMap();
+extern "C++" void iphone_m_flip(unsigned int* data) {
+	glView->data = data;
+	[glView->layer setNeedsDisplay];
+	runloop();
 }
 
-// called to reload a given file
-// Adds it to the fileSelector if it's not
-// in there yet
--(void)reloadFile:(NSString *)fname {
-    [self addFile:fname];
-	runReload((char *)[fname cString]);
+
+
+@implementation AppDelegate
+@synthesize window;
+
+- (void)applicationDidFinishLaunching:(UIApplication*)application
+{
+	init();
+	iphone_c_main();
+	//for(;;) {
+		//[glView drawView];
+		//[glView->layer setNeedsDisplay];
+		//runloop();
+	//}
+	
 }
 
-// adds the given file to the pop-up list if
-// it's not there yet (uses string comparison)
--(void)addFile:(NSString *)fname {
-	if([[fileSelector itemTitles] indexOfObject: fname] == NSNotFound) {
-		[fileSelector addItemWithTitle: fname];
-	}
-}
 
-// called to eval the code in the evalField
--(IBAction)eval:(id)sender {
-	runEval((char *)[[evalField stringValue] cString]);
-}
-
-// call to show the code editing window
--(void)showWindow {
-	[window makeKeyAndOrderFront:self];
-}
-
-// these are called when the code editing window
-// becomes/stops being the front window. They
-// ensure verge ignores (and the window recieves)
-// events when it is in front, and vice-versa
-// Also handle the cursor showing/hiding.
-// We use *Main instead of *Key so dialogs don't 
-// trigger these and make the mouse go away.
-- (void)windowDidBecomeMain:(NSNotification *)aNotification {
-	setenv("SDL_ENABLEAPPEVENTS", "1", 1);
-	IgnoreEvents = true;
-	SDL_ShowCursor(SDL_ENABLE);
-}
-
-- (void)windowDidResignMain:(NSNotification *)aNotification {
-	unsetenv("SDL_ENABLEAPPEVENTS");
-	IgnoreEvents = false;
-	SDL_ShowCursor(SDL_DISABLE);
-}
- 
-
-- (void)toggleFullscreen {
-	sdl_toggleFullscreen();
-}
-
-*/
- 
 @end
