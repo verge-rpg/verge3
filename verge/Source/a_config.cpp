@@ -43,7 +43,10 @@ void cfg_Init(char *fn)
 	char line[1024];
 
 	config_key *cf;
-#ifdef __APPLE__
+#ifdef __IPHONE__
+	getcwd(cfgfn,255);
+	strcat(cfgfn, va("/%s", fn));
+#elif __APPLE__
 	getcwd(cfgfn,255);
 	strcat(cfgfn, va("/%s", fn));
 #elif __LINUX__
@@ -64,7 +67,7 @@ void cfg_Init(char *fn)
 #endif
 	cf_top = 0;
 
-	FILE *f = fopen(fn, "r");
+	FILE *f = fopen(cfgfn, "r");
 	if (!f) return;
 
 	cf = 0;

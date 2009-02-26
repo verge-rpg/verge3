@@ -71,8 +71,6 @@ void doMessageBox(std::string msg);
 // internal use
 int getCurrentBpp();
 
-void iphone_m_HideStatusBar();
-
 int main(int argc, char **argv)
 {
 #ifdef __LINUX__
@@ -82,13 +80,10 @@ int main(int argc, char **argv)
 	log_Init(true);
 
 	// we must init SDL before any other sdl stuff
-	if(SDL_Init(SDL_INIT_TIMER |
+	//if(SDL_Init(SDL_INIT_TIMER |
+	if(SDL_Init(
 			 SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
 		err("Couldn't start up SDL.");
-
-#ifdef __IPHONE__
-	iphone_m_HideStatusBar();
-#endif
 
 	// create video window
 	sdl_video_init();
