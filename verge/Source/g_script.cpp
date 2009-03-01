@@ -1005,7 +1005,7 @@ int ScriptEngine::ImageShell(int x, int y, int w, int h, int src) {
 
 	image *d = new image(w, h);
 	d->delete_data();
-	d->shell = 1;
+	d->shell = true;
 
 	d->data = (s->data + (y*s->pitch)+x);
 	d->pitch = s->pitch;

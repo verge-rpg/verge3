@@ -132,7 +132,10 @@ image *xLoadImage_int(const char *fname,int tflag)
 	}
 	if(!img)
 		err("loadimage: couldn't load image %s; corona just bombed.",fname);
-	if(img->getFormat()==corona::PF_I8)
+
+	switch(img->getFormat())
+	{
+	case corona::PF_I8:
 	{
 		if(img->getPaletteFormat()!=corona::PF_R8G8B8) {
 
@@ -152,26 +155,34 @@ image *xLoadImage_int(const char *fname,int tflag)
 			else err("loadimage: couldnt load image %s; unexpected pixel format",fname);
 		}
 
-		unsigned char *pal2=(unsigned char *)img->getPalette();
+		unsigned char *pal2=(byte*)img->getPalette();
 		unsigned char pal[768];
 		memcpy(pal, pal2, img->getPaletteSize()*3);
 		if(tflag)
 		{
 			pal[0]=255; pal[1]=0; pal[2]=255;
 		}
-		newimage=ImageFrom8bpp((unsigned char *)img->getPixels(), img->getWidth(), img->getHeight(), pal);
+		newimage=ImageFrom8bpp((byte*)img->getPixels(), img->getWidth(), img->getHeight(), pal);
 		delete img;
 		return newimage;
 	}
-	else
+	break;
+
+	case corona::PF_R8G8B8A8:
+		newimage=ImageFrom32bpp((byte*)img->getPixels(),img->getWidth(),img->getHeight());
+		delete img;
+        return newimage;
+
+	default:
 	{
 		img = corona::ConvertImage(img,corona::PF_R8G8B8);
-		newimage=ImageFrom24bpp((unsigned char *)img->getPixels(),img->getWidth(),img->getHeight());
+		newimage=ImageFrom24bpp((byte*)img->getPixels(),img->getWidth(),img->getHeight());
 		delete img;
         return newimage;
 	}
+	}
 }
-//#endif
+
 
 image *xLoadImage(const char *fname)
 {
@@ -186,4 +197,36 @@ image *xLoadImage0(const char *fname)
 image* xLoadImage8(const char* fname)
 {
 	return xLoadImage_int_respect8bitTransparency(fname);
+}
+
+static int imagesize = 0;
+
+image::image(int xres, int yres)
+:width(xres)
+,height(yres)
+,pitch(xres)
+,cx1(0),cy1(0),cx2(xres-1),cy2(yres-1)
+,shell(false)
+,alpha(false)
+{
+	imagesize += width*height*4;
+	//log("Allocating %d image bytes; now up to %dK",width*height*4,imagesize/1024);
+	data = new quad[width*height];
+
+	//we are going to assume that pixels are 4byte aligned.
+	assert((((int)data) & 3) == 0);
+
+	//we're running out of memory sometimes
+	assert(data);
+}
+
+void image::delete_data() {
+	imagesize -= width*height*4;
+	//log("Freeing %d image bytes; now down to %dK",width*height*4,imagesize/1024);
+	delete[] (quad*)data;
+}
+
+image::~image() {
+	if (data && !shell)
+		delete_data();
 }

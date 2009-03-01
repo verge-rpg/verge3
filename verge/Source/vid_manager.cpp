@@ -117,36 +117,4 @@ int vid_SetMode(int xres, int yres, int bpp, int window, int mode)
 	return 0;
 }
 
-static int imagesize = 0;
 
-
-image::image(int xres, int yres) {
-	width = pitch = xres;
-	height = yres;
-	cx1 = 0;
-	cy1 = 0;
-	cx2 = width - 1;
-	cy2 = height - 1;
-	shell = 0;
-	
-	imagesize += width*height*4;
-	//log("Allocating %d image bytes; now up to %dK",width*height*4,imagesize/1024);
-	data = new quad[width*height];
-
-	//we are going to assume that pixels are 4byte aligned.
-	assert((((int)data) & 3) == 0);
-
-	//we're running out of memory sometimes
-	assert(data);
-}
-
-void image::delete_data() {
-	imagesize -= width*height*4;
-	//log("Freeing %d image bytes; now down to %dK",width*height*4,imagesize/1024);
-	delete[] (quad*)data;
-}
-
-image::~image() {
-	if (data && !shell)
-		delete_data();
-}

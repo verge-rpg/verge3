@@ -180,11 +180,11 @@ typedef unsigned char  byte;
 //xerxes includes
 
 #include "a_handle.h"
+#include "a_image.h"
 #include "vid_manager.h"
 #include "vid_sysfont.h"
 #include "a_common.h"
 #include "a_config.h"
-#include "a_image.h"
 #include "a_string.h"
 #include "a_vfile.h"
 #include "a_codec.h"

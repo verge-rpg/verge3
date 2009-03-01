@@ -38,6 +38,14 @@ enum LUCENT_TYPE {
 	NONE, HALF, ANY
 };
 
+//TODO - change for big endian
+union Color {
+	quad q;
+	struct {
+		byte r,g,b,a;
+	};
+};
+
 /***************************** code *****************************/
 
 // Overkill (2007-05-04): Converts HSV into a color
@@ -434,13 +442,6 @@ void T_Box(int x, int y, int x2, int y2, int color, image *dest)
 	T_HLine<LT,true>(x, y2, x2, color, dest);
 	T_VLine<LT>(x, y+1, y2-1, color, dest);
 	T_VLine<LT>(x2, y+1, y2-1, color, dest);
-}
-
-void dd_Rect(int x, int y, int x2, int y2, int color, image *dest)
-{
-	if (y2<y) SWAP(y,y2);
-	for (; y<=y2; y++)
-		HLine(x, y, x2, color, dest);
 }
 
 // Overkill 2006-02-04
@@ -1505,6 +1506,35 @@ inline void COPY_PIXELS(quad* dst, quad* src, const int num) {
 	for(int i=0;i<num;i++)
 		*dst++=*src++;
 }
+
+static void create_tables() {
+	static bool created = false;
+	if(created) return;
+	created = true;
+}
+
+inline void COPY_PIXELS_BLEND(int * dst, int* src, const int num) {
+	for(int i=0;i<num;i++)
+	{
+		const Color& sc = ((Color*)src)[i];
+		Color& dc = ((Color*)dst)[i];
+
+		if(sc.a == 0) continue;
+		if (sc.a == 255)
+		{
+			dc = sc;
+			continue;
+		}
+
+		int pa = sc.a;
+		int ipa = 255-pa;
+
+		dc.r = ((sc.r*pa)+(dc.r*ipa))>>8;
+		dc.g = ((sc.g*pa)+(dc.g*ipa))>>8;
+		dc.b = ((sc.b*pa)+(dc.b*ipa))>>8;
+	}
+}
+
 inline void COPY_PIXELS(int* dst, int* src, const int num) {
 	COPY_PIXELS((quad*)dst,(quad*)src,num);
 }
@@ -1549,17 +1579,23 @@ void T_Blit(int x, int y, image *src, image *dest)
 	d += (y * dpitch) + x;
 	switch(LT) {
 		case NONE: 
-			//iphone optimization
-			if(xlen == 320) {
-				if(ylen == 480 && dpitch == 320 && spitch == 320)
-					COPY_PIXELS_320_480(d,s);
+			if(src->alpha) {
+				for (; ylen--; s+=spitch, d+=dpitch)
+					COPY_PIXELS_BLEND(d,s,xlen);
+			}
+			else {
+				//iphone optimization
+				if(xlen == 320) {
+					if(ylen == 480 && dpitch == 320 && spitch == 320)
+						COPY_PIXELS_320_480(d,s);
+					else
+						for (; ylen--; s+=spitch, d+=dpitch)
+							COPY_PIXELS_320(d,s);
+				}
 				else
 					for (; ylen--; s+=spitch, d+=dpitch)
-						COPY_PIXELS_320(d,s);
+						COPY_PIXELS(d,s,xlen);
 			}
-			else
-				for (; ylen--; s+=spitch, d+=dpitch)
-					COPY_PIXELS(d,s,xlen);
 			break;
 		case HALF: {
 			for (; ylen; ylen--) {
@@ -2735,6 +2771,7 @@ void dd32_BlitWrap_lucent(int x, int y, image *src, image *dest)
 	}
 }
 
+
 void dd32_AlphaBlit(int x, int y, image *src, image *alpha, image *dest)
 {
 	int *s=(int *)src->data,
@@ -2899,19 +2936,11 @@ image *dd32_ImageFrom32bpp(byte *src, int width, int height)
 {
 	quad *dest;
 	image *img;
-	int i;
-	byte r, g, b;
 
 	img = new image(width, height);
-	dest = (quad *) img->data;
-	for (i=0; i<width*height; i++)
-	{
-		b = *src++;
-		g = *src++;
-		r = *src++;
-		src++; //alpha
-		dest[i] = MakeColor(r,g,b);
-	}
+	img->alpha = true;
+	dest = (quad *)img->data;
+	memcpy(dest,src,width*height*4);
 	return img;
 }
 
@@ -2930,6 +2959,17 @@ static void T_Rect(int x, int y, int x2, int y2, int color, image *dest)
 	if (x<cx1)  x =cx1;
 	if (y2>cy2) y2=cy2;
 	if (y<cy1)  y =cy1;
+
+	//speed optimization for entire-buffer clearing
+	/*if(y==0&&y2==dest->height-1
+		&&x==0&&x2==dest->width-1
+		&&dest->pitch == dest->width) {
+			int todo = dest->width*dest->height;
+			int* d = (int*)dest->data;
+			for(int i=0;i<todo;i++)
+				*d++ = color;
+			return;
+	}*/
 
 	for (; y<=y2; y++)
 		T_HLine<LT,false>(x, y, x2, color, dest);
