@@ -116,7 +116,7 @@ void init() {
 	CGRect	rect = [[UIScreen mainScreen] bounds];
 	
 	window = [[UIWindow alloc] initWithFrame:rect];
-	
+	window.opaque = YES;
 	glView = [[GLView alloc] initWithFrame:rect]; 
 	glView.opaque = YES;
 	[window addSubview:glView];

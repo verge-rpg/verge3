@@ -43,7 +43,7 @@ void _CGDataProviderReleaseBytePointerCallback(void *info,const void *pointer)
     //CGDataProviderRef bitmapProvider = CGDataProviderCreateDirect(NULL,320*480*2,&callbacks);
     //CGImageRef bitmap = CGImageCreate(320,480,5,16,320*2,colorSpace, 0, bitmapProvider, NULL, FALSE, kCGRenderingIntentDefault); 
 	CGDataProviderRef bitmapProvider = CGDataProviderCreateDirect(NULL,320*480*4,&callbacks);
-	CGImageRef bitmap = CGImageCreate(320,480,8,32,320*4,colorSpace, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrder32Little, bitmapProvider, NULL, FALSE, kCGRenderingIntentDefault); 
+	CGImageRef bitmap = CGImageCreate(320,480,8,32,320*4,colorSpace, kCGImageAlphaNoneSkipLast | kCGBitmapByteOrder32Big, bitmapProvider, NULL, FALSE, kCGRenderingIntentDefault); 
     
     
     theLayer.contents = bitmap;
