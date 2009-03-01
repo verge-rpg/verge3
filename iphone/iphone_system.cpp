@@ -2,6 +2,7 @@
 
 
 #include <sys/types.h>
+#include <sys/time.h>
 #include <dirent.h>
 #include <glob.h>
 
@@ -134,10 +135,38 @@ void err(const char *str, ...)
 	exit(strlen(msg)==0?0:-1);
 }
 
+static long last_timestamp = 0;
+static bool has_timestamp = false;
 void runloop();
+
+void tick() {
+	win_movie_update();
+	systemtime++;
+	if(engine_paused) return;
+	timer++;
+	vctimer++;
+	hooktimer++;
+}
+
 void HandleMessages(void)
 {
 	runloop();
+
+	//for now, also update the timer
+	timeval time;
+	gettimeofday(&time,NULL);
+	long millis = (time.tv_sec * 1000) + (time.tv_usec/1000);
+	
+	if(!has_timestamp) {
+		has_timestamp = true;
+		last_timestamp = millis;
+		return;
+	}
+	
+	int new_timer = (millis-last_timestamp)/10;
+	
+	for(int i=systemtime;i<new_timer;i++)
+		tick();
 }
 
 int iphone_SetMode(int xres, int yres, int bpp, bool windowflag) {
