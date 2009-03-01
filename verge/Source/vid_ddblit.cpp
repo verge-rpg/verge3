@@ -2961,15 +2961,19 @@ static void T_Rect(int x, int y, int x2, int y2, int color, image *dest)
 	if (y<cy1)  y =cy1;
 
 	//speed optimization for entire-buffer clearing
-	/*if(y==0&&y2==dest->height-1
+	//but this is hacky right now and doesnt properly support all the mix modes
+	if(y==0&&y2==dest->height-1
 		&&x==0&&x2==dest->width-1
 		&&dest->pitch == dest->width) {
 			int todo = dest->width*dest->height;
 			int* d = (int*)dest->data;
-			for(int i=0;i<todo;i++)
-				*d++ = color;
+			if(color>=0 && color<256)
+				memset(d,color,todo<<2);
+			else
+				for(int i=0;i<todo;i++)
+					*d++ = color;
 			return;
-	}*/
+	}
 
 	for (; y<=y2; y++)
 		T_HLine<LT,false>(x, y, x2, color, dest);
