@@ -1,8 +1,25 @@
+/// The VERGE 3 Project is originally by Ben Eirich and is made available via
+///  the BSD License.
+///
+/// Please see LICENSE in the project's root directory for the text of the
+/// licensing agreement.  The CREDITS file in the same directory enumerates the
+/// folks involved in this public build.
+///
+/// If you have altered this source file, please log your name, date, and what
+/// changes you made below this line.
+
+
+/****************************************************************
+	xerxes engine
+	lua_main.cpp
+ ****************************************************************/
+
 #include "xerxes.h"
 
 #ifdef ENABLE_LUA
 
 #include "lua_main.h"
+#include "lua_vector.h"
 #include <stdio.h>
 
 #include <string>
@@ -14,6 +31,20 @@
 
 int LUA::activeFunctionIndex;
 int LUA::activeFunctionStackOffset;
+
+LUA::LUA()
+{
+	L = lua_open();
+	luaL_openlibs(L);
+	luaopen_vector(L);
+	bindApi();
+
+}
+
+LUA::~LUA()
+{
+	lua_close(L);
+}
 
 //http://www.codeproject.com/cpp/luaincpp.asp
 bool LUA::CompileMap(const char *f) {

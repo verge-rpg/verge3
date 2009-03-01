@@ -1,9 +1,22 @@
+/// The VERGE 3 Project is originally by Ben Eirich and is made available via
+///  the BSD License.
+///
+/// Please see LICENSE in the project's root directory for the text of the
+/// licensing agreement.  The CREDITS file in the same directory enumerates the
+/// folks involved in this public build.
+///
+/// If you have altered this source file, please log your name, date, and what
+/// changes you made below this line.
+
+#ifndef _LUA_MAIN_H
+#define _LUA_MAIN_H
+
+#ifdef ENABLE_LUA
+
 #include "xerxes.h"
 #include "opcodes.h"
 
 #include <stdarg.h>
-
-#ifdef ENABLE_LUA
 
 #include "g_script.h"
 
@@ -46,17 +59,8 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 		// hdefs
 		static void BindHdef(lua_State* L, int index);
 
-		LUA()
-		{
-			L = lua_open();
-			luaL_openlibs(L);
-			bindApi();
-		}
-
-		~LUA()
-		{
-			lua_close(L);
-		}
+		LUA();
+		~LUA();
 
 		static void LuaError(lua_State *L, const char *text, ...);
 		void LuaError(const char *text, ...);
@@ -198,4 +202,6 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 		void bindApi();
 };
 
-#endif
+#endif //ENABLE_LUA
+
+#endif //_LUA_MAIN_H
