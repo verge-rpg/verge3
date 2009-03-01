@@ -13,7 +13,7 @@
 #import <QuartzCore/QuartzCore.h>
 #import <OpenGLES/EAGLDrawable.h>
 
-#define MAX_SIMULTANEOUS_TOUCHES 5
+#include "iphone_interface.h"
 
 @interface GLView : UIView
 {
@@ -23,6 +23,10 @@
 }
 
 - (void)displayLayer:(CALayer *)theLayer;
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent*)event;
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent*)event;
+- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event;
+- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event;
 
 
 @end

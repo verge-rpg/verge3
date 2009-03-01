@@ -54,6 +54,9 @@
 		AA8DA6C60F4AA1B10076C551 /* liblibungif.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE070D70F4A864E00927080 /* liblibungif.a */; };
 		AA8DA6C70F4AA1B10076C551 /* liblua.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AAE06FA80F4A82EB00927080 /* liblua.a */; };
 		AA8DA6CC0F4AA37D0076C551 /* iphone_sys.mm in Sources */ = {isa = PBXBuildFile; fileRef = AA8DA6CB0F4AA37D0076C551 /* iphone_sys.mm */; settings = {COMPILER_FLAGS = "-DPLEASE_NO_XERXES_H"; }; };
+		AACED88E0F5B053400B281E6 /* lua_vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACED88C0F5B053400B281E6 /* lua_vector.cpp */; };
+		AACED8910F5B055A00B281E6 /* algebra3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACED88F0F5B055A00B281E6 /* algebra3.cpp */; };
+		AACED8EC0F5B232A00B281E6 /* iphone_interface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACED8EA0F5B232A00B281E6 /* iphone_interface.cpp */; };
 		AACF7B200F4E575A00A2B5DB /* iphone.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B190F4E575A00A2B5DB /* iphone.cpp */; };
 		AACF7B210F4E575A00A2B5DB /* iphone_input.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B1A0F4E575A00A2B5DB /* iphone_input.cpp */; };
 		AACF7B220F4E575A00A2B5DB /* iphone_keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AACF7B1B0F4E575A00A2B5DB /* iphone_keyboard.cpp */; };
@@ -412,6 +415,13 @@
 		AA8DA6730F4A9BD80076C551 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		AA8DA6CB0F4AA37D0076C551 /* iphone_sys.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = iphone_sys.mm; sourceTree = "<group>"; };
 		AA8DA6CF0F4AA3E80076C551 /* iphone_sys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iphone_sys.h; sourceTree = "<group>"; };
+		AACED88C0F5B053400B281E6 /* lua_vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua_vector.cpp; path = ../verge/Source/lua_vector.cpp; sourceTree = SOURCE_ROOT; };
+		AACED88D0F5B053400B281E6 /* lua_vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_vector.h; path = ../verge/Source/lua_vector.h; sourceTree = SOURCE_ROOT; };
+		AACED88F0F5B055A00B281E6 /* algebra3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = algebra3.cpp; path = ../verge/Source/algebra3.cpp; sourceTree = SOURCE_ROOT; };
+		AACED8900F5B055A00B281E6 /* algebra3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = algebra3.h; path = ../verge/Source/algebra3.h; sourceTree = SOURCE_ROOT; };
+		AACED8E90F5B232A00B281E6 /* iphone_input.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iphone_input.h; sourceTree = "<group>"; };
+		AACED8EA0F5B232A00B281E6 /* iphone_interface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone_interface.cpp; sourceTree = "<group>"; };
+		AACED8EB0F5B232A00B281E6 /* iphone_interface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iphone_interface.h; sourceTree = "<group>"; };
 		AACF7B190F4E575A00A2B5DB /* iphone.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone.cpp; sourceTree = "<group>"; };
 		AACF7B1A0F4E575A00A2B5DB /* iphone_input.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone_input.cpp; sourceTree = "<group>"; };
 		AACF7B1B0F4E575A00A2B5DB /* iphone_keyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iphone_keyboard.cpp; sourceTree = "<group>"; };
@@ -898,6 +908,13 @@
 		AA315C370F4A8B3E00B85147 /* verge3 */ = {
 			isa = PBXGroup;
 			children = (
+				AACED8E90F5B232A00B281E6 /* iphone_input.h */,
+				AACED8EA0F5B232A00B281E6 /* iphone_interface.cpp */,
+				AACED8EB0F5B232A00B281E6 /* iphone_interface.h */,
+				AACED88F0F5B055A00B281E6 /* algebra3.cpp */,
+				AACED8900F5B055A00B281E6 /* algebra3.h */,
+				AACED88C0F5B053400B281E6 /* lua_vector.cpp */,
+				AACED88D0F5B053400B281E6 /* lua_vector.h */,
 				AA315C450F4A8B5600B85147 /* a_codec.cpp */,
 				AA315C460F4A8B5600B85147 /* a_codec.h */,
 				AA315C470F4A8B5600B85147 /* a_common.cpp */,
@@ -1830,7 +1847,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#remove the exe so that the whole thing will relink and resign the bundle\ntouch $TARGET_BUILD_DIR/$WRAPPER_NAME/$TARGET_NAME\n\n#copy game content\ncp -r /Volumes/c$/svn/v3iphone/vergerepo/masterthief/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/svn/resonance/trunk/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/svn/v3iphone/vergerepo/timeless/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/demos/tk/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n";
+			shellScript = "#remove the exe so that the whole thing will relink and resign the bundle\ntouch $TARGET_BUILD_DIR/$WRAPPER_NAME/$TARGET_NAME\n\n#copy game content\n#cp -r /Volumes/c$/svn/v3iphone/vergerepo/masterthief/* $TARGET_BUILD_DIR/\ncp -r ~/svn/atrain/wordee/* $TARGET_BUILD_DIR/$WRAPPER_NAME\nchmod -R a+rwx $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/svn/resonance/trunk/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/svn/v3iphone/vergerepo/timeless/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/demos/tk/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1883,6 +1900,9 @@
 				AACF7B250F4E575A00A2B5DB /* iphone_sound.cpp in Sources */,
 				AACF7B260F4E575A00A2B5DB /* iphone_system.cpp in Sources */,
 				AA137A610F4E769A00295F78 /* GLView.m in Sources */,
+				AACED88E0F5B053400B281E6 /* lua_vector.cpp in Sources */,
+				AACED8910F5B055A00B281E6 /* algebra3.cpp in Sources */,
+				AACED8EC0F5B232A00B281E6 /* iphone_interface.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

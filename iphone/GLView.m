@@ -59,11 +59,14 @@ void _CGDataProviderReleaseBytePointerCallback(void *info,const void *pointer)
 
 -(id)initWithFrame:(CGRect)frame
 {
+	int i=0;
 	self = [super initWithFrame:frame];
 	view = self;
 	layer = [self layer];
 	layer.opaque = YES;
 	//layer.delegate = drawDelegate;
+	for(i=0;i<MAX_SIMULTANEOUS_TOUCHES;i++)
+		iphone_mouses[i].data = NULL;
 	return self;
 }
 
@@ -71,6 +74,76 @@ void _CGDataProviderReleaseBytePointerCallback(void *info,const void *pointer)
 - (void)dealloc
 {
 	[super dealloc];
+}
+
+- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent*)event {
+	
+	NSEnumerator *enumerator = [touches objectEnumerator];
+	UITouch *touch = (UITouch*)[enumerator nextObject];
+	
+	int i;
+	int found = 0;
+	for(i=0;touch&&i<MAX_SIMULTANEOUS_TOUCHES;i++) {
+		//check if this mouse is already tracking a touch
+		if(iphone_mouses[i].data != NULL) continue;
+		
+		//mouse not associated with anything right now.
+		//associate the mosue with this touch
+		found = 1;
+		
+		CGPoint locationInView = [touch locationInView: self];
+		iphone_mouses[i].data = [touch retain];
+		
+		//send press event
+		iphone_mouses[i].l = 1;
+		iphone_mouses[i].x = locationInView.x;
+		iphone_mouses[i].y = locationInView.y;
+		
+		touch = (UITouch*)[enumerator nextObject];
+		
+	}
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent*)event {
+	NSEnumerator *enumerator = [touches objectEnumerator];
+	UITouch *touch = nil;
+	
+	while(touch = (UITouch*)[enumerator nextObject]) {
+		//search for the mouse slot associated with this touch
+		int i, found = NO;
+		for(i=0;i<MAX_SIMULTANEOUS_TOUCHES && !found; i++) {
+			if(iphone_mouses[i].data == touch) {
+				//found the mouse associated with the touch
+				[(UITouch*)(iphone_mouses[i].data) release];
+				iphone_mouses[i].data = NULL;
+				iphone_mouses[i].l = 0;
+				found = YES;
+			}
+		}
+	}
+}
+
+- (void)touchesCancelled:(NSSet*)touches withEvent:(UIEvent*)event {
+	[self touchesEnded: touches withEvent: event];
+}
+
+- (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event {
+	NSEnumerator *enumerator = [touches objectEnumerator];
+	UITouch *touch = nil;
+	
+	while(touch = (UITouch*)[enumerator nextObject]) {
+		//try to find the mouse associated with this touch
+		int i, found = NO;
+		for(i=0;i<MAX_SIMULTANEOUS_TOUCHES && !found; i++) {
+			if(iphone_mouses[i].data == touch) {
+				//found proper mouse
+				CGPoint locationInView = [touch locationInView: self];
+				iphone_mouses[i].x = locationInView.x;
+				iphone_mouses[i].y = locationInView.y;
+				found = YES;
+			}
+		}
+	}
 }
 
 @end

@@ -1,5 +1,7 @@
 #include "xerxes.h"
 
+#include "iphone_interface.h"
+
 bool joy_initd = false;
 stick sticks[4];
 
@@ -47,4 +49,7 @@ void joy_Update() {
 }
 
 void mouse_Update() {
+	mouse_l = iphone_mouses[0].l;
+	mouse_x = iphone_mouses[0].x;
+	mouse_y = iphone_mouses[0].y;
 }
