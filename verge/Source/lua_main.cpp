@@ -36,7 +36,6 @@ LUA::LUA()
 {
 	L = lua_open();
 	luaL_openlibs(L);
-	luaopen_vector(L);
 	bindApi();
 
 }
@@ -599,6 +598,10 @@ void LUA::bindApi()
 	lua_newtable(L);
 	// Put the table we created into the global namespace as v3.
 	lua_setglobal(L, "v3");
+
+	// now that v3 namespace exists, it is a fine time to install the vector stuff
+	luaopen_vector(L);
+	
 	// Metatable boilerplate that basically handles variable handling magic.
 	status = luaL_dostring(L,
 		"v3.get_hvar0 = {}\n"

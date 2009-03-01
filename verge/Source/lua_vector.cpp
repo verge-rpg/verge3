@@ -290,7 +290,6 @@ namespace
 	};
 }
 
-// vec3 * lua_pushvec3(lua_State * L)
 vec3 * lua_pushvec3(lua_State * L)
 {
 	vec3 * v = static_cast<vec3 *>(lua_newuserdata(L, sizeof(vec3)));
@@ -301,13 +300,12 @@ vec3 * lua_pushvec3(lua_State * L)
 	return v;
 }
 
-// vec3 * lua_checkvec3(lua_State * L, int index)
 vec3 * lua_checkvec3(lua_State * L, int index)
 {
 	return static_cast<vec3 *>(luaL_checkudata(L, index, "Verge3vec3"));
 }
 
-// int luaopen_vector(lua_State * L)
+
 int luaopen_vector(lua_State * L)
 {
 	luaL_newmetatable(L, "Verge3vec3");
@@ -315,8 +313,17 @@ int luaopen_vector(lua_State * L)
 	lua_setfield(L, -2, "__index"); // metatable.__index = metatable
 
 	luaL_register(L, NULL, vector_members);
+	lua_pop(L,1);
 
-	luaL_register(L, "vector", vector_static);
+	// Push the v3 namespace
+	lua_getglobal(L, "v3");
+
+	//create vector statics in a vector table
+	lua_newtable(L);
+	luaL_register(L, NULL, vector_static);
+	lua_setfield(L,-2,"vector");
+	lua_pop(L,1);
+
 	return 1;
 }
 

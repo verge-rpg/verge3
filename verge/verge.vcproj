@@ -388,6 +388,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Source\algebra3.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Source\g_chr.cpp"
 				>
 				<FileConfiguration
@@ -709,6 +713,10 @@
 						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Source\lua_vector.cpp"
+				>
 			</File>
 			<File
 				RelativePath=".\Source\p_datastructs.cpp"
@@ -1452,6 +1460,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\algebra3.h"
+				>
+			</File>
+			<File
 				RelativePath="Source\fontdef.h"
 				>
 			</File>
@@ -1509,6 +1521,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\lua_main.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\lua_vector.h"
 				>
 			</File>
 			<File
