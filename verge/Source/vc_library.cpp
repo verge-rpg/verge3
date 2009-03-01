@@ -1621,7 +1621,7 @@ VC_LIBFUNC(vc_ListBuiltinDefines) ()
 	std::string temp;
 	for (int i = 0; i < NUM_HDEFS; i++)
 	{
-		temp += std::string(hdefs[i][0]) + "|";
+		temp += std::string(hdefs[i].key) + "|";
 	}
 	se->vcretstr = temp;
 }

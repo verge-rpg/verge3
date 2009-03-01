@@ -364,6 +364,7 @@ public:
 	static StringRef GetKeyBuffer();
 	static void FlushKeyBuffer();
 	static void SetKeyDelay(int d);
+	static StringRef GetEngineString(CStringRef key);
 };
 
 

@@ -105,7 +105,7 @@
 #define t_STRUCT			6
 #define t_BOOL				7 // For better lua compatibility with builtins.
 
-#define NUM_LIBFUNCS		280
+#define NUM_LIBFUNCS		281
 #define NUM_HVARS			128
 #define NUM_HDEFS			111
 
@@ -113,6 +113,24 @@ struct VcFunctionDecl {
 	const char* returnType;
 	const char* name;
 	const char* argumentTypes;
+};
+
+class Define
+{
+public:
+	enum Type {
+		Type_Raw,
+		Type_PleaseQuote
+	} type;
+	std::string key, value;
+	Define(const char *k, const char *v, Type type = Type_Raw);
+	~Define();
+};
+
+struct HdefDecl {
+	const char* key;
+	const char* value;
+	Define::Type type;
 };
 
 void vc_initBuiltins();
@@ -168,6 +186,6 @@ extern VcFunction* libfuncs;
 extern VcFunctionImplTable implTable;
 extern VcFunctionDispatchTable dispatchTable;
 extern char* libvars[NUM_HVARS][3];
-extern char* hdefs[NUM_HDEFS][2];
+extern HdefDecl hdefs[NUM_HDEFS];
 
 #endif  /* OPCODES_H */

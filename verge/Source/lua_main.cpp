@@ -502,8 +502,8 @@ int LUA::Set_Hvar(lua_State* L)
 
 void LUA::BindHdef(lua_State* L, int index)
 {
-	std::string name = strtolower(hdefs[index][0]);
-	char* value = hdefs[index][1];
+	std::string name = strtolower(hdefs[index].key);
+	const char* value = hdefs[index].value;
 
 	lua_getglobal(L, "v3");
 

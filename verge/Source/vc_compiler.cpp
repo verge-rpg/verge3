@@ -43,7 +43,8 @@ escape_sequence escape_codes[10] =
 	escape_sequence("\\0", '\0'),
 };
 
-int zstrcmp(char *s1, char *s2)
+//WHY do we need this??
+int zstrcmp(const char *s1, const char *s2)
 {
 	while (true)
 	{
@@ -60,18 +61,15 @@ int zstrcmp(char *s1, char *s2)
 
 /***************** subclass Define *****************/
 
-Define::Define(char *k, char *v)
+Define::Define(const char *k, const char *v, Define::Type type)
+: type(type)
+, key(k)
+, value(v)
 {
-	key = new char[strlen(k)+1];
-	value = new char[strlen(v)+1];
-	strcpy(key, k);
-	strcpy(value, v);
 }
 
 Define::~Define()
 {
-	delete[] key;
-	delete[] value;
 }
 
 /***************** subclass HVar *****************/
@@ -611,7 +609,7 @@ VCCompiler::VCCompiler(FileServer* file_server)
 
 	// initialize built-in defines
 	for (int i=0; i<NUM_HDEFS; i++)
-		defines.push_back(new Define(hdefs[i][0], hdefs[i][1]));
+		defines.push_back(new Define(hdefs[i].key, hdefs[i].value, hdefs[i].type));
 	vprint("HDEFS...\n");
 
     // don't add source files unless we're compiling
@@ -1304,7 +1302,7 @@ bool VCCompiler::Process(char *fn)
 				bool macro_exists = false;
 				for (i = 0; i < defines.size(); i++)
 				{
-					if (!zstrcmp(newkey, defines[i]->key))
+					if (!zstrcmp(newkey, defines[i]->key.c_str()))
 					{
 						log("%s(%d) : warning: '%s' : macro redefinition", fn, curline, newkey);
 						defines[i]->value = newvalue;
@@ -1362,11 +1360,16 @@ bool VCCompiler::Process(char *fn)
 			bool def_found = false;
 			for (int k=0; k<defines.size(); k++)
 			{
-				if (!zstrcmp(defines[k]->key, temp))
+				Define *def = defines[k];
+				if (!zstrcmp(def->key.c_str(), temp))
 				{
-					for (i=0; i<strlen(defines[k]->value); i++)
-						source.EmitC(defines[k]->value[i]);
 					def_found = true;
+					if(def->type == Define::Type_PleaseQuote)
+						source.EmitC('\"');
+					for (i=0; i<def->value.size(); i++)
+						source.EmitC(def->value[i]);
+					if(def->type == Define::Type_PleaseQuote)
+						source.EmitC('\"');
 					break;
 				}
 			}

@@ -18,6 +18,8 @@
   typedef unsigned char  byte;
 #endif
 
+#include "opcodes.h"
+
 #define PP_FILETAG			1
 #define PP_LINETAG			2
 #define IDENTIFIER_LEN		80
@@ -43,13 +45,7 @@ struct escape_sequence
 
 extern escape_sequence escape_codes[10];
 
-class Define
-{
-public:
-	char *key, *value;
-	Define(char *k, char *v);
-	~Define();
-};
+
 
 class HVar
 {
