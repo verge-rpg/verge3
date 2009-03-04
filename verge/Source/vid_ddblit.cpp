@@ -48,6 +48,7 @@ union Color {
 
 byte _tbl_getcolor_16bpp[65536][3];
 byte _tbl_getcolor_15bpp[65536][3];
+byte _tbl_blendcolor_15bpp[256][32][32];
 
 void SetupTables()
 {
@@ -74,6 +75,14 @@ void SetupTables()
 		_tbl_getcolor_15bpp[c][1] = g;
 		_tbl_getcolor_15bpp[c][2] = b;
 	}
+
+	for(int a=0;a<256;a++)
+		for(int x=0;x<32;x++)
+			for(int y=0;y<32;y++) {
+				int pa = a;
+				int ipa = 255-pa;
+				_tbl_blendcolor_15bpp[a][x][y] = ((x*pa)+(y*ipa))>>8;
+			}
 }
 
 

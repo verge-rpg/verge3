@@ -14,8 +14,16 @@ FORCEINLINE int _MakeColor(int r, int g, int b) {
 	return T_MakeColor<BPP>(r,g,b);
 }
 
+FORCEINLINE int _PackColor(int r, int g, int b) {
+	return T_PackColor<BPP>(r,g,b);
+}
+
 FORCEINLINE void _GetColor(int c, int &r, int &g, int &b) {
 	T_GetColor<BPP>(c,r,g,b);
+}
+
+FORCEINLINE void _UnpackColor(int c, int &r, int &g, int &b) {
+	T_UnpackColor<BPP>(c,r,g,b);
 }
 
 FORCEINLINE void BLEND_PIXELS(PT* dst, PT* src, byte* sa, const int num) {
@@ -40,14 +48,15 @@ FORCEINLINE void BLEND_PIXELS(PT* dst, PT* src, byte* sa, const int num) {
 		} else if(BPP==16 || BPP==15) {
 			//todo - use lookup table
 			byte pa = sa[i];
-			byte ipa = 255-pa;
+			if(pa == 0) continue;
+			if(pa == 255) { dst[i] = src[i]; continue; }
 			int sr,sg,sb,dr,dg,db;
-			_GetColor(src[i],sr,sg,sb);
-			_GetColor(dst[i],dr,dg,db);
-			dr = ((sr*pa)+(dr*ipa))>>8;
-			dg = ((sg*pa)+(dg*ipa))>>8;
-			db = ((sb*pa)+(db*ipa))>>8;
-			dst[i] = _MakeColor(dr,dg,db);
+			_UnpackColor(src[i],sr,sg,sb);
+			_UnpackColor(dst[i],dr,dg,db);
+			dr = _tbl_blendcolor_15bpp[pa][sr][dr];
+			dg = _tbl_blendcolor_15bpp[pa][sg][dg];
+			db = _tbl_blendcolor_15bpp[pa][sb][db];
+			dst[i] = _PackColor(dr,dg,db);
 		}
 	}
 }

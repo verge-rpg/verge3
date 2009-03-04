@@ -167,6 +167,43 @@ template<> FORCEINLINE void T_GetColor<15>(int c, int &r, int &g, int &b)
 	b = _tbl_getcolor_15bpp[c][2];
 }
 
+template<int BPP> FORCEINLINE void T_UnpackColor(int c, int &r, int &g, int &b);
+
+template<> FORCEINLINE void T_UnpackColor<15>(int c, int &r, int &g, int &b)
+{
+	b = c&0x1F;
+	g = (c>>5)&0x1F;
+	r = (c>>10)&0x1F;
+}
+
+template<> FORCEINLINE void T_UnpackColor<16>(int c, int &r, int &g, int &b)
+{
+	b = c&0x1F;
+	g = (c>>5)&0x3F;
+	r = (c>>11)&0x1F;
+}
+
+template<> FORCEINLINE void T_UnpackColor<32>(int c, int &r, int &g, int &b)
+{
+	T_GetColor<32>(c,r,g,b);
+}
+
+template<int BPP> FORCEINLINE int T_PackColor(int r, int g, int b);
+
+template<> FORCEINLINE int T_PackColor<32>(int r, int g, int b)
+{ 
+	return T_MakeColor<32>(r,g,b);
+}
+template<> FORCEINLINE int T_PackColor<16>(int r, int g, int b)
+{
+	return b|(g<<5)|(r<<11);
+}
+template<> FORCEINLINE int T_PackColor<15>(int r, int g, int b)
+{ 
+	return b|(g<<5)|(r<<10);
+}
+
+extern byte _tbl_blendcolor_15bpp[256][32][32];
 
 inline int ReadPixel(int x, int y, image *source)
 {
