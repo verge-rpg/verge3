@@ -61,6 +61,7 @@ void   (*ColorFilter) (int filter, image *img);
 void   (*Triangle) (int x1, int y1, int x2, int y2, int x3, int y3, int c, image *dest);
 void   (*FlipBlit) (int x, int y, int fx, int fy, image *src, image *dest);
 image* (*ImageFrom8bpp) (byte *src, int width, int height, byte *pal);
+image* (*ImageFrom15bpp) (byte *src, int width, int height);
 image* (*ImageFrom16bpp) (byte *src, int width, int height);
 image* (*ImageFrom24bpp) (byte *src, int width, int height);
 image* (*ImageFrom32bpp) (byte *src, int width, int height);

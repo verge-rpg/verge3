@@ -86,6 +86,7 @@ extern void   (*ColorFilter) (int filter, image *img);
 extern void   (*Triangle) (int x1, int y1, int x2, int y2, int x3, int y3, int c, image *dest);
 extern void   (*FlipBlit) (int x, int y, int fx, int fy, image *src, image *dest);
 extern image* (*ImageFrom8bpp) (byte *src, int width, int height, byte *pal);
+extern image* (*ImageFrom15bpp) (byte *src, int width, int height);
 extern image* (*ImageFrom16bpp) (byte *src, int width, int height);
 extern image* (*ImageFrom24bpp) (byte *src, int width, int height);
 extern image* (*ImageFrom32bpp) (byte *src, int width, int height);
@@ -125,6 +126,11 @@ template<> FORCEINLINE int T_MakeColor<16>(int r, int g, int b)
 	return (((r>>3)<<11)|((g>>2)<<5)|(b>>3));
 }
 
+template<> FORCEINLINE int T_MakeColor<15>(int r, int g, int b)
+{
+	return (((r>>3)<<10)|((g>>3)<<5)|(b>>3));
+}
+
 template<int BPP> FORCEINLINE void T_GetColor(int c, int &r, int &g, int &b);
 extern void (*GetColor)(int c, int &r, int &g, int &b);
 
@@ -148,6 +154,19 @@ template<> FORCEINLINE void T_GetColor<16>(int c, int &r, int &g, int &b)
 	b = _tbl_getcolor_16bpp[c][2];
 }
 
+extern byte _tbl_getcolor_15bpp[65536][3];
+
+template<> FORCEINLINE void T_GetColor<15>(int c, int &r, int &g, int &b)
+{
+	//this table may or may not improve matters depending on the system due to the extreme pressure it puts on the cache
+	//b = (c & 0x1F) << 3;
+	//g = ((c >> 5) & 0x3f) << 2;
+	//r = ((c >> 11) & 0x1f) << 3;
+	r = _tbl_getcolor_15bpp[c][0];
+	g = _tbl_getcolor_15bpp[c][1];
+	b = _tbl_getcolor_15bpp[c][2];
+}
+
 
 inline int ReadPixel(int x, int y, image *source)
 {
@@ -156,10 +175,12 @@ inline int ReadPixel(int x, int y, image *source)
 }
 
 
-inline int BytesPerPixel(int bpp) {
+FORCEINLINE int BytesPerPixel(int bpp) {
 	switch(bpp) {
+		case 15: return 2;
 		case 16: return 2;
 		case 32: return 4;
+		default: return -1;
 	}
 }
 

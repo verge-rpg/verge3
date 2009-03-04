@@ -47,6 +47,7 @@ union Color {
 };
 
 byte _tbl_getcolor_16bpp[65536][3];
+byte _tbl_getcolor_15bpp[65536][3];
 
 void SetupTables()
 {
@@ -62,6 +63,16 @@ void SetupTables()
 		_tbl_getcolor_16bpp[c][0] = r;
 		_tbl_getcolor_16bpp[c][1] = g;
 		_tbl_getcolor_16bpp[c][2] = b;
+	}
+
+	for(int c=0;c<65536;c++) {
+		int b = (c & 0x1F) << 3;
+		int g = ((c >> 5) & 0x1f) << 3;
+		int r = ((c >> 10) & 0x1f) << 3;
+
+		_tbl_getcolor_15bpp[c][0] = r;
+		_tbl_getcolor_15bpp[c][1] = g;
+		_tbl_getcolor_15bpp[c][2] = b;
 	}
 }
 
@@ -472,7 +483,8 @@ image *Image32bppFrom8bpp(byte *src, int width, int height, byte *pal)
 	return b;
 }
 
-image *Image32bppFrom16bpp(byte *src, int width, int height)
+template<int BPP>
+image *Image32bppFromWordType(byte *src, int width, int height)
 {
 	quad *dest;
 	image *img;
@@ -484,7 +496,7 @@ image *Image32bppFrom16bpp(byte *src, int width, int height)
 	dest = (quad *) img->data;
 	for (i=0; i<width*height; i++)
 	{
-		T_GetColor<16>(*wsrc++,r,g,b);
+		T_GetColor<BPP>(*wsrc++,r,g,b);
 		dest[i] = T_MakeColor<32>(r,g,b);
 	}
 	return img;
@@ -521,7 +533,8 @@ image *Image32bppFrom32bpp(byte *src, int width, int height)
 	return img;
 }
 
-image *Image16bppFrom8bpp(byte *src, int width, int height, byte *pal)
+template<int BPP>
+image *ImageWordTypeFrom8bpp(byte *src, int width, int height, byte *pal)
 {
 	word palconv[256], *p;
 	image *b;
@@ -530,7 +543,7 @@ image *Image16bppFrom8bpp(byte *src, int width, int height, byte *pal)
 	b = new image(width, height);
 	p = (word *) b->data;
 	for (i=0; i<256; i++)
-		palconv[i] = T_MakeColor<16>(pal[i*3], pal[(i*3)+1], pal[(i*3)+2]);
+		palconv[i] = T_MakeColor<BPP>(pal[i*3], pal[(i*3)+1], pal[(i*3)+2]);
 	for (i=0; i<width*height; i++)
 		p[i] = palconv[src[i]];
 	return b;
@@ -567,7 +580,8 @@ image *Image16bppFrom24bpp(byte *src, int width, int height)
 	return img;
 }
 
-image *Image16bppFrom32bpp(byte *src, int width, int height)
+template<int BPP>
+image *ImageWordTypeFrom32bpp(byte *src, int width, int height)
 {
 	word *dest;
 	image *img;
@@ -584,7 +598,7 @@ image *Image16bppFrom32bpp(byte *src, int width, int height)
 		g = *src++;
 		r = *src++;
 		adest[i] = *src++;
-		dest[i] = MakeColor(r,g,b);
+		dest[i] = T_MakeColor<BPP>(r,g,b);
 	}
 	return img;
 }
@@ -596,8 +610,8 @@ image* ImageAdapt(image* src, int srcbpp, int dstbpp) {
 	switch(dstbpp) {
 		case 32:
 			switch(srcbpp) {
-				case 16:
-					return Image32bppFrom16bpp((byte*)src->data,src->width,src->height);
+				case 15: return Image32bppFromWordType<15>((byte*)src->data,src->width,src->height);
+				case 16: return Image32bppFromWordType<16>((byte*)src->data,src->width,src->height);
 			}
 	}
 	err("Unsupported!");
@@ -605,6 +619,13 @@ image* ImageAdapt(image* src, int srcbpp, int dstbpp) {
 }
 
 
+#define BPP 15
+#define PT word
+namespace Blitter15 {
+#include "blitter_include.h"
+}
+#undef BPP
+#undef PT
 
 #define BPP 16
 #define PT word
@@ -635,7 +656,9 @@ int SetLucent(int percent)
 
 	if(vid_bpp == 32)
 		Blitter32::SetForLucent(percent);
-	else Blitter16::SetForLucent(percent);
+	else if(vid_bpp==16)
+		Blitter16::SetForLucent(percent);
+	else Blitter15::SetForLucent(percent);
 
 	return oldalpha;
 }
@@ -644,22 +667,29 @@ int SetLucent(int percent)
 void dd_RegisterBlitters()
 {
 	SetupTables();
-	if(vid_bpp == 32)
-		Blitter32::SetForLucent(0);
-	else Blitter16::SetForLucent(0);
 
-	//AlphaBlit       = dd32_AlphaBlit;
+	if(vid_bpp == 32)
+		Blitter32::SetForLucent(alpha );
+	else if(vid_bpp==16)
+		Blitter16::SetForLucent(alpha );
+	else Blitter15::SetForLucent(alpha );
 
 	if(vid_bpp == 32) {
 		ImageFrom8bpp	= Image32bppFrom8bpp;
-		ImageFrom16bpp	= Image32bppFrom16bpp;
+		ImageFrom15bpp	= Image32bppFromWordType<15>;
+		ImageFrom16bpp	= Image32bppFromWordType<16>;
 		ImageFrom24bpp	= Image32bppFrom24bpp;
 		ImageFrom32bpp	= Image32bppFrom32bpp;
-	} else {
-		ImageFrom8bpp	= Image16bppFrom8bpp;
+	} else if(vid_bpp == 16) {
+		ImageFrom8bpp	= ImageWordTypeFrom8bpp<16>;
 		ImageFrom16bpp	= Image16bppFrom16bpp;
 		ImageFrom24bpp	= Image16bppFrom24bpp;
-		ImageFrom32bpp	= Image16bppFrom32bpp;
+		ImageFrom32bpp	= ImageWordTypeFrom32bpp<16>;
+	} else {
+		ImageFrom8bpp	= ImageWordTypeFrom8bpp<15>;
+		ImageFrom16bpp	= Image16bppFrom16bpp;
+		ImageFrom24bpp	= Image16bppFrom24bpp;
+		ImageFrom32bpp	= ImageWordTypeFrom32bpp<15>;
 	}
 	
 	RectVGrad = dd_RectVGrad;
