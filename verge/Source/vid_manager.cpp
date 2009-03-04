@@ -22,12 +22,15 @@
 bool vid_initd = false;
 bool vid_window = true;
 int vid_bpp, vid_xres, vid_yres;
+int vid_bytesperpixel;
 int transColor;
 image *screen = 0;
 AuxWindow *gameWindow;
 
 /****************************************************************/
 
+void (*GetColor)(int c, int &r, int &g, int &b);
+int (*MakeColor)(int r, int g, int b);
 void   (*Flip) (void);
 void   (*Blit) (int x, int y, image *src, image *dest);
 void   (*TBlit) (int x, int y, image *src, image *dest);
@@ -36,8 +39,8 @@ void   (*AlphaBlit) (int x, int y, image *src, image *alpha, image *dest);
 void   (*TAdditiveBlit) (int x, int y, image *src, image *dest);
 void   (*SubtractiveBlit) (int x, int y, image *src, image *dest);
 void   (*TSubtractiveBlit) (int x, int y, image *src, image *dest);
-void   (*BlitTile) (int x, int y, quad *src, image *dest);
-void   (*TBlitTile) (int x, int y, quad *src, image *dest);
+void   (*BlitTile) (int x, int y, char *src, image *dest);
+void   (*TBlitTile) (int x, int y, char *src, image *dest);
 void   (*PutPixel) (int x, int y, int color, image *dest);
 void   (*Line) (int x, int y, int xe, int ye, int color, image *dest);
 void   (*VLine) (int x, int y, int ye, int color, image *dest);
@@ -58,6 +61,7 @@ void   (*ColorFilter) (int filter, image *img);
 void   (*Triangle) (int x1, int y1, int x2, int y2, int x3, int y3, int c, image *dest);
 void   (*FlipBlit) (int x, int y, int fx, int fy, image *src, image *dest);
 image* (*ImageFrom8bpp) (byte *src, int width, int height, byte *pal);
+image* (*ImageFrom16bpp) (byte *src, int width, int height);
 image* (*ImageFrom24bpp) (byte *src, int width, int height);
 image* (*ImageFrom32bpp) (byte *src, int width, int height);
 void   (*vid_Close) (void);
@@ -102,10 +106,13 @@ int vid_SetMode(int xres, int yres, int bpp, int window, int mode)
 	doModeSet = dd_SetMode;
 #endif
 
+	vid_bpp = bpp;
+	vid_bytesperpixel = bpp/8;
+
 	switch (mode)
 	{
 		case MODE_SOFTWARE:
-			if( doModeSet(xres, yres, bpp, window?true:false) )
+			if( doModeSet(xres, yres, DesktopBPP, window?true:false) )
 			{
 				vid_initd = true;
 				return 1;

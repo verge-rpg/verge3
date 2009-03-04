@@ -24,7 +24,7 @@
 
 /****************************** data ******************************/
 
-int v3_xres=320, v3_yres=240;
+int v3_xres=320, v3_yres=240, v3_bpp;
 int v3_window_xres=0, v3_window_yres = 0;
 
 bool windowmode=true;
@@ -58,6 +58,8 @@ void LoadConfig()
 		v3_xres = cfg_GetIntKeyValue("xres");
 	if (cfg_KeyPresent("yres"))
 		v3_yres = cfg_GetIntKeyValue("yres");
+	if (cfg_KeyPresent("bpp"))
+		v3_bpp = cfg_GetIntKeyValue("bpp");
 
 	if (cfg_KeyPresent("window_x_res"))
 		v3_window_xres = cfg_GetIntKeyValue("window_x_res");
@@ -136,16 +138,16 @@ void InitVideo()
 
 	if (!windowmode)
 	{
-		int result = vid_SetMode(v3_xres, v3_yres, 32, 0, MODE_SOFTWARE);
+		int result = vid_SetMode(v3_xres, v3_yres, v3_bpp, 0, MODE_SOFTWARE);
 		if (!result)
-			result = vid_SetMode(v3_xres, v3_yres, DesktopBPP, 1, MODE_SOFTWARE);
+			result = vid_SetMode(v3_xres, v3_yres, v3_bpp, 1, MODE_SOFTWARE);
 		if (!result)
 			err("Could not set video mode!");
 		return;
 	}
 	if (windowmode)
 	{
-		int result = vid_SetMode(v3_xres, v3_yres, DesktopBPP, 1, MODE_SOFTWARE);
+		int result = vid_SetMode(v3_xres, v3_yres, v3_bpp, 1, MODE_SOFTWARE);
 		if (!result)
 			err("Could not set video mode!");
 		return;

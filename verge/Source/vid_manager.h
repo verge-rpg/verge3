@@ -41,7 +41,7 @@ public:
 };
 
 extern int vid_bpp, vid_xres, vid_yres, transColor;
-const int vid_bytesperpixel = 4;
+extern int vid_bytesperpixel;
 extern bool vid_window;
 extern image *screen;
 extern AuxWindow *gameWindow;
@@ -54,7 +54,6 @@ int SetLucent(int percent);
 
 
 
-
 extern void   (*Flip) (void);
 extern void   (*Blit) (int x, int y, image *src, image *dest);
 extern void   (*TBlit) (int x, int y, image *src, image *dest);
@@ -63,8 +62,8 @@ extern void   (*AdditiveBlit) (int x, int y, image *src, image *dest);
 extern void   (*TAdditiveBlit) (int x, int y, image *src, image *dest);
 extern void   (*SubtractiveBlit) (int x, int y, image *src, image *dest);
 extern void   (*TSubtractiveBlit) (int x, int y, image *src, image *dest);
-extern void   (*BlitTile) (int x, int y, quad *src, image *dest);
-extern void   (*TBlitTile) (int x, int y, quad *src, image *dest);
+extern void   (*BlitTile) (int x, int y, char *src, image *dest);
+extern void   (*TBlitTile) (int x, int y, char *src, image *dest);
 void   Clear (int color, image *dest);
 extern void   (*PutPixel) (int x, int y, int color, image *dest);
 int    ReadPixel (int x, int y, image *dest);
@@ -87,6 +86,7 @@ extern void   (*ColorFilter) (int filter, image *img);
 extern void   (*Triangle) (int x1, int y1, int x2, int y2, int x3, int y3, int c, image *dest);
 extern void   (*FlipBlit) (int x, int y, int fx, int fy, image *src, image *dest);
 extern image* (*ImageFrom8bpp) (byte *src, int width, int height, byte *pal);
+extern image* (*ImageFrom16bpp) (byte *src, int width, int height);
 extern image* (*ImageFrom24bpp) (byte *src, int width, int height);
 extern image* (*ImageFrom32bpp) (byte *src, int width, int height);
 extern void   (*vid_Close) (void);
@@ -110,10 +110,44 @@ extern void    (*HueReplace) (int hue_find, int hue_tolerance, int hue_replace, 
 // Overkill (2007-05-04)
 extern void	(*ColorReplace) (int color_find, int color_replace, image *img);
 
-inline int MakeColor(int r, int g, int b)
+image* ImageAdapt(image* src, int srcbpp, int dstbpp);
+
+template<int BPP> FORCEINLINE int T_MakeColor(int r, int g, int b);
+extern int (*MakeColor)(int r, int g, int b);
+
+template<> FORCEINLINE int T_MakeColor<32>(int r, int g, int b)
 {
 	return ((r<<16)|(g<<8)|b);
 }
+
+template<> FORCEINLINE int T_MakeColor<16>(int r, int g, int b)
+{
+	return (((r>>3)<<11)|((g>>2)<<5)|(b>>3));
+}
+
+template<int BPP> FORCEINLINE void T_GetColor(int c, int &r, int &g, int &b);
+extern void (*GetColor)(int c, int &r, int &g, int &b);
+
+template<> FORCEINLINE void T_GetColor<32>(int c, int &r, int &g, int &b)
+{
+	b = c & 0xff;
+	g = (c >> 8) & 0xff;
+	r = (c >> 16) & 0xff;
+}
+
+extern byte _tbl_getcolor_16bpp[65536][3];
+
+template<> FORCEINLINE void T_GetColor<16>(int c, int &r, int &g, int &b)
+{
+	//this table may or may not improve matters depending on the system due to the extreme pressure it puts on the cache
+	//b = (c & 0x1F) << 3;
+	//g = ((c >> 5) & 0x3f) << 2;
+	//r = ((c >> 11) & 0x1f) << 3;
+	r = _tbl_getcolor_16bpp[c][0];
+	g = _tbl_getcolor_16bpp[c][1];
+	b = _tbl_getcolor_16bpp[c][2];
+}
+
 
 inline int ReadPixel(int x, int y, image *source)
 {
@@ -121,14 +155,12 @@ inline int ReadPixel(int x, int y, image *source)
 	return ptr[(y * source->pitch) + x];
 }
 
-inline bool GetColor(int c, int &r, int &g, int &b)
-{
-	//mbg 09-nov-08 - when was this removed?  was the old logic put into VC?
-//	if (c == transColor) return false;
-	b = c & 0xff;
-	g = (c >> 8) & 0xff;
-	r = (c >> 16) & 0xff;
-    return true;
+
+inline int BytesPerPixel(int bpp) {
+	switch(bpp) {
+		case 16: return 2;
+		case 32: return 4;
+	}
 }
 
 #ifndef NOTIMELESS

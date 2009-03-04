@@ -186,7 +186,7 @@ void VSP::Blit(int x, int y, int index, image *dest)
 	index = tileidx[index];
 	if (index >= numtiles) return;
 	//if (index >= numtiles) err("VSP::BlitTile(), tile %d exceeds %d", index, numtiles);
-	quad* tile = vspdata->data + (index<<8);
+	char* tile = (char*)vspdata->data + (index<<8) * vid_bytesperpixel;
 	BlitTile(x, y, tile, dest);
 }
 
@@ -202,7 +202,7 @@ void VSP::TBlit(int x, int y, int index, image *dest)
 	index = tileidx[index];
 	if (index >= numtiles) return;
 	//if (index >= numtiles) err("VSP::BlitTile(), tile %d exceeds %d", index, numtiles);
-	quad* tile = vspdata->data + (index<<8);
+	char* tile = (char*)vspdata->data + (index<<8) * vid_bytesperpixel;
 	TBlitTile(x, y, tile, dest);
 }
 

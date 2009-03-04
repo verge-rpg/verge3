@@ -9,7 +9,7 @@
 /// changes you made below this line.
 
 
-extern int v3_xres, v3_yres;
+extern int v3_xres, v3_yres, v3_bpp;
 extern bool windowmode;
 extern bool sound;
 extern bool use_lua;

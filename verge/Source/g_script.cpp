@@ -999,7 +999,7 @@ int ScriptEngine::ImageShell(int x, int y, int w, int h, int src) {
 	image *s = ImageForHandle(src);
 	if (w+x > s->width || y+h > s->height)
 		err(
-			"ImageShell() - Bad arguements. x/y+w/h greater than original image dimensions\n\nx:%d,w:%d (%d),y:%d,h:%d (%d), orig_x:%d, orig_y:%d",
+			"ImageShell() - Bad arguments. x/y+w/h greater than original image dimensions\n\nx:%d,w:%d (%d),y:%d,h:%d (%d), orig_x:%d, orig_y:%d",
 			x,w,x+w,y,h,y+h,s->width,s->height
 		);
 
@@ -1007,7 +1007,7 @@ int ScriptEngine::ImageShell(int x, int y, int w, int h, int src) {
 	d->delete_data();
 	d->shell = true;
 
-	d->data = (s->data + (y*s->pitch)+x);
+	d->data = (char*)s->data + ((y*s->pitch)+x) * vid_bytesperpixel;
 	d->pitch = s->pitch;
 	
 	return HandleForImage(d);

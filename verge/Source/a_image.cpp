@@ -169,6 +169,7 @@ image *xLoadImage_int(const char *fname,int tflag)
 	break;
 
 	case corona::PF_R8G8B8A8:
+		img = corona::ConvertImage(img,corona::PF_B8G8R8A8);
 		newimage=ImageFrom32bpp((byte*)img->getPixels(),img->getWidth(),img->getHeight());
 		delete img;
         return newimage;
@@ -199,34 +200,60 @@ image* xLoadImage8(const char* fname)
 	return xLoadImage_int_respect8bitTransparency(fname);
 }
 
-static int imagesize = 0;
+image::image(int bpp)
+:shell(false)
+,bpp(bpp==-1?vid_bpp:bpp)
+,alpha(false)
+,alphaChannel(0)
+{
+}
 
-image::image(int xres, int yres)
+image::image(int xres, int yres, int bpp)
 :width(xres)
 ,height(yres)
+,bpp(bpp==-1?vid_bpp:bpp)
 ,pitch(xres)
 ,cx1(0),cy1(0),cx2(xres-1),cy2(yres-1)
 ,shell(false)
 ,alpha(false)
+,alphaChannel(0)
 {
-	imagesize += width*height*4;
-	//log("Allocating %d image bytes; now up to %dK",width*height*4,imagesize/1024);
-	data = new quad[width*height];
+	alloc_data();
+}
+
+void image::delete_data() {
+	if(shell) return;
+
+	delete[] (byte*)data;
+	delete[] alphaChannel;
+	data = 0;
+	alphaChannel = 0;
+}
+
+void image::alloc_alpha()
+{
+	alpha = true;
+	alphaChannel = new byte[width*height];
+	assert(alphaChannel);
+
+	//we are going to assume that pixels are 4byte aligned.
+	assert((((int)alphaChannel) & 3) == 0);
+}
+
+void image::alloc_data()
+{
+	shell = false;
+
+	data = new byte[width*height*BytesPerPixel(bpp)];
+	assert(data);
 
 	//we are going to assume that pixels are 4byte aligned.
 	assert((((int)data) & 3) == 0);
 
-	//we're running out of memory sometimes
-	assert(data);
+	pitch = width;
 }
 
-void image::delete_data() {
-	imagesize -= width*height*4;
-	//log("Freeing %d image bytes; now down to %dK",width*height*4,imagesize/1024);
-	delete[] (quad*)data;
-}
-
-image::~image() {
-	if (data && !shell)
-		delete_data();
+image::~image()
+{
+	delete_data();
 }

@@ -392,6 +392,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\blitter_include.h"
+				>
+			</File>
+			<File
 				RelativePath="Source\g_chr.cpp"
 				>
 				<FileConfiguration

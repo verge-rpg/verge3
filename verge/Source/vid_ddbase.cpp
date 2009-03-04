@@ -565,6 +565,13 @@ void dd_Window::flip_win()
 	if(!img)
 		return;
 
+	//convert the image format if necessary
+	if(DesktopBPP != vid_bpp) {
+		image* temp = ImageAdapt(img, vid_bpp, DesktopBPP);
+		memcpy((quad*)dx_win_bsd.lpSurface,temp->data,img->width*img->height*DesktopBPP/8);
+		delete temp;
+	}
+
 	GetClientRect(hwnd, &r);
 
 	int xres = img->width;
@@ -756,40 +763,43 @@ int dd_Window::set_win(int w, int h, int bpp)
 	}
 
 	//set pixelformat parameters
-	if(bGameWindow)
-	{
-		DDPIXELFORMAT ddpf;
-		ddpf.dwSize = sizeof(ddpf);
-		ddpf.dwFlags = DDPF_RGB;
-		hr = dx_win_ps->GetPixelFormat(&ddpf);
-		if (hr != DD_OK) err("Could not get pixel format!");
-		//if (ddpf.dwRBitMask == 0x7C00 && bpp == 16)
-		//	vid_bpp = 15, vid_bytesperpixel = 2;
-		//else
-		//	vid_bpp = bpp, vid_bytesperpixel = bpp / 8;
-		vid_bpp = 32;
+	//if(bGameWindow)
+	//{
+	//	DDPIXELFORMAT ddpf;
+	//	ddpf.dwSize = sizeof(ddpf);
+	//	ddpf.dwFlags = DDPF_RGB;
+	//	hr = dx_win_ps->GetPixelFormat(&ddpf);
+	//	if (hr != DD_OK) err("Could not get pixel format!");
+	//	//if (ddpf.dwRBitMask == 0x7C00 && bpp == 16)
+	//	//	vid_bpp = 15, vid_bytesperpixel = 2;
+	//	//else
+	//	//	vid_bpp = bpp, vid_bytesperpixel = bpp / 8;
+	//}
+
+	delete img;
+	img = new image();
+	img->width = w;
+	img->height = h;
+	img->cx1 = 0;
+	img->cx2 = w-1;
+	img->cy1 = 0;
+	img->cy2 = h-1;
+	
+	if(vid_bpp == DesktopBPP) {
+		img->shell = true;
+		img->data = (quad*)dx_win_bsd.lpSurface;
+		img->pitch = dx_win_bsd.lPitch / vid_bytesperpixel;
+	} else {
+		img->alloc_data();
 	}
 
-	if(img) delete img;
-	img = new image();
-	img->shell = true;
 	SetHandleImage(imgHandle,img);
-
 	if(bGameWindow)
 	{
 		SetHandleImage(1,img);
 		screen = img;
 	}
-
-	img->data = (quad*)dx_win_bsd.lpSurface;
-//	img->alphamap = 0;
-	img->width = w;
-	img->height = h;
-	img->pitch = dx_win_bsd.lPitch / vid_bytesperpixel;
-	img->cx1 = 0;
-	img->cx2 = w-1;
-	img->cy1 = 0;
-	img->cy2 = h-1;
+	
 
 	return 1;
 }

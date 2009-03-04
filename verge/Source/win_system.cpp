@@ -50,6 +50,7 @@ int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE zwhocares, LPSTR szComman
 {
 	hMainInst = hCurrentInst;
 	DesktopBPP = GetDeviceCaps(GetDC(NULL), BITSPIXEL);
+	v3_bpp = DesktopBPP;
 	//dd_init();
 	setWindowTitle(APPNAME);
 
