@@ -199,7 +199,7 @@ public:
 void iphone_m_flip(unsigned int* data);
 
 void iphone_VidFlip(void) {
-	iphone_m_flip(screen->data);
+	iphone_m_flip((unsigned int*)screen->data);
 }
 
 static void initvideo() {

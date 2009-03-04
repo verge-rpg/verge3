@@ -132,6 +132,75 @@ static void T_PutPixel(int x, int y, int color, image *dest)
 	}
 }
 
+
+template<LUCENT_TYPE LT, bool CLIP>
+void T_HLine(int x, int y, int xe, int color, image *dest)
+{
+	PT *d = (PT *) dest->data;
+	
+	if(CLIP) {
+		int cx1=0, cy1=0, cx2=0, cy2=0;
+		if (xe<x) SWAP(x,xe);
+		dest->GetClip(cx1, cy1, cx2, cy2);
+		if (x>cx2 || y>cy2 || xe<cx1 || y<cy1)
+			return;
+		if (xe>cx2) xe=cx2;
+		if (x<cx1)  x =cx1;
+	}
+	
+	d += (y * dest->pitch) + x;
+	for (; x<=xe; x++) {
+		switch(LT) {
+			case NONE: *d++ = color; break;
+			case HALF: {
+				if(BPP==32) {
+					int s=*d;
+					s=(s & tmask) + (color & tmask);
+					*d++ = (s >> 1);
+				} else bpperr();
+				break;
+			}
+			case ANY:
+				T_PutPixel<ANY,false>(x, y, color, dest);
+				break;
+		}
+	}
+}
+
+
+
+template<LUCENT_TYPE LT>
+void T_VLine(int x, int y, int ye, int color, image *dest)
+{
+	PT *d = (PT *) dest->data;
+	int cx1=0, cy1=0, cx2=0, cy2=0;
+	if (ye<y) SWAP(y,ye);
+	dest->GetClip(cx1, cy1, cx2, cy2);
+	if (x>cx2 || y>cy2 || x<cx1 || ye<cy1)
+		return;
+	if (ye>cy2) ye=cy2;
+	if (y<cy1)  y =cy1;
+	
+	d += (y * dest->pitch) + x;
+	for (; y<=ye; y++, d+=dest->pitch) {
+		switch(LT) {
+			case NONE: *d = color; break;
+			case HALF: {
+				if(BPP==32) {
+					quad s=*d;
+					s=(s & tmask) + (color & tmask);
+					*d = (s >> 1);
+				} else bpperr();
+				break;
+			}
+			case ANY:
+				T_PutPixel<ANY,false>(x, y, color, dest);
+				break;
+		}
+	}
+}
+
+
 template<LUCENT_TYPE LT>
 void T_Line(int x, int y, int xe, int ye, int color, image *dest)
 {
@@ -207,40 +276,6 @@ void T_Line(int x, int y, int xe, int ye, int color, image *dest)
 
 
 
-template<LUCENT_TYPE LT, bool CLIP>
-void T_HLine(int x, int y, int xe, int color, image *dest)
-{
-	PT *d = (PT *) dest->data;
-	
-	if(CLIP) {
-		int cx1=0, cy1=0, cx2=0, cy2=0;
-		if (xe<x) SWAP(x,xe);
-		dest->GetClip(cx1, cy1, cx2, cy2);
-		if (x>cx2 || y>cy2 || xe<cx1 || y<cy1)
-			return;
-		if (xe>cx2) xe=cx2;
-		if (x<cx1)  x =cx1;
-	}
-
-	d += (y * dest->pitch) + x;
-	for (; x<=xe; x++) {
-		switch(LT) {
-			case NONE: *d++ = color; break;
-			case HALF: {
-				if(BPP==32) {
-					int s=*d;
-					s=(s & tmask) + (color & tmask);
-					*d++ = (s >> 1);
-				} else bpperr();
-				break;
-			}
-			case ANY:
-				T_PutPixel<ANY,false>(x, y, color, dest);
-				break;
-		}
-	}
-}
-
 template<LUCENT_TYPE LT>
 void T_Box(int x, int y, int x2, int y2, int color, image *dest)
 {
@@ -279,37 +314,6 @@ static void T_Rect(int x, int y, int x2, int y2, int color, image *dest)
 
 	for (; y<=y2; y++)
 		T_HLine<LT,false>(x, y, x2, color, dest);
-}
-
-template<LUCENT_TYPE LT>
-void T_VLine(int x, int y, int ye, int color, image *dest)
-{
-	PT *d = (PT *) dest->data;
-	int cx1=0, cy1=0, cx2=0, cy2=0;
-	if (ye<y) SWAP(y,ye);
-	dest->GetClip(cx1, cy1, cx2, cy2);
-	if (x>cx2 || y>cy2 || x<cx1 || ye<cy1)
-		return;
-	if (ye>cy2) ye=cy2;
-	if (y<cy1)  y =cy1;
-
-	d += (y * dest->pitch) + x;
-	for (; y<=ye; y++, d+=dest->pitch) {
-		switch(LT) {
-			case NONE: *d = color; break;
-			case HALF: {
-				if(BPP==32) {
-					quad s=*d;
-					s=(s & tmask) + (color & tmask);
-					*d = (s >> 1);
-				} else bpperr();
-				break;
-			}
-			case ANY:
-				T_PutPixel<ANY,false>(x, y, color, dest);
-				break;
-		}
-	}
 }
 
 template<LUCENT_TYPE LT>
