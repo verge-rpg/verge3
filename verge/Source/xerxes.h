@@ -121,6 +121,12 @@ typedef unsigned char  byte;
 #define LOGFILE "v3.log"
 #define ORDER_INT(a,b) { if (a>b) { a=a-b; b=a+b; a=b-a; } }
 #define SWAP(a,b) { a=a-b; b=a+b; a=b-a; }
+#define FORCEINLINE inline
+
+#ifdef __WIN32__
+#undef FORCEINLINE
+#define FORCEINLINE __forceinline
+#endif
 
 /* system includes */
 

@@ -1847,7 +1847,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#remove the exe so that the whole thing will relink and resign the bundle\ntouch $TARGET_BUILD_DIR/$WRAPPER_NAME/$TARGET_NAME\n\n#copy game content\n#cp -r /Volumes/c$/svn/v3iphone/vergerepo/masterthief/* $TARGET_BUILD_DIR/\ncp -r ~/svn/atrain/wordee/* $TARGET_BUILD_DIR/$WRAPPER_NAME\nchmod -R a+rwx $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/svn/resonance/trunk/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/svn/v3iphone/vergerepo/timeless/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/demos/tk/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n";
+			shellScript = "#remove the exe so that the whole thing will relink and resign the bundle\ntouch $TARGET_BUILD_DIR/$WRAPPER_NAME/$TARGET_NAME\n\n#copy game content\n#cp -r /Volumes/c$/svn/v3iphone/vergerepo/masterthief/* $TARGET_BUILD_DIR/\ncp -r ~/svn/atrain/wordee/* $TARGET_BUILD_DIR/$WRAPPER_NAME\nchmod -R a+rwx $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/svn/resonance/trunk/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/svn/v3iphone/vergerepo/timeless/* $TARGET_BUILD_DIR/$WRAPPER_NAME\n#cp -r /Volumes/c$/demos/tk/* $TARGET_BUILD_DIR/$WRAPPER_NAME\nrm $TARGET_BUILD_DIR/$WRAPPER_NAME/verge.exe";
 		};
 /* End PBXShellScriptBuildPhase section */
 

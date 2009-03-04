@@ -98,7 +98,7 @@ void showMessageBox(CStringRef msg)
 	doMessageBox(msg.c_str());
 }
 
-int DesktopBPP = 32;
+int DesktopBPP = 16;
 
 void Sleep(unsigned int msec)
 {
@@ -171,14 +171,12 @@ void HandleMessages(void)
 
 int iphone_SetMode(int xres, int yres, int bpp, bool windowflag) {
 
-	if(bpp != 32) return 0;
-
 	delete screen;
 	image *img = new image();
 	img->shell = true;
 	SetHandleImage(1,img);
 	screen = img;
-	img->data = (quad*)malloc(xres*yres*4);
+	img->data = (quad*)malloc(xres*yres*2);
 	img->width = xres;
 	img->height = yres;
 	img->pitch = xres;
@@ -228,7 +226,7 @@ public:
 void iphone_m_flip(unsigned int* data);
 
 void iphone_VidFlip(void) {
-	iphone_m_flip(screen->data);
+	iphone_m_flip((unsigned int*)screen->data);
 }
 
 static void initvideo() {
