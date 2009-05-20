@@ -18,16 +18,12 @@ public:
 	int width, height, pitch;
 	int cx1, cy1, cx2, cy2;
 	bool shell, alpha;
-	void *data;
-	byte *alphaChannel;
-	int bpp;
+	quad *data;
 
 
-	image(int bpp=-1);
-	image(int xres, int yres, int bpp=-1);
+	image():alpha(false) {}
+	image(int xres, int yres);
 	void delete_data();
-	void alloc_data();
-	void alloc_alpha();
 	~image();
 
 	void SetClip(int x1, int y1, int x2, int y2) {
