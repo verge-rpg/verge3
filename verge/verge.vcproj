@@ -158,7 +158,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="delayimp.lib msacm32.lib vfw32.lib winmm.lib ws2_32.lib ../win32/dxguid.lib ../win32/ddraw.lib ../win32/dinput.lib wininet.lib ../zlib/release/zlib.lib ../corona/output/release/corona.lib user32.lib gdi32.lib ../fmod/fmodvc.lib ../flac-1.1.4/obj/$(ConfigurationName)/lib/libFLAC_static.lib ../audiere/vc7/bin/$(ConfigurationName)/audiere.lib"
+				AdditionalDependencies="delayimp.lib msacm32.lib vfw32.lib winmm.lib ws2_32.lib ../win32/dxguid.lib ../win32/ddraw.lib ../win32/dinput.lib wininet.lib ../zlib/release/zlib.lib ../corona/output/release/corona.lib user32.lib gdi32.lib ../fmod/fmodvc.lib ../flac-1.1.4/obj/$(ConfigurationName)/lib/libFLAC_static.lib ole32.lib ../audiere/vc7/bin/$(ConfigurationName)/audiere.lib"
 				OutputFile="$(OutDir)/verge.exe"
 				LinkIncremental="1"
 				GenerateManifest="false"
@@ -389,10 +389,6 @@
 			</File>
 			<File
 				RelativePath=".\Source\algebra3.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\blitter_include.h"
 				>
 			</File>
 			<File
@@ -1465,6 +1461,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\algebra3.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\blitter_include.h"
 				>
 			</File>
 			<File

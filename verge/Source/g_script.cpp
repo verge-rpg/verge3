@@ -1011,7 +1011,7 @@ int ScriptEngine::ImageShell(int x, int y, int w, int h, int src) {
 	d->delete_data();
 	d->shell = true;
 
-	d->data = (s->data + (y*s->pitch)+x);
+	d->data = ((quad *)s->data + (y*s->pitch)+x);
 	d->pitch = s->pitch;
 	
 	return HandleForImage(d);

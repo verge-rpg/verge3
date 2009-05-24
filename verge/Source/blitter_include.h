@@ -313,16 +313,21 @@ static void T_Rect(int x, int y, int x2, int y2, int color, image *dest)
 	//speed optimization for entire-buffer clearing
 	if(y==0&&y2==dest->height-1
 		&&x==0&&x2==dest->width-1
-		&&dest->pitch == dest->width) {
+		&&dest->pitch == dest->width
+		&&alpha==0
+		) {
 			int todo = dest->width*dest->height;
 			PT* d = (PT*)dest->data;
 			for(int i=0;i<todo;i++)
 				*d++ = color;
 			return;
 	}
+	else
+	{
+		for (; y<=y2; y++)
+			T_HLine<LT,false>(x, y, x2, color, dest);
 
-	for (; y<=y2; y++)
-		T_HLine<LT,false>(x, y, x2, color, dest);
+	}
 }
 
 template<LUCENT_TYPE LT>
@@ -1266,6 +1271,7 @@ static void SetForLucentCommon()
 	Mosaic			= T_Mosaic;
 	MakeColor		= _MakeColor;
 	GetColor		= _GetColor;
+	AlphaBlit       = dd32_AlphaBlit;
 }
 
 static void SetForLucent(int percent)
