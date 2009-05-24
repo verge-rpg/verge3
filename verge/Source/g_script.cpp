@@ -152,27 +152,29 @@ void ScriptEngine::WriteHvar(int category, int loc, int ofs, int value)
 				case 62: if (ofs>=0 && ofs<entities) entity[ofs]->setface(value); break;
 				case 63: if (ofs>=0 && ofs<entities) entity[ofs]->setspeed(value); break;
 				case 64: if (ofs>=0 && ofs<entities) entity[ofs]->visible = value ? true : false; break;
-				case 66: if (ofs>=0 && ofs<256) sprites[ofs].x = value; return;
-				case 67: if (ofs>=0 && ofs<256) sprites[ofs].y = value; return;
-				case 68: if (ofs>=0 && ofs<256) sprites[ofs].sc = value; return;
-				case 69: if (ofs>=0 && ofs<256) sprites[ofs].image = value; return;
-				case 70: if (ofs>=0 && ofs<256) sprites[ofs].lucent = value; return;
-				case 71: if (ofs>=0 && ofs<256) sprites[ofs].addsub = value; return;
-				case 72: if (ofs>=0 && ofs<256) sprites[ofs].alphamap = value; return;
-				case 73: if (ofs>=0 && ofs<256) sprites[ofs].thinkrate = value; return; // Overkill (2006-07-28)
+				case 66: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].x = value; return;
+				case 67: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].y = value; return;
+				case 68: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].sc = value; return;
+				case 69: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].image = value; return;
+				case 70: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].lucent = value; return;
+				case 71: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].addsub = value; return;
+				case 72: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].alphamap = value; return;
+				case 73: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].thinkrate = value; return; // Overkill (2006-07-28)
+				case 75: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].xflip = value; return;
+				case 76: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].yflip = value; return;
 				case 78: if (ofs>=0 && ofs<entities) entity[ofs]->obstruction = (value!=0); return;
 				case 79: if (ofs>=0 && ofs<entities) entity[ofs]->obstructable = (value!=0); return;
 				case 94: if (current_map && ofs>=0 && ofs<current_map->numlayers) current_map->layers[ofs]->lucent = value; return;
                 case 97: if (current_map && ofs>=0 && ofs<current_map->numlayers) current_map->layers[ofs]->SetParallaxX(value / 65536.0); return;
                 case 98: if (current_map && ofs>=0 && ofs<current_map->numlayers) current_map->layers[ofs]->SetParallaxY(value / 65536.0); return;
-				case 105: if (ofs>=0 && ofs<256) sprites[ofs].ent = value; return; // Overkill (2006-07-28)
-				case 106: if (ofs>=0 && ofs<256) sprites[ofs].silhouette = value; return; // Overkill (2006-07-28)
-				case 107: if (ofs>=0 && ofs<256) sprites[ofs].color = value; return; // Overkill (2006-07-28)
-				case 108: if (ofs>=0 && ofs<256) sprites[ofs].wait = value; return; // Overkill (2006-07-28)
-				case 109: if (ofs>=0 && ofs<256) sprites[ofs].onmap = value; return; // Overkill (2006-07-28)
-				case 110: if (ofs>=0 && ofs<256) sprites[ofs].layer = value; return; // Overkill (2006-07-28)
+				case 105: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].ent = value; return; // Overkill (2006-07-28)
+				case 106: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].silhouette = value; return; // Overkill (2006-07-28)
+				case 107: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].color = value; return; // Overkill (2006-07-28)
+				case 108: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].wait = value; return; // Overkill (2006-07-28)
+				case 109: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].onmap = value; return; // Overkill (2006-07-28)
+				case 110: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].layer = value; return; // Overkill (2006-07-28)
 				case 111: if (ofs>=0 && ofs<entities) entity[ofs]->lucent = value; return; // Overkill (2006-07-28)
-				case 112: if (ofs>=0 && ofs<256) sprites[ofs].timer = value; return; // Overkill (2006-07-28)
+				case 112: if (ofs>=0 && ofs<sprites.size()) sprites[ofs].timer = value; return; // Overkill (2006-07-28)
 				//case 113: ent.framew
 				//case 114: ent.frameh
 
@@ -228,7 +230,7 @@ void ScriptEngine::WriteHvar_str(int category, int loc, int arg, CStringRef valu
 					entity[arg]->script = value; break;
 				break;
 			case 74: 
-				if(arg >= 0 && arg < 256)
+				if(arg >= 0 && arg < sprites.size())
 					sprites[arg].thinkproc = value; break;
 				break;
 			case 100: //Entity.Chr
@@ -289,7 +291,7 @@ StringRef ScriptEngine::ReadHvar_str(int category, int loc, int arg)
 					else
 						return empty_string;
 				case 74:
-					if(arg >= 0 && arg < 256)
+					if(arg >= 0 && arg < sprites.size())
 						return sprites[arg].thinkproc; // Overkill (2006-07-28): No more HSTR error 4 u.
 					else
 						return empty_string;
@@ -426,27 +428,29 @@ int ScriptEngine::ReadHvar(int category, int loc, int ofs)
 				case 62: if (ofs>=0 && ofs<entities) return entity[ofs]->face; return 0;
 				case 63: if (ofs>=0 && ofs<entities) return entity[ofs]->speed; return 0;
 				case 64: if (ofs>=0 && ofs<entities) return entity[ofs]->visible; return 0;
-				case 66: if (ofs>=0 && ofs<256) return sprites[ofs].x; return 0;
-				case 67: if (ofs>=0 && ofs<256) return sprites[ofs].y; return 0;
-				case 68: if (ofs>=0 && ofs<256) return sprites[ofs].sc; return 0;
-				case 69: if (ofs>=0 &&	ofs<256) return sprites[ofs].image; return 0;
-				case 70: if (ofs>=0 && ofs<256) return sprites[ofs].lucent; return 0;
-				case 71: if (ofs>=0 && ofs<256) return sprites[ofs].addsub; return 0;
-				case 72: if (ofs>=0 && ofs<256) return sprites[ofs].alphamap; return 0;
-				case 73: if (ofs>=0 && ofs<256) return sprites[ofs].thinkrate; return 0; // Overkill (2006-07-28)
+				case 66: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].x; return 0;
+				case 67: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].y; return 0;
+				case 68: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].sc; return 0;
+				case 69: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].image; return 0;
+				case 70: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].lucent; return 0;
+				case 71: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].addsub; return 0;
+				case 72: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].alphamap; return 0;
+				case 73: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].thinkrate; return 0; // Overkill (2006-07-28)
+				case 75: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].xflip; return 0;
+				case 76: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].yflip; return 0;
 				case 78: if (ofs>=0 && ofs<entities) return entity[ofs]->obstruction; return 0;
 				case 79: if (ofs>=0 && ofs<entities) return entity[ofs]->obstructable; return 0;
 				case 94: if (current_map && ofs>=0 && ofs<current_map->numlayers) return current_map->layers[ofs]->lucent;
                 case 97: if (current_map && ofs>=0 && ofs<current_map->numlayers) return (int)(current_map->layers[ofs]->parallax_x * 65536);
                 case 98: if (current_map && ofs>=0 && ofs<current_map->numlayers) return (int)(current_map->layers[ofs]->parallax_y * 65536);
-				case 105: if (ofs>=0 && ofs<256) return sprites[ofs].ent; return 0; // Overkill (2006-07-28)
-				case 106: if (ofs>=0 && ofs<256) return sprites[ofs].silhouette; return 0; // Overkill (2006-07-28)
-				case 107: if (ofs>=0 && ofs<256) return sprites[ofs].color; return 0; // Overkill (2006-07-28)
-				case 108: if (ofs>=0 && ofs<256) return sprites[ofs].wait; return 0; // Overkill (2006-07-28)
-				case 109: if (ofs>=0 && ofs<256) return sprites[ofs].onmap; return 0; // Overkill (2006-07-28)
-				case 110: if (ofs>=0 && ofs<256) return sprites[ofs].layer; return 0; // Overkill (2006-07-28)
+				case 105: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].ent; return 0; // Overkill (2006-07-28)
+				case 106: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].silhouette; return 0; // Overkill (2006-07-28)
+				case 107: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].color; return 0; // Overkill (2006-07-28)
+				case 108: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].wait; return 0; // Overkill (2006-07-28)
+				case 109: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].onmap; return 0; // Overkill (2006-07-28)
+				case 110: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].layer; return 0; // Overkill (2006-07-28)
 				case 111: if (ofs>=0 && ofs<entities) return entity[ofs]->lucent; return 0; // Overkill (2006-07-28)
-				case 112: if (ofs>=0 && ofs<256) return sprites[ofs].timer; return 0; // Overkill (2006-07-28)
+				case 112: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].timer; return 0; // Overkill (2006-07-28)
 				case 113: return ScriptEngine::Get_EntityFrameW(ofs); // Overkill (2006-07-28)
 				case 114: return ScriptEngine::Get_EntityFrameH(ofs); // Overkill (2006-07-28)
 				default:
@@ -999,7 +1003,7 @@ int ScriptEngine::ImageShell(int x, int y, int w, int h, int src) {
 	image *s = ImageForHandle(src);
 	if (w+x > s->width || y+h > s->height)
 		err(
-			"ImageShell() - Bad arguments. x/y+w/h greater than original image dimensions\n\nx:%d,w:%d (%d),y:%d,h:%d (%d), orig_x:%d, orig_y:%d",
+			"ImageShell() - Bad arguements. x/y+w/h greater than original image dimensions\n\nx:%d,w:%d (%d),y:%d,h:%d (%d), orig_x:%d, orig_y:%d",
 			x,w,x+w,y,h,y+h,s->width,s->height
 		);
 
@@ -1007,7 +1011,7 @@ int ScriptEngine::ImageShell(int x, int y, int w, int h, int src) {
 	d->delete_data();
 	d->shell = true;
 
-	d->data = (char*)s->data + ((y*s->pitch)+x) * vid_bytesperpixel;
+	d->data = (s->data + (y*s->pitch)+x);
 	d->pitch = s->pitch;
 	
 	return HandleForImage(d);

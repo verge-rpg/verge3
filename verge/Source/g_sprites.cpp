@@ -18,21 +18,29 @@
 
 /****************************** data ******************************/
 
-sprite sprites[256];
+//sprite sprites[256];
+std::vector<sprite> sprites;
 
 /****************************** code ******************************/
 
 void ResetSprites()
 {
+	if (!sprites.empty())
+		sprites.erase(sprites.begin(),sprites.end());
+
+	/*
 	for (int i=0; i<256; i++)
 	{
 		sprites[i] = sprite();
 	}
+	*/
 }
 
 int GetSprite()
 {
-	for (int i=0; i<256; i++)
+	int i;
+
+	for (i=0; i<sprites.size(); i++)
 	{
 		if (!sprites[i].image)
 		{
@@ -41,7 +49,9 @@ int GetSprite()
 			return i;
 		}
 	}
-	return -1;
+
+	sprites.push_back(sprite());
+	return sprites.size() - 1;
 }
 
 void RenderSprite(int i)
@@ -89,7 +99,7 @@ void RenderSprite(int i)
 
 void RenderSprites()
 {
-	for (int i=0; i<256; i++)
+	for (int i=0; i<sprites.size(); i++)
 	{
 		if (sprites[i].onmap) continue;
 		RenderSprite(i);
@@ -99,7 +109,7 @@ void RenderSprites()
 
 void RenderLayerSprites(int layer)
 {
-	for (int i=0; i<256; i++)
+	for (int i=0; i<sprites.size(); i++)
 	{
 		if (!sprites[i].onmap) continue;
 		if (sprites[i].ent >= 0) continue;
@@ -111,7 +121,7 @@ void RenderLayerSprites(int layer)
 
 void RenderSpritesBelowEntity(int ent)
 {
-	for (int i=0; i<256; i++)
+	for (int i=0; i<sprites.size(); i++)
 	{
 		if (!sprites[i].onmap) continue;
 		if (sprites[i].ent != ent) continue;
@@ -124,7 +134,7 @@ void RenderSpritesBelowEntity(int ent)
 
 void RenderSpritesAboveEntity(int ent)
 {
-	for (int i=0; i<256; i++)
+	for (int i=0; i<sprites.size(); i++)
 	{
 		if (!sprites[i].onmap) continue;
 		if (sprites[i].ent != ent) continue;

@@ -47,7 +47,7 @@ public:
 	StringRef thinkproc;
 };
 
-extern sprite sprites[256];
+extern std::vector<sprite> sprites;
 
 void RenderSprites();
 void ResetSprites();

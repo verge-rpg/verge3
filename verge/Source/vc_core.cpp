@@ -1029,7 +1029,7 @@ void VCCore::HandleAssign()
 				}
 				break;
 			case 74: 
-				if(arg >= 0 && arg < 256) {
+				if(arg >= 0 && arg < sprites.size()) {
 					sprites[arg].thinkproc = ResolveString(); break;
 				} else {
 					ResolveString(); // invalid arg, just ignore the string
