@@ -136,7 +136,24 @@ MAP::MAP(char *fname)
 	vread(&startx, 2, f);
 	vread(&starty, 2, f);
 
-	tileset = new VSP(vspname);
+	std::string s = std::string(fname);
+	int offs = s.rfind('\\');
+	if (offs >= 0)
+	{
+		s.replace(offs+1,strlen(fname),vspname);
+		tileset = new VSP((char *)s.c_str());
+	}
+	else
+	{
+		offs = s.rfind('/');
+		if (offs >= 0)
+		{
+			s.replace(offs+1,strlen(fname),vspname);
+			tileset = new VSP((char *)s.c_str());
+		}
+		else
+			tileset = new VSP(vspname);
+	}
 
 	vread(&numlayers, 4, f);
 
