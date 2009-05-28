@@ -8,7 +8,7 @@
 /// If you have altered this source file, please log your name, date, and what
 /// changes you made below this line.
 
-
+ 
 #ifndef IMAGE_H
 #define IMAGE_H
 
@@ -18,12 +18,16 @@ public:
 	int width, height, pitch;
 	int cx1, cy1, cx2, cy2;
 	bool shell, alpha;
-	quad *data;
+	void *data;
+	byte *alphaChannel;
+	int bpp;
 
 
-	image():alpha(false) {}
-	image(int xres, int yres);
+	image(int bpp=-1);
+	image(int xres, int yres, int bpp=-1);
 	void delete_data();
+	void alloc_data();
+	void alloc_alpha();
 	~image();
 
 	void SetClip(int x1, int y1, int x2, int y2) {
