@@ -210,21 +210,43 @@ void InitGarlick() {
 }
 
 #ifdef ALLOW_SCRIPT_COMPILATION
-bool CompileMaps(const char *ext, MapScriptCompiler *compiler)
+bool CompileMaps(const char *ext, MapScriptCompiler *compiler, char *directory = NULL)
 {
+	if (!directory)
+		directory = ".";
+
+	std::string pattern = std::string(directory);
+	pattern.append("/*");
+
 	std::vector<std::string> filenames;
-	listFilePattern(filenames, "*.map");
+	listFilePattern(filenames, pattern.c_str());
 	for(std::vector<std::string>::iterator i = filenames.begin();
 		i != filenames.end();
 		i++)
 	{
-		char *s = stripext(i->c_str());
-		if (Exist(va("%s.%s", s,ext))) {
-			if(!compiler->CompileMap(s))
-				return false;
-			}
+		if (ExtensionIs(i->c_str(),"map"))
+		{
+			std::string fullpath(directory);
+			fullpath.append("/");
+			fullpath.append(*i);
+
+			char *s = stripext(fullpath.c_str());
+			if (Exist(va("%s.%s", s,ext))) 
+				if(!compiler->CompileMap(s))
+					return false;
+		}
+		else if (i->at(0) != '.')
+		{
+			// for now, if it's not a .map then try to use it as a directory
+			std::string newpath(directory);
+			newpath.append("/");
+			newpath.append(*i);
+			CompileMaps(ext,compiler,(char *)newpath.c_str());
+		}
 	}
-	log ("");
+
+
+	//log ("");
 	return true;
 }
 #endif
