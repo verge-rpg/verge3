@@ -141,14 +141,17 @@ void Font::PrintLine(char *s, char *end, int x, int y, image *dest)
 	{
 		if (!*s)
 			return;
-		if (*s == '@')
+		if (*s == '\f')
 		{
+			/*
+			// what's wrong with just using \f0?
 			if (incolor)
 			{
 				selected = 0;
 				incolor = false;
 				continue;
 			}
+			*/
 			if (!*++s) return;
 			selected = *s - '0';
 			if (selected >= subsets || selected < 0)
@@ -279,13 +282,16 @@ int Font::Pixels(const char *str, const char* end)
 
     for (const char *s = str; *s && (!end || s < end); s++)
 	{
-		if (*s == '@')
+		if (*s == '\f')
 		{
+			/*
+			// what's wrong with just using \f0?
 			if (incolor)
 			{
 				incolor = false;
 				continue;
 			}
+			*/
 			if (!*++s) break;
 			incolor = true;
 			continue;
