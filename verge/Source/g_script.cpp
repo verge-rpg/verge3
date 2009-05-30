@@ -1994,9 +1994,13 @@ static int TextWidth(int f, CStringRef text, int pos, int len)
 {
 	Font *font = (Font*) f;
 	if (font == 0)
+	{
 		return pixels(text.c_str(),text.c_str()+len);
+	}
 	else
-		return font->Pixels(text.c_str(),text.c_str()+len);
+	{
+		return font->Pixels(text.c_str()+pos,text.c_str()+pos+len);
+	}
 }
 
 // Overkill: 2005-12-28
@@ -2016,8 +2020,8 @@ StringRef ScriptEngine::WrapText(int wt_font, CStringRef wt_s, int wt_linelen)
 // Note: Existing breaks will be respected, but adjacent \n characters will be
 //     replaced with a single \n so add a space for multiple line breaks
 {
-	int lastbreak = 0; // beginning of the current line
-	int lastws = 0; // last whitespace character
+	int lastbreak = -1; // beginning of the current line
+	int lastws = -1; // last whitespace character
 	int currloc = 0; // current character
 	int len = wt_s.length(); // length of string
 
@@ -2025,24 +2029,29 @@ StringRef ScriptEngine::WrapText(int wt_font, CStringRef wt_s, int wt_linelen)
 
 	while (currloc < len)
 	{
-		if (::TextWidth(wt_font, wt_s, lastbreak+1, currloc - (lastbreak+1)) > wt_linelen && lastws != lastbreak)
+		if (temp[currloc] == ' ')
+		{
+			lastws = currloc;
+		}
+		else if (temp[currloc] == '\n')
+		{
+			lastws = currloc;
+			lastbreak = currloc;
+		}
+		else if (temp[currloc] == '\r')
+		{
+			if (temp[currloc+1] == '\n')
+				currloc++;
+			lastws = currloc;
+			lastbreak = currloc;
+		}
+		else if (::TextWidth(wt_font, temp, lastbreak+1, currloc - (lastbreak)) > wt_linelen && lastws != lastbreak)
 		{
 			temp.dangerous_peek()[lastws] = '\n';
 			lastbreak = lastws;
 		}
-		else
-		{
-			if (wt_s[currloc] == ' ')
-			{
-				lastws = currloc;
-			}
-			if (wt_s[currloc] == '\n')
-			{
-				lastws = currloc;
-				lastbreak = currloc;
-			}
-			currloc++;
-		}
+
+		currloc++;
 	}
 
 	return temp;

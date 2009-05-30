@@ -133,18 +133,14 @@ void Font::PrintChar(char c, int x, int y, image *dest)
 	TBlit(x, y, container, dest);
 }
 
-void Font::PrintString(char *str, int x, int y, image *dest, ...)
+// print a chunk of a string; doesn't care about newlines
+// called from PrintString, PrintCenter, and PrintRight, which DO care about newlines
+void Font::PrintLine(char *s, char *end, int x, int y, image *dest)
 {
-	va_list argptr;
-	char msg[1024], *s;
-
-	va_start(argptr, dest);
-	vsprintf(msg, str, argptr);
-	va_end(argptr);
-
-	int x1 = x; // Remember where x where the line should start. -- Overkill 2005-12-28.
-    for (s = msg; *s; s++)
+	for (; s < end; s++)
 	{
+		if (!*s)
+			return;
 		if (*s == '@')
 		{
 			if (incolor)
@@ -162,24 +158,42 @@ void Font::PrintString(char *str, int x, int y, image *dest, ...)
 			continue;
 		}
 		PrintChar(*s, x, y, dest);
+		if (*s < 32) continue;
 		x += fwidth[*s - 32]+1;
+	}
+}
 
-		// New lines -- Overkill 2005-12-28.
-		if (*s == '\n' || *s == '\r')
+void Font::PrintString(char *str, int x, int y, image *dest, ...)
+{
+	va_list argptr;
+	char msg[1024];
+
+	va_start(argptr, dest);
+	vsprintf(msg, str, argptr);
+	va_end(argptr);
+
+	int start = 0, end = 0;
+
+    for (end = 0; msg[end]; end++)
+	{
+		if (msg[end] == '\n' || msg[end] == '\r')
 		{
-			if (*s == '\r')
-			{
-				// Checks for \r\n so they aren't parsed as two seperate line breaks.
-				if (!*++s) return;
-				if (*s != '\n')
-				{
-					--s;
-				}
-			}
-			x = x1;
+			PrintLine(&msg[start],&msg[end],x,y,dest);
+
+			start = end + 1;
+
+			// Check for \r\n so they aren't parsed as two separate line breaks.
+			if (msg[end] == '\r' && msg[start] && msg[start] == '\n')
+				start++;
+
+			end = start;
+
 			y += height;
 		}
 	}
+
+	PrintLine(&msg[start],&msg[end+1],x,y,dest);
+
 	selected=0;
 	incolor = false;
 }
@@ -188,36 +202,82 @@ void Font::PrintRight(char *str, int x, int y, image *dest, ...)
 {
 	va_list argptr;
 	char msg[1024];
+	int xsize = 0;
 
 	va_start(argptr, dest);
 	vsprintf(msg, str, argptr);
 	va_end(argptr);
 
-	int i = Pixels(msg);
-	x -= i;
-	PrintString(msg, x, y, dest);
+	int start = 0, end = 0;
+
+    for (end = 0; msg[end]; end++)
+	{
+		if (msg[end] == '\n' || msg[end] == '\r')
+		{
+			xsize = Pixels(&msg[start],&msg[end]);
+			PrintLine(&msg[start],&msg[end],x - (xsize),y,dest);
+
+			start = end + 1;
+
+			// Check for \r\n so they aren't parsed as two separate line breaks.
+			if (msg[end] == '\r' && msg[start] && msg[start] == '\n')
+				start++;
+
+			end = start;
+
+			y += height;
+		}
+	}
+	xsize = Pixels(&msg[start],&msg[end+1]);
+	PrintLine(&msg[start],&msg[end+1],x - (xsize),y,dest);
+
+	selected=0;
+	incolor = false;
 }
 
 void Font::PrintCenter(char *str, int x, int y, image *dest, ...)
 {
 	va_list argptr;
 	char msg[1024];
-	int xsize=0;
+	int xsize = 0;
 
 	va_start(argptr, dest);
 	vsprintf(msg, str, argptr);
 	va_end(argptr);
 
-	xsize = Pixels(msg);
-	x -= xsize / 2;
-	PrintString(msg, x, y, dest);
+	int start = 0, end = 0;
+
+    for (end = 0; msg[end]; end++)
+	{
+		if (msg[end] == '\n' || msg[end] == '\r')
+		{
+			xsize = Pixels(&msg[start],&msg[end]);
+			PrintLine(&msg[start],&msg[end],x - (xsize/2),y,dest);
+
+			start = end + 1;
+
+			// Check for \r\n so they aren't parsed as two separate line breaks.
+			if (msg[end] == '\r' && msg[start] && msg[start] == '\n')
+				start++;
+
+			end = start;
+
+			y += height;
+		}
+	}
+	xsize = Pixels(&msg[start],&msg[end+1]);
+	PrintLine(&msg[start],&msg[end+1],x - (xsize/2),y,dest);
+
+	selected=0;
+	incolor = false;
 }
 
 int Font::Pixels(const char *str, const char* end)
 {
 	int xsize = 0;
+	bool ic = incolor;
 
-    for (const char *s = str; *s && (!end||s!=end); s++)
+    for (const char *s = str; *s && (!end || s < end); s++)
 	{
 		if (*s == '@')
 		{
@@ -226,11 +286,17 @@ int Font::Pixels(const char *str, const char* end)
 				incolor = false;
 				continue;
 			}
-			if (!*++s) return xsize;
+			if (!*++s) break;
 			incolor = true;
 			continue;
 		}
-		xsize += fwidth[*s - 32]+1;
+		else
+		{
+			if (*s < 32) continue;
+			xsize += fwidth[*s - 32]+1;
+		}
 	}
+
+	incolor = ic; // reset the incolor flag
 	return xsize;
 }

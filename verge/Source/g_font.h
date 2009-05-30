@@ -25,6 +25,7 @@ public:
 	void EnableVariableWidth();
 	bool ColumnEmpty(int cell, int column);
 	void PrintChar(char c, int x, int y, image *dest);
+	void PrintLine(char *s, char *end, int x, int y, image *dest);
 	void PrintString(char *str, int x, int y, image *dest...);
 	void PrintCenter(char *str, int x, int y, image *dest...);
 	void PrintRight(char *str, int x, int y, image *dest ...);
