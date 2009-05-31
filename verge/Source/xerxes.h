@@ -24,7 +24,7 @@
 #endif
 
 //version info macros
-#define DEF_VERSION "\"Verge 3.14 2008.09.29\""
+#define DEF_VERSION "Verge 3.14 2008.09.29"
 #define DEF_BUILD "20070708"
 #ifdef __IPHONE__
 #define DEF_OS "iphone"
