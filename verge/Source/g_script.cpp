@@ -396,6 +396,7 @@ int ScriptEngine::ReadHvar(int category, int loc, int ofs)
 				case 101: return playerstep;
 				case 102: return playerdiagonals;
 				case 103: return AppIsForeground;
+				case 116: return ReadHvar_derived(category,loc,ofs);
 				case 126: return event_entity_hit;
 
 				default: vcerr("Unknown HVAR0 (%d)", loc);
