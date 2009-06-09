@@ -635,8 +635,6 @@ void T_Blit(int x, int y, image *src, image *dest)
 template<LUCENT_TYPE LT>
 void T_FlipBlit(int x, int y, int fx, int fy, image *src, image *dest)
 {
-	err("this function probably doesnt work.");
-
 	if(!fx && !fy) T_Blit<LT>(x,y,src,dest);
 
 	PT *s=(PT *)src->data,
