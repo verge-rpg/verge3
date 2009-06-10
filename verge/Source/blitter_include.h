@@ -1068,7 +1068,7 @@ void T_RotScale(int posx, int posy, float angle, float scale, image* src, image 
 		yc+=cosas*ys;
 	}
 
-	d=(quad*) dest->data+posx+posy*dest->pitch;
+	d=(PT*) dest->data+posx+posy*dest->pitch;
 	for (y=0; y<yl; y++)
 	{
 		srcx=xc;
@@ -1256,6 +1256,7 @@ static void SetForLucentCommon()
 	FlipBlit        = T_FlipBlit<LT>;
 	BlitTile        = T_BlitTile<LT>;
 	TBlitTile       = T_TBlitTile<LT>;
+	RotScale        = T_RotScale<LT,true>;
 	ScaleBlit		= T_ScaleBlit<LT,false>;
 	TScaleBlit      = T_ScaleBlit<LT,true>;
 	WrapBlit		= T_WrapBlit<LT,false>;
