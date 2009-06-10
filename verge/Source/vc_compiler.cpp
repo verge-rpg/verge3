@@ -836,7 +836,7 @@ bool VCCompiler::CompileMap(const char *f)
 
 		int mapcoresize;
 		vread(&mapcoresize, 4, mi);
-		log("DESTINATION POS: %d", mapcoresize);
+		//log("DESTINATION POS: %d", mapcoresize);
 		vseek(mi, 0, 0);
 		byte* buf = new byte[mapcoresize];
 		vread(buf, mapcoresize, mi);
@@ -849,7 +849,7 @@ bool VCCompiler::CompileMap(const char *f)
 		delete[] buf;
 
 		// write num funcs
-		log("CURRENT POS: %d", ftell(mo));
+		//log("CURRENT POS: %d", ftell(mo));
 		fwrite(&s, 1, 4, mo);
 		for (i=0; i < s; i++)
 			funcs[CIMAGE_MAP][i]->write(mo);
@@ -3513,7 +3513,7 @@ void VCCompiler::EmitSingleStringLiteral()
     }
 	output.EmitC(0);
     Expect("\'");
-	log("%d", srcofs);
+	//log("%d", srcofs);
 }
 
 void VCCompiler::ProcessString()

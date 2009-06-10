@@ -354,7 +354,7 @@ void MAP::save(FILE *f)
 	fwrite(&entities, 1, 4, out);
 	for (i=0; i<entities; i++)
 	{
-		log("ENT %d of %d", i, entities);
+		//log("ENT %d of %d", i, entities);
 		// Tile coords.
 		int x = entity[i]->x / 16;
 		int y = entity[i]->y / 16;
@@ -365,7 +365,7 @@ void MAP::save(FILE *f)
 		fwrite(&entity[i]->obstruction, 1, 1, out);
 		fwrite(&entity[i]->autoface, 1, 1, out);
 		fwrite(&entity[i]->speed, 1, 2, out);
-		log("HERE?");
+		//log("HERE?");
 		// FIXME: ACTIVATION MODE
 		int activationMode = 0;
 		fwrite(&activationMode, 1, 1, out);
@@ -376,7 +376,7 @@ void MAP::save(FILE *f)
 		fwrite(&entity[i]->wx2, 1, 2, out);
 		fwrite(&entity[i]->wy2, 1, 2, out);
 		fwrite(&entity[i]->wdelay, 1, 2, out);
-		log("YAR?");
+		//log("YAR?");
 		// Expand! whatever, man.
 		int expand = 0;
 		fwrite(&expand, 1, 4, out);
@@ -384,7 +384,7 @@ void MAP::save(FILE *f)
 		// h8 u STD::string.
 		char tempchar[256];
 
-		log("movestr: %s", entity[i]->movestr);
+		//log("movestr: %s", entity[i]->movestr);
 		fwrite(entity[i]->movestr, 1, 256, out);
 		strcpy(tempchar, entity[i]->chr->name.c_str());
 		fwrite(tempchar, 1, 256, out);
@@ -416,7 +416,7 @@ void MAP::save(FILE *f)
 	fwrite(buf, 1, bufferlength, f);
 	// VC funcs are waaay down here.
 	int vcfuncs = 0; // number compiled should be none.
-	log("VCOFS: %d CURRENT POS: %d", vcofs, ftell(f));
+	//log("VCOFS: %d CURRENT POS: %d", vcofs, ftell(f));
 	fwrite(&vcfuncs, 1, 4, f);
 }
 

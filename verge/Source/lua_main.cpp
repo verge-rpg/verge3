@@ -60,7 +60,7 @@ bool LUA::CompileMap(const char *f) {
 
 	int mapcoresize;
 	vread(&mapcoresize, 4, mi);
-	log("DESTINATION POS: %d", mapcoresize);
+	//log("DESTINATION POS: %d", mapcoresize);
 	vseek(mi, 0, 0);
 	byte* buf = new byte[mapcoresize];
 	vread(buf, mapcoresize, mi);

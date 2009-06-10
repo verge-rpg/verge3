@@ -22,7 +22,7 @@ image* xLoadImage_int_respect8bitTransparency(const char* fname)
 	
 	corona::Image* img;
 
-	log("loading image %s", fname);
+	//log("loading image %s", fname);
 	if (Exist(fname))
 	{
 		img = corona::OpenImage(fname, corona::FF_AUTODETECT, corona::PF_DONTCARE);
@@ -112,7 +112,7 @@ image *xLoadImage_int(const char *fname,int tflag)
 
 	corona::Image *img;
 
-	log("loading image %s",fname);
+	//log("loading image %s",fname);
 	if (Exist(fname))
 		img = corona::OpenImage(fname,corona::FF_AUTODETECT,corona::PF_DONTCARE);
 	else

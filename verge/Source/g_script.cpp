@@ -1399,7 +1399,7 @@ int ScriptEngine::FileOpen(CStringRef fname, int filemode) {
 			vcfiles[index].vfptr = vopen(cpfname);
 			if (!vcfiles[index].vfptr)
 			{
-				log("opening of %s for reading failed.", cpfname);
+				//log("opening of %s for reading failed.", cpfname);
 				return 0;
 			}
 			vcfiles[index].active = true;
@@ -1412,7 +1412,7 @@ int ScriptEngine::FileOpen(CStringRef fname, int filemode) {
 			else vcfiles[index].fptr = fopen(cpfname, "ab");
 			if (!vcfiles[index].fptr)
 			{
-				::log("opening of %s for writing/appending failed.", cpfname);
+				//::log("opening of %s for writing/appending failed.", cpfname);
 				return 0;
 			}
 			vcfiles[index].active = true;
