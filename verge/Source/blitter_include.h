@@ -11,7 +11,7 @@ void bpperr() { err("blitter operation unsupported in your bpp"); }
 
 struct OpaqueBlendMode
 {
-    FORCEINLINE quad operator() (quad source, quad dest) const
+    FORCEINLINE PT operator() (PT source, PT dest) const
     {
         return source;
     }
@@ -19,7 +19,7 @@ struct OpaqueBlendMode
 
 struct LucentBlendMode
 {
-    FORCEINLINE quad operator() (quad source, quad dest) const
+    FORCEINLINE PT operator() (PT source, PT dest) const
     {
 #if BPP == 32
         quad sourceR = (source >> 16) & 0xff;
@@ -47,7 +47,7 @@ struct LucentBlendMode
 
 struct AddBlendMode
 {
-    FORCEINLINE quad operator() (quad source, quad dest) const
+    FORCEINLINE PT operator() (PT source, PT dest) const
     {
 #if BPP == 32
         quad sourceR = (source >> 16) & 0xff;
@@ -59,9 +59,9 @@ struct AddBlendMode
         quad destB = (dest & 0xff);
         
         quad resultR, resultG, resultB;
-        resultR = (alpha * sourceR) / 100 + destR;
-        resultG = (alpha * sourceG) / 100 + destG;
-        resultB = (alpha * sourceB) / 100 + destB;
+        resultR = (ialpha * sourceR) / 100 + destR;
+        resultG = (ialpha * sourceG) / 100 + destG;
+        resultB = (ialpha * sourceB) / 100 + destB;
         if(resultR > 255)
         {
             resultR = 255;
@@ -89,7 +89,7 @@ struct AddBlendMode
 
 struct SubtractBlendMode
 {
-    FORCEINLINE quad operator() (quad source, quad dest) const
+    FORCEINLINE PT operator() (PT source, PT dest) const
     {
 #if BPP == 32
         int sourceR = (source >> 16) & 0xff;
@@ -101,9 +101,9 @@ struct SubtractBlendMode
         int destB = (dest & 0xff);
         
         int resultR, resultG, resultB;
-        resultR = (alpha * -sourceR) / 100 + destR;
-        resultG = (alpha * -sourceG) / 100 + destG;
-        resultB = (alpha * -sourceB) / 100 + destB;
+        resultR = (ialpha * -sourceR) / 100 + destR;
+        resultG = (ialpha * -sourceG) / 100 + destG;
+        resultB = (ialpha * -sourceB) / 100 + destB;
 
         if(resultR < 0)
         {
@@ -133,8 +133,8 @@ struct SubtractBlendMode
 template <typename BlendCallback, bool TRANSPARENT>
 void ImageBlit(int x, int y, image *src, image *dest, const BlendCallback& blend)
 {
-	quad* s = (quad*) src->data;
-    quad* d = (quad*) dest->data; 
+	PT* s = (PT*) src->data;
+    PT* d = (PT*) dest->data; 
 	int spitch = src->pitch;
     int dpitch = dest->pitch;
 	int xlen = src->width;
