@@ -130,143 +130,6 @@ struct SubtractBlendMode
     }
 };
 
-template <typename BlendCallback, bool TRANSPARENT>
-void ImageBlit(int x, int y, image *src, image *dest, const BlendCallback& blend)
-{
-	PT* s = (PT*) src->data;
-    PT* d = (PT*) dest->data; 
-	int spitch = src->pitch;
-    int dpitch = dest->pitch;
-	int xlen = src->width;
-	int ylen = src->height;
-	int cx1, cy1, cx2, cy2;
-
-	dest->GetClip(cx1, cy1, cx2, cy2);
-	if (x > cx2 || y > cy2 || x + xlen < cx1 || y + ylen < cy1)
-    {
-		return;
-    }
-	if (x + xlen > cx2)
-    {
-        xlen = cx2 - x + 1;
-    }
-	if (y + ylen > cy2)
-    {
-        ylen = cy2 - y + 1;
-    }
-	if (x < cx1) 
-    {
-		s += (cx1 - x);
-		xlen -= (cx1 - x);
-		x  = cx1;
-	}
-	if (y < cy1)
-    {
-		s += (cy1 - y) * spitch;
-		ylen -= (cy1 - y);
-		y  = cy1;
-	}
-    
-	d += (y * dpitch) + x;
-	for (; ylen; ylen--)
-    {
-        for (x = 0; x < xlen; x++)
-		{
-            if (TRANSPARENT && s[x] == transColor)
-            {
-                continue;
-            }
-            d[x] = blend(s[x], d[x]);
-        }
-        s += spitch;
-        d += dpitch;
-    }
-}
-
-template <typename BlendCallback, bool TRANSPARENT>
-void ImageRotScale(int posx, int posy, float angle, float scale, image* src, image *dest, const BlendCallback& blend)
-{
-	int xs,ys,xl,yl;
-	int srcx,srcy,x,y,tempx,tempy;
-
-	PT *source = (PT*) src->data, *d;
-	int width=src->width;
-	int height=src->height;
-	int clip_x = dest->cx1;
-	int clip_y = dest->cy1;
-	int clip_xend = dest->cx2;
-	int clip_yend = dest->cy2;
-	float ft=atan2((float)width,(float)height);
-	int T_WIDTH_CENTER=width>>1;
-	int T_HEIGHT_CENTER=height>>1;
-	int W_WIDTH=(int)((float)width/scale*sin(ft) + (float)height/scale*cos(ft));
-	int W_HEIGHT=W_WIDTH;
-	int W_HEIGHT_CENTER=W_HEIGHT>>1;
-	int W_WIDTH_CENTER=W_HEIGHT_CENTER;
-
-	int sinas = (int)(sin(-angle)*65536*scale);
-	int cosas = (int)(cos(-angle)*65536*scale);
-
-	int xc = T_WIDTH_CENTER*65536 - (W_HEIGHT_CENTER*(cosas+sinas));
-	int yc = T_HEIGHT_CENTER*65536 - (W_WIDTH_CENTER*(cosas-sinas));
-	posx -= W_WIDTH_CENTER;
-	posy -= W_HEIGHT_CENTER;
-
-	// clipping
-	if (W_WIDTH<2 || W_HEIGHT<2) return;
-	xl=W_WIDTH;
-	yl=W_HEIGHT;
-	xs=ys=0;
-	if (posx>clip_xend || posy>clip_yend || posx+xl<clip_x || posy+yl<clip_y)
-		return;
-	if (posx+xl > clip_xend) xl=clip_xend-posx+1;
-	if (posy+yl > clip_yend) yl=clip_yend-posy+1;
-	if (posx<clip_x)
-	{
-		xs=clip_x-posx;
-		xl-=xs;
-		posx=clip_x;
-
-		xc+=cosas*xs;
-		yc-=sinas*xs;
-	}
-	if (posy<clip_y)
-	{
-		ys=clip_y-posy;
-		yl-=ys;
-		posy=clip_y;
-
-		xc+=sinas*ys;
-		yc+=cosas*ys;
-	}
-
-	d=(PT*) dest->data+posx+posy*dest->pitch;
-	for (y=0; y<yl; y++)
-	{
-		srcx=xc;
-		srcy=yc;
-
-		for (x=0; x<xl; x++)
-		{
-			tempx=(srcx>>16);
-			tempy=(srcy>>16);
-
-			if (tempx>=0 && tempx<width && tempy>=0 && tempy<height)
-			{
-				int sofs=tempx+tempy*src->pitch;
-				if (!TRANSPARENT || source[sofs] != (quad)transColor)
-					d[x] = blend(source[sofs], d[x]);
-			}
-
-			srcx+=cosas;
-			srcy-=sinas;
-		}
-		d+=dest->pitch;
-		xc+=sinas;
-		yc+=cosas;
-	}
-}
-
 FORCEINLINE int _MakeColor(int r, int g, int b) {
 	return T_MakeColor<BPP>(r,g,b);
 }
@@ -777,18 +640,58 @@ static void T_ColorFilter(int filter, image *img)
 	}
 }
 
-template<LUCENT_TYPE LT, bool TRANSPARENT>
-void T_AddBlit(int x, int y, image *src, image *dest)
+template <typename BlendCallback, bool TRANSPARENT>
+void ImageBlit(int x, int y, image *src, image *dest, const BlendCallback& blend)
 {
-	ImageBlit<AddBlendMode, TRANSPARENT>(x, y, src, dest, AddBlendMode());
-}
+	PT* s = (PT*) src->data;
+    PT* d = (PT*) dest->data; 
+	int spitch = src->pitch;
+    int dpitch = dest->pitch;
+	int xlen = src->width;
+	int ylen = src->height;
+	int cx1, cy1, cx2, cy2;
 
-template<LUCENT_TYPE LT, bool TRANSPARENT>
-void T_SubtractBlit(int x, int y, image *src, image *dest)
-{
-	ImageBlit<SubtractBlendMode, TRANSPARENT>(x, y, src, dest, SubtractBlendMode());
+	dest->GetClip(cx1, cy1, cx2, cy2);
+	if (x > cx2 || y > cy2 || x + xlen < cx1 || y + ylen < cy1)
+    {
+		return;
+    }
+	if (x + xlen > cx2)
+    {
+        xlen = cx2 - x + 1;
+    }
+	if (y + ylen > cy2)
+    {
+        ylen = cy2 - y + 1;
+    }
+	if (x < cx1) 
+    {
+		s += (cx1 - x);
+		xlen -= (cx1 - x);
+		x  = cx1;
+	}
+	if (y < cy1)
+    {
+		s += (cy1 - y) * spitch;
+		ylen -= (cy1 - y);
+		y  = cy1;
+	}
+    
+	d += (y * dpitch) + x;
+	for (; ylen; ylen--)
+    {
+        for (x = 0; x < xlen; x++)
+		{
+            if (TRANSPARENT && s[x] == transColor)
+            {
+                continue;
+            }
+            d[x] = blend(s[x], d[x]);
+        }
+        s += spitch;
+        d += dpitch;
+    }
 }
-
 
 template<LUCENT_TYPE LT, bool TRANSPARENT>
 void T_Blit(int x, int y, image *src, image *dest)
@@ -803,6 +706,18 @@ void T_Blit(int x, int y, image *src, image *dest)
 			ImageBlit<LucentBlendMode, TRANSPARENT>(x, y, src, dest, LucentBlendMode());
 			break;
 	}
+}
+
+template<LUCENT_TYPE LT, bool TRANSPARENT>
+void T_AddBlit(int x, int y, image *src, image *dest)
+{
+	ImageBlit<AddBlendMode, TRANSPARENT>(x, y, src, dest, AddBlendMode());
+}
+
+template<LUCENT_TYPE LT, bool TRANSPARENT>
+void T_SubtractBlit(int x, int y, image *src, image *dest)
+{
+	ImageBlit<SubtractBlendMode, TRANSPARENT>(x, y, src, dest, SubtractBlendMode());
 }
 
 template<LUCENT_TYPE LT>
@@ -973,9 +888,8 @@ void T_TBlitTile(int x, int y, char *src, image *dest)
 	}
 }
 
-
-template<LUCENT_TYPE LT, bool TRANSPARENT>
-void T_ScaleBlit(int x, int y, int dw, int dh, image *src, image *dest)
+template<typename BlendCallback, bool TRANSPARENT>
+void ImageScaleBlit(int x, int y, int dw, int dh, image *src, image *dest, BlendCallback& blend)
 {
 	int i, j;
 	int xerr, yerr;
@@ -1016,49 +930,30 @@ void T_ScaleBlit(int x, int y, int dw, int dh, image *src, image *dest)
 		xerr = xerr_start;
 		for (j = 0; j < xl; j += 1) {
 			int c = s[(xerr >> 16)];
-			switch(LT) {
-				case NONE:
-					if (!TRANSPARENT || c != transColor)
-						d[j] = c;
-					break;
-				case HALF:
-					if(BPP==32) {
-						if (!TRANSPARENT || c != transColor) {
-							c = (c & tmask) + (d[j] & tmask);
-							d[j] = (c >> 1);
-						}
-					} else bpperr();
-					break;
-				case ANY:
-					if(BPP==32)
-					if (!TRANSPARENT || c != transColor) {
-
-						quad r1, g1, b1;
-						quad r2, g2, b2;
-						quad dp;
-
-						dp = d[j];
-
-						r1 = (c >> 16) & 0xff,
-						g1 = (c >> 8) & 0xff,
-						b1 = (c & 0xff);
-
-						r2 = (dp >> 16) & 0xff,
-						g2 = (dp >> 8) & 0xff,
-						b2 = (dp & 0xff);
-
-						d[j] = ((((r1 * ialpha) + (r2 * alpha)) / 100) << 16) |
-							   ((((g1 * ialpha) + (g2 * alpha)) / 100) << 8) |
-							   ((((b1 * ialpha) + (b2 * alpha)) / 100));
-					}
-					else bpperr();
-			}
+			if(!TRANSPARENT || c != transColor)
+				d[j] = blend(c, d[j]);
 			xerr += xadj;
 		}
 		d    += dest->pitch;
 		yerr += yadj;
 		s    += (yerr>>16)*src->pitch;
 		yerr &= 0xffff;
+	}
+}
+
+
+template<LUCENT_TYPE LT, bool TRANSPARENT>
+void T_ScaleBlit(int x, int y, int dw, int dh, image *src, image *dest)
+{
+	switch(LT)
+	{
+		case NONE:
+			ImageScaleBlit<OpaqueBlendMode, TRANSPARENT>(x, y, dw, dh, src, dest, OpaqueBlendMode());
+			break;
+		case HALF:
+		case ANY:
+			ImageScaleBlit<LucentBlendMode, TRANSPARENT>(x, y, dw, dh, src, dest, LucentBlendMode());
+			break;
 	}
 }
 
@@ -1107,6 +1002,90 @@ void T_WrapBlit(int x, int y, image *src, image *dst)
 	} while (curx < clipw);
 }
 
+template <typename BlendCallback, bool TRANSPARENT>
+void ImageRotScale(int posx, int posy, float angle, float scale, image* src, image *dest, const BlendCallback& blend)
+{
+	int xs,ys,xl,yl;
+	int srcx,srcy,x,y,tempx,tempy;
+
+	PT *source = (PT*) src->data, *d;
+	int width=src->width;
+	int height=src->height;
+	int clip_x = dest->cx1;
+	int clip_y = dest->cy1;
+	int clip_xend = dest->cx2;
+	int clip_yend = dest->cy2;
+	float ft=atan2((float)width,(float)height);
+	int T_WIDTH_CENTER=width>>1;
+	int T_HEIGHT_CENTER=height>>1;
+	int W_WIDTH=(int)((float)width/scale*sin(ft) + (float)height/scale*cos(ft));
+	int W_HEIGHT=W_WIDTH;
+	int W_HEIGHT_CENTER=W_HEIGHT>>1;
+	int W_WIDTH_CENTER=W_HEIGHT_CENTER;
+
+	int sinas = (int)(sin(-angle)*65536*scale);
+	int cosas = (int)(cos(-angle)*65536*scale);
+
+	int xc = T_WIDTH_CENTER*65536 - (W_HEIGHT_CENTER*(cosas+sinas));
+	int yc = T_HEIGHT_CENTER*65536 - (W_WIDTH_CENTER*(cosas-sinas));
+	posx -= W_WIDTH_CENTER;
+	posy -= W_HEIGHT_CENTER;
+
+	// clipping
+	if (W_WIDTH<2 || W_HEIGHT<2) return;
+	xl=W_WIDTH;
+	yl=W_HEIGHT;
+	xs=ys=0;
+	if (posx>clip_xend || posy>clip_yend || posx+xl<clip_x || posy+yl<clip_y)
+		return;
+	if (posx+xl > clip_xend) xl=clip_xend-posx+1;
+	if (posy+yl > clip_yend) yl=clip_yend-posy+1;
+	if (posx<clip_x)
+	{
+		xs=clip_x-posx;
+		xl-=xs;
+		posx=clip_x;
+
+		xc+=cosas*xs;
+		yc-=sinas*xs;
+	}
+	if (posy<clip_y)
+	{
+		ys=clip_y-posy;
+		yl-=ys;
+		posy=clip_y;
+
+		xc+=sinas*ys;
+		yc+=cosas*ys;
+	}
+
+	d=(PT*) dest->data+posx+posy*dest->pitch;
+	for (y=0; y<yl; y++)
+	{
+		srcx=xc;
+		srcy=yc;
+
+		for (x=0; x<xl; x++)
+		{
+			tempx=(srcx>>16);
+			tempy=(srcy>>16);
+
+			if (tempx>=0 && tempx<width && tempy>=0 && tempy<height)
+			{
+				int sofs=tempx+tempy*src->pitch;
+				if (!TRANSPARENT || source[sofs] != (quad)transColor)
+					d[x] = blend(source[sofs], d[x]);
+			}
+
+			srcx+=cosas;
+			srcy-=sinas;
+		}
+		d+=dest->pitch;
+		xc+=sinas;
+		yc+=cosas;
+	}
+}
+
 template<LUCENT_TYPE LT, bool TRANSPARENT>
 void T_RotScale(int posx, int posy, float angle, float scale, image* src, image *dest)
 {
@@ -1145,13 +1124,11 @@ void T_BlitWrap(int x, int y, image *src, image *dest)
 }
 
 //TRANSPARENT is always true for silhouette. 
-template<LUCENT_TYPE LT>
-void T_Silhouette(int x, int y, int c, image *src, image *dest)
+template <typename BlendCallback>
+void ImageSilhouette(int x, int y, int c, image *src, image *dest, const BlendCallback& blend)
 {
-	if(LT != NONE) bpperr();
-
-	int *s=(int *)src->data,
-		*d=(int *)dest->data;
+	PT *s=(PT*)src->data,
+		*d=(PT*)dest->data;
 	int spitch=src->pitch,
 		dpitch=dest->pitch;
 	int xlen=src->width,
@@ -1180,9 +1157,23 @@ void T_Silhouette(int x, int y, int c, image *src, image *dest)
 	{
 		for (x=0; x<xlen; x++)
 			if (s[x] != transColor) 
-				d[x]=c;
+				d[x] = blend(c, d[x]);
 		s+=spitch;
 		d+=dpitch;
+	}
+}
+
+//TRANSPARENT is always true for silhouette. 
+template<LUCENT_TYPE LT>
+void T_Silhouette(int x, int y, int c, image *src, image *dest)
+{
+	switch(LT)
+	{
+		case NONE:
+			ImageSilhouette<OpaqueBlendMode>(x, y, c, src, dest, OpaqueBlendMode());
+		case HALF:
+		case ANY:
+			ImageSilhouette<LucentBlendMode>(x, y, c, src, dest, LucentBlendMode());
 	}
 }
 
