@@ -957,12 +957,9 @@ void T_ScaleBlit(int x, int y, int dw, int dh, image *src, image *dest)
 	}
 }
 
-template<LUCENT_TYPE LT, bool TRANSPARENT>
-void T_WrapBlit(int x, int y, image *src, image *dst)
+template<typename BlendCallback, bool TRANSPARENT>
+void ImageWrapBlit(int x, int y, image *src, image *dst, BlendCallback& blend)
 {
-	if(LT != NONE) bpperr();
-	if(TRANSPARENT) bpperr();
-
 	int i;
 	int cliph, clipw;
 	int curx, cury;
@@ -982,7 +979,7 @@ void T_WrapBlit(int x, int y, image *src, image *dst)
 		spanx = src->width - x;
 		if (curx + spanx >= clipw)
 			spanx = clipw - curx;
-		source = (PT *) src -> data + (y * src->pitch) + x;
+		source = (PT *) src -> data + (y * src->width) + x;
 		dest = (PT *) dst -> data + (dst->cy1 * dst->pitch) + dst->cx1 + curx;
 		cury = 0;
 
@@ -992,14 +989,36 @@ void T_WrapBlit(int x, int y, image *src, image *dst)
 			if (cury + spany >= cliph)
 				spany = cliph - cury;
 
-			for (i = 0; i < spany; i++, source += src->pitch, dest += dst->pitch)
-				memcpy(dest, source, spanx*sizeof(PT));
+			for (i = 0; i < spany; i++, source += src->width, dest += dst->pitch)
+			{
+				for (int x = 0; x < spanx; x++)
+				{
+					if(!TRANSPARENT || source[x] != transColor)
+						dest[x] = blend(source[x], dest[x]);
+				}
+			}
 
 			source = (PT *) src->data + x;
 			cury += spany;
 		} while (cury < cliph);
 		curx +=	spanx;
 	} while (curx < clipw);
+}
+
+
+template<LUCENT_TYPE LT, bool TRANSPARENT>
+void T_WrapBlit(int x, int y, image *src, image *dst)
+{
+	switch(LT)
+	{
+		case NONE:
+			ImageWrapBlit<OpaqueBlendMode, TRANSPARENT>(x, y, src, dst, OpaqueBlendMode());
+			break;
+		case HALF:
+		case ANY:
+			ImageWrapBlit<LucentBlendMode, TRANSPARENT>(x, y, src, dst, LucentBlendMode());
+			break;
+	}
 }
 
 template <typename BlendCallback, bool TRANSPARENT>
@@ -1104,8 +1123,7 @@ void T_RotScale(int posx, int posy, float angle, float scale, image* src, image 
 template<LUCENT_TYPE LT, bool TRANSPARENT>
 void T_BlitWrap(int x, int y, image *src, image *dest)
 {
-	if(LT != NONE) bpperr();
-
+	//if(LT != NONE) bpperr();
 	PT *s=(PT *)src->data,c,
 		 *d=(PT *)dest->data;
 	int dpitch=dest->pitch;
