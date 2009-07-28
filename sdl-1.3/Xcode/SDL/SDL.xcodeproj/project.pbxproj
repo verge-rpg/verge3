@@ -2600,9 +2600,13 @@
 				GCC_PREPROCESSOR_DEFINITIONS_QUOTED_4 = "SDL_VIDEO_DRIVER_X11_DYNAMIC_XRENDER=\\\"/usr/X11R6/lib/libXrender.1.dylib\\\"";
 				GCC_PREPROCESSOR_DEFINITIONS_QUOTED_5 = "SDL_VIDEO_DRIVER_X11_DYNAMIC_XINPUT=\\\"/usr/X11R6/lib/libXi.6.dylib\\\"";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_VERSION_i386 = 4.0;
+				GCC_VERSION_ppc = 4.0;
 				HEADER_SEARCH_PATHS = /usr/X11R6/include;
 				INFOPLIST_FILE = "Info-Framework.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET_i386 = 10.5;
+				MACOSX_DEPLOYMENT_TARGET_ppc = 10.5;
 				OTHER_CFLAGS = "$(OTHER_CFLAGS_$(CURRENT_ARCH))";
 				OTHER_CFLAGS_i386 = "";
 				OTHER_CFLAGS_ppc = "";
@@ -2611,6 +2615,8 @@
 					0x30000000,
 				);
 				PRODUCT_NAME = SDL;
+				SDKROOT_i386 = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT_ppc = /Developer/SDKs/MacOSX10.5.sdk;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Development;
@@ -2644,9 +2650,13 @@
 				GCC_PREPROCESSOR_DEFINITIONS_QUOTED_4 = "SDL_VIDEO_DRIVER_X11_DYNAMIC_XRENDER=\\\"/usr/X11R6/lib/libXrender.1.dylib\\\"";
 				GCC_PREPROCESSOR_DEFINITIONS_QUOTED_5 = "SDL_VIDEO_DRIVER_X11_DYNAMIC_XINPUT=\\\"/usr/X11R6/lib/libXi.6.dylib\\\"";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_VERSION_i386 = 4.0;
+				GCC_VERSION_ppc = 4.0;
 				HEADER_SEARCH_PATHS = /usr/X11R6/include;
 				INFOPLIST_FILE = "Info-Framework.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET_i386 = 10.5;
+				MACOSX_DEPLOYMENT_TARGET_ppc = 10.5;
 				OTHER_CFLAGS = "$(OTHER_CFLAGS_$(CURRENT_ARCH))";
 				OTHER_CFLAGS_i386 = "";
 				OTHER_CFLAGS_ppc = "";
@@ -2655,6 +2665,8 @@
 					0x30000000,
 				);
 				PRODUCT_NAME = SDL;
+				SDKROOT_i386 = /Developer/SDKs/MacOSX10.5.sdk;
+				SDKROOT_ppc = /Developer/SDKs/MacOSX10.5.sdk;
 				WRAPPER_EXTENSION = framework;
 			};
 			name = Deployment;
@@ -2688,9 +2700,13 @@
 				GCC_PREPROCESSOR_DEFINITIONS_QUOTED_4 = "SDL_VIDEO_DRIVER_X11_DYNAMIC_XRENDER=\\\"/usr/X11R6/lib/libXrender.1.dylib\\\"";
 				GCC_PREPROCESSOR_DEFINITIONS_QUOTED_5 = "SDL_VIDEO_DRIVER_X11_DYNAMIC_XINPUT=\\\"/usr/X11R6/lib/libXi.6.dylib\\\"";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				GCC_VERSION_i386 = 4.0;
+				GCC_VERSION_ppc = 4.0;
 				HEADER_SEARCH_PATHS = /usr/X11R6/include;
 				INFOPLIST_FILE = "Info-Framework.plist";
 				INSTALL_PATH = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET_i386 = 10.5;
+				MACOSX_DEPLOYMENT_TARGET_ppc = 10.5;
 				OTHER_CFLAGS = "$(OTHER_CFLAGS_$(CURRENT_ARCH))";
 				OTHER_CFLAGS_i386 = "";
 				OTHER_CFLAGS_ppc = "";

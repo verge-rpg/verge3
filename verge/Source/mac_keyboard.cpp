@@ -48,7 +48,7 @@ byte key_shift_tbl[128] =
    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '/', 0,   0,   0,   0,   0
 };
 
-byte SdlKeyToScan(SDLKey key)
+byte SdlKeyToScan(SDL_scancode key)
 {
 	// Converts from SDLkeys to keyboard scan codes
 	// some keys have no mapping, the return 0
@@ -272,7 +272,7 @@ byte SdlKeyToScan(SDLKey key)
 
 void ParseKeyEvent(SDL_KeyboardEvent keyEvent)
 {
-	byte scanCode = SdlKeyToScan(keyEvent.keysym.sym);
+	byte scanCode = SdlKeyToScan(keyEvent.keysym.scancode);
 	bool key_pressed = false;
 
 	if(keyEvent.type == SDL_KEYDOWN)

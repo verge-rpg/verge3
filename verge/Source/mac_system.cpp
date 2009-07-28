@@ -20,6 +20,7 @@
 
 #include "xerxes.h"
 
+#include "SDL_main.h"    
 
 /***************************** data *****************************/
 
@@ -79,10 +80,13 @@ int main(int argc, char **argv)
 	srand(timeGetTime());
 	log_Init(true);
 
+    unsigned long sdlFlags = SDL_INIT_VIDEO | SDL_INIT_JOYSTICK;
+#ifndef __IPHONE__
+    sdlFlags |= SDL_INIT_TIMER;
+#endif
+    
 	// we must init SDL before any other sdl stuff
-	//if(SDL_Init(SDL_INIT_TIMER |
-	if(SDL_Init(
-			 SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0)
+	if(SDL_Init(sdlFlags) != 0)
 		err("Couldn't start up SDL.");
 
 	// create video window

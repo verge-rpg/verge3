@@ -67,9 +67,11 @@ xTimer::xTimer(int hz, SDL_NewTimerCallback TimeProc)
 	pthread_setschedparam(self,policy,&param);
 	pthread_getschedparam(self,&policy,&param);
 	// timer set in ms
-//	timer_id = SDL_AddTimer(1000/hz, TimeProc, NULL);
-//	if(!timer_id)
-//		err("SDL_AddTimer failed");
+#ifndef __IPHONE__
+	timer_id = SDL_AddTimer(1000/hz, TimeProc, NULL);
+	if(!timer_id)
+		err("SDL_AddTimer failed");
+#endif
 
 	xTimer::hz=hz;
 }

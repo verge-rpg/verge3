@@ -889,7 +889,7 @@ void T_TBlitTile(int x, int y, char *src, image *dest)
 }
 
 template<typename BlendCallback, bool TRANSPARENT>
-void ImageScaleBlit(int x, int y, int dw, int dh, image *src, image *dest, BlendCallback& blend)
+void ImageScaleBlit(int x, int y, int dw, int dh, image *src, image *dest, const BlendCallback& blend)
 {
 	int i, j;
 	int xerr, yerr;
@@ -958,7 +958,7 @@ void T_ScaleBlit(int x, int y, int dw, int dh, image *src, image *dest)
 }
 
 template<typename BlendCallback, bool TRANSPARENT>
-void ImageWrapBlit(int x, int y, image *src, image *dst, BlendCallback& blend)
+void ImageWrapBlit(int x, int y, image *src, image *dst, const BlendCallback& blend)
 {
 	int i;
 	int cliph, clipw;

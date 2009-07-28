@@ -26,15 +26,15 @@
 //version info macros
 #define DEF_VERSION "Verge 3.14 2008.09.29"
 #define DEF_BUILD "20070708"
-#ifdef __IPHONE__
+#if defined(__IPHONE__)
 #define DEF_OS "iphone"
-#elif __OSX__
+#elif defined(__OSX__)
 #define DEF_OS "osx"
-#elif __LINUX__
+#elif defined(__LINUX__)
 #define DEF_OS "linux"
-#elif __PSP__
+#elif defined(__PSP__)
 #define DEF_OS "psp"
-#elif __WII__
+#elif defined(__WII__)
 #define DEF_OS "wii"
 #else
 #define DEF_OS "win"

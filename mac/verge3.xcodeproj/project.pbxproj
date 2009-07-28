@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		51BC9E390DBA8F400083C27F /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66B2B83707B41F2A000E3414 /* SDL.framework */; };
 		660DDBBC082CFFBA0084B9B7 /* Credits.html in Resources */ = {isa = PBXBuildFile; fileRef = 660DDBBB082CFFBA0084B9B7 /* Credits.html */; };
 		661F5B1108770D45008AE4D7 /* g_editcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 661F5B0F08770D45008AE4D7 /* g_editcode.cpp */; };
 		661F5B1208770D45008AE4D7 /* g_editcode.h in Headers */ = {isa = PBXBuildFile; fileRef = 661F5B1008770D45008AE4D7 /* g_editcode.h */; };
@@ -17,10 +16,19 @@
 		66380C3007C968F700207F2B /* verge.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66380C2F07C968F700207F2B /* verge.icns */; };
 		66380C7007C969FF00207F2B /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 66380C6D07C969FF00207F2B /* MainMenu.nib */; };
 		66380C7F07C96A0F00207F2B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66380C7D07C96A0F00207F2B /* InfoPlist.strings */; };
-		66648E5C0EA5248D00BE2395 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 66B2B83707B41F2A000E3414 /* SDL.framework */; };
-		666E154707B4911200617631 /* SDL.h in Headers */ = {isa = PBXBuildFile; fileRef = 666E154407B4911200617631 /* SDL.h */; };
 		666E154807B4911200617631 /* SDLMain.h in Headers */ = {isa = PBXBuildFile; fileRef = 666E154507B4911200617631 /* SDLMain.h */; };
 		666E154907B4911200617631 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 666E154607B4911200617631 /* SDLMain.m */; };
+		66705CB8101F5BD800A4C9A3 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66705CB7101F5BD800A4C9A3 /* SDL.framework */; };
+		66705D42101F63EF00A4C9A3 /* algebra3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66705D37101F63EF00A4C9A3 /* algebra3.cpp */; };
+		66705D43101F63EF00A4C9A3 /* algebra3.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D38101F63EF00A4C9A3 /* algebra3.h */; };
+		66705D44101F63EF00A4C9A3 /* lua_main.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D39101F63EF00A4C9A3 /* lua_main.h */; };
+		66705D45101F63EF00A4C9A3 /* lua_vector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66705D3A101F63EF00A4C9A3 /* lua_vector.cpp */; };
+		66705D46101F63EF00A4C9A3 /* lua_vector.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D3B101F63EF00A4C9A3 /* lua_vector.h */; };
+		66705D47101F63EF00A4C9A3 /* snd_audiere.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D3C101F63EF00A4C9A3 /* snd_audiere.h */; };
+		66705D48101F63EF00A4C9A3 /* snd_oakra.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D3D101F63EF00A4C9A3 /* snd_oakra.h */; };
+		66705D49101F63EF00A4C9A3 /* vcsplash.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D3E101F63EF00A4C9A3 /* vcsplash.h */; };
+		66705D4C101F63EF00A4C9A3 /* xerxes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66705D41101F63EF00A4C9A3 /* xerxes.cpp */; };
+		66705D67101F647D00A4C9A3 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 66705CB7101F5BD800A4C9A3 /* SDL.framework */; };
 		6674381C07AF143D00765A03 /* Corona.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6674380B07AF143D00765A03 /* Corona.cpp */; };
 		6674381D07AF143D00765A03 /* corona.h in Headers */ = {isa = PBXBuildFile; fileRef = 6674380C07AF143D00765A03 /* corona.h */; };
 		6674381E07AF143D00765A03 /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6674380D07AF143D00765A03 /* Debug.cpp */; };
@@ -279,6 +287,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		66705C56101F595800A4C9A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66CDF9B90C4EA62A00420943 /* lua */;
+			remoteInfo = lua;
+		};
+		66705C67101F5AA400A4C9A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66705C5A101F5A5400A4C9A3 /* sdl-1.3 */;
+			remoteInfo = "sdl-1.3";
+		};
 		66B3791F07B2B8600068C75B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
@@ -316,7 +338,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				66648E5C0EA5248D00BE2395 /* SDL.framework in CopyFiles */,
+				66705D67101F647D00A4C9A3 /* SDL.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,9 +359,18 @@
 		66380C6E07C969FF00207F2B /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = MainMenu.nib; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		66380C7E07C96A0F00207F2B /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		66380C8A07C96A2C00207F2B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		666E154407B4911200617631 /* SDL.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SDL.h; sourceTree = SOURCE_ROOT; };
 		666E154507B4911200617631 /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = SOURCE_ROOT; };
 		666E154607B4911200617631 /* SDLMain.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SDLMain.m; sourceTree = SOURCE_ROOT; };
+		66705CB7101F5BD800A4C9A3 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = "../sdl-1.3/Xcode/SDL/build/Deployment/SDL.framework"; sourceTree = SOURCE_ROOT; };
+		66705D37101F63EF00A4C9A3 /* algebra3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = algebra3.cpp; path = ../verge/Source/algebra3.cpp; sourceTree = SOURCE_ROOT; };
+		66705D38101F63EF00A4C9A3 /* algebra3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = algebra3.h; path = ../verge/Source/algebra3.h; sourceTree = SOURCE_ROOT; };
+		66705D39101F63EF00A4C9A3 /* lua_main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_main.h; path = ../verge/Source/lua_main.h; sourceTree = SOURCE_ROOT; };
+		66705D3A101F63EF00A4C9A3 /* lua_vector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = lua_vector.cpp; path = ../verge/Source/lua_vector.cpp; sourceTree = SOURCE_ROOT; };
+		66705D3B101F63EF00A4C9A3 /* lua_vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_vector.h; path = ../verge/Source/lua_vector.h; sourceTree = SOURCE_ROOT; };
+		66705D3C101F63EF00A4C9A3 /* snd_audiere.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = snd_audiere.h; path = ../verge/Source/snd_audiere.h; sourceTree = SOURCE_ROOT; };
+		66705D3D101F63EF00A4C9A3 /* snd_oakra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = snd_oakra.h; path = ../verge/Source/snd_oakra.h; sourceTree = SOURCE_ROOT; };
+		66705D3E101F63EF00A4C9A3 /* vcsplash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vcsplash.h; path = ../verge/Source/vcsplash.h; sourceTree = SOURCE_ROOT; };
+		66705D41101F63EF00A4C9A3 /* xerxes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xerxes.cpp; path = ../verge/Source/xerxes.cpp; sourceTree = SOURCE_ROOT; };
 		667437DC07AF140700765A03 /* libcorona.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcorona.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6674380B07AF143D00765A03 /* Corona.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Corona.cpp; path = ../corona/Corona.cpp; sourceTree = SOURCE_ROOT; };
 		6674380C07AF143D00765A03 /* corona.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = corona.h; path = ../corona/corona.h; sourceTree = SOURCE_ROOT; };
@@ -492,7 +523,7 @@
 		66A448B508EDDE4500132604 /* snd_fmod.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = snd_fmod.cpp; path = ../verge/Source/snd_fmod.cpp; sourceTree = SOURCE_ROOT; };
 		66A448B608EDDE4500132604 /* snd_fmod.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = snd_fmod.h; path = ../verge/Source/snd_fmod.h; sourceTree = SOURCE_ROOT; };
 		66B2B62407B40927000E3414 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		66B2B83707B41F2A000E3414 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = ../sdl/SDL.framework; sourceTree = SOURCE_ROOT; };
+		66B2B83707B41F2A000E3414 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Users/jrusak/verge3/trunk/sdl/SDL.framework; sourceTree = "<absolute>"; };
 		66B3752007B2A38E0068C75B /* fmod_errors.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fmod_errors.h; path = ../fmod/fmod_errors.h; sourceTree = SOURCE_ROOT; };
 		66B3752107B2A38E0068C75B /* fmod.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fmod.h; path = ../fmod/fmod.h; sourceTree = SOURCE_ROOT; };
 		66B3752207B2A38E0068C75B /* fmoddyn.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fmoddyn.h; path = ../fmod/fmoddyn.h; sourceTree = SOURCE_ROOT; };
@@ -625,7 +656,7 @@
 				66B2B83807B41F2A000E3414 /* SDL.framework in Frameworks */,
 				66DBFDC507B8085F00CB0A24 /* OpenGL.framework in Frameworks */,
 				66CB58EC0BFA863B00E37C0F /* libfmodub.a in Frameworks */,
-				51BC9E390DBA8F400083C27F /* SDL.framework in Frameworks */,
+				66705CB8101F5BD800A4C9A3 /* SDL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -704,9 +735,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				66B2B83707B41F2A000E3414 /* SDL.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				66705CB7101F5BD800A4C9A3 /* SDL.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -837,6 +868,15 @@
 		66743A7207AF192A00765A03 /* verge3 */ = {
 			isa = PBXGroup;
 			children = (
+				66705D37101F63EF00A4C9A3 /* algebra3.cpp */,
+				66705D38101F63EF00A4C9A3 /* algebra3.h */,
+				66705D39101F63EF00A4C9A3 /* lua_main.h */,
+				66705D3A101F63EF00A4C9A3 /* lua_vector.cpp */,
+				66705D3B101F63EF00A4C9A3 /* lua_vector.h */,
+				66705D3C101F63EF00A4C9A3 /* snd_audiere.h */,
+				66705D3D101F63EF00A4C9A3 /* snd_oakra.h */,
+				66705D3E101F63EF00A4C9A3 /* vcsplash.h */,
+				66705D41101F63EF00A4C9A3 /* xerxes.cpp */,
 				AAC5C5420F4920CE00A8D3E0 /* vid_fbfx.cpp */,
 				AAC5C5430F4920CE00A8D3E0 /* vid_fbfx.h */,
 				AAC5C5390F49203700A8D3E0 /* vid_timeless.cpp */,
@@ -930,7 +970,6 @@
 		66B2B41407B3EB88000E3414 /* SDL Wrapper */ = {
 			isa = PBXGroup;
 			children = (
-				666E154407B4911200617631 /* SDL.h */,
 				666E154507B4911200617631 /* SDLMain.h */,
 				666E154607B4911200617631 /* SDLMain.m */,
 			);
@@ -1150,7 +1189,6 @@
 				66B3755C07B2A4130068C75B /* mac_system.h in Headers */,
 				66B3755E07B2A4130068C75B /* mac_timer.h in Headers */,
 				66B3784B07B2B4580068C75B /* vid_macbase.h in Headers */,
-				666E154707B4911200617631 /* SDL.h in Headers */,
 				666E154807B4911200617631 /* SDLMain.h in Headers */,
 				66C8E4940818AB47000E0853 /* mac_cocoa_util.h in Headers */,
 				66248262085548A3008B043B /* macsplash.h in Headers */,
@@ -1161,10 +1199,33 @@
 				66DE5FE70A6FA92400D6CEEA /* garlick.h in Headers */,
 				66CDF7C60C4E8EB900420943 /* g_script.h in Headers */,
 				AAC5C5450F4920CE00A8D3E0 /* vid_fbfx.h in Headers */,
+				66705D43101F63EF00A4C9A3 /* algebra3.h in Headers */,
+				66705D44101F63EF00A4C9A3 /* lua_main.h in Headers */,
+				66705D46101F63EF00A4C9A3 /* lua_vector.h in Headers */,
+				66705D47101F63EF00A4C9A3 /* snd_audiere.h in Headers */,
+				66705D48101F63EF00A4C9A3 /* snd_oakra.h in Headers */,
+				66705D49101F63EF00A4C9A3 /* vcsplash.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
+
+/* Begin PBXLegacyTarget section */
+		66705C5A101F5A5400A4C9A3 /* sdl-1.3 */ = {
+			isa = PBXLegacyTarget;
+			buildArgumentsString = "-target Framework -configuration $CONFIGURATION $(ACTION)";
+			buildConfigurationList = 66705C5E101F5A7F00A4C9A3 /* Build configuration list for PBXLegacyTarget "sdl-1.3" */;
+			buildPhases = (
+			);
+			buildToolPath = xcodebuild;
+			buildWorkingDirectory = "/Users/jrusak/verge3/trunk/sdl-1.3/Xcode/SDL";
+			dependencies = (
+			);
+			name = "sdl-1.3";
+			passBuildSettingsInEnvironment = 1;
+			productName = "sdl-1.3";
+		};
+/* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
 		667437DB07AF140700765A03 /* corona */ = {
@@ -1265,7 +1326,9 @@
 			buildRules = (
 			);
 			dependencies = (
+				66705C57101F595800A4C9A3 /* PBXTargetDependency */,
 				66B3792007B2B8600068C75B /* PBXTargetDependency */,
+				66705C68101F5AA400A4C9A3 /* PBXTargetDependency */,
 			);
 			name = verge3;
 			productInstallPath = "$(HOME)/Applications";
@@ -1291,6 +1354,7 @@
 				667438FE07AF149100765A03 /* libpng */,
 				66B8DC5B08D513420062487B /* libungif */,
 				66CDF9B90C4EA62A00420943 /* lua */,
+				66705C5A101F5A5400A4C9A3 /* sdl-1.3 */,
 			);
 		};
 /* End PBXProject section */
@@ -1503,12 +1567,25 @@
 				AAC5C5380F49201E00A8D3E0 /* a_string.cpp in Sources */,
 				AAC5C53A0F49203700A8D3E0 /* vid_timeless.cpp in Sources */,
 				AAC5C5440F4920CE00A8D3E0 /* vid_fbfx.cpp in Sources */,
+				66705D42101F63EF00A4C9A3 /* algebra3.cpp in Sources */,
+				66705D45101F63EF00A4C9A3 /* lua_vector.cpp in Sources */,
+				66705D4C101F63EF00A4C9A3 /* xerxes.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		66705C57101F595800A4C9A3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66CDF9B90C4EA62A00420943 /* lua */;
+			targetProxy = 66705C56101F595800A4C9A3 /* PBXContainerItemProxy */;
+		};
+		66705C68101F5AA400A4C9A3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66705C5A101F5A5400A4C9A3 /* sdl-1.3 */;
+			targetProxy = 66705C67101F5AA400A4C9A3 /* PBXContainerItemProxy */;
+		};
 		66B3792007B2B8600068C75B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 667437DB07AF140700765A03 /* corona */;
@@ -1551,6 +1628,34 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		66705C5B101F5A5400A4C9A3 /* Development */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = "sdl-1.3";
+			};
+			name = Development;
+		};
+		66705C5C101F5A5400A4C9A3 /* Deployment */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				PRODUCT_NAME = "sdl-1.3";
+				ZERO_LINK = NO;
+			};
+			name = Deployment;
+		};
+		66705C5D101F5A5400A4C9A3 /* Default */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "sdl-1.3";
+			};
+			name = Default;
+		};
 		66CDF9BE0C4EA63000420943 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1894,7 +1999,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/../sdl",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../sdl-1.3/Xcode/SDL/build/Development\"";
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
@@ -1909,6 +2016,8 @@
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)",
 					"$(SRCROOT)/../boost-1.37.0",
+					"$(SRCROOT)/../lua/luabind",
+					"$(SRCROOT)/../sdl-1.3/include",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -1948,7 +2057,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/../sdl",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../sdl-1.3/Xcode/SDL/build/Deployment\"";
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_TRIGRAPHS = NO;
@@ -1961,8 +2072,9 @@
 				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)",
-					"$(SRCROOT)/../boost-1.34.0",
+					"$(SRCROOT)/../boost-1.37.0",
 					"$(SRCROOT)/../lua/luabind",
+					"$(SRCROOT)/../sdl-1.3/include",
 				);
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -1997,7 +2109,9 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(FRAMEWORK_SEARCH_PATHS)",
 					"$(SRCROOT)/../sdl",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../sdl-1.3/Xcode/SDL/build/Deployment\"";
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_ENABLE_TRIGRAPHS = NO;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
@@ -2073,6 +2187,16 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		66705C5E101F5A7F00A4C9A3 /* Build configuration list for PBXLegacyTarget "sdl-1.3" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66705C5B101F5A5400A4C9A3 /* Development */,
+				66705C5C101F5A5400A4C9A3 /* Deployment */,
+				66705C5D101F5A5400A4C9A3 /* Default */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Default;
+		};
 		66CDF9BD0C4EA63000420943 /* Build configuration list for PBXNativeTarget "lua" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
