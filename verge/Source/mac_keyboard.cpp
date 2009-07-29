@@ -15,7 +15,6 @@
  ******************************************************************/
 
 #include "xerxes.h"
-#include "SDL_scancode.h"
 
 /****************************** data ******************************/
 
@@ -48,221 +47,273 @@ byte key_shift_tbl[128] =
    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '/', 0,   0,   0,   0,   0
 };
 
-byte SdlKeyToScan(SDL_scancode key)
+byte SdlKeyToScan(SDLKey key)
 {
 	// Converts from SDLkeys to keyboard scan codes
 	// some keys have no mapping, the return 0
 	/* TODO Keypad might be arrows instead of numbers */
 	switch (key)
 	{
-    case SDL_SCANCODE_BACKSPACE:
+    case SDLK_BACKSPACE:
         return SCAN_BACKSP;
-    case SDL_SCANCODE_TAB:
+    case SDLK_TAB:
         return SCAN_TAB;
-    case SDL_SCANCODE_CLEAR:
+    case SDLK_CLEAR:
         return 0;
-    case SDL_SCANCODE_RETURN:
+    case SDLK_RETURN:
         return SCAN_ENTER;
-    case SDL_SCANCODE_PAUSE:
+    case SDLK_PAUSE:
         return 0;
-    case SDL_SCANCODE_ESCAPE:
+    case SDLK_ESCAPE:
         return SCAN_ESC;
-    case SDL_SCANCODE_SPACE:
+    case SDLK_SPACE:
         return SCAN_SPACE;
-    case SDL_SCANCODE_APOSTROPHE:
+    case SDLK_EXCLAIM:
+        return SCAN_1;
+    case SDLK_QUOTEDBL:
         return SCAN_QUOTA;
-    case SDL_SCANCODE_COMMA:
+    case SDLK_HASH:
+        return SCAN_3;
+    case SDLK_DOLLAR:
+        return SCAN_4;
+    case SDLK_AMPERSAND:
+        return SCAN_7;
+    case SDLK_QUOTE:
+        return SCAN_QUOTA;
+    case SDLK_LEFTPAREN:
+        return SCAN_9;
+    case SDLK_RIGHTPAREN:
+        return SCAN_0;
+    case SDLK_ASTERISK:
+        return SCAN_8;
+    case SDLK_PLUS:
+        return SCAN_EQUALS;
+    case ',':
         return SCAN_COMA;
-    case SDL_SCANCODE_MINUS:
+    case SDLK_MINUS:
         return SCAN_MINUS;
-    case SDL_SCANCODE_PERIOD:
+    case '.':
         return SCAN_DOT;
-    case SDL_SCANCODE_SLASH:
+    case '/':
         return SCAN_SLASH;
-    case SDL_SCANCODE_0:
+    case SDLK_0:
         return SCAN_0;
-    case SDL_SCANCODE_1:
+    case SDLK_1:
         return SCAN_1;
-    case SDL_SCANCODE_2:
+    case SDLK_2:
         return SCAN_2;
-    case SDL_SCANCODE_3:
+    case SDLK_3:
         return SCAN_3;
-    case SDL_SCANCODE_4:
+    case SDLK_4:
         return SCAN_4;
-    case SDL_SCANCODE_5:
+    case SDLK_5:
         return SCAN_5;
-    case SDL_SCANCODE_6:
+    case SDLK_6:
         return SCAN_6;
-    case SDL_SCANCODE_7:
+    case SDLK_7:
         return SCAN_7;
-    case SDL_SCANCODE_8:
+    case SDLK_8:
         return SCAN_8;
-    case SDL_SCANCODE_9:
+    case SDLK_9:
         return SCAN_9;
-    case SDL_SCANCODE_SEMICOLON:
+    case SDLK_COLON:
         return SCAN_SCOLON;
-    case SDL_SCANCODE_EQUALS:
+    case ';':
+        return SCAN_SCOLON;
+    case SDLK_LESS:
+        return SCAN_COMA;
+    case '=':
         return SCAN_EQUALS;
-    case SDL_SCANCODE_LEFTBRACKET:
-        return SCAN_LANGLE;
-    case SDL_SCANCODE_BACKSLASH:
-        return SCAN_BSLASH;
-    case SDL_SCANCODE_RIGHTBRACKET:
-        return SCAN_RANGLE;
-    case SDL_SCANCODE_A:
-        return SCAN_A;
-    case SDL_SCANCODE_B:
-        return SCAN_B;
-    case SDL_SCANCODE_C:
-        return SCAN_C;
-    case SDL_SCANCODE_D:
-        return SCAN_D;
-    case SDL_SCANCODE_E:
-        return SCAN_E;
-    case SDL_SCANCODE_F:
-        return SCAN_F;
-    case SDL_SCANCODE_G:
-        return SCAN_G;
-    case SDL_SCANCODE_H:
-        return SCAN_H;
-    case SDL_SCANCODE_I:
-        return SCAN_I;
-    case SDL_SCANCODE_J:
-        return SCAN_J;
-    case SDL_SCANCODE_K:
-        return SCAN_K;
-    case SDL_SCANCODE_L:
-        return SCAN_L;
-    case SDL_SCANCODE_M:
-        return SCAN_M;
-    case SDL_SCANCODE_N:
-        return SCAN_N;
-    case SDL_SCANCODE_O:
-        return SCAN_O;
-    case SDL_SCANCODE_P:
-        return SCAN_P;
-    case SDL_SCANCODE_Q:
-        return SCAN_Q;
-    case SDL_SCANCODE_R:
-        return SCAN_R;
-    case SDL_SCANCODE_S:
-        return SCAN_S;
-    case SDL_SCANCODE_T:
-        return SCAN_T;
-    case SDL_SCANCODE_U:
-        return SCAN_U;
-    case SDL_SCANCODE_V:
-        return SCAN_V;
-    case SDL_SCANCODE_W:
-        return SCAN_W;
-    case SDL_SCANCODE_X:
-        return SCAN_X;
-    case SDL_SCANCODE_Y:
-        return SCAN_Y;
-    case SDL_SCANCODE_Z:
-        return SCAN_Z;
-    case SDL_SCANCODE_DELETE:
-        return SCAN_DEL;
-    case SDL_SCANCODE_KP_0:
-        return SCAN_0;
-    case SDL_SCANCODE_KP_1:
-        return SCAN_1;
-    case SDL_SCANCODE_KP_2:
-        return SCAN_2;
-    case SDL_SCANCODE_KP_3:
-        return SCAN_3;
-    case SDL_SCANCODE_KP_4:
-        return SCAN_4;
-    case SDL_SCANCODE_KP_5:
-        return SCAN_5;
-    case SDL_SCANCODE_KP_6:
-        return SCAN_6;
-    case SDL_SCANCODE_KP_7:
-        return SCAN_7;
-    case SDL_SCANCODE_KP_8:
-        return SCAN_8;
-    case SDL_SCANCODE_KP_9:
-        return SCAN_9;
-    case SDL_SCANCODE_KP_PERIOD:
+    case SDLK_GREATER:
         return SCAN_DOT;
-    case SDL_SCANCODE_KP_DIVIDE:
+    case SDLK_QUESTION:
+        return SCAN_SLASH;
+    case SDLK_AT:
+        return SCAN_2;
+    case '[':
+        return SCAN_LANGLE;
+    case '\\':
         return SCAN_BSLASH;
-    case SDL_SCANCODE_KP_MULTIPLY:
-        return SCAN_8;
-    case SDL_SCANCODE_KP_MINUS:
+    case ']':
+        return SCAN_RANGLE;
+    case '^':
+        return SCAN_6;
+    case '_':
         return SCAN_MINUS;
-    case SDL_SCANCODE_KP_PLUS:
+    case '`':
+        return 0;
+    case SDLK_a:
+        return SCAN_A;
+    case SDLK_b:
+        return SCAN_B;
+    case SDLK_c:
+        return SCAN_C;
+    case SDLK_d:
+        return SCAN_D;
+    case SDLK_e:
+        return SCAN_E;
+    case SDLK_f:
+        return SCAN_F;
+    case SDLK_g:
+        return SCAN_G;
+    case SDLK_h:
+        return SCAN_H;
+    case SDLK_i:
+        return SCAN_I;
+    case SDLK_j:
+        return SCAN_J;
+    case SDLK_k:
+        return SCAN_K;
+    case SDLK_l:
+        return SCAN_L;
+    case SDLK_m:
+        return SCAN_M;
+    case SDLK_n:
+        return SCAN_N;
+    case SDLK_o:
+        return SCAN_O;
+    case SDLK_p:
+        return SCAN_P;
+    case SDLK_q:
+        return SCAN_Q;
+    case SDLK_r:
+        return SCAN_R;
+    case SDLK_s:
+        return SCAN_S;
+    case SDLK_t:
+        return SCAN_T;
+    case SDLK_u:
+        return SCAN_U;
+    case SDLK_v:
+        return SCAN_V;
+    case SDLK_w:
+        return SCAN_W;
+    case SDLK_x:
+        return SCAN_X;
+    case SDLK_y:
+        return SCAN_Y;
+    case SDLK_z:
+        return SCAN_Z;
+    case SDLK_DELETE:
+        return SCAN_DEL;
+    case SDLK_KP0:
+        return SCAN_0;
+    case SDLK_KP1:
+        return SCAN_1;
+    case SDLK_KP2:
+        return SCAN_2;
+    case SDLK_KP3:
+        return SCAN_3;
+    case SDLK_KP4:
+        return SCAN_4;
+    case SDLK_KP5:
+        return SCAN_5;
+    case SDLK_KP6:
+        return SCAN_6;
+    case SDLK_KP7:
+        return SCAN_7;
+    case SDLK_KP8:
+        return SCAN_8;
+    case SDLK_KP9:
+        return SCAN_9;
+    case SDLK_KP_PERIOD:
+        return SCAN_DOT;
+    case SDLK_KP_DIVIDE:
+        return SCAN_BSLASH;
+    case SDLK_KP_MULTIPLY:
+        return SCAN_8;
+    case SDLK_KP_MINUS:
+        return SCAN_MINUS;
+    case SDLK_KP_PLUS:
         return SCAN_EQUALS;
-    case SDL_SCANCODE_KP_ENTER:
+    case SDLK_KP_ENTER:
         return SCAN_ENTER;
-    case SDL_SCANCODE_KP_EQUALS:
+    case SDLK_KP_EQUALS:
         return SCAN_EQUALS;
-    case SDL_SCANCODE_UP:
+    case SDLK_UP:
         return SCAN_UP;
-    case SDL_SCANCODE_DOWN:
+    case SDLK_DOWN:
         return SCAN_DOWN;
-    case SDL_SCANCODE_RIGHT:
+    case SDLK_RIGHT:
         return SCAN_RIGHT;
-    case SDL_SCANCODE_LEFT:
+    case SDLK_LEFT:
         return SCAN_LEFT;
-    case SDL_SCANCODE_INSERT:
+    case SDLK_INSERT:
         return SCAN_INSERT;
-    case SDL_SCANCODE_HOME:
+    case SDLK_HOME:
         return SCAN_HOME;
-    case SDL_SCANCODE_END:
+    case SDLK_END:
         return SCAN_END;
-    case SDL_SCANCODE_PAGEUP:
+    case SDLK_PAGEUP:
         return SCAN_PGUP;
-    case SDL_SCANCODE_PAGEDOWN:
+    case SDLK_PAGEDOWN:
         return SCAN_PGDN;
-    case SDL_SCANCODE_F1:
+    case SDLK_F1:
         return SCAN_F1;
-    case SDL_SCANCODE_F2:
+    case SDLK_F2:
         return SCAN_F2;
-    case SDL_SCANCODE_F3:
+    case SDLK_F3:
         return SCAN_F3;
-    case SDL_SCANCODE_F4:
+    case SDLK_F4:
         return SCAN_F4;
-    case SDL_SCANCODE_F5:
+    case SDLK_F5:
         return SCAN_F5;
-    case SDL_SCANCODE_F6:
+    case SDLK_F6:
         return SCAN_F6;
-    case SDL_SCANCODE_F7:
+    case SDLK_F7:
         return SCAN_F7;
-    case SDL_SCANCODE_F8:
+    case SDLK_F8:
         return SCAN_F8;
-    case SDL_SCANCODE_F9:
+    case SDLK_F9:
         return SCAN_F9;
-    case SDL_SCANCODE_F10:
+    case SDLK_F10:
         return SCAN_F10;
-    case SDL_SCANCODE_F11:
+    case SDLK_F11:
         return SCAN_F11;
-    case SDL_SCANCODE_F12:
+    case SDLK_F12:
         return SCAN_F12;
-    case SDL_SCANCODE_F13:
+    case SDLK_F13:
         return 0;
-    case SDL_SCANCODE_F14:
+    case SDLK_F14:
         return 0;
-    case SDL_SCANCODE_F15:
+    case SDLK_F15:
         return 0;
-    case SDL_SCANCODE_NUMLOCKCLEAR:
+    case SDLK_NUMLOCK:
         return SCAN_NUMLOCK;
-    case SDL_SCANCODE_CAPSLOCK:
+    case SDLK_CAPSLOCK:
         return SCAN_CAPS;
-    case SDL_SCANCODE_SCROLLLOCK:
+    case SDLK_SCROLLOCK:
         return SCAN_SCRLOCK;
-    case SDL_SCANCODE_RSHIFT:
+    case SDLK_RSHIFT:
         return SCAN_RSHIFT;
-    case SDL_SCANCODE_LSHIFT:
+    case SDLK_LSHIFT:
         return SCAN_LSHIFT;
-    case SDL_SCANCODE_RCTRL:
+    case SDLK_RCTRL:
         return SCAN_CTRL;
-    case SDL_SCANCODE_LCTRL:
+    case SDLK_LCTRL:
         return SCAN_CTRL;
-    case SDL_SCANCODE_RALT:
+    case SDLK_RALT:
         return SCAN_ALT;
-    case SDL_SCANCODE_LALT:
+    case SDLK_LALT:
         return SCAN_ALT;
+    case SDLK_RGUI:
+        return SCAN_ALT;
+    case SDLK_LGUI:
+        return SCAN_ALT;
+    case SDLK_MODE:
+        return 0;
+    case SDLK_HELP:
+        return 0;
+    case SDLK_PRINT:
+        return 0;
+    case SDLK_SYSREQ:
+        return 0;
+    case SDLK_BREAK:
+        return 0;
+    case SDLK_MENU:
+        return 0;
+    case SDLK_POWER:
+        return 0;
 	default:
 		return 0;
 	}
@@ -272,7 +323,7 @@ byte SdlKeyToScan(SDL_scancode key)
 
 void ParseKeyEvent(SDL_KeyboardEvent keyEvent)
 {
-	byte scanCode = SdlKeyToScan(keyEvent.keysym.scancode);
+	byte scanCode = SdlKeyToScan(keyEvent.keysym.sym);
 	bool key_pressed = false;
 
 	if(keyEvent.type == SDL_KEYDOWN)
@@ -335,11 +386,12 @@ void InitKeyboard()
 
 // check to see if a raw SDL key is pressed -
 // for keys not covered by normal keycodes
-bool isSDLKeyPressed(int key)
+bool isSDLKeyPressed(SDLKey key)
 {
 	int numkeys;
 	Uint8 *keys = SDL_GetKeyboardState(&numkeys);
-	if(key < numkeys)
-		return keys[key];
+    int scancode = SDL_GetScancodeFromKey(key);
+	if(scancode < numkeys)
+		return keys[scancode];
 	return false;
 }
