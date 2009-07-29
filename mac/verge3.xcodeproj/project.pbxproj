@@ -14,11 +14,7 @@
 		662B8C4D090B2F8B00E910BF /* a_dict.h in Headers */ = {isa = PBXBuildFile; fileRef = 662B8C4B090B2F8B00E910BF /* a_dict.h */; };
 		662B8C4E090B2F8B00E910BF /* a_dict.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 662B8C4C090B2F8B00E910BF /* a_dict.cpp */; };
 		66380C3007C968F700207F2B /* verge.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66380C2F07C968F700207F2B /* verge.icns */; };
-		66380C7007C969FF00207F2B /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 66380C6D07C969FF00207F2B /* MainMenu.nib */; };
 		66380C7F07C96A0F00207F2B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66380C7D07C96A0F00207F2B /* InfoPlist.strings */; };
-		666E154807B4911200617631 /* SDLMain.h in Headers */ = {isa = PBXBuildFile; fileRef = 666E154507B4911200617631 /* SDLMain.h */; };
-		666E154907B4911200617631 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 666E154607B4911200617631 /* SDLMain.m */; };
-		66705CB8101F5BD800A4C9A3 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66705CB7101F5BD800A4C9A3 /* SDL.framework */; };
 		66705D42101F63EF00A4C9A3 /* algebra3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66705D37101F63EF00A4C9A3 /* algebra3.cpp */; };
 		66705D43101F63EF00A4C9A3 /* algebra3.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D38101F63EF00A4C9A3 /* algebra3.h */; };
 		66705D44101F63EF00A4C9A3 /* lua_main.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D39101F63EF00A4C9A3 /* lua_main.h */; };
@@ -28,7 +24,8 @@
 		66705D48101F63EF00A4C9A3 /* snd_oakra.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D3D101F63EF00A4C9A3 /* snd_oakra.h */; };
 		66705D49101F63EF00A4C9A3 /* vcsplash.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D3E101F63EF00A4C9A3 /* vcsplash.h */; };
 		66705D4C101F63EF00A4C9A3 /* xerxes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66705D41101F63EF00A4C9A3 /* xerxes.cpp */; };
-		66705D67101F647D00A4C9A3 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 66705CB7101F5BD800A4C9A3 /* SDL.framework */; };
+		66705EDC10207BAB00A4C9A3 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66705ED110207B7000A4C9A3 /* SDL.framework */; };
+		66705EDD10207BBC00A4C9A3 /* SDL.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 66705ED110207B7000A4C9A3 /* SDL.framework */; };
 		6674381C07AF143D00765A03 /* Corona.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6674380B07AF143D00765A03 /* Corona.cpp */; };
 		6674381D07AF143D00765A03 /* corona.h in Headers */ = {isa = PBXBuildFile; fileRef = 6674380C07AF143D00765A03 /* corona.h */; };
 		6674381E07AF143D00765A03 /* Debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 6674380D07AF143D00765A03 /* Debug.cpp */; };
@@ -186,7 +183,6 @@
 		66B2B5D507B40767000E3414 /* mac_timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B3754B07B2A4130068C75B /* mac_timer.cpp */; };
 		66B2B62507B40927000E3414 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66B2B62407B40927000E3414 /* Carbon.framework */; };
 		66B2B71207B41E95000E3414 /* mac_mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B3754107B2A4130068C75B /* mac_mouse.cpp */; };
-		66B2B83807B41F2A000E3414 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66B2B83707B41F2A000E3414 /* SDL.framework */; };
 		66B2BAA307B4854F000E3414 /* mac_keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66B3753F07B2A4130068C75B /* mac_keyboard.cpp */; };
 		66B3752407B2A38E0068C75B /* fmod_errors.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B3752007B2A38E0068C75B /* fmod_errors.h */; };
 		66B3752507B2A38E0068C75B /* fmod.h in Headers */ = {isa = PBXBuildFile; fileRef = 66B3752107B2A38E0068C75B /* fmod.h */; };
@@ -291,15 +287,57 @@
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 66CDF9B90C4EA62A00420943 /* lua */;
+			remoteGlobalIDString = 66CDF9B90C4EA62A00420943;
 			remoteInfo = lua;
 		};
-		66705C67101F5AA400A4C9A3 /* PBXContainerItemProxy */ = {
+		66705ED010207B7000A4C9A3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			containerPortal = 66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF66C0761BA81005FE872;
+			remoteInfo = Framework;
+		};
+		66705ED210207B7000A4C9A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF6B30761BA81005FE872;
+			remoteInfo = "Static Library";
+		};
+		66705ED410207B7000A4C9A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF6BE0761BA81005FE872;
+			remoteInfo = "Standard DMG";
+		};
+		66705ED610207B7000A4C9A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BECDF6C30761BA81005FE872;
+			remoteInfo = "Developer Extras Package";
+		};
+		66705ED810207B7000A4C9A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F3A40F4F0C5CE1B200BB2308;
+			remoteInfo = "Framework Without X11 Stuff (for those who didn't install the X11 headers with Xcode)";
+		};
+		66705EDA10207B7000A4C9A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 002F327609CA02D800EBEB88;
+			remoteInfo = "Static Library Without X11 Stuff (for those who didn't install the X11 headers with Xcode)";
+		};
+		66705EFA10207D1200A4C9A3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */;
 			proxyType = 1;
-			remoteGlobalIDString = 66705C5A101F5A5400A4C9A3 /* sdl-1.3 */;
-			remoteInfo = "sdl-1.3";
+			remoteGlobalIDString = BECDF5FE0761BA81005FE872;
+			remoteInfo = Framework;
 		};
 		66B3791F07B2B8600068C75B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -338,7 +376,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				66705D67101F647D00A4C9A3 /* SDL.framework in CopyFiles */,
+				66705EDD10207BBC00A4C9A3 /* SDL.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,12 +394,8 @@
 		662B8C4C090B2F8B00E910BF /* a_dict.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = a_dict.cpp; path = ../verge/Source/a_dict.cpp; sourceTree = SOURCE_ROOT; };
 		66380C2F07C968F700207F2B /* verge.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = verge.icns; sourceTree = "<group>"; };
 		66380C5407C969A300207F2B /* verge3_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = verge3_Prefix.pch; sourceTree = "<group>"; };
-		66380C6E07C969FF00207F2B /* MainMenu.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = MainMenu.nib; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		66380C7E07C96A0F00207F2B /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		66380C8A07C96A2C00207F2B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		666E154507B4911200617631 /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = SOURCE_ROOT; };
-		666E154607B4911200617631 /* SDLMain.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = SDLMain.m; sourceTree = SOURCE_ROOT; };
-		66705CB7101F5BD800A4C9A3 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = "../sdl-1.3/Xcode/SDL/build/Deployment/SDL.framework"; sourceTree = SOURCE_ROOT; };
 		66705D37101F63EF00A4C9A3 /* algebra3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = algebra3.cpp; path = ../verge/Source/algebra3.cpp; sourceTree = SOURCE_ROOT; };
 		66705D38101F63EF00A4C9A3 /* algebra3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = algebra3.h; path = ../verge/Source/algebra3.h; sourceTree = SOURCE_ROOT; };
 		66705D39101F63EF00A4C9A3 /* lua_main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_main.h; path = ../verge/Source/lua_main.h; sourceTree = SOURCE_ROOT; };
@@ -371,6 +405,7 @@
 		66705D3D101F63EF00A4C9A3 /* snd_oakra.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = snd_oakra.h; path = ../verge/Source/snd_oakra.h; sourceTree = SOURCE_ROOT; };
 		66705D3E101F63EF00A4C9A3 /* vcsplash.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vcsplash.h; path = ../verge/Source/vcsplash.h; sourceTree = SOURCE_ROOT; };
 		66705D41101F63EF00A4C9A3 /* xerxes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = xerxes.cpp; path = ../verge/Source/xerxes.cpp; sourceTree = SOURCE_ROOT; };
+		66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SDL.xcodeproj; path = "../sdl-1.3/Xcode/SDL/SDL.xcodeproj"; sourceTree = SOURCE_ROOT; };
 		667437DC07AF140700765A03 /* libcorona.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcorona.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6674380B07AF143D00765A03 /* Corona.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = Corona.cpp; path = ../corona/Corona.cpp; sourceTree = SOURCE_ROOT; };
 		6674380C07AF143D00765A03 /* corona.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = corona.h; path = ../corona/corona.h; sourceTree = SOURCE_ROOT; };
@@ -523,7 +558,6 @@
 		66A448B508EDDE4500132604 /* snd_fmod.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = snd_fmod.cpp; path = ../verge/Source/snd_fmod.cpp; sourceTree = SOURCE_ROOT; };
 		66A448B608EDDE4500132604 /* snd_fmod.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = snd_fmod.h; path = ../verge/Source/snd_fmod.h; sourceTree = SOURCE_ROOT; };
 		66B2B62407B40927000E3414 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		66B2B83707B41F2A000E3414 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Users/jrusak/verge3/trunk/sdl/SDL.framework; sourceTree = "<absolute>"; };
 		66B3752007B2A38E0068C75B /* fmod_errors.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fmod_errors.h; path = ../fmod/fmod_errors.h; sourceTree = SOURCE_ROOT; };
 		66B3752107B2A38E0068C75B /* fmod.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fmod.h; path = ../fmod/fmod.h; sourceTree = SOURCE_ROOT; };
 		66B3752207B2A38E0068C75B /* fmoddyn.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fmoddyn.h; path = ../fmod/fmoddyn.h; sourceTree = SOURCE_ROOT; };
@@ -645,6 +679,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66705EDC10207BAB00A4C9A3 /* SDL.framework in Frameworks */,
 				66CDFA410C4EA6FC00420943 /* liblua.a in Frameworks */,
 				66743A5C07AF191700765A03 /* libcorona.a in Frameworks */,
 				66743A5D07AF191700765A03 /* liblibjpeg.a in Frameworks */,
@@ -653,10 +688,8 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				66B3791207B2B7FD0068C75B /* libz.dylib in Frameworks */,
 				66B2B62507B40927000E3414 /* Carbon.framework in Frameworks */,
-				66B2B83807B41F2A000E3414 /* SDL.framework in Frameworks */,
 				66DBFDC507B8085F00CB0A24 /* OpenGL.framework in Frameworks */,
 				66CB58EC0BFA863B00E37C0F /* libfmodub.a in Frameworks */,
-				66705CB8101F5BD800A4C9A3 /* SDL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -699,9 +732,9 @@
 		29B97314FDCFA39411CA2CEA /* verge3 */ = {
 			isa = PBXGroup;
 			children = (
+				66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */,
 				66CDF9B50C4EA5FC00420943 /* lua */,
 				66743A7207AF192A00765A03 /* verge3 */,
-				66B2B41407B3EB88000E3414 /* SDL Wrapper */,
 				66B3751B07B2A3700068C75B /* fmod */,
 				667437C807AF13C800765A03 /* corona */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -727,7 +760,6 @@
 				66380C8A07C96A2C00207F2B /* Info.plist */,
 				66380C2F07C968F700207F2B /* verge.icns */,
 				66380C7D07C96A0F00207F2B /* InfoPlist.strings */,
-				66380C6D07C969FF00207F2B /* MainMenu.nib */,
 			);
 			name = Resources;
 			sourceTree = SOURCE_ROOT;
@@ -737,9 +769,21 @@
 			children = (
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
-				66705CB7101F5BD800A4C9A3 /* SDL.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		66705EC510207B6F00A4C9A3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				66705ED110207B7000A4C9A3 /* SDL.framework */,
+				66705ED310207B7000A4C9A3 /* libSDL.a */,
+				66705ED510207B7000A4C9A3 /* Standard DMG */,
+				66705ED710207B7000A4C9A3 /* Developer Extras Package */,
+				66705ED910207B7000A4C9A3 /* SDL.framework */,
+				66705EDB10207B7000A4C9A3 /* libSDL.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		667437C807AF13C800765A03 /* corona */ = {
@@ -868,31 +912,55 @@
 		66743A7207AF192A00765A03 /* verge3 */ = {
 			isa = PBXGroup;
 			children = (
+				66743A7607AF194500765A03 /* a_codec.cpp */,
+				66743A7707AF194500765A03 /* a_codec.h */,
+				66743A7807AF194500765A03 /* a_common.cpp */,
+				66743A7907AF194500765A03 /* a_common.h */,
+				66743A7A07AF194500765A03 /* a_config.cpp */,
+				66743A7B07AF194500765A03 /* a_config.h */,
+				662B8C4C090B2F8B00E910BF /* a_dict.cpp */,
+				662B8C4B090B2F8B00E910BF /* a_dict.h */,
+				66743A7C07AF194500765A03 /* a_handle.cpp */,
+				66743A7D07AF194500765A03 /* a_handle.h */,
+				66743A7E07AF194500765A03 /* a_image.cpp */,
+				66743A7F07AF194500765A03 /* a_image.h */,
+				AAC5C5370F49201E00A8D3E0 /* a_string.cpp */,
+				66743A8107AF194500765A03 /* a_string.h */,
+				66743A8207AF194500765A03 /* a_vfile.cpp */,
+				66743A8307AF194500765A03 /* a_vfile.h */,
 				66705D37101F63EF00A4C9A3 /* algebra3.cpp */,
 				66705D38101F63EF00A4C9A3 /* algebra3.h */,
+				66743A8407AF194500765A03 /* fontdef.h */,
+				66743A8507AF194500765A03 /* g_chr.cpp */,
+				66743A8607AF194500765A03 /* g_chr.h */,
+				66743A8707AF194500765A03 /* g_controls.cpp */,
+				66743A8807AF194500765A03 /* g_controls.h */,
+				661F5B0F08770D45008AE4D7 /* g_editcode.cpp */,
+				661F5B1008770D45008AE4D7 /* g_editcode.h */,
+				66743A8907AF194500765A03 /* g_engine.cpp */,
+				66743A8A07AF194500765A03 /* g_engine.h */,
+				66743A8B07AF194500765A03 /* g_entity.cpp */,
+				66743A8C07AF194500765A03 /* g_entity.h */,
+				66743A8D07AF194500765A03 /* g_font.cpp */,
+				66743A8E07AF194500765A03 /* g_font.h */,
+				66743A8F07AF194500765A03 /* g_map.cpp */,
+				66743A9007AF194500765A03 /* g_map.h */,
+				66CDF7C20C4E8EB900420943 /* g_script.cpp */,
+				66CDF7C30C4E8EB900420943 /* g_script.h */,
+				66A448B108EDDDBF00132604 /* g_sound.cpp */,
+				66A448B208EDDDBF00132604 /* g_sound.h */,
+				66743A9107AF194500765A03 /* g_sprites.cpp */,
+				66743A9207AF194500765A03 /* g_sprites.h */,
+				66743A9307AF194500765A03 /* g_startup.cpp */,
+				66743A9407AF194500765A03 /* g_startup.h */,
+				66743A9507AF194500765A03 /* g_vsp.cpp */,
+				66743A9607AF194500765A03 /* g_vsp.h */,
+				66DE5FE40A6FA92400D6CEEA /* garlick.cpp */,
+				66DE5FE50A6FA92400D6CEEA /* garlick.h */,
+				66CDF7C40C4E8EB900420943 /* lua_main.cpp */,
 				66705D39101F63EF00A4C9A3 /* lua_main.h */,
 				66705D3A101F63EF00A4C9A3 /* lua_vector.cpp */,
 				66705D3B101F63EF00A4C9A3 /* lua_vector.h */,
-				66705D3C101F63EF00A4C9A3 /* snd_audiere.h */,
-				66705D3D101F63EF00A4C9A3 /* snd_oakra.h */,
-				66705D3E101F63EF00A4C9A3 /* vcsplash.h */,
-				66705D41101F63EF00A4C9A3 /* xerxes.cpp */,
-				AAC5C5420F4920CE00A8D3E0 /* vid_fbfx.cpp */,
-				AAC5C5430F4920CE00A8D3E0 /* vid_fbfx.h */,
-				AAC5C5390F49203700A8D3E0 /* vid_timeless.cpp */,
-				AAC5C5370F49201E00A8D3E0 /* a_string.cpp */,
-				66CDF7C20C4E8EB900420943 /* g_script.cpp */,
-				66CDF7C30C4E8EB900420943 /* g_script.h */,
-				66CDF7C40C4E8EB900420943 /* lua_main.cpp */,
-				668634080A80F2BD00E20C3E /* p_datastructs.cpp */,
-				66DE5FE40A6FA92400D6CEEA /* garlick.cpp */,
-				66DE5FE50A6FA92400D6CEEA /* garlick.h */,
-				66A448B508EDDE4500132604 /* snd_fmod.cpp */,
-				66A448B608EDDE4500132604 /* snd_fmod.h */,
-				66A448B108EDDDBF00132604 /* g_sound.cpp */,
-				66A448B208EDDDBF00132604 /* g_sound.h */,
-				661F5B0F08770D45008AE4D7 /* g_editcode.cpp */,
-				661F5B1008770D45008AE4D7 /* g_editcode.h */,
 				66C8E4930818AB47000E0853 /* mac_cocoa_util.h */,
 				66B7FC4E07C65C630071EACA /* mac_cocoa_util.mm */,
 				66B3753D07B2A4130068C75B /* mac_joystick.cpp */,
@@ -910,45 +978,14 @@
 				66B3754B07B2A4130068C75B /* mac_timer.cpp */,
 				66B3754C07B2A4130068C75B /* mac_timer.h */,
 				66248261085548A3008B043B /* macsplash.h */,
-				66B3754D07B2A4130068C75B /* vid_macbase.cpp */,
-				66B3754E07B2A4130068C75B /* vid_macbase.h */,
-				66743A7607AF194500765A03 /* a_codec.cpp */,
-				66743A7707AF194500765A03 /* a_codec.h */,
-				66743A7807AF194500765A03 /* a_common.cpp */,
-				66743A7907AF194500765A03 /* a_common.h */,
-				66743A7A07AF194500765A03 /* a_config.cpp */,
-				66743A7B07AF194500765A03 /* a_config.h */,
-				662B8C4C090B2F8B00E910BF /* a_dict.cpp */,
-				662B8C4B090B2F8B00E910BF /* a_dict.h */,
-				66743A7C07AF194500765A03 /* a_handle.cpp */,
-				66743A7D07AF194500765A03 /* a_handle.h */,
-				66743A7E07AF194500765A03 /* a_image.cpp */,
-				66743A7F07AF194500765A03 /* a_image.h */,
-				66743A8107AF194500765A03 /* a_string.h */,
-				66743A8207AF194500765A03 /* a_vfile.cpp */,
-				66743A8307AF194500765A03 /* a_vfile.h */,
-				66743A8407AF194500765A03 /* fontdef.h */,
-				66743A8507AF194500765A03 /* g_chr.cpp */,
-				66743A8607AF194500765A03 /* g_chr.h */,
-				66743A8707AF194500765A03 /* g_controls.cpp */,
-				66743A8807AF194500765A03 /* g_controls.h */,
-				66743A8907AF194500765A03 /* g_engine.cpp */,
-				66743A8A07AF194500765A03 /* g_engine.h */,
-				66743A8B07AF194500765A03 /* g_entity.cpp */,
-				66743A8C07AF194500765A03 /* g_entity.h */,
-				66743A8D07AF194500765A03 /* g_font.cpp */,
-				66743A8E07AF194500765A03 /* g_font.h */,
-				66743A8F07AF194500765A03 /* g_map.cpp */,
-				66743A9007AF194500765A03 /* g_map.h */,
-				66743A9107AF194500765A03 /* g_sprites.cpp */,
-				66743A9207AF194500765A03 /* g_sprites.h */,
-				66743A9307AF194500765A03 /* g_startup.cpp */,
-				66743A9407AF194500765A03 /* g_startup.h */,
-				66743A9507AF194500765A03 /* g_vsp.cpp */,
-				66743A9607AF194500765A03 /* g_vsp.h */,
 				66743A9807AF194500765A03 /* opcodes.h */,
+				668634080A80F2BD00E20C3E /* p_datastructs.cpp */,
 				66743A9907AF194500765A03 /* resource.h */,
 				66743A9A07AF194500765A03 /* sincos.h */,
+				66705D3C101F63EF00A4C9A3 /* snd_audiere.h */,
+				66A448B508EDDE4500132604 /* snd_fmod.cpp */,
+				66A448B608EDDE4500132604 /* snd_fmod.h */,
+				66705D3D101F63EF00A4C9A3 /* snd_oakra.h */,
 				66743A9C07AF194500765A03 /* vc_builtins.cpp */,
 				66743A9D07AF194500765A03 /* vc_compiler.cpp */,
 				66743A9E07AF194500765A03 /* vc_compiler.h */,
@@ -957,23 +994,21 @@
 				66743AA207AF194500765A03 /* vc_debug.cpp */,
 				66743AA307AF194500765A03 /* vc_debug.h */,
 				66743AA407AF194500765A03 /* vc_library.cpp */,
+				66705D3E101F63EF00A4C9A3 /* vcsplash.h */,
 				66743AA807AF194500765A03 /* vid_ddblit.cpp */,
+				AAC5C5420F4920CE00A8D3E0 /* vid_fbfx.cpp */,
+				AAC5C5430F4920CE00A8D3E0 /* vid_fbfx.h */,
+				66B3754D07B2A4130068C75B /* vid_macbase.cpp */,
+				66B3754E07B2A4130068C75B /* vid_macbase.h */,
 				66743AA907AF194500765A03 /* vid_manager.cpp */,
 				66743AAA07AF194500765A03 /* vid_manager.h */,
 				66743AAB07AF194500765A03 /* vid_sysfont.cpp */,
 				66743AAC07AF194500765A03 /* vid_sysfont.h */,
+				AAC5C5390F49203700A8D3E0 /* vid_timeless.cpp */,
+				66705D41101F63EF00A4C9A3 /* xerxes.cpp */,
 				66743ABD07AF194500765A03 /* xerxes.h */,
 			);
 			name = verge3;
-			sourceTree = SOURCE_ROOT;
-		};
-		66B2B41407B3EB88000E3414 /* SDL Wrapper */ = {
-			isa = PBXGroup;
-			children = (
-				666E154507B4911200617631 /* SDLMain.h */,
-				666E154607B4911200617631 /* SDLMain.m */,
-			);
-			name = "SDL Wrapper";
 			sourceTree = SOURCE_ROOT;
 		};
 		66B3751B07B2A3700068C75B /* fmod */ = {
@@ -1189,7 +1224,6 @@
 				66B3755C07B2A4130068C75B /* mac_system.h in Headers */,
 				66B3755E07B2A4130068C75B /* mac_timer.h in Headers */,
 				66B3784B07B2B4580068C75B /* vid_macbase.h in Headers */,
-				666E154807B4911200617631 /* SDLMain.h in Headers */,
 				66C8E4940818AB47000E0853 /* mac_cocoa_util.h in Headers */,
 				66248262085548A3008B043B /* macsplash.h in Headers */,
 				661F5B1208770D45008AE4D7 /* g_editcode.h in Headers */,
@@ -1209,23 +1243,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
-
-/* Begin PBXLegacyTarget section */
-		66705C5A101F5A5400A4C9A3 /* sdl-1.3 */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "-target Framework -configuration $CONFIGURATION $(ACTION)";
-			buildConfigurationList = 66705C5E101F5A7F00A4C9A3 /* Build configuration list for PBXLegacyTarget "sdl-1.3" */;
-			buildPhases = (
-			);
-			buildToolPath = xcodebuild;
-			buildWorkingDirectory = "/Users/jrusak/verge3/trunk/sdl-1.3/Xcode/SDL";
-			dependencies = (
-			);
-			name = "sdl-1.3";
-			passBuildSettingsInEnvironment = 1;
-			productName = "sdl-1.3";
-		};
-/* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
 		667437DB07AF140700765A03 /* corona */ = {
@@ -1328,7 +1345,7 @@
 			dependencies = (
 				66705C57101F595800A4C9A3 /* PBXTargetDependency */,
 				66B3792007B2B8600068C75B /* PBXTargetDependency */,
-				66705C68101F5AA400A4C9A3 /* PBXTargetDependency */,
+				66705EFB10207D1200A4C9A3 /* PBXTargetDependency */,
 			);
 			name = verge3;
 			productInstallPath = "$(HOME)/Applications";
@@ -1346,6 +1363,12 @@
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* verge3 */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 66705EC510207B6F00A4C9A3 /* Products */;
+					ProjectRef = 66705EC410207B6F00A4C9A3 /* SDL.xcodeproj */;
+				},
+			);
 			projectRoot = ..;
 			targets = (
 				8D1107260486CEB800E47090 /* verge3 */,
@@ -1354,10 +1377,54 @@
 				667438FE07AF149100765A03 /* libpng */,
 				66B8DC5B08D513420062487B /* libungif */,
 				66CDF9B90C4EA62A00420943 /* lua */,
-				66705C5A101F5A5400A4C9A3 /* sdl-1.3 */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		66705ED110207B7000A4C9A3 /* SDL.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL.framework;
+			remoteRef = 66705ED010207B7000A4C9A3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		66705ED310207B7000A4C9A3 /* libSDL.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSDL.a;
+			remoteRef = 66705ED210207B7000A4C9A3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		66705ED510207B7000A4C9A3 /* Standard DMG */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "Standard DMG";
+			remoteRef = 66705ED410207B7000A4C9A3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		66705ED710207B7000A4C9A3 /* Developer Extras Package */ = {
+			isa = PBXReferenceProxy;
+			fileType = "compiled.mach-o.executable";
+			path = "Developer Extras Package";
+			remoteRef = 66705ED610207B7000A4C9A3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		66705ED910207B7000A4C9A3 /* SDL.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = SDL.framework;
+			remoteRef = 66705ED810207B7000A4C9A3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		66705EDB10207B7000A4C9A3 /* libSDL.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libSDL.a;
+			remoteRef = 66705EDA10207B7000A4C9A3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8D1107290486CEB800E47090 /* Resources */ = {
@@ -1365,7 +1432,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				66380C3007C968F700207F2B /* verge.icns in Resources */,
-				66380C7007C969FF00207F2B /* MainMenu.nib in Resources */,
 				66380C7F07C96A0F00207F2B /* InfoPlist.strings in Resources */,
 				660DDBBC082CFFBA0084B9B7 /* Credits.html in Resources */,
 			);
@@ -1550,7 +1616,6 @@
 				66B2B5D507B40767000E3414 /* mac_timer.cpp in Sources */,
 				66B2B71207B41E95000E3414 /* mac_mouse.cpp in Sources */,
 				66B2BAA307B4854F000E3414 /* mac_keyboard.cpp in Sources */,
-				666E154907B4911200617631 /* SDLMain.m in Sources */,
 				66CE20D707B54EBA00C42922 /* vid_macbase.cpp in Sources */,
 				66CE215607B5552D00C42922 /* mac_network.cpp in Sources */,
 				66CE220D07B55A6300C42922 /* mac_movie.cpp in Sources */,
@@ -1581,10 +1646,10 @@
 			target = 66CDF9B90C4EA62A00420943 /* lua */;
 			targetProxy = 66705C56101F595800A4C9A3 /* PBXContainerItemProxy */;
 		};
-		66705C68101F5AA400A4C9A3 /* PBXTargetDependency */ = {
+		66705EFB10207D1200A4C9A3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 66705C5A101F5A5400A4C9A3 /* sdl-1.3 */;
-			targetProxy = 66705C67101F5AA400A4C9A3 /* PBXContainerItemProxy */;
+			name = Framework;
+			targetProxy = 66705EFA10207D1200A4C9A3 /* PBXContainerItemProxy */;
 		};
 		66B3792007B2B8600068C75B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1609,14 +1674,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		66380C6D07C969FF00207F2B /* MainMenu.nib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				66380C6E07C969FF00207F2B /* MainMenu.nib */,
-			);
-			name = MainMenu.nib;
-			sourceTree = "<group>";
-		};
 		66380C7D07C96A0F00207F2B /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -1628,34 +1685,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		66705C5B101F5A5400A4C9A3 /* Development */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = NO;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				PRODUCT_NAME = "sdl-1.3";
-			};
-			name = Development;
-		};
-		66705C5C101F5A5400A4C9A3 /* Deployment */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				PRODUCT_NAME = "sdl-1.3";
-				ZERO_LINK = NO;
-			};
-			name = Deployment;
-		};
-		66705C5D101F5A5400A4C9A3 /* Default */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				PRODUCT_NAME = "sdl-1.3";
-			};
-			name = Default;
-		};
 		66CDF9BE0C4EA63000420943 /* Development */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2187,16 +2216,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		66705C5E101F5A7F00A4C9A3 /* Build configuration list for PBXLegacyTarget "sdl-1.3" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				66705C5B101F5A5400A4C9A3 /* Development */,
-				66705C5C101F5A5400A4C9A3 /* Deployment */,
-				66705C5D101F5A5400A4C9A3 /* Default */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Default;
-		};
 		66CDF9BD0C4EA63000420943 /* Build configuration list for PBXNativeTarget "lua" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -51,5 +51,6 @@ void InitEditCode(); // impl in mac_cocoa_util.mm
 void AddSourceFile(std::string s); // impl in mac_cocoa_util.mm
 
 StringRef GetSystemSaveDirectory(CStringRef name); // impl in mac_cocoa_util.mm 
+void ChangeToRootDirectory(); // impl in mac_cocoa_util.mm
 
 #endif

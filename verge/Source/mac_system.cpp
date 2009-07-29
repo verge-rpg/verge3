@@ -62,6 +62,8 @@ StringRef GetSystemSaveDirectory(CStringRef name)
 }
 #endif
 
+
+
 void platform_ProcessConfig()
 {
 }
@@ -77,6 +79,7 @@ int main(int argc, char **argv)
 #ifdef __LINUX__
 	gtk_init(&argc, &argv);
 #endif
+    
 	srand(timeGetTime());
 	log_Init(true);
 
@@ -99,8 +102,13 @@ int main(int argc, char **argv)
 
 	DesktopBPP = getCurrentBpp(); // needs video inited already
 
+#ifdef __APPLE__
+    ChangeToRootDirectory();
+#endif
+    
 	xmain(argc,argv);
-	err("");
+    err("");
+    
 	return 0;
 }
 

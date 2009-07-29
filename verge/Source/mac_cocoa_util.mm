@@ -1,6 +1,5 @@
 
 #import <Cocoa/Cocoa.h>
-#import "SDLMain.h"
 
 #include "mac_cocoa_util.h"
 
@@ -30,8 +29,8 @@ void InitEditCode() {
 	// retrieve SDLMain object from the NSApp
 	// then get the reloadController outlet
 	// (These are both hooked up in the nib file)
-	SDLMain *sdlmain = [NSApp delegate];
-	[sdlmain->macCocoaUtil showWindow];
+//	SDLMain *sdlmain = [NSApp delegate];
+//	[sdlmain->macCocoaUtil showWindow];
 }
 
 // called to add a file to the pop-up
@@ -39,8 +38,33 @@ void AddSourceFile(string s) {
 	// retrieve SDLMain object from the NSApp
 	// then get the reloadController outlet
 	// (These are both hooked up in the nib file)
-    SDLMain *sdlmain = [NSApp delegate];
-    [sdlmain->macCocoaUtil addFile:[NSString stringWithCString:s.c_str()]];
+//    SDLMain *sdlmain = [NSApp delegate];
+//    [sdlmain->macCocoaUtil addFile:[NSString stringWithCString:s.c_str()]];
+}
+
+void ChangeToRootDirectory() {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
+    NSString *rootPath;
+    
+    // this is set in XCode when launching the app so the cwdir stays put
+    NSString *shouldStay = [[[NSProcessInfo processInfo] environment] objectForKey:@"VERGE_DONT_CHANGE_DIR"];
+    if(!shouldStay)
+    {
+        if(MAC_USE_VERGE_RES_DIR) {
+            // go to "verge" folder in resources
+            rootPath = [[NSBundle mainBundle] pathForResource:@"verge" ofType:@""];
+        }
+        else {
+            // go up to .app's parent
+            rootPath = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@".."];
+        }    
+        
+        NSFileManager *manager = [NSFileManager defaultManager];
+        [manager changeCurrentDirectoryPath:rootPath];        
+    }
+    
+    [pool drain];
 }
 
 // call to show an alert panel. 
@@ -49,18 +73,27 @@ void AddSourceFile(string s) {
 // details like what to do for full-screen.
 void doMessageBox(string message)
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
 	NSRunAlertPanel(@"Verge Message:",[NSString stringWithCString: message.c_str()],@"OK",NULL,NULL);
+
+    [pool drain];
 }
 
 // call to retrieve a url's text
 // Returns the empty string on error
 string getUrlText(CStringRef inUrl) 
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
 	NSURL * url = [NSURL URLWithString: [NSString stringWithCString: inUrl.c_str()]];
 	NSString * contents = [NSString stringWithContentsOfURL: url];
-	if(contents == nil)
-		return string();
-	return string([contents cString]);
+    string toReturn;
+	if(contents != nil)
+        toReturn = string([contents cString]);
+
+    [pool drain];
+    return toReturn;
 }
 
 // returns an image from a given url
@@ -69,6 +102,8 @@ string getUrlText(CStringRef inUrl)
 // is not loadable.
 int getUrlImage(CStringRef inUrl)
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
 	NSURL * url = [NSURL URLWithString: [NSString stringWithCString: inUrl.c_str()]];
 	NSString * contents = [NSString stringWithContentsOfURL: url];
 
@@ -81,32 +116,37 @@ int getUrlImage(CStringRef inUrl)
 	
 	remove("$$urlimagetemp.$$$");
 	
+    [pool drain];
 	return toReturn;
 }
 
 StringRef GetSystemSaveDirectory(CStringRef name)
 {
-  NSArray *arr = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, true);
-  if([arr count] == 0 || !MAC_USE_VERGE_RES_DIR)
-  {
-    return "./";
-  }
-  else
-  {
-	  StringRef temp = (std::string)"com.verge-rpg." + name.c_str();
-    NSString *prefsDirName = [NSString stringWithUTF8String:temp.c_str()];
-    
-    NSString *libDir = [arr objectAtIndex:0];
-    NSString *vergeDir = [[libDir stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:prefsDirName];
-    
-    NSFileManager *manager = [NSFileManager defaultManager];
-    if(![manager fileExistsAtPath:vergeDir]) 
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
+    NSArray *arr = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, true);
+    if([arr count] == 0 || !MAC_USE_VERGE_RES_DIR)
     {
-      [manager createDirectoryAtPath:vergeDir attributes:nil];
+        [pool drain];
+        return "./";
     }
-    
-    return std::string([vergeDir UTF8String]) + "/";
-  }
+    else
+    {
+        StringRef temp = (std::string)"com.verge-rpg." + name.c_str();
+        NSString *prefsDirName = [NSString stringWithUTF8String:temp.c_str()];
+        
+        NSString *libDir = [arr objectAtIndex:0];
+        NSString *vergeDir = [[libDir stringByAppendingPathComponent:@"Preferences"] stringByAppendingPathComponent:prefsDirName];
+        
+        NSFileManager *manager = [NSFileManager defaultManager];
+        if(![manager fileExistsAtPath:vergeDir]) 
+        {
+            [manager createDirectoryAtPath:vergeDir attributes:nil];
+        }
+        
+        [pool drain];
+        return std::string([vergeDir UTF8String]) + "/";
+    }
 }
 
 // The MacCocoaUtil handles user input
