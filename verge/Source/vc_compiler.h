@@ -56,29 +56,40 @@ public:
 	~HVar();
 };
 
-class int_t
+struct callback_definition;
+class struct_definition;
+union ext_definition
 {
-public:
-	char name[IDENTIFIER_LEN];
-	int ofs, len;
-	int dim;
-	std::vector<int> dims;
-	StringRef initializer;
-	int_t();
-	int_t(FILE *f);
-	void write(FILE *f);
+    callback_definition* callback;
+    struct_definition* structure;
 };
 
-class string_t
+struct callback_definition
+{
+    int signature;
+    ext_definition sigext;
+    char argtype[60];
+    ext_definition argext[60];
+    int numargs; 
+
+	callback_definition();
+	~callback_definition();
+};
+
+class global_var_t
 {
 public:
+	char type;
+	ext_definition ext;
+
 	char name[IDENTIFIER_LEN];
 	int ofs, len;
 	int dim;
 	std::vector<int> dims;
 	StringRef initializer;
-	string_t();
-	string_t(FILE *f);
+	global_var_t();
+	global_var_t(FILE *f);
+	~global_var_t();
 	void write(FILE *f);
 };
 
@@ -86,6 +97,8 @@ class struct_element
 {
 public:
 	char type;
+	ext_definition ext;
+
 	char name[IDENTIFIER_LEN];
 
 	// For nested structs.
@@ -96,6 +109,8 @@ public:
 	std::vector<int> dims;
 	struct_element();
 	struct_element(FILE *f);
+	~struct_element();
+
 	bool equals(struct_element *rhs);
 	void write(FILE *f);
 };
@@ -107,6 +122,9 @@ public:
 	std::vector<struct_element*> elements;
 	struct_definition();
 	struct_definition(FILE *f);
+	~struct_definition();
+
+
 	bool equals(struct_definition *rhs);
 	void write(FILE *f);
 };
@@ -128,14 +146,17 @@ class function_t
 public:
 	char name[IDENTIFIER_LEN];
 	char argtype[60];
+	ext_definition argext[60];
 	char localnames[100][IDENTIFIER_LEN];
 	int numargs, numlocals;
 	int signature;
+	ext_definition sigext;
 	int codeofs;
 	int codeend;
 	char coreimage;
 	function_t();
 	function_t(FILE *f);
+	~function_t();
 	void write(FILE *f);
 };
 
@@ -317,11 +338,10 @@ private:
 	void GetIdentifierToken();
 
 	// scanning pass component
-	std::vector<int_t*>					global_ints;
-	std::vector<string_t*>				global_strings;
+	std::vector<global_var_t*>					global_vars;
 	std::vector<struct_instance*>		struct_instances;
 
-	int global_intofs, global_stringofs;
+	int global_var_offset;
 
 	// storage for functions
 	// funcs stores all functions in each code image
@@ -355,14 +375,15 @@ private:
 	void SkipBrackets();
 	void SkipFunction();
 	void SkipDeclare();
+	void SkipArguments();
 	void CheckNameDup(char *s);
 
 	// Overkill (2006-05-06): 
 	// Elements inside structures have different naming rules.
 	void CheckStructElementNameDup (char *s, struct_definition *def);
 
-	void ParseIntDecl(scan_t type);
-	void ParseStringDecl(scan_t type);
+	void ParseGlobalDecl(scan_t type);
+	void ParseCallbackDefinition(callback_definition** def);
 	void ParseFuncDecl(scan_t type);
 	void ParseStructDecl(scan_t type);
     void ParseStructDeclVar(struct_definition* mystruct, int variable_type);
@@ -370,8 +391,11 @@ private:
 
 	// code generation component
 	int returntype;
+	ext_definition returnext;
+
 	function_t *in_func;
-	int id_type, id_subtype, id_array, id_index, id_access; 
+	int id_type, id_subtype, id_array, id_index, id_access;
+	ext_definition id_ext;
 	static const int ID_ACCESS_READ = 1; 
 	static const int ID_ACCESS_WRITE = 2;
 	char id_cimage;
@@ -380,7 +404,7 @@ private:
 	void CompilePass();
 	void CompileMapPass();
 	void CompileOtherPass(bool append);
-	void CompileFunction();
+	void CompileFunction(bool returns_callback);
 	void CompileGlobalInitializers();
 	void SkipVariables();
 
@@ -401,14 +425,19 @@ private:
 	void CompileSubTerm();
 	void CompileAtom();
 
+	bool VerifySignatureMatch(callback_definition* expected, function_t* value);
+	bool VerifySignatureMatch(callback_definition* expected, callback_definition* value);
+	void CompileCallback(callback_definition* def);
+
 	void CompileString();
 	void CompileStatement();
 
 	void HandleReturn();
 	void HandleLibraryFunc();
 	void HandleUserFunc();
+	void HandleCallbackInvocation(callback_definition* def);
 	void HandlePluginFunc();
-	int HandleVariable();
+	int HandleVariable(ext_definition* ext);
 	void HandleAssign();
 	void HandleIf(bool falsify = false);
 	void HandleIfGroup(bool falsify = false);

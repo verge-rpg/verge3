@@ -1758,13 +1758,8 @@ VC_LIBFUNC(vc_MessageBox) ()
 
 // ===================== End VC Standard Function Library =====================
 
-void VCCore::HandleLibFunc()
+void VCCore::HandleLibFunc(word c)
 {
-	// Overkill (2006-06-07): Now functions past 255 work.
-	// Yay! We'll probably never reach the 65535 mark,
-	// so we're safe again.
-	word c = currentvc->GrabW();
-
 	VcFunctionImpl ptr = dispatchTable[c];
 	if (ptr) {
 		ptr();

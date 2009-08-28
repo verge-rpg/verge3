@@ -53,6 +53,8 @@ VCCore::VCCore()
 	int_stack_ptr = 0;
 	str_stack_base = 0;
 	str_stack_ptr = 0;
+	cb_stack_base = 0;
+	cb_stack_ptr = 0;
 	currentvc = &coreimages[CIMAGE_SYSTEM];
 	current_cimage = CIMAGE_SYSTEM;
 	LoadSystemXVC();
@@ -78,6 +80,7 @@ VCCore::~VCCore()
 
 	delete[] vcint;
 	delete[] vcstring;
+	delete[] vccallback;
 }
 
 void VCCore::ExecAutoexec()
@@ -106,7 +109,6 @@ bool VCCore::ExecuteFunctionString(const StringRef &script)
 	return false;
 }
 
-//TODO - yuck I cant believe this looks at all the strings
 bool VCCore::FunctionExists(const StringRef &script)
 {
 	quad hash = FastHash(true, script.c_str());
@@ -139,8 +141,7 @@ void VCCore::LoadSystemXVC()
 		err("VCCore::LoadSystemXVC() - system.xvc is missing signature!");
 
 	userfuncs[CIMAGE_SYSTEM].clear();
-	global_ints.clear();
-	global_strings.clear();
+	global_vars.clear();
 	struct_instances.clear();
 
 	int ver;
@@ -148,21 +149,50 @@ void VCCore::LoadSystemXVC()
 	if (ver != 1)
 		err("VCCore::LoadSystemXVC() - system.xvc has incorrect version marker");
 
-	int size, i;
+	// Globals.
+	global_var_t var;
+	int i, size;
 	fread_le(&size, f);
+	maxint = maxstr = maxcb = 0;
+	
 	for (int i=0; i<size; i++)
-		global_ints.push_back(int_t(f));
-	maxint = size ? global_ints[size-1].ofs + global_ints[size-1].len : 1;
+	{
+		// Load variable definition from file.
+		var = global_var_t(f);
+		// Current "ofs" saved was the one to used by the compiler to properly expand structs/arrays. 
+		// But we now need a offset specific to each type category.
+		// Figure out each variable's offset in the global value arrays,
+		// and calculate the max number of variables to allocate.
+		if(var.type == t_INT)
+		{
+			var.ofs = maxint;
+			maxint += var.len;
+		}
+		else if(var.type == t_STRING)
+		{
+			var.ofs = maxstr;
+			maxstr += var.len;
+		}
+		else if(var.type == t_CALLBACK)
+		{
+			var.ofs = maxcb;
+			maxcb += var.len;
+		}
 
-	fread_le(&size, f);
-	for (i=0; i<size; i++)
-		global_strings.push_back(string_t(f));
-	maxstr = size ? global_strings[size-1].ofs + global_strings[size-1].len : 1;
+		// Push back.
+		global_vars.push_back(var);
+	}
+	// Must allocate at least size 1 so we we can index these global arrays later.
+	if(maxint == 0) maxint = 1;
+	if(maxstr == 0) maxstr = 1;
+	if(maxcb == 0) maxcb = 1;
 
+	// Struct instances.
 	fread_le(&size, f);
 	for (i=0; i<size; i++)
 		struct_instances.push_back(new struct_instance(f));
 
+	// User functions.
 	fread_le(&size, f);
 	userfuncMap[CIMAGE_SYSTEM] = new TUserFuncMap[size];
 	for (i=0; i<size; i++) {
@@ -179,6 +209,7 @@ void VCCore::LoadSystemXVC()
 	// Allocate and initialize all vc global variables (to 0 or "")
 	vcint = new int[maxint];
 	vcstring = new StringRef[maxstr];
+	vccallback = new VergeCallback[maxcb];
 	memset(vcint, 0, maxint*4);
 
 	coreimages[CIMAGE_SYSTEM].LoadChunk(f);
@@ -313,6 +344,20 @@ StringRef VCCore::PopString()
 	return str_stack[--str_stack_ptr];
 }
 
+void VCCore::PushCallback(VergeCallback cb)
+{
+	if (cb_stack_ptr < 0 || cb_stack_ptr > 1024)
+		err("VCCore::PushCallback() Stack overflow!");
+	cb_stack[cb_stack_ptr++] = cb;
+}
+
+VergeCallback VCCore::PopCallback()
+{
+	if (cb_stack_ptr<=0 || cb_stack_ptr>1024)
+		err("VCCore::PopCallback() Stack underflow!");
+	return cb_stack[--cb_stack_ptr];
+}
+
 int VCCore::GetIntArgument(int index)
 {
 	if (index >= vararg_stack[vararg_stack.size() - 1].size())
@@ -423,21 +468,21 @@ int VCCore::ProcessOperand()
 			return ReadInt(op, d, ofs);
 		case intGLOBAL:
 			d = currentvc->GrabD();
-			return ReadInt(op, global_ints[d].ofs, 0);
+			return ReadInt(op, global_vars[d].ofs, 0);
 		case intARRAY:
 		{
 			int idx = currentvc->GrabD();
-			d = global_ints[idx].ofs;
+			d = global_vars[idx].ofs;
 			ofs = 0;
-			for (int i=0; i<global_ints[idx].dim; i++)
+			for (int i=0; i<global_vars[idx].dim; i++)
 			{
 				int dimofs = ResolveOperand();
 				int old = dimofs;
-				for (int j=i+1; j<global_ints[idx].dim; j++)
-					dimofs *= global_ints[idx].dims[j];
+				for (int j=i+1; j<global_vars[idx].dim; j++)
+					dimofs *= global_vars[idx].dims[j];
 				ofs += dimofs;
-				if (dimofs >= global_ints[idx].len)
-					vcerr("Bad offset on reading array %s (%d/%d)", global_ints[idx].name, ofs, global_ints[idx].len);
+				if (dimofs >= global_vars[idx].len)
+					vcerr("Bad offset on reading array %s (%d/%d)", global_vars[idx].name, ofs, global_vars[idx].len);
 			}
 			return ReadInt(op, d+ofs, 0);
 		}
@@ -445,9 +490,78 @@ int VCCore::ProcessOperand()
 			d=currentvc->GrabD();
 			if (d>99) vcerr("ProcessOperand: bad offset to local ints %d", d);
 			return int_stack[int_stack_base+d];
+		// Local callback invocation.
+		case cbLOCAL:
+			d = currentvc->GrabD();
+			c = currentvc->GrabC();
+			if (c == opCBINVOKE)
+			{
+				if (d>=0 && d<40)
+				{
+					ExecuteCallback(cb_stack[cb_stack_base+d]);
+				}
+				else
+				{
+					vcerr("ProcessOperand: (int invocation) bad offset to local callbacks");
+				}
+			}
+			else
+			{
+				vcerr("VCCore::ProcessOperand() - Corrupt callback invocation");
+			}
+			return vcreturn;
+		// Callback operation (global var)
+		case cbGLOBAL:
+			d = currentvc->GrabD();
+			d = global_vars[d].ofs;
+			if (d>=0 && d<maxcb)
+			{
+				c = currentvc->GrabC();
+				if(c == opCBINVOKE)
+				{
+					ExecuteCallback(vccallback[d]);
+					return vcreturn;
+				}
+				else
+				{
+					vcerr("VCCore::ProcessOperand() - Corrupt callback invocation");
+				}
+			}
+			else
+				vcerr("VCCore::ProcessOperand(): bad offset to vc_callbacks (var), %d", d);
+			break;
+		// Callback operation (global array)
+		case cbARRAY:
+		{
+			int idx = currentvc->GrabD();
+			d = global_vars[idx].ofs;
+			for (int i=0; i<global_vars[idx].dim; i++)
+			{
+				int dimofs = ResolveOperand();
+				for (int j=i+1; j<global_vars[idx].dim; j++)
+					dimofs *= global_vars[idx].dims[j];
+				d += dimofs;
+			}
+			if (d>=0 && d<maxcb)
+			{
+				c = currentvc->GrabC();
+				if(c == opCBINVOKE)
+				{
+					ExecuteCallback(vccallback[d]);
+					return vcreturn;
+				}
+				else
+				{
+					vcerr("VCCore::ProcessOperand() - Corrupt callback invocation");
+				}
+			}
+			else
+				vcerr("VCCore::ProcessOperand(): bad offset to vc_callbacks (var), %d", d);
+			break;
+		}
 		case intLIBFUNC:
 			currentvc->GrabC(); // skip opLIBFUNC
-			HandleLibFunc();
+			HandleLibFunc(currentvc->GrabW());
 			return vcreturn;
 		case intUSERFUNC:
 			currentvc->GrabC(); // skip opUSERFUNC
@@ -533,29 +647,29 @@ StringRef VCCore::ProcessString()
 		case strGLOBAL:
 		{
 			int idx = currentvc->GrabD();
-			d = global_strings[idx].ofs;
+			d = global_vars[idx].ofs;
 			if (d >= 0 && d < maxstr)
 				ret = vcstring[d];
 			else
-				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strGLOBAL) %d, valid range [0,%d) \n global string name: '%s' ", d, maxstr, global_strings[idx].name);
+				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strGLOBAL) %d, valid range [0,%d) \n global string name: '%s' ", d, maxstr, global_vars[idx].name);
 			break;
 		}
 		case strARRAY:
 		{
 			int idx = currentvc->GrabD();
-			d = global_strings[idx].ofs;
+			d = global_vars[idx].ofs;
 
-			for (int i=0; i<global_strings[idx].dim; i++)
+			for (int i=0; i<global_vars[idx].dim; i++)
 			{
 				int dimofs = ResolveOperand();
-				for (int j=i+1; j<global_strings[idx].dim; j++)
-					dimofs *= global_strings[idx].dims[j];
+				for (int j=i+1; j<global_vars[idx].dim; j++)
+					dimofs *= global_vars[idx].dims[j];
 				d += dimofs;
 			}
 			if (d>=0 && d<maxstr)
 				ret = vcstring[d];
 			else {
-				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strARRAY) %d, valid range [0,%d).\n global string name: '%s'", d, maxstr, global_strings[idx].name);
+				vcerr("VCCore::ProcessString() - bad offset to vcstring[] (strARRAY) %d, valid range [0,%d).\n global string name: '%s'", d, maxstr, global_vars[idx].name);
 			}
 			break;
 		}
@@ -599,9 +713,78 @@ StringRef VCCore::ProcessString()
 			else
 				vcerr("VCCore::ProcessString() - bad offset to local strings");
 			break;
+		// Local callback invocation.
+		case cbLOCAL:
+			d = currentvc->GrabD();
+			c = currentvc->GrabC();
+			if (c == opCBINVOKE)
+			{
+				if (d>=0 && d<40)
+				{
+					ExecuteCallback(cb_stack[cb_stack_base+d]);
+				}
+				else
+				{
+					vcerr("ProcessString: (string invocation) bad offset to local callbacks");
+				}
+			}
+			else
+			{
+				vcerr("VCCore::ProcessString() - Corrupt callback invocation");
+			}
+			return vcretstr;
+		// Callback operation (global var)
+		case cbGLOBAL:
+			d = currentvc->GrabD();
+			d = global_vars[d].ofs;
+			if (d>=0 && d<maxcb)
+			{
+				temp = currentvc->GrabC();
+				if(temp == opCBINVOKE)
+				{
+					ExecuteCallback(vccallback[d]);
+					return vcretstr;
+				}
+				else
+				{
+					vcerr("VCCore::ProcessString() - Corrupt callback invocation");
+				}
+			}
+			else
+				vcerr("VCCore::ProcessString(): bad offset to vc_callbacks (var), %d", d);
+			break;
+		// Callback operation (global array)
+		case cbARRAY:
+		{
+			int idx = currentvc->GrabD();
+			d = global_vars[idx].ofs;
+			for (int i=0; i<global_vars[idx].dim; i++)
+			{
+				int dimofs = ResolveOperand();
+				for (int j=i+1; j<global_vars[idx].dim; j++)
+					dimofs *= global_vars[idx].dims[j];
+				d += dimofs;
+			}
+			if (d>=0 && d<maxcb)
+			{
+				temp = currentvc->GrabC();
+				if(temp == opCBINVOKE)
+				{
+					ExecuteCallback(vccallback[d]);
+					return vcretstr;
+				}
+				else
+				{
+					vcerr("VCCore::ProcessString() - Corrupt callback invocation");
+				}
+			}
+			else
+				vcerr("VCCore::ProcessString(): bad offset to vc_callbacks (var), %d", d);
+			break;
+		}
 		case strLIBFUNC:
 			currentvc->GrabC(); // skip opLIBFUNC
-			HandleLibFunc();
+			HandleLibFunc(currentvc->GrabW());
 			ret = vcretstr;
 			break;
 		case strUSERFUNC:
@@ -651,6 +834,106 @@ StringRef VCCore::ResolveString()
 		return ret;
 }
 
+VergeCallback VCCore::ResolveCallback()
+{
+	int d, idx;
+	byte c, temp;
+	c = currentvc->GrabC();
+
+	VergeCallback cb = VergeCallback();
+	cb.opType = c;
+	switch(c)
+	{
+		// Reference to library function.
+		case opLIBFUNC:
+			cb.functionIndex = currentvc->GrabW();
+			return cb;
+		// Reference to user function.
+		case opUSERFUNC:
+			cb.cimage = currentvc->GrabC();
+			cb.functionIndex = currentvc->GrabD();
+			return cb;
+		// Return value from user function.
+		case cbUSERFUNC:
+			currentvc->GrabC(); // skip opUSERFUNC
+			temp = currentvc->GrabC(); // to ensure correct order
+			ExecuteUserFunc(temp, currentvc->GrabD());			
+			return vcretcb;
+		case cbLOCAL:
+			d = currentvc->GrabD();
+			if (d>=0 && d<40)
+			{
+				temp = currentvc->GrabC();
+				// Copying another callback variable.
+				if(temp == opCBCOPY)
+				{
+					return cb_stack[cb_stack_base + d];
+				}
+				// Copying the return value from the invocation of some callback.
+				else if(temp == opCBINVOKE)
+				{
+					ExecuteCallback(cb_stack[cb_stack_base + d]);
+					return vcretcb;
+				}
+				// Huh.
+				else
+				{
+					vcerr("VCCore::ResolveCallback() - unknown callback reference opcode!");
+				}
+			}
+		// Callback operation (global var)
+		case cbGLOBAL:
+			d = currentvc->GrabD();
+			d = global_vars[d].ofs;
+			if (d>=0 && d<maxcb)
+			{
+				temp = currentvc->GrabC();
+				if(temp == opCBCOPY)
+				{
+					return vccallback[d];
+				}
+				else if(temp == opCBINVOKE)
+				{
+					ExecuteCallback(vccallback[d]);
+					return vcretcb;
+				}
+			}
+			else
+				vcerr("VCCore::ResolveCallback(): bad offset to vc_callbacks (var), %d", d);
+			break;
+		// Callback operation (global array)
+		case cbARRAY:
+			idx = currentvc->GrabD();
+			d = global_vars[idx].ofs;
+			for (int i=0; i<global_vars[idx].dim; i++)
+			{
+				int dimofs = ResolveOperand();
+				for (int j=i+1; j<global_vars[idx].dim; j++)
+					dimofs *= global_vars[idx].dims[j];
+				d += dimofs;
+			}
+			if (d>=0 && d<maxcb)
+			{
+				temp = currentvc->GrabC();
+				if(temp == opCBCOPY)
+				{
+					return vccallback[d];
+				}
+				else if(temp == opCBINVOKE)
+				{
+					ExecuteCallback(vccallback[d]);
+					return vcretcb;
+				}
+			}
+			else
+				vcerr("VCCore::ResolveCallback(): bad offset to vc_callbacks (var), %d", d);
+			break;			
+		default:
+			vcerr("VCCore:ResolveCallback() - Unsupported callback expression opcode.");
+	}
+	return cb;
+}
+
 void VCCore::ExecuteBlock()
 {
 	bool done = false;
@@ -665,7 +948,7 @@ void VCCore::ExecuteBlock()
 			case opASSIGN:		HandleAssign(); break;
 			case opIF:			HandleIf(); break;
 			case opPLUGINFUNC:	HandlePluginFunc(currentvc->GrabD()); break;
-			case opLIBFUNC:		HandleLibFunc(); break;
+			case opLIBFUNC:		HandleLibFunc(currentvc->GrabW()); break;
 			case opUSERFUNC:	temp = currentvc->GrabC(); // to ensure correct order of eval
 								ExecuteUserFunc(temp, currentvc->GrabD()); break;
 			case opGOTO:		currentvc->setpos(currentvc->GrabD()); break;
@@ -677,6 +960,7 @@ void VCCore::ExecuteBlock()
 
 			case opRETVALUE:	vcreturn=ResolveOperand();  break;
 			case opRETSTRING:	vcretstr=ResolveString(); break;
+			case opRETCB:		vcretcb=ResolveCallback(); break;
 			case opVARARG_START:
 				// Overkill (2007-05-02): Ignored vararg pass, catch it so we can continue.
 				IgnoreVararg(); break;
@@ -778,6 +1062,30 @@ bool VCCore::CheckForVarargs()
 	return false;
 }
 
+void VCCore::ExecuteCallback(const VergeCallback& cb, bool argument_pass)
+{
+	if(cb.functionIndex == -1)
+	{
+		if(!argument_pass)
+		{
+			vcerr("Failed to invoke callback, because it wasn't properly initialized. Can't call a null or non-existant function!");
+		}
+		return;
+	}
+	else if(cb.opType == opUSERFUNC)
+	{
+		ExecuteUserFunc(cb.cimage, cb.functionIndex, argument_pass);
+	}
+	else if(cb.opType == opLIBFUNC)
+	{
+		HandleLibFunc(cb.functionIndex);
+	}
+	else
+	{
+		vcerr("ExecuteUserFunc: Invalid optype supplied for callback given! (%d)", currentvc->curpos() - 1);
+	}
+}
+
 void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 {
 	bool check_for_patch = true;
@@ -802,8 +1110,10 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 	function_t *func = userfuncs[cimage][ufunc];
 	int save_intbase = int_stack_base;
 	int save_strbase = str_stack_base;
+	int save_cbbase = cb_stack_base;
 	int isp = int_stack_ptr;
 	int ssp = str_stack_ptr;
+	int csp = cb_stack_ptr; 
 
 	if (func->numlocals)
 	{
@@ -835,6 +1145,7 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 						PushInt(ResolveOperand());
 					}
 					PushString(empty_string);
+					PushCallback(VergeCallback());
 					break;
 				case t_STRING:
 					PushInt(0);
@@ -850,10 +1161,26 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 					{
 						PushString(ResolveString());
 					}
+					PushCallback(VergeCallback());
+					break;
+				case t_CALLBACK:
+					PushInt(0);
+					PushString(empty_string);
+					if (argument_pass)
+					{
+						// We can't pass callback arguments to the argument_pass list used by CallFunction.
+						vcerr("Expected argument %d of callback %s() to be a callback.", n, func->name);
+					}
+					else
+					{
+						PushCallback(ResolveCallback());
+					}
+					
 					break;
 				case t_VARARG:
 					PushInt(0);
 					PushString(empty_string);
+					PushCallback(VergeCallback());
 					break;
 			}
 		}
@@ -861,6 +1188,7 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 		{
 			PushInt(0);
 			PushString(empty_string);
+			PushCallback(VergeCallback());
 		}
 	}
 
@@ -890,17 +1218,22 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 				case t_INT:
 					PushInt(vararg[n].int_value);
 					PushString(empty_string);
+					PushCallback(VergeCallback());
 					break;
 				case t_STRING:
 					PushInt(0);
 					PushString(vararg[n].string_value);
+					PushCallback(VergeCallback());
 					break;
+				default:
+					vcerr("Unknown type found in vararg list", n, func->name);
 			}
 		}
 	}
 
 	int_stack_base = isp;
 	str_stack_base = ssp;
+	cb_stack_base = csp;
 
 	// save core and code offset
 	int save_pos = currentvc->curpos();
@@ -926,6 +1259,7 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 		{
 			PopInt();
 			PopString();
+			PopCallback();
 		}
 	}
 
@@ -939,6 +1273,7 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 
 	int_stack_base = save_intbase;
 	str_stack_base = save_strbase;
+	cb_stack_base = save_cbbase;
 	in_func = last_func;
 }
 
@@ -1053,27 +1388,27 @@ void VCCore::HandleAssign()
 	if (c == strGLOBAL)
 	{
 		offset = currentvc->GrabD();
-		offset = global_strings[offset].ofs;
+		offset = global_vars[offset].ofs;
 		c = currentvc->GrabC();
 		if (c != aSET)
 			vcerr("VC execution error: Corrupt string assignment");
 		if (offset>=0 && offset<maxstr)
 			vcstring[offset] = ResolveString();
 		else
-			vcerr("VCCore::HandleAssign() - bad offset to vc_strings (var)");
+			vcerr("HandleAssign: bad offset to vc_strings (var), %d", offset);
 		return;
 	}
 	// string array assignment
 	if (c == strARRAY)
 	{
 		int idx = currentvc->GrabD();
-		base = global_strings[idx].ofs;
+		base = global_vars[idx].ofs;
 		offset = 0;
-		for (int i=0; i<global_strings[idx].dim; i++)
+		for (int i=0; i<global_vars[idx].dim; i++)
 		{
 			int dimofs = ResolveOperand();
-			for (int j=i+1; j<global_strings[idx].dim; j++)
-				dimofs *= global_strings[idx].dims[j];
+			for (int j=i+1; j<global_vars[idx].dim; j++)
+				dimofs *= global_vars[idx].dims[j];
 			offset += dimofs;
 		}
 		base += offset;
@@ -1083,7 +1418,7 @@ void VCCore::HandleAssign()
 		if (base>=0 && base<maxstr)
 			vcstring[base] = ResolveString();
 		else
-			vcerr("HandleAssign: bad offset to vc_strings (arr)");
+			vcerr("HandleAssign: bad offset to vc_strings (arr), %d %d %d", base, offset, base - offset);
 		return;
 	}
 	// local string assignment
@@ -1099,23 +1434,107 @@ void VCCore::HandleAssign()
 			vcerr("HandleAssign: bad offset to local strings");
 		return;
 	}
+	// Callback operation (local)
+	if(c == cbLOCAL)
+	{
+		offset = currentvc->GrabD();
+		c = currentvc->GrabC();
+		
+		if (offset>=0 && offset<40)
+		{
+			if (c == aSET)
+			{
+				cb_stack[cb_stack_base+offset] = ResolveCallback();
+			}
+			else if (c == opCBINVOKE)
+			{
+				ExecuteCallback(cb_stack[cb_stack_base+offset]);
+			}
+			else
+			{
+				vcerr("VCCore::HandleAssign() - Corrupt local callback operation");
+			}
+		}
+		else
+		{
+			vcerr("HandleAssign: bad offset to local callbacks");
+		}
+		return;
+	}
+	// Callback operation (global var)
+	if(c == cbGLOBAL)
+	{
+		offset = currentvc->GrabD();
+		offset = global_vars[offset].ofs;
+		c = currentvc->GrabC();
+		if (offset>=0 && offset<maxcb)
+		{
+			if(c == aSET)
+			{
+				vccallback[offset] = ResolveCallback();
+			}
+			else if(c == opCBINVOKE)
+			{
+				ExecuteCallback(vccallback[offset]);
+			}
+			else
+			{
+				vcerr("VCCore::HandleAssign() - Corrupt global callback operation (var)");
+			}
+		}
+		else
+			vcerr("HandleAssign: bad offset to vc_callbacks (var), %d", offset);
+		return;
+	}
+	// Callback operation (global array)
+	if(c == cbARRAY)
+	{
+		int idx = currentvc->GrabD();
+		offset = global_vars[idx].ofs;
+		for (int i=0; i<global_vars[idx].dim; i++)
+		{
+			int dimofs = ResolveOperand();
+			for (int j=i+1; j<global_vars[idx].dim; j++)
+				dimofs *= global_vars[idx].dims[j];
+			offset += dimofs;
+		}
+		c = currentvc->GrabC();
+		if (offset>=0 && offset<maxcb)
+		{
+			if(c == aSET)
+			{
+				vccallback[offset] = ResolveCallback();
+			}
+			else if(c == opCBINVOKE)
+			{
+				ExecuteCallback(vccallback[offset]);
+			}
+			else
+			{
+				vcerr("VCCore::HandleAssign() - Corrupt global callback operation (arr)");
+			}
+		}
+		else
+			vcerr("HandleAssign: bad offset to vc_callbacks (arr), %d", offset);
+		return;
+	}
 
 	// integer assignment
 	switch (c)
 	{
 		case intGLOBAL:
-			base = global_ints[currentvc->GrabD()].ofs;
+			base = global_vars[currentvc->GrabD()].ofs;
 			break;
 		case intARRAY:
 		{
 			int idx = currentvc->GrabD();
-			base = global_ints[idx].ofs;
+			base = global_vars[idx].ofs;
 			offset = 0;
-			for (int i=0; i<global_ints[idx].dim; i++)
+			for (int i=0; i<global_vars[idx].dim; i++)
 			{
 				int dimofs = ResolveOperand();
-				for (int j=i+1; j<global_ints[idx].dim; j++)
-					dimofs *= global_ints[idx].dims[j];
+				for (int j=i+1; j<global_vars[idx].dim; j++)
+					dimofs *= global_vars[idx].dims[j];
 				offset += dimofs;
 			}
 			base += offset;
@@ -1305,14 +1724,14 @@ bool VCCore::CopyArray(const char *srcname, const char *destname)
 	int dest = -1;
 
 	// Look for int arrays that match src or dest
-	for (int i=0; i<global_ints.size(); i++)
+	for (int i=0; i<global_vars.size(); i++)
 	{
-		if (!strcasecmp(global_ints[i].name, srcname))
+		if (!strcasecmp(global_vars[i].name, srcname))
 		{
 			src = i;
 			src_type = t_INT;
 		}
-		else if (!strcasecmp(global_ints[i].name, destname))
+		else if (!strcasecmp(global_vars[i].name, destname))
 		{
 			dest = i;
 			dest_type = t_INT;
@@ -1320,14 +1739,14 @@ bool VCCore::CopyArray(const char *srcname, const char *destname)
 	}
 
 	// Look for string arrays that match src or dest
-	for (int i=0; i<global_strings.size(); i++)
+	for (int i=0; i<global_vars.size(); i++)
 	{
-		if (!strcasecmp(global_strings[i].name, srcname))
+		if (!strcasecmp(global_vars[i].name, srcname))
 		{
 			src = i;
 			src_type = t_STRING;
 		}
-		else if (!strcasecmp(global_strings[i].name, destname))
+		else if (!strcasecmp(global_vars[i].name, destname))
 		{
 			dest = i;
 			dest_type = t_STRING;
@@ -1346,35 +1765,35 @@ bool VCCore::CopyArray(const char *srcname, const char *destname)
 	if (src_type == t_INT)
 	{
 		// If arrays aren't same dimensions, return.
-		for (int i = 0; i < global_ints[src].dim; i++)
+		for (int i = 0; i < global_vars[src].dim; i++)
 		{
-			if (global_ints[src].dims[i] != global_ints[dest].dims[i])
+			if (global_vars[src].dims[i] != global_vars[dest].dims[i])
 			{
 				return false;
 			}
 		}
 		// Copy!
-		for (int i = 0; i < global_ints[src].len; i++)
+		for (int i = 0; i < global_vars[src].len; i++)
 		{
-			vcint[global_ints[dest].ofs + i]
-				= vcint[global_ints[src].ofs + i];
+			vcint[global_vars[dest].ofs + i]
+				= vcint[global_vars[src].ofs + i];
 		}
 	}
 	else if (src_type == t_STRING)
 	{
 		// If arrays aren't same dimensions, return.
-		for (int i = 0; i < global_strings[src].dim; i++)
+		for (int i = 0; i < global_vars[src].dim; i++)
 		{
-			if (global_strings[src].dims[i] != global_strings[dest].dims[i])
+			if (global_vars[src].dims[i] != global_vars[dest].dims[i])
 			{
 				return false;
 			}
 		}
 		// Copy!
-		for (int i = 0; i < global_strings[src].len; i++)
+		for (int i = 0; i < global_vars[src].len; i++)
 		{
-			vcstring[global_strings[dest].ofs + i]
-				= vcstring[global_strings[src].ofs + i];
+			vcstring[global_vars[dest].ofs + i]
+				= vcstring[global_vars[src].ofs + i];
 		}
 	}
 
@@ -1384,46 +1803,46 @@ bool VCCore::CopyArray(const char *srcname, const char *destname)
 
 void VCCore::SetInt(const char *intname, int value)
 {
-	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_ints[i].name, intname))
+	for (int i=0; i<global_vars.size(); i++)
+		if (!strcasecmp(global_vars[i].name, intname))
 		{
-			vcint[global_ints[i].ofs] = value;
+			vcint[global_vars[i].ofs] = value;
 			return;
 		}
 }
 
 int VCCore::GetInt(const char *intname)
 {
-	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_ints[i].name, intname))
-			return vcint[global_ints[i].ofs];
+	for (int i=0; i<global_vars.size(); i++)
+		if (!strcasecmp(global_vars[i].name, intname))
+			return vcint[global_vars[i].ofs];
 
 	return 0;
 }
 
 void VCCore::SetStr(CStringRef strname, CStringRef value)
 {
-	for (int i=0; i<global_strings.size(); i++)
-		if (!strcasecmp(global_strings[i].name, strname.c_str()))
+	for (int i=0; i<global_vars.size(); i++)
+		if (!strcasecmp(global_vars[i].name, strname.c_str()))
 		{
-			vcstring[global_strings[i].ofs] = value;
+			vcstring[global_vars[i].ofs] = value;
 			return;
 		}
 }
 
 CStringRef VCCore::GetStr(const char *strname)
 {
-	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_strings[i].name, strname))
-			return vcstring[global_strings[i].ofs];
+	for (int i=0; i<global_vars.size(); i++)
+		if (!strcasecmp(global_vars[i].name, strname))
+			return vcstring[global_vars[i].ofs];
 
 	return empty_string;
 }
 
 bool VCCore::StrExists(const char *strname)
 {
-	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_strings[i].name, strname))
+	for (int i=0; i<global_vars.size(); i++)
+		if (!strcasecmp(global_vars[i].name, strname))
 			return true;
 
 	return false;
@@ -1431,8 +1850,8 @@ bool VCCore::StrExists(const char *strname)
 
 bool VCCore::IntExists(const char *intname)
 {
-	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_ints[i].name, intname))
+	for (int i=0; i<global_vars.size(); i++)
+		if (!strcasecmp(global_vars[i].name, intname))
 			return true;
 
 	return false;
@@ -1440,44 +1859,44 @@ bool VCCore::IntExists(const char *intname)
 
 void VCCore::SetIntArray(const char *intname, int index, int value)
 {
-	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_ints[i].name, intname) && index>=0 && index<global_ints[i].len)
+	for (int i=0; i<global_vars.size(); i++)
+		if (!strcasecmp(global_vars[i].name, intname) && index>=0 && index<global_vars[i].len)
 		{
-			vcint[global_ints[i].ofs+index] = value;
+			vcint[global_vars[i].ofs+index] = value;
 			return;
 		}
 }
 
 int VCCore::GetIntArray(const char *intname, int index)
 {
-	for (int i=0; i<global_ints.size(); i++)
-		if (!strcasecmp(global_ints[i].name, intname) && index>=0 && index<global_ints[i].len)
-			return vcint[global_ints[i].ofs+index];
+	for (int i=0; i<global_vars.size(); i++)
+		if (!strcasecmp(global_vars[i].name, intname) && index>=0 && index<global_vars[i].len)
+			return vcint[global_vars[i].ofs+index];
 
 	return 0;
 }
 
-// aen 12/3/05 12:55am : fixed index checking against global_ints[i]->len to be global_strings[i]->len
+// aen 12/3/05 12:55am : fixed index checking against global_vars[i]->len to be global_vars[i]->len
 void VCCore::SetStrArray(CStringRef strname, int index, CStringRef value)
 {
-	for (int i = 0; i < global_strings.size(); i++)
+	for (int i = 0; i < global_vars.size(); i++)
 	{
-		if (!strcasecmp(global_strings[i].name, strname.c_str()) && index >= 0 && index < global_strings[i].len)
+		if (!strcasecmp(global_vars[i].name, strname.c_str()) && index >= 0 && index < global_vars[i].len)
 		{
-			vcstring[global_strings[i].ofs + index] = value;
+			vcstring[global_vars[i].ofs + index] = value;
 			return;
 		}
 	}
 }
 
-// aen 12/3/05 12:52am : fixed looping through global_ints.size() and checking index against global_ints[i]->len
+// aen 12/3/05 12:52am : fixed looping through global_vars.size() and checking index against global_vars[i]->len
 CStringRef VCCore::GetStrArray(CStringRef strname, int index)
 {
-	for (int i = 0; i < global_strings.size(); i++)
+	for (int i = 0; i < global_vars.size(); i++)
 	{
-		if (!strcasecmp(global_strings[i].name, strname.c_str()) && index >= 0 && index < global_strings[i].len)
+		if (!strcasecmp(global_vars[i].name, strname.c_str()) && index >= 0 && index < global_vars[i].len)
 		{
-			return vcstring[global_strings[i].ofs + index];
+			return vcstring[global_vars[i].ofs + index];
 		}
 	}
 			
@@ -1497,20 +1916,20 @@ void VCCore::Decompile()
 
 void VCCore::WriteGlobalVars()
 {
-	for (int i=0; i<global_ints.size(); i++)
+	for (int i=0; i<global_vars.size(); i++)
 	{
-		fprintf(vcd, "int %s", global_ints[i].name);
-		for (int j=0; j<global_ints[i].dim; j++)
-			fprintf(vcd,"[%d]",global_ints[i].dims[j]);
-		fprintf(vcd, ";\n");
-	}
-	fprintf(vcd, "\n");
+		char* name;
+		switch(global_vars[i].type)
+		{
+			case t_INT: name = "int"; break;
+			case t_STRING: name = "string"; break;
+			default:
+				err("Unknown variable type (can't decompile)");
+		}
 
-	for (int i=0; i<global_strings.size(); i++)
-	{
-		fprintf(vcd, "string %s", global_strings[i].name);
-		for (int j=0; j<global_strings[i].dim; j++)
-			fprintf(vcd,"[%d]",global_strings[i].dims[j]);
+		fprintf(vcd, "%s %s", name, global_vars[i].name);
+		for (int j=0; j<global_vars[i].dim; j++)
+			fprintf(vcd,"[%d]",global_vars[i].dims[j]);
 		fprintf(vcd, ";\n");
 	}
 	fprintf(vcd, "\n");

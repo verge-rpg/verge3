@@ -318,18 +318,21 @@ void Chunk::clear()
 
 /***************** struct utility classes *****************/
 
-int_t::int_t()
+global_var_t::global_var_t()
 {
 	memset(name, 0, IDENTIFIER_LEN);
+	type = 0;
 	ofs = 0;
 	len = 0;
 	dim = 0;
 }
 
-
-int_t::int_t(FILE *f)
+global_var_t::global_var_t(FILE *f)
 {
+	memset(&ext, 0, sizeof (ext));
+
 	fread(name, 1, IDENTIFIER_LEN, f);
+	fread(&type, 1, 1, f);
 	fread_le(&ofs, f);
 	fread_le(&len, f);
 	fread_le(&dim, f);
@@ -342,45 +345,18 @@ int_t::int_t(FILE *f)
 	}
 }
 
-void int_t::write(FILE *f)
+global_var_t::~global_var_t()
 {
-	fwrite(name, 1, IDENTIFIER_LEN, f);
-	fwrite(&ofs, 1, 4, f);
-	fwrite(&len, 1, 4, f);
-	fwrite(&dim, 1, 4, f);
-	for (int i = 0; i < dim; i++)
+	if(type == t_CALLBACK)
 	{
-		int mydimsize = dims[i];
-		fwrite(&mydimsize, 1, 4, f);
+		delete ext.callback;
 	}
 }
 
-string_t::string_t()
-{
-	memset(name, 0, IDENTIFIER_LEN);
-	ofs = 0;
-	len = 0;
-	dim = 0;
-}
-
-string_t::string_t(FILE *f)
-{
-	fread(name, 1, IDENTIFIER_LEN, f);
-	fread_le(&ofs, f);
-	fread_le(&len, f);
-	fread_le(&dim, f);
-	dims.resize(dim);
-	for (int i = 0; i < dim; i++)
-	{
-		int mydimsize;
-		fread_le(&mydimsize, f);
-		dims[i] = mydimsize;
-	}
-}
-
-void string_t::write(FILE *f)
+void global_var_t::write(FILE *f)
 {
 	fwrite(name, 1, IDENTIFIER_LEN, f);
+	fwrite(&type, 1, 1, f);
 	fwrite(&ofs, 1, 4, f);
 	fwrite(&len, 1, 4, f);
 	fwrite(&dim, 1, 4, f);
@@ -402,6 +378,8 @@ struct_element::struct_element()
 
 struct_element::struct_element(FILE *f)
 {
+	memset(&ext, 0, sizeof (ext));
+
 	fread(&type, 1, 1, f);
 	fread(name, 1, IDENTIFIER_LEN, f);
 	fread(type_name, 1, IDENTIFIER_LEN, f);
@@ -415,6 +393,14 @@ struct_element::struct_element(FILE *f)
 		dims[i] = mydimsize;
 	}
 	//log("Loaded %s of type '%d' type name '%s'.", name, type, type_name);
+}
+
+struct_element::~struct_element()
+{
+	if(type == t_CALLBACK)
+	{
+		delete ext.callback;
+	}
 }
 
 void struct_element::write(FILE *f)
@@ -476,6 +462,14 @@ struct_definition::struct_definition(FILE *f)
 	for (int i = 0; i < element_count; i++)
 	{
 		elements[i] = new struct_element(f);
+	}
+}
+
+struct_definition::~struct_definition()
+{
+	for (int j = 0; j < elements.size(); j++)
+	{
+		delete elements[j];
 	}
 }
 
@@ -550,6 +544,26 @@ void struct_instance::write(FILE *f)
 	is->write(f);
 }
 
+callback_definition::callback_definition()
+{
+	memset(argtype, 0, sizeof (argtype));
+	numargs = signature = 0;
+}
+
+callback_definition::~callback_definition()
+{
+	if(signature == t_CALLBACK)
+	{
+		delete sigext.callback;
+	}
+	for(int i = 0; i < numargs; i++)
+	{
+		if(argtype[i] == t_CALLBACK)
+		{
+			delete argext[i].callback;
+		}
+	}
+}
 
 function_t::function_t()
 {
@@ -557,12 +571,19 @@ function_t::function_t()
 	memset(argtype, 0, sizeof (argtype));
 	memset(localnames, 0, sizeof (localnames));
 	numargs = numlocals = signature = codeofs = coreimage = 0;
+
+	memset(&sigext, 0, sizeof (sigext));
+	memset(&argext, 0, sizeof (argext));
 }
 
 function_t::function_t(FILE *f)
 {
 	memset(argtype, 0, sizeof (argtype));
 	memset(localnames, 0, sizeof (localnames));
+
+	memset(&sigext, 0, sizeof (sigext));
+	memset(&argext, 0, sizeof (argext));
+
 	fread_le(&numargs, f);
 	fread_le(&numlocals, f);
 	fread_le(&signature, f);
@@ -572,6 +593,21 @@ function_t::function_t(FILE *f)
 	fread(name, 1, IDENTIFIER_LEN, f);
 	fread(argtype, 1, numlocals, f);
 	fread(localnames, IDENTIFIER_LEN, numlocals, f);
+}
+
+function_t::~function_t()
+{
+	if(signature == t_CALLBACK)
+	{
+		delete sigext.callback;
+	}
+	for(int i = 0; i < numargs; i++)
+	{
+		if(argtype[i] == t_CALLBACK)
+		{
+			delete argext[i].callback;
+		}
+	}
 }
 
 void function_t::write(FILE *f)
@@ -625,30 +661,35 @@ VCCompiler::~VCCompiler()
 	int i,j;
 	// free defines
 	for (i=0; i<defines.size(); i++)
+	{
 		delete defines[i];
+	}
 	// free hvars
 	for (i=0; i<hvars.size(); i++)
+	{
 		delete hvars[i];
+	}
 	// free global ints
-	for (i=0; i<global_ints.size(); i++)
-		delete global_ints[i];
-	// free global strings
-	for (i=0; i<global_strings.size(); i++)
-		delete global_strings[i];
+	for (i=0; i<global_vars.size(); i++)
+	{
+		delete global_vars[i];
+	}
 	// free global functions
 	for (i=0; i<NUM_CIMAGES;i++)
+	{
 		for (j=0; j<funcs[i].size(); j++)
+		{
 			delete funcs[i][j];
+		}
+	}
 	// free struct instances
 	for (i=0; i<struct_instances.size(); i++)
+	{
 		delete struct_instances[i];
+	}
 	// free struct types
 	for (i=0; i<struct_defs.size(); i++)
 	{
-		for (j = 0; j<struct_defs[i]->elements.size(); j++)
-		{
-			delete struct_defs[i]->elements[j];
-		}
 		delete struct_defs[i];
 	}
 
@@ -716,8 +757,8 @@ bool VCCompiler::CompileAll()
 
     add_source_files = false; // turn off for next compile
 
-	log("VC System Compilation stats: \n%d ints (%d expanded), %d strings (%d expanded), %d functions, %d total lines\n",
-		 global_ints.size(), global_intofs, global_strings.size(), global_stringofs, funcs[CIMAGE_SYSTEM].size(), pp_total_lines);
+	log("VC System Compilation stats: \n%d globals (%d expanded), %d functions, %d total lines\n",
+		 global_vars.size(), global_var_offset, funcs[CIMAGE_SYSTEM].size(), pp_total_lines);
 
 	return result;
 }
@@ -763,15 +804,10 @@ void VCCompiler::ExportSystemXVC()
 	fwrite(xvc_sig, 1, 8, f);
 	fwrite(&ver, 1, 4, f);
 
-	size = global_ints.size();
+	size = global_vars.size();
 	fwrite(&size, 1, 4, f);
 	for (i=0; i<size; i++)
-		global_ints[i]->write(f);
-
-	size = global_strings.size();
-	fwrite(&size, 1, 4, f);
-	for (i=0; i<size; i++)
-		global_strings[i]->write(f);
+		global_vars[i]->write(f);
 
 	size = struct_instances.size();
 	fwrite(&size, 1, 4, f);
@@ -1985,10 +2021,8 @@ void VCCompiler::ScanPass(scan_t type)
 	{
 		// if we are reading new ints and strings,
 		// we need to clear them first
-		global_ints.clear();
-		global_strings.clear();
-		global_intofs = 0;
-		global_stringofs = 0;
+		global_vars.clear();
+		global_var_offset = 0;
 	}
 
 	bool isFunc;
@@ -2016,27 +2050,41 @@ fclose(f);*/
 			srcofs = save_srcofs;
 			GetToken();
 		}
+		else if (TokenIs("callback"))
+		{			
+			SkipArguments();
+			
+			// Name of variable/function.
+			GetIdentifierToken();
+			ParseWhitespace();
+
+			// Brackets, means it's a function.
+			if (source[srcofs] == '(')
+			{
+				isFunc = true;
+			}
+			// restore
+			srcofs = save_srcofs;
+			GetToken();
+		}
 		else if (TokenIs("void"))
 		{
 			isFunc = true;
 		}
 
-		if (TokenIs("int") && !isFunc)
+		// Global variable declaration.
+		if ((TokenIs("int") || TokenIs("string") || TokenIs("callback")) && !isFunc)
 		{
-			ParseIntDecl(type);
+			ParseGlobalDecl(type);
 			continue;
 		}
-		if (TokenIs("string") && !isFunc)
-		{
-			ParseStringDecl(type);
-			continue;
-		}
-		if ((TokenIs("void") || TokenIs("int") || TokenIs("string")) && isFunc)
+		// Function declaration.
+		if ((TokenIs("void") || TokenIs("int") || TokenIs("string") || TokenIs("callback")) && isFunc)
 		{
 			ParseFuncDecl(type);
 			continue;
 		}		
-
+		// Struct definition.
 		if (TokenIs("struct")) 
 		{
 			ParseStructDecl(type);
@@ -2126,6 +2174,35 @@ void VCCompiler::SkipBrackets()
 	GetToken();
 }
 
+void VCCompiler::SkipArguments()
+{
+	int orig_line = linenum;
+	char orig_file[256];
+	strcpy(orig_file, sourcefile);
+
+	// a ( *must* be the first part to an argument list.
+	Expect("(");
+	int bracketCount = 1;
+
+	// Skip argument type definition.
+	// Account for nesting (which can happen due to callback definitions) by counting depth.
+	// Read until we're at 0 bracket depth again.
+	while(bracketCount > 0)
+	{
+		if (!source[srcofs])
+			throw va("%s(%d): Missing closing bracket for callback declaration.", orig_file, orig_line);
+		GetToken();
+		if(TokenIs("("))
+		{
+			bracketCount++;
+		}
+		else if(TokenIs(")"))
+		{
+			bracketCount--;
+		}
+	}
+}
+
 void VCCompiler::CheckNameDup(char *s)
 {
 	int i;
@@ -2167,13 +2244,8 @@ void VCCompiler::CheckNameDup(char *s)
         	throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. global ints
-	for (i=0; i<global_ints.size(); i++)
-		if (streq(global_ints[i]->name, token))
-			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
-
-	// check vs. global strings
-	for (i=0; i<global_strings.size(); i++)
-		if (streq(global_strings[i]->name, token))
+	for (i=0; i<global_vars.size(); i++)
+		if (streq(global_vars[i]->name, token))
 			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. struct types
@@ -2217,7 +2289,7 @@ void VCCompiler::CheckStructElementNameDup(char *s, struct_definition *def)
 }
 
 
-void VCCompiler::ParseIntDecl(scan_t type)
+void VCCompiler::ParseGlobalDecl(scan_t type)
 {
 	switch(type) {
 		case SCAN_IGNORE_NON_FUNC:
@@ -2229,28 +2301,44 @@ void VCCompiler::ParseIntDecl(scan_t type)
 			break;
 	}
 
+	char var_type;
+	ext_definition ext;
+	if(TokenIs("int"))
+	{
+		var_type = t_INT;
+	}
+	else if(TokenIs("string"))
+	{
+		var_type = t_STRING;
+	}
+	else if(TokenIs("callback"))
+	{
+		var_type = t_CALLBACK;
+		ParseCallbackDefinition(&(ext.callback));
+	}
+
 	while (true)
 	{
-		char int_name[256];
-		int  int_len = 1;
-		int	 int_dim = 0;
-		std::vector<int> int_dims;
-		int_dims.push_back(0);
+		char var_name[256];
+		int  var_len = 1;
+		int	 var_dim = 0;
+		std::vector<int> var_dims;
+		var_dims.push_back(0);
 		std::string initstr = "";
 
 		GetIdentifierToken();		// grab name of int
-		strcpy(int_name, token);
-		CheckNameDup(int_name);
+		strcpy(var_name, token);
+		CheckNameDup(var_name);
 
 		while (NextIs("["))			// it's an array
 		{
 			GetToken(2);
-			int_len *= token_value;
-			if (int_dim)
+			var_len *= token_value;
+			if (var_dim)
 			{
-				int_dims.push_back(0);
+				var_dims.push_back(0);
 			}
-			int_dims[int_dim++] = token_value;
+			var_dims[var_dim++] = token_value;
 			Expect("]");
 		}
 
@@ -2285,103 +2373,19 @@ void VCCompiler::ParseIntDecl(scan_t type)
 			}
 		}
 
-		int_t *my_int = new int_t;
-		strcpy(my_int->name, int_name);
-		my_int->len = int_len;
-		my_int->ofs = global_intofs;
-		my_int->dim = int_dim;
-		//memcpy(my_int->dims, int_dims, sizeof (int_dims));
-		my_int->dims = int_dims;
-		my_int->initializer = initstr.c_str();
-		global_ints.push_back(my_int);
-		vprint("int    %15s: offset %8d, size %6d, initializer: %s\n", int_name, global_intofs, int_len, initstr.c_str());
-		global_intofs += int_len;
-
-		if (NextIs(";")) break;
-		Expect(",");
-	}
-	Expect(";");
-}
-
-void VCCompiler::ParseStringDecl(scan_t type)
-{
-	switch(type) {
-		case SCAN_IGNORE_NON_FUNC:
-			SkipDeclare();
-			return;
-		case SCAN_ERR_NON_FUNC:
-			throw va("%s(%d): Cannot declare global variables in map VC!", sourcefile, linenum);
-		case SCAN_ALL: // continue normally
-			break;
-	}
-
-	while (true)
-	{
-		std::string initstr = "";
-		char string_name[256];
-		int  string_len = 1;
-		int  string_dim = 0;
-		std::vector<int>  string_dims;
-		string_dims.push_back(0);
-
-		GetToken();					// grab name of string
-		strcpy(string_name, token);
-		CheckNameDup(string_name);
-
-		while (NextIs("["))			// it's an array
-		{
-			GetToken(2);
-			string_len *= token_value;
-			if (string_dim)
-			{
-				string_dims.push_back(0);
-			}
-			string_dims[string_dim++] = token_value;
-			Expect("]");
-		}
-
-		if (NextIs("="))			// got an initializer
-		{
-			GetToken();
-			int group = 0;
-			while (true)
-			{
-				if (TokenIs("("))
-					group++;
-				if (TokenIs(")"))
-					group--;
-				if (TokenIs("\""))          // Only special case is a quoted string.
-				{
-					initstr += '\"';
-					while (source[srcofs] != '\"')
-					{
-						if (!source[srcofs])
-							throw va("%s(%d): Reached unexpected end of file, probable missing end-quote (\")", sourcefile, linenum);
-						initstr += source[srcofs++];
-					}
-					initstr += source[srcofs++];
-					source.setpos(srcofs);
-					if (!group && (NextIs(";") || NextIs(","))) break;
-					GetToken();
-					continue;
-				}
-				initstr += token;
-				if (!group && (NextIs(";") || NextIs(","))) break;
-				GetToken();
-			}
-		}
-
-		string_t *my_string = new string_t;
-		strcpy(my_string->name, string_name);
-		my_string->len = string_len;
-		my_string->ofs = global_stringofs;
-		my_string->dim = string_dim;
-		//memcpy(my_string->dims, string_dims, sizeof (string_dims));
-		my_string->dims = string_dims;
-		my_string->initializer = initstr.c_str();
-		global_strings.push_back(my_string);
-		vprint("string %15s: offset %8d, size %6d, initializer: %s \n", string_name, global_stringofs, string_len, initstr.c_str());
-		global_stringofs += string_len;
+		global_var_t *my_var = new global_var_t;
+		strcpy(my_var->name, var_name);
+		my_var->type = var_type;
+		my_var->ext = ext;
+		my_var->len = var_len;
+		my_var->ofs = global_var_offset;
+		my_var->dim = var_dim;
+		//memcpy(my_int->dims, var_dims, sizeof (var_dims));
+		my_var->dims = var_dims;
+		my_var->initializer = initstr.c_str();
+		global_vars.push_back(my_var);
+		vprint("global %s: type %d, offset %8d, size %6d, initializer: %s\n", var_name, var_type, global_var_offset, var_len, initstr.c_str());
+		global_var_offset += var_len;
 
 		if (NextIs(";")) break;
 		Expect(",");
@@ -2393,6 +2397,7 @@ void VCCompiler::ParseStructDeclVar(struct_definition* mystruct, int variable_ty
 {
     if (variable_type != t_INT
     &&  variable_type != t_STRING
+	&&  variable_type != t_CALLBACK
     &&  variable_type != t_STRUCT)
     {
         throw va("%s(%d) : assertion failure: expecting t_INT (%d) or t_STRING (%d) or t_STRUCT(%d) type; got %d", sourcefile, linenum, t_INT, t_STRING, t_STRUCT, variable_type);
@@ -2400,6 +2405,13 @@ void VCCompiler::ParseStructDeclVar(struct_definition* mystruct, int variable_ty
 
     char type_name[80];
     strcpy(type_name, token);
+
+	ext_definition ext;
+
+	if(variable_type == t_CALLBACK)
+	{
+		ParseCallbackDefinition(&(ext.callback));
+	}
     while (true)
     {
         struct_element *myelem = new struct_element;
@@ -2425,6 +2437,7 @@ void VCCompiler::ParseStructDeclVar(struct_definition* mystruct, int variable_ty
             Expect("]");
         }
         myelem->type = variable_type;
+		myelem->ext = ext;
         mystruct->elements.push_back(myelem);
         if (NextIs(";")) break;
         Expect(",");
@@ -2460,6 +2473,10 @@ void VCCompiler::ParseStructDecl(scan_t type)
 		else if (TokenIs("string"))
 		{
             ParseStructDeclVar(mystruct, t_STRING);
+		}
+		else if (TokenIs("callback"))
+		{
+			ParseStructDeclVar(mystruct, t_CALLBACK);
 		}
 		else
 		{
@@ -2531,81 +2548,46 @@ void VCCompiler::CreateStructInstance(struct_instance *inst)
 		switch (elem->type)
 		{
 			case t_INT:
-			{
-				int_t *myint = new int_t();
-				sprintf(myint->name, "%c%s_%s", 1, inst->name, elem->name);
-				if (!inst->dim)
-				{
-					myint->len = elem->len;
-					myint->dim = elem->dim;
-
-					myint->dims = elem->dims;
-				}
-				else
-				{
-					myint->len = elem->len;
-					myint->dim = elem->dim;
-					myint->dims = elem->dims;
-					for (std::vector<int>::reverse_iterator it = inst->dims.rbegin();
-							it != inst->dims.rend(); it++)
-					{
-						myint->len *= *it;
-						// If this already is an array, append to the beginning.
-						if (myint->dim)
-						{
-							myint->dims.insert(myint->dims.begin(), *it);
-						}
-						// If this wasn't an array, set the start element.
-						else
-						{
-							myint->dims[0] = *it;
-						}
-						
-						myint->dim++;
-					}
-				}
-				myint->ofs = global_intofs;
-				global_intofs += myint->len;
-				global_ints.push_back(myint);
-				break;
-			}
 			case t_STRING:
+			case t_CALLBACK:
 			{
-				string_t *mystr = new string_t();
-				sprintf(mystr->name, "%c%s_%s", 1, inst->name, elem->name);
+				global_var_t *myvar = new global_var_t();
+				myvar->type = elem->type;
+				myvar->ext = elem->ext;
+				sprintf(myvar->name, "%c%s_%s", 1, inst->name, elem->name);
 				if (!inst->dim)
 				{
-					mystr->len = elem->len;
-					mystr->dim = elem->dim;
-					//memcpy(mystr->dims, elem->dims, sizeof (elem->dims));
-					mystr->dims = elem->dims;
+					myvar->len = elem->len;
+					myvar->dim = elem->dim;
+
+					myvar->dims = elem->dims;
 				}
 				else
 				{
-					mystr->len = elem->len;
-					mystr->dim = elem->dim;
-					mystr->dims = elem->dims;
+					myvar->len = elem->len;
+					myvar->dim = elem->dim;
+					myvar->dims = elem->dims;
 					for (std::vector<int>::reverse_iterator it = inst->dims.rbegin();
 							it != inst->dims.rend(); it++)
 					{
-						mystr->len *= *it;
+						myvar->len *= *it;
 						// If this already is an array, append to the beginning.
-						if (mystr->dim)
+						if (myvar->dim)
 						{
-							mystr->dims.insert(mystr->dims.begin(), *it);
+							myvar->dims.insert(myvar->dims.begin(), *it);
 						}
 						// If this wasn't an array, set the start element.
 						else
 						{
-							mystr->dims[0] = *it;
+							myvar->dims[0] = *it;
 						}
 						
-						mystr->dim++;
+						myvar->dim++;
 					}
 				}
-				mystr->ofs = global_stringofs;
-				global_stringofs += mystr->len;
-				global_strings.push_back(mystr);
+				myvar->ofs = global_var_offset;
+				global_var_offset += myvar->len;
+				global_vars.push_back(myvar);
 				break;
 			}
 			case t_STRUCT:
@@ -2665,16 +2647,115 @@ void VCCompiler::CreateStructInstance(struct_instance *inst)
 	}
 }
 
+void VCCompiler::ParseCallbackDefinition(callback_definition** def)
+{
+	(*def) = new callback_definition;
+	int numargs = 0;
+
+	Expect("(");
+
+	GetToken();
+	if (TokenIs("void")) 
+		(*def)->signature = t_VOID;
+	else if (TokenIs("int")) 
+		(*def)->signature = t_INT;
+	else if (TokenIs("string"))
+		(*def)->signature = t_STRING;
+	else if (TokenIs("callback"))
+	{
+		(*def)->signature = t_CALLBACK;
+		ParseCallbackDefinition(&((*def)->sigext.callback));
+	}
+	else // Overkill (2006-05-06): More relevant errors where possible.
+	{
+		// check vs. struct types
+		for (int i=0; i<struct_defs.size(); i++)
+			if (streq(struct_defs[i]->name, token))
+			{
+				throw va("%s(%d): '%s' is a struct. Structs cannot be used as an argument type in a callback definition.", sourcefile, linenum, token);
+			}
+		// Otherwise: generic error.
+		throw va("%s(%d): invalid argument type '%s' in callback definition", sourcefile, linenum, token);
+	}
+
+
+	Expect("(");
+	while (!NextIs(")"))
+	{
+		GetToken();
+		if (TokenIs("int"))	
+			(*def)->argtype[numargs] = t_INT;
+        else if (TokenIs("string")) 
+			(*def)->argtype[numargs] = t_STRING;
+		else if (TokenIs("callback"))
+		{
+			(*def)->argtype[numargs] = t_CALLBACK;
+			ParseCallbackDefinition(&((*def)->argext[numargs].callback));
+		}
+		else if (TokenIs("..."))
+		{
+			(*def)->argtype[numargs] = t_VARARG;
+		}
+		else // Overkill (2006-05-06): More relevant errors where possible.
+		{
+			// check vs. struct types
+			for (int i=0; i<struct_defs.size(); i++)
+				if (streq(struct_defs[i]->name, token))
+				{
+					throw va("%s(%d): '%s' is a struct. Structs cannot be used as an argument type in a callback definition.", sourcefile, linenum, token);
+				}
+			// Otherwise: generic error.
+			throw va("%s(%d): invalid argument type '%s' in callback definition", sourcefile, linenum, token);
+		}
+		
+		if(!NextIs(",") && !NextIs(")"))
+		{
+			GetIdentifierToken();
+			CheckNameDup(token);
+		}
+		if ((*def)->argtype[numargs] != t_VARARG && NextIs(","))
+		{
+			GetToken();	
+			if (NextIs(")"))
+			{
+				throw va("%s(%d) : syntax error: trailing comma not allowed in argument list", sourcefile, linenum);
+			}
+		}
+		else if (!NextIs(")"))
+		{
+			GetToken();
+			if ((*def)->argtype[numargs] == t_VARARG)
+			{
+				throw va("%s(%d): variable argument lists must be the last argument of a variadic function.", sourcefile, linenum);
+			}
+			else
+			{
+				throw va("%s(%d) : syntax error: arguments must be separated by commas. found: %s", sourcefile, linenum, token); 
+			}
+		}
+		numargs++;
+	}
+	(*def)->numargs = numargs;
+	Expect(")");
+	Expect(")");
+}
+
 void VCCompiler::ParseFuncDecl(scan_t type) 
 {
 	// type ignored -- always parse functions
 	function_t *myfunc = new function_t;
+
 	if (TokenIs("void")) 
 		myfunc->signature = t_VOID;
 	else if (TokenIs("int")) 
 		myfunc->signature = t_INT;
 	else if (TokenIs("string"))
 		myfunc->signature = t_STRING;
+	else if (TokenIs("callback"))
+	{
+		myfunc->signature = t_CALLBACK;
+		ParseCallbackDefinition(&(myfunc->sigext.callback));
+	}
 	else // Overkill (2006-05-06): More relevant errors where possible.
 	{
 		// check vs. struct types
@@ -2698,10 +2779,16 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 	while (!NextIs(")"))
 	{
 		GetToken();
+
 		if (TokenIs("int"))	
 			myfunc->argtype[numargs] = t_INT;
         else if (TokenIs("string")) 
 			myfunc->argtype[numargs] = t_STRING;
+		else if (TokenIs("callback"))
+		{
+			myfunc->argtype[numargs] = t_CALLBACK;
+			ParseCallbackDefinition(&(myfunc->argext[numargs].callback));
+		}
 		else if (TokenIs("..."))
 		{
 			myfunc->argtype[numargs] = t_VARARG;
@@ -2720,6 +2807,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 		
 		GetIdentifierToken();
 		CheckNameDup(token);
+
 		if (streq(myfunc->name, token))
 		{
 			throw va("%s(%d) : error: '%s' : variable has same name as function", sourcefile, linenum, token);
@@ -2779,7 +2867,9 @@ enum
 	ID_STRUCT,
 	ID_PLUGINFUNC,
 	ID_PLUGINVAR,
-	ID_VARARG_LIST
+	ID_VARARG_LIST,
+	ID_LOCALCB,
+	ID_GLOBALCB,
 };
 
 void VCCompiler::CompilePass()
@@ -2799,8 +2889,29 @@ void VCCompiler::CompilePass()
 	ParseWhitespace(); // need to do this first for empty files
 	while (source[srcofs])
 	{
-		if (NextIs(3,"("))
-			CompileFunction();
+		// Holy crap, this is hacky as hell.
+		// Anyways, if we find the word "callback", we skip past the type definition,
+		// and try and see if what's after it is a global variable or a function.
+		if (NextIs("callback"))
+		{
+			GetToken(); // Got the keyword.
+			SkipArguments(); // Get the callback definition
+
+			// Check if the token after the word token is a (.
+			if(NextIs(2, "("))
+			{
+				// It's a function. Oh boy!
+				CompileFunction(true);
+			}
+			else
+			{
+				// It's a variable, but since we skipped the type definition
+				// we can't use skip variables. Instead, we'll use skip declare, because that simply reads until a ;
+				SkipDeclare();
+			}
+		}
+		else if (NextIs(3,"("))
+			CompileFunction(false);
 		else
 			SkipVariables();
 		ParseWhitespace();
@@ -2818,7 +2929,7 @@ void VCCompiler::CompileMapPass()
 	while (source[srcofs])
 	{
 		if (NextIs(3,"("))
-			CompileFunction();
+			CompileFunction(false);
 		ParseWhitespace();
 	}
 }
@@ -2843,7 +2954,7 @@ void VCCompiler::CompileOtherPass(bool append)
 	while (source[srcofs])
 	{
 		if (NextIs(3,"("))
-			CompileFunction();
+			CompileFunction(false);
 		else
 			SkipVariables();
 		ParseWhitespace();
@@ -2868,31 +2979,15 @@ void VCCompiler::CompileGlobalInitializers()
 
 	char buffer[1024], *p;
 	int i, j;
-	for (i=0, j=0; i<global_ints.size(); i++)
+	for (i=0, j=0; i<global_vars.size(); i++)
 	{
-		if (!global_ints[i]->initializer.length())
+		if (!global_vars[i]->initializer.length())
 			continue;
 
 		source.clear();
 		srcofs=0;
-		sprintf(buffer, "%s%s;", global_ints[i]->name, global_ints[i]->initializer.c_str());
+		sprintf(buffer, "%s%s;", global_vars[i]->name, global_vars[i]->initializer.c_str());
 		for (j=0, p=buffer; *p; p++, j++) {
-			source.Expand(1);
-			source.chunk[j] = *p;
-		}
-		CompileStatement();
-	}
-
-	for (i=0, j=0; i<global_strings.size(); i++)
-	{
-		if (!global_strings[i]->initializer.length())
-			continue;
-
-		source.clear();
-		srcofs=0;
-		sprintf(buffer, "%s%s;", global_strings[i]->name, global_strings[i]->initializer.c_str());
-		for (j=0, p=buffer; *p; p++, j++)
-		{
 			source.Expand(1);
 			source.chunk[j] = *p;
 		}
@@ -2977,25 +3072,25 @@ void VCCompiler::SkipVariables()
 }
 
 
-void VCCompiler::CompileFunction()
+void VCCompiler::CompileFunction(bool returns_callback)
 {
-	GetToken();						// function return type (signature)
+	if(!returns_callback)			// function return type (signature)
+		GetToken();					//		(we only grab this when the function isn't known to be returning a callback (definition skipped earlier))
 	GetToken();						// function name
 	in_func = FetchFunction(token);	// grab the record for this function
 
 	vprint("compiling function %s ->>>>\n", token);
 
-	Expect("(");
-	while (!TokenIs(")"))			// get to the end of the arguements already
-		GetToken();
+	SkipArguments();				// get to the end of the arguements already
 	Expect("{");
 	returntype = in_func->signature;
+	returnext = in_func->sigext;
 	in_func->codeofs = output.curpos();
 	in_func->numlocals = in_func->numargs;  // not really, but it'll be incremented as locals are declared
 
 	while (!NextIs("}"))
 	{
-		while (NextIs("int") || NextIs("string"))
+		while (NextIs("int") || NextIs("string") || NextIs("callback"))
 		{
 			char argtype;
 			GetToken();
@@ -3006,6 +3101,11 @@ void VCCompiler::CompileFunction()
 			else if(TokenIs("string"))
 			{
 				argtype = t_STRING;
+			}
+			else if(TokenIs("callback"))
+			{
+				argtype = t_CALLBACK;
+				ParseCallbackDefinition(&(in_func->argext[in_func->numlocals].callback));
 			}
 			in_func->argtype[in_func->numlocals] = argtype;
 			GetIdentifierToken();
@@ -3100,24 +3200,18 @@ void VCCompiler::CheckIdentifier(char *s)
 			return;
 		}
 
-	// check global ints next
-	for (i=0; i<global_ints.size(); i++)
-		if (streq(s, global_ints[i]->name))
+	// check globals next
+	for (i=0; i<global_vars.size(); i++)
+		if (streq(s, global_vars[i]->name))
 		{
 			id_type = ID_VARIABLE;
-			id_subtype = ID_GLOBALINT;
-			id_array = (global_ints[i]->len > 0) ? 1 : 0; // len == 0 is a non-array
-			id_index = i;
-			return;
-		}
-
-	// check global strings next
-	for (i=0; i<global_strings.size(); i++)
-		if (streq(s, global_strings[i]->name))
-		{
-			id_type = ID_VARIABLE;
-			id_subtype = ID_GLOBALSTR;
-			id_array = (global_strings[i]->len > 0) ? 1 : 0; // len == 0 is a non-array
+			switch(global_vars[i]->type)
+			{
+				case t_INT: id_subtype = ID_GLOBALINT; break;
+				case t_STRING: id_subtype = ID_GLOBALSTR; break;
+				case t_CALLBACK: id_subtype = ID_GLOBALCB; id_ext = global_vars[i]->ext; break;
+			}
+			id_array = (global_vars[i]->len > 0) ? 1 : 0; // len == 0 is a non-array
 			id_index = i;
 			return;
 		}
@@ -3142,6 +3236,13 @@ void VCCompiler::CheckIdentifier(char *s)
 						id_subtype = ID_LOCALSTR;
 						id_array = 0;
 						id_index = i;
+						return;
+					case t_CALLBACK:
+						id_type = ID_VARIABLE;
+						id_subtype = ID_LOCALCB;
+						id_array = 0;
+						id_index = i;
+						id_ext = in_func->argext[i];
 						return;
 					case t_VARARG:
 						id_type = ID_VARARG_LIST;
@@ -3374,12 +3475,27 @@ void VCCompiler::CompileAtom()
         return;
     }
 
+
 	int varofs = srcofs;
 	std::string varname = std::string(token);
-	int type = HandleVariable();
+	ext_definition ext;
+	int type = HandleVariable(&ext);
 	// Found an int, good.
 	if (type == t_INT)
 	{
+		return;
+	}
+	if(type == t_CALLBACK)
+	{
+		if(NextIs("("))
+		{
+			GetToken();
+			HandleCallbackInvocation(ext.callback);
+		}
+		else
+		{
+			throw va("%s(%d): Expected an int, but the callback expression, '%s', was found instead.", sourcefile, linenum, token);
+		}
 		return;
 	}
 	// Found something, but it wasn't an int.
@@ -3596,12 +3712,27 @@ void VCCompiler::ProcessString()
 
 	int varofs = srcofs;
 	std::string varname = std::string(token);
-	int type = HandleVariable();
+	ext_definition ext;
+	int type = HandleVariable(&ext);
 	// Found a string, good.
 	if (type == t_STRING)
 	{
 		return;
 	}
+	if(type == t_CALLBACK)
+	{
+		if(NextIs("("))
+		{
+			GetToken();
+			HandleCallbackInvocation(ext.callback);
+		}
+		else
+		{
+			throw va("%s(%d): Expected an string, but the callback expression, '%s', was found instead.", sourcefile, linenum, token);
+		}
+		return;
+	}
+
 	// Found something, but it wasn't a string.
 	if (type != -1)
 	{
@@ -3653,6 +3784,253 @@ void VCCompiler::CompileString()
             break;
         }
 	}
+}
+
+// Compare signatures of two functions/callbacks, recursing as necessary.
+// Returns true if they are identical, false if there are differences.
+// IMPORTANT: IF YOU UPDATE THIS, UPDATE THE FUNCTION_T VERSION TOO.
+bool VCCompiler::VerifySignatureMatch(callback_definition* expected, callback_definition* value)
+{
+	// Return values don't match.
+	if(expected->signature != value->signature)
+	{
+		return false;
+	}
+	// Okay, hooray, the return values are a match!
+	else 
+	{
+		// But if it's a callback, we have to recurse to prove they have identical callback definitions.
+		if(expected->signature == t_CALLBACK)
+		{
+			if(!VerifySignatureMatch(expected->sigext.callback, value->sigext.callback))
+			{
+				return false;
+			}
+		}
+	}
+
+	// Number of arguments don't match, so the arguments won't match.
+	if(expected->numargs != value->numargs)
+	{
+		return false;
+	}
+
+	for(int i = 0; i < expected->numargs; i++)
+	{
+		// Argument types don't match.
+		if(expected->argtype[i] != value->argtype[i])
+		{
+			return false;
+		}
+		// Okay, hooray, the argument types being compared are a match!
+		else 
+		{
+			// But if it's a callback, we have to recurse to prove they have identical callback definitions.
+			if(expected->signature == t_CALLBACK)
+			{
+				if(!VerifySignatureMatch(expected->argext[i].callback, value->argext[i].callback))
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	// They were identical. Woo.
+	return true;
+}
+
+// Compare signatures of two functions/callbacks, recursing as necessary.
+// Returns true if they are identical, false if there are differences.
+// IMPORTANT: IF YOU UPDATE THIS, UPDATE THE CALLBACK_DEFINITION VERSION TOO.
+bool VCCompiler::VerifySignatureMatch(callback_definition* expected, function_t* value)
+{
+	// Return values don't match.
+	if(expected->signature != value->signature)
+	{
+		return false;
+	}
+	// Okay, hooray, the return values are a match!
+	else 
+	{
+		// But if it's a callback, we have to recurse to prove they have identical callback definitions.
+		if(expected->signature == t_CALLBACK)
+		{
+			if(!VerifySignatureMatch(expected->sigext.callback, value->sigext.callback))
+			{
+				return false;
+			}
+		}
+	}
+
+	// Number of arguments don't match, so the arguments won't match.
+	if(expected->numargs != value->numargs)
+	{
+		return false;
+	}
+
+	for(int i = 0; i < expected->numargs; i++)
+	{
+		// Argument types don't match.
+		if(expected->argtype[i] != value->argtype[i])
+		{
+			return false;
+		}
+		// Okay, hooray, the argument types being compared are a match!
+		else 
+		{
+			// But if it's a callback, we have to recurse to prove they have identical callback definitions.
+			if(expected->signature == t_CALLBACK)
+			{
+				if(!VerifySignatureMatch(expected->argext[i].callback, value->argext[i].callback))
+				{
+					return false;
+				}
+			}
+		}
+	}
+
+	// They were identical. Woo.
+	return true;
+}
+
+// Compile an expression for assignment to a callback variable.
+// The expression must match the definition of the variable.
+void VCCompiler::CompileCallback(callback_definition* def)
+{
+    GetToken();
+	CheckIdentifier(token);
+
+	if (id_type == ID_LIBFUNC)
+    {
+		bool fail = false;
+		if(libfuncs[id_index].returnType != def->signature)
+		{
+			fail = true;
+		}
+
+		int i = 0;
+		while (i < libfuncs[id_index].argumentTypes.size())
+		{
+			if(fail || libfuncs[id_index].argumentTypes[i] != def->argtype[i])
+			{
+				fail = true;
+				break;
+			}
+			i++;
+		}
+		// No library function returns a callback.
+		if(NextIs("("))
+		{
+			throw va("%s(%d): Function %s's return value does not match the callback signature expected", sourcefile, linenum, libfuncs[id_index].name);
+		}
+
+		output.EmitC(opLIBFUNC);
+		// Overkill (2006-06-07): Now functions past 255 work.
+		// Yay! We'll probably never reach the 65535 mark,
+		// so we're safe again.
+		output.EmitW(id_index);
+        return;
+    }
+    if (id_type == ID_USERFUNC)
+    {
+		int index = id_index;
+		function_t *func = funcs[id_cimage][id_index];
+
+		// If it's a function call, then handle that.
+		// The returned value from the call must be a callback that recursively matches the definition of the callback expected.
+		if(NextIs("("))
+		{
+			// First, we'd better whine if the function does not return a callback, or the callback returned is not the one we expected.
+			if(func->signature != t_CALLBACK || !VerifySignatureMatch(def, func->sigext.callback))
+			{
+				// TODO: comprehensive error report with full signatures printed.
+				throw va("%s(%d): Function %s's return value does not match the callback signature expected", sourcefile, linenum, func->name);
+			}
+			// This is confusingly close to the bytecode for function references, save for one byte.
+			output.EmitC(cbUSERFUNC);
+			HandleUserFunc();
+		}
+		// A function reference, not a function call.
+		// so the function itself must recursively match the signature of the callback expected.
+		else
+		{
+			if(!VerifySignatureMatch(def, func))
+			{
+				// TODO: comprehensive error report with full signatures printed.
+				throw va("%s(%d): Function %s does not match the callback signature expected", sourcefile, linenum, func->name);
+			}
+			output.EmitC(opUSERFUNC);
+			output.EmitC(func->coreimage);
+			output.EmitD(index);
+		}
+		return;
+    }
+
+	int varofs = srcofs;
+	std::string varname = std::string(token);
+	ext_definition ext;
+	int type = HandleVariable(&ext);
+	// Found a callback, good.
+	if (type == t_CALLBACK)
+	{
+		if(NextIs("("))
+		{
+			if(!VerifySignatureMatch(def, ext.callback->sigext.callback))
+			{
+				throw va("%s(%d): Callback's return type does not match the callback signature expected", sourcefile, linenum);
+			}
+			GetToken();
+			HandleCallbackInvocation(ext.callback);
+		}
+		else
+		{
+			// Make sure it matches.
+			if(!VerifySignatureMatch(def, ext.callback))
+			{
+				throw va("%s(%d): Callback does not match the callback signature expected", sourcefile, linenum);
+			}
+			// We emit a "copy" opcode so to not confuse with local callbacks that are being called.
+			output.EmitC(opCBCOPY);
+		}
+		return;
+	}
+
+	// Found something, but it wasn't a callback.
+	if (type != -1)
+	{
+		int thisofs = srcofs;
+		srcofs = varofs;
+		while(srcofs < thisofs)
+		{
+			ParseWhitespace();
+			if (source[srcofs] == '[')
+			{
+				varname += "[";
+				while (source[srcofs] != ']' && srcofs < thisofs)
+				{
+					srcofs++;
+				}
+				varname += "]";
+			}
+			else
+			{
+				varname += source[srcofs];
+			}
+			srcofs++;
+		}
+		throw va("%s(%d): %s is not a callback", sourcefile, linenum, varname.c_str());
+	}
+
+	if (TokenIsIntExpression())
+	{
+		throw va("%s(%d): Expected a callback, but the int expression, '%s', was found instead.", sourcefile, linenum, token);
+	}
+	if (TokenIsStringExpression())
+	{
+		throw va("%s(%d): Expected a callback, but the string expression, '%s', was found instead.", sourcefile, linenum, token);
+	}
+	throw va("%s(%d): %s is not a known callback identifier", sourcefile, linenum, token);
 }
 
 void VCCompiler::CompileStatement()
@@ -3791,6 +4169,12 @@ void VCCompiler::HandleReturn()
 			Expect(";");
 			output.EmitC(opRETURN);
 			return;
+		case t_CALLBACK:
+			output.EmitC(opRETCB);
+			CompileCallback(returnext.callback);
+			Expect(";");
+			output.EmitC(opRETURN);
+			return;
 		default:
 			throw va("%s(%d): Internal compiler error in VCCompiler::HandleReturn()!", sourcefile, linenum);
 	}
@@ -3798,6 +4182,7 @@ void VCCompiler::HandleReturn()
 
 void VCCompiler::HandleLibraryFunc()
 {
+
 	Expect("(");
 	output.EmitC(opLIBFUNC);
 	// Overkill (2006-06-07): Now functions past 255 work.
@@ -3911,6 +4296,103 @@ void VCCompiler::HandlePluginFunc() {
 	Expect(")");
 }
 
+void VCCompiler::HandleCallbackInvocation(callback_definition* func)
+{
+	output.EmitC(opCBINVOKE);
+
+	int i = 0;
+	bool varargs = false;
+	while (true)
+	{
+		if (NextIs(")"))
+		{
+			if (i < func->numargs && func->argtype[i] == t_VARARG)
+			{
+				output.EmitC(opVARARG_START);
+				varargs = true;
+				i++;
+			}
+			break;
+		}
+		if (i < func->numargs)
+		{
+			switch (func->argtype[i])
+			{
+				case t_INT:
+					CompileOperand();
+					if (NextIs(",")) GetToken();
+					break;
+				case t_STRING:
+					CompileString();
+					if (NextIs(",")) GetToken();
+					break;
+				case t_CALLBACK:
+					CompileCallback(func->argext[i].callback);
+					if (NextIs(",")) GetToken();
+					break;
+				case t_VARARG:
+					output.EmitC(opVARARG_START);
+					varargs = true;
+					break;
+			}
+		}
+		else
+		{
+			int type = CheckExpressionType();
+			output.EmitC(type);
+			if (type == -1)
+			{
+				GetToken();
+				throw va("%s(%d) Could not resolve identifier '%s'!", sourcefile, linenum, token);
+				break;
+			}
+			else if (type == t_VARARG)
+			{
+				GetToken();
+				CheckIdentifier(token);
+
+				// Don't need to do anything more, we just skip over the token now,
+				// since we already know its type.
+				// break, there can't be any more arguments after this one.
+				break;
+			}
+			else if (type == t_INT)
+			{
+				CompileOperand();
+				if (NextIs(",")) GetToken();
+			}
+			else if (type == t_STRING)
+			{
+				CompileString();
+				if (NextIs(",")) GetToken();
+			}
+			else
+			{
+				throw va("%s(%d) Identifier '%s' has a value that is not permitted in variadic function lists!", sourcefile, linenum, token);
+			}
+		}
+		i++;
+	}
+	Expect(")");
+
+	if (varargs)
+	{
+		output.EmitC(opVARARG_END);
+	}
+	if (i < func->numargs || (i > func->numargs && !varargs))
+	{
+		int size = func->numargs;
+
+		// Varargs need not be specified so don't include in the count here.
+		if(func->argtype[size - 1] == t_VARARG)
+		{
+			size--;
+		}
+
+		throw va("%s(%d) Callback invocation expects %d arguments. (Got %d)", sourcefile, linenum, size, i);
+	}
+}
+
 void VCCompiler::HandleUserFunc()
 {
 	function_t *func = funcs[id_cimage][id_index];
@@ -3947,6 +4429,10 @@ void VCCompiler::HandleUserFunc()
 					CompileString();
 					if (NextIs(",")) GetToken();
 					break;
+				case t_CALLBACK:
+					CompileCallback(func->argext[i].callback);
+					if (NextIs(",")) GetToken();
+					break;
 				case t_VARARG:
 					output.EmitC(opVARARG_START);
 					varargs = true;
@@ -3963,7 +4449,7 @@ void VCCompiler::HandleUserFunc()
 				throw va("%s(%d) Could not resolve identifier '%s'!", sourcefile, linenum, token);
 				break;
 			}
-			if (type == t_VARARG)
+			else if (type == t_VARARG)
 			{
 				GetToken();
 				CheckIdentifier(token);
@@ -3973,15 +4459,19 @@ void VCCompiler::HandleUserFunc()
 				// break, there can't be any more arguments after this one.
 				break;
 			}
-			if (type == t_INT)
+			else if (type == t_INT)
 			{
 				CompileOperand();
 				if (NextIs(",")) GetToken();
 			}
-			if (type == t_STRING)
+			else if (type == t_STRING)
 			{
 				CompileString();
 				if (NextIs(",")) GetToken();
+			}
+			else
+			{
+				throw va("%s(%d) Identifier '%s' has a value that is not permitted in variadic function lists!", sourcefile, linenum, token);
 			}
 		}
 		i++;
@@ -4034,16 +4524,18 @@ int VCCompiler::CheckExpressionType()
 		srcofs = thisofs;
 		return id_subtype;
 	}
-	type = HandleVariable();
+	type = HandleVariable(NULL);
 	output.setpos(temp);
 	srcofs = thisofs;
 	return type;
 }
 
-int VCCompiler::HandleVariable()
+// Parse a variable reference.
+// The ext argument gives extended info on a variable (such as a callback) if not null.
+int VCCompiler::HandleVariable(ext_definition* ext)
 {
 	int vartype = -1; // Type of variable to be set.
-	int type = -1; // Overkill (2006-05-05): t_STRING or t_INT. Type of value expected.
+	int type = -1; // Overkill (2006-05-05): t_STRING or t_INT or t_CALLBACK. Type of value expected.
 	if (id_type == ID_NOMATCH)
 	{
 		return -1;
@@ -4076,6 +4568,16 @@ int VCCompiler::HandleVariable()
 			case ID_LOCALSTR:
 				vartype = strLOCAL;
 				type = t_STRING;
+				break;
+			case ID_LOCALCB:
+				vartype = cbLOCAL;
+				type = t_CALLBACK;
+				if(ext) *ext = id_ext;
+				break;
+			case ID_GLOBALCB:
+				vartype = (id_array ? cbARRAY : cbGLOBAL);
+				type = t_CALLBACK;
+				if(ext) *ext = id_ext;
 				break;
 			case ID_HVAR:
 			{
@@ -4122,15 +4624,21 @@ int VCCompiler::HandleVariable()
 				}
 				break;
 			}
-
+		case intLOCAL:
 		case intGLOBAL:
+		case strLOCAL:
+		case strGLOBAL:
+		case cbLOCAL:
+		case cbGLOBAL:
 			output.EmitC(vartype);
 			output.EmitD(id_index);
 			break;
 		case intARRAY:
+		case strARRAY:
+		case cbARRAY:
 			output.EmitC(vartype);
 			output.EmitD(id_index);
-			for (int i=0; i<global_ints[id_index]->dim; i++)
+			for (int i=0; i<global_vars[id_index]->dim; i++)
 			{
 				Expect("[");
 				int myid = id_index;
@@ -4139,51 +4647,12 @@ int VCCompiler::HandleVariable()
 				Expect("]");
 			}
 			break;
-		case intLOCAL:
-			output.EmitC(vartype);
-			output.EmitD(id_index);
-			break;
 		case intHVAR0:
+		case strHSTR0:
 			output.EmitC(vartype);
-			// Overkill (2008-12-21): this was casting to char before writing as an int anyway, whyyyy.
 			output.EmitD(id_index);
 			break;
 		case intHVAR1:
-		{
-			output.EmitC(vartype);
-			output.EmitD(id_index);
-			Expect("[");
-			int myid = id_index;
-            CompileOperand();
-			id_index = myid;
-            Expect("]");
-			break;
-		}
-		case strGLOBAL:
-			output.EmitC(vartype);
-			output.EmitD(id_index);
-			break;
-		case strARRAY:
-			output.EmitC(vartype);
-			output.EmitD(id_index);
-			for (int i=0; i<global_strings[id_index]->dim; i++)
-			{
-				Expect("[");
-				int myid = id_index;
-				CompileOperand();
-				id_index = myid;
-				Expect("]");
-			}
-			break;
-		case strLOCAL:
-			output.EmitC(vartype);
-			output.EmitD(id_index);
-			break;
-		case strHSTR0:
-			output.EmitC(vartype);
-			// Overkill (2008-12-21): this was casting to char before writing as an int anyway, whyyyy.
-			output.EmitD(id_index);
-			break;
 		case strHSTR1:
 		{
 			output.EmitC(vartype);
@@ -4354,103 +4823,50 @@ int VCCompiler::HandleVariable()
 				case t_STRUCT: // Still a struct. okay.
 					break;
 				case t_INT:
-					vartype = intGLOBAL;
-					if (elem->len == 1 && !id_array)   // intGLOBAL
-					{
-						char itsname[80];
-						sprintf(itsname, "%c%s_%s", 1, struct_instances[struct_index]->name, elem->name);
-						for (i=0; i<global_ints.size(); i++) // get index of vcint of this element
-							if (streq(global_ints[i]->name, itsname))
-							{
-								output.EmitC(intGLOBAL);
-								output.EmitD(i);
-								break;
-							}
-					}
-					else
-					{
-						// at this point it's a intARRAY
-						char itsname[80];
-						sprintf(itsname, "%c%s_%s", 1, struct_instances[struct_index]->name, elem->name);
-						for (i=0; i<global_ints.size(); i++) // get index of vcint of this element
-							if (streq(global_ints[i]->name, itsname))
-							{
-								output.EmitC(intARRAY);
-								output.EmitD(i);
-								break;
-							}
-
-						// output array indexes.
-						if (id_array)
-						{
-							//log("Struct int arr: %d", struct_dim_ptr.size());
-							for (std::vector<int>::iterator it = struct_dim_ptr.begin();
-								it != struct_dim_ptr.end(); it++)
-							{
-								int thisofs = srcofs;
-								srcofs = *it;
-								int myarray = id_array;
-								CompileOperand();
-								id_array = myarray;
-								srcofs = thisofs;
-							}
-						}
-
-						for (int j=id_array; j<global_ints[i]->dim; j++)
-						{
-							Expect("[");
-							CompileOperand();
-							Expect("]");
-						}
-					}
-					break;
 				case t_STRING:
-					vartype = strGLOBAL;
-					if (elem->len == 1 && !id_array)   // strGLOBAL
+				case t_CALLBACK:
+					switch(elem->type)
 					{
-						char itsname[80];
-						sprintf(itsname, "%c%s_%s", 1, struct_instances[struct_index]->name, elem->name);
-						for (i=0; i<global_strings.size(); i++) // get index of vcstring of this element
-							if (streq(global_strings[i]->name, itsname))
-							{
-								output.EmitC(strGLOBAL);
-								output.EmitD(i);
-								break;
-							}
+						case t_INT:
+							vartype = (elem->len == 1 && !id_array) ? intGLOBAL : intARRAY;
+							break;
+						case t_STRING:
+							vartype = (elem->len == 1 && !id_array) ? strGLOBAL : strARRAY;
+							break;
+						case t_CALLBACK:
+							vartype = (elem->len == 1 && !id_array) ? cbGLOBAL : cbARRAY;
+							if(ext) *ext = elem->ext;
+							break;
 					}
-					else
+
+					char itsname[80];
+					sprintf(itsname, "%c%s_%s", 1, struct_instances[struct_index]->name, elem->name);
+					// get index for this element
+					for (i=0; i<global_vars.size(); i++)
 					{
-						// at this point it's a strARRAY
-						char itsname[80];
-						sprintf(itsname, "%c%s_%s", 1, struct_instances[struct_index]->name, elem->name);
-						for (i=0; i<global_strings.size(); i++) // get index of vcstring of this element
-							if (streq(global_strings[i]->name, itsname))
-							{
-								output.EmitC(strARRAY);
-								output.EmitD(i);
-								break;
-							}
-
-						// output array indexes.
-						if (id_array)
+						if (streq(global_vars[i]->name, itsname))
 						{
-							//log("Struct string arr: %d", struct_dim_ptr.size());
-							for (std::vector<int>::iterator it = struct_dim_ptr.begin();
-								it != struct_dim_ptr.end(); it++)
-							{
-								int thisofs = srcofs;
-
-								srcofs = *it;
-								int myarray = id_array;
-								CompileOperand();
-								id_array = myarray;
-								srcofs = thisofs;
-
-							}
+							output.EmitC(vartype);
+							output.EmitD(i);
+							break;
 						}
-						for (int j=id_array; j<global_strings[i]->dim; j++)
+					}
+					// output array indexes.
+					if (id_array)
+					{
+						//log("Struct int arr: %d", struct_dim_ptr.size());
+						for (std::vector<int>::iterator it = struct_dim_ptr.begin();
+							it != struct_dim_ptr.end(); it++)
 						{
-
+							int thisofs = srcofs;
+							srcofs = *it;
+							int myarray = id_array;
+							CompileOperand();
+							id_array = myarray;
+							srcofs = thisofs;
+						}
+						for (int j=id_array; j<global_vars[i]->dim; j++)
+						{
 							Expect("[");
 							CompileOperand();
 							Expect("]");
@@ -4485,7 +4901,8 @@ void VCCompiler::HandleAssign()
 	output.EmitC(opASSIGN);
 
 	int varofs = srcofs;
-	type = HandleVariable();
+	ext_definition ext;
+	type = HandleVariable(&ext);
 
 	GetToken();
 	if (!TokenIs("=") && (vartype==intPLUGINVAR || vartype==strPLUGINVAR)){
@@ -4496,52 +4913,6 @@ void VCCompiler::HandleAssign()
 	if (TokenIs("++") && type == t_INT) { output.EmitC(aINC); return; } else
 	if (TokenIs("--") && type == t_INT) { output.EmitC(aDEC); return; } else
 	if (TokenIs("+=") && type == t_INT) { output.EmitC(aINCSET); } else
-	// Syntactic sugar for CallFunction, via parentheses after a string.
-	// Allows for "MyFunction"(); instead of CallFunction("MyFunction");
-	/*
-	if (TokenIs("(") && type == t_STRING)
-	{
-		output.setpos(temp);
-		CheckIdentifier("CallFunction");
-		output.EmitC(opLIBFUNC);
-		output.EmitW(id_index);
-
-		srcofs = varofs;
-		CheckIdentifier(varname);
-		HandleVariable();
-		output.EmitC(sEND);
-
-		Expect("(");
-		output.EmitC(opVARARG_START);
-		while (true)
-		{
-			if (NextIs(")"))
-			{
-				break;
-			}
-			int type = CheckExpressionType();
-			output.EmitC(type);
-			if (type == -1)
-			{
-				GetToken();
-				throw va("%s(%d) Could not resolve identifier '%s'!", sourcefile, linenum, token);
-				break;
-			}
-			if (type == t_INT)
-			{
-				CompileOperand();
-				if (NextIs(",")) GetToken();
-			}
-			if (type == t_STRING)
-			{
-				CompileString();
-				if (NextIs(",")) GetToken();
-			}
-		}
-		Expect(")");
-		output.EmitC(opVARARG_END);
-		return;
-	} else*/
 	// Overkill (2006-06-29): += Concatination operator implemented at last!
 	if (TokenIs("+=") && type == t_STRING)
     {
@@ -4549,13 +4920,21 @@ void VCCompiler::HandleAssign()
 
 		int thisofs = srcofs;
 		srcofs = varofs;
-		HandleVariable();
+		HandleVariable(NULL);
 		srcofs = thisofs;
 		output.EmitC(sADD);
 	} else
 	if (TokenIs("-=") && type == t_INT) { output.EmitC(aDECSET); } else
 	// Overkill (2006-05-06): = assignment allowed if type is not a struct.
-	if (TokenIs("=") && (type == t_INT || type == t_STRING))  { output.EmitC(aSET); }
+	if (TokenIs("=") && (type == t_INT || type == t_STRING || type == t_CALLBACK))  { output.EmitC(aSET); } else
+	// Callbacks can be invoked.
+	// Since they're variables, and any statement that leads with a variable is handled by this function,
+	// a void callback invocation () is handled under this "assignment" section.
+	if (TokenIs("(") && (type == t_CALLBACK))
+	{
+		HandleCallbackInvocation(ext.callback);
+		return;
+	}
 
 	// Overkill (2006-05-05):
 	// If the above is a bad assignment operator, error.
@@ -4569,6 +4948,10 @@ void VCCompiler::HandleAssign()
 		else if (type == t_STRING)
 		{
 			throw va("%s(%d) Invalid string assignment operator: \"%s\"", sourcefile, linenum, token);
+		}
+		else if (type == t_CALLBACK)
+		{
+			throw va("%s(%d) Invalid callback assignment operator: \"%s\"", sourcefile, linenum, token);
 		}
 		else if (type == t_VARARG)
 		{
@@ -4598,6 +4981,8 @@ void VCCompiler::HandleAssign()
 
 	if (type == t_STRING)
 		CompileString();
+	else if (type == t_CALLBACK)
+		CompileCallback(ext.callback);
 	else
 		CompileOperand();
 }

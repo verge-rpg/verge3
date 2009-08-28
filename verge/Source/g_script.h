@@ -45,6 +45,28 @@ struct argument_t
 	StringRef string_value;
 };
 
+// Callbacks used by Verge's hooks/builtins.
+struct VergeCallback
+{
+	/// For resolving names at runtime
+    // (VC/Lua) The name of the function to resolve.
+    StringRef funcname;
+    
+	/// For direct references to a callback.
+    // (VC) function index for library or user function
+    // (Lua) an index to the lua registry where this callback is held.
+    int functionIndex;
+    // (VC only) Either opLIBFUNC or opUSERFUNC.
+    int opType;
+    // (VC only) the core image the function is on.
+    int cimage;
+
+	VergeCallback()
+		: funcname(empty_string), functionIndex(-1), opType(0), cimage(0)
+	{
+	}
+};
+
 class ScriptEngine {
 public:
 	ScriptEngine();

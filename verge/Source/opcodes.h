@@ -96,6 +96,17 @@
 #define strPLUGINFUNC		103
 #define opPLUGINFUNC		104
 
+// Callbacks
+#define opRETCB				105 // Function returning a callback.
+#define opCBINVOKE			106 // Callback invocation with no return value
+#define opCBCOPY			107 // When copying a callback from a variable.
+#define strCBINVOKE			108 // Callback invocation with string return value
+#define intCBINVOKE			109 // Callback invocation with int return value
+#define cbLOCAL				110 // Local callback
+#define cbGLOBAL			111 // Global callback
+#define cbARRAY				112 // Global callback array
+#define cbUSERFUNC			113 // A function that returns a callback.
+
 // types are 1 = int, 3 = string, 4 = variable number of ints, 5 = void, 6 = struct
 
 #define t_INT				1
@@ -104,6 +115,7 @@
 #define t_VOID				5
 #define t_STRUCT			6
 #define t_BOOL				7 // For better lua compatibility with builtins.
+#define t_CALLBACK			8 // For function pointers.
 
 #define NUM_LIBFUNCS		281
 #define NUM_HVARS			128

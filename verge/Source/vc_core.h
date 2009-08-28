@@ -226,6 +226,8 @@ public:
 	VCCore();
 	~VCCore();
 
+	VergeCallback vcretcb;
+
 	virtual int ReadHvar_derived(int category, int loc, int ofs);
 	virtual void WriteHvar_derived(int category, int loc, int ofs, int value);
 	virtual StringRef ReadHvar_str_derived(int category, int loc, int ofs);
@@ -242,6 +244,7 @@ public:
 	bool FunctionExists(const StringRef &func);
 	int ResolveOperand();
 	StringRef ResolveString();
+	VergeCallback ResolveCallback();
 	void DisplayError(const StringRef &msg);
 
 	void ListStructMembers(std::vector<StringRef> &result, const char *structname);
@@ -273,8 +276,7 @@ public:
 	TUserFuncMap* userfuncMap[NUM_CIMAGES];
 
 private:
-	std::vector<int_t>					global_ints;
-	std::vector<string_t>				global_strings;
+	std::vector<global_var_t>				global_vars;
 	std::vector<struct_instance*>		struct_instances;
 
 	// patches pairs of <cimage,findex>
@@ -287,13 +289,16 @@ private:
 	int int_stack_base, int_stack_ptr;
 	StringRef str_stack[1024+20];
 	int str_stack_base, str_stack_ptr;
-	int int_last_base, str_last_base;
+	VergeCallback cb_stack[1024+20];
+	int cb_stack_base, cb_stack_ptr;
+	int int_last_base, str_last_base, cb_last_base;
 	std::vector < std::vector<argument_t> > vararg_stack;
 	function_t *in_func;
 
 	int *vcint;
 	StringRef *vcstring;
-	int maxint, maxstr;
+	VergeCallback *vccallback;
+	int maxint, maxstr, maxcb;
 
 	Chunk* currentvc;
 	int current_cimage;
@@ -306,6 +311,8 @@ private:
 	int  PopInt();
 	void PushString(CStringRef s);
 	StringRef PopString();
+	void PushCallback(VergeCallback callback);
+	VergeCallback PopCallback();
 
 	StringRef ProcessString();
 	int  ProcessOperand();
@@ -316,10 +323,11 @@ private:
 	bool ProcessIf();
 	bool ProcessIfOperand();
 	bool HandleSwitch(); // returns if it exits normally (else was a return)
-	void HandleLibFunc();
+	void HandleLibFunc(word c);
 	void HandlePluginFunc(int id);
 	void HandlePluginVarRead(int id);
 	void ExecuteBlock();
+	void ExecuteCallback(const VergeCallback& cb, bool argument_pass = false);
 	void ExecuteUserFunc(int cimage, int i, bool argument_pass = false);
 
 	int GetIntArgument(int index);
