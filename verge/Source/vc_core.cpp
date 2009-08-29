@@ -1062,17 +1062,47 @@ bool VCCore::CheckForVarargs()
 	return false;
 }
 
-void VCCore::ExecuteCallback(const VergeCallback& cb, bool argument_pass)
+void VCCore::ExecuteCallback(VergeCallback& cb, bool argument_pass)
 {
 	if(cb.functionIndex == -1)
 	{
-		if(!argument_pass)
+		bool success = false;
+		// Try and find the name early and keep a numeric reference from then on.
+		if(cb.funcname.length() > 0)
 		{
-			vcerr("Failed to invoke callback, because it wasn't properly initialized. Can't call a null or non-existant function!");
+			quad hash = FastHash(true, cb.funcname.c_str());
+			for(int i=0; i<NUM_CIMAGES; i++) {
+				TUserFuncMap find; find.hash = hash;
+				TUserFuncMap *end = userfuncMap[i]+userfuncs[i].size();
+				TUserFuncMap *found = std::lower_bound( userfuncMap[i], end, find );
+				if(found == end || found->hash != hash) continue;
+				
+				success = true;
+				cb.functionIndex = found->index;
+				cb.cimage = i;
+			}
+			// Clear the string so this lookup is cached, whether it failed or succeeded.
+			cb.funcname = empty_string;
 		}
-		return;
+		// Failed.
+		// Being called from interpreter, not outside code.
+		if(!success && !argument_pass)
+		{
+			// Seek to the nearest padding byte, so that failed calls won't kill the universe.
+			while (true)
+			{
+				if (currentvc->GrabC() == opCBPADDING)
+				{
+					break;
+				}
+			}
+			// Exit while we already know we fail.
+			return;
+		}
 	}
-	else if(cb.opType == opUSERFUNC)
+
+
+	if(cb.opType == opUSERFUNC)
 	{
 		ExecuteUserFunc(cb.cimage, cb.functionIndex, argument_pass);
 	}
@@ -1083,6 +1113,21 @@ void VCCore::ExecuteCallback(const VergeCallback& cb, bool argument_pass)
 	else
 	{
 		vcerr("ExecuteUserFunc: Invalid optype supplied for callback given! (%d)", currentvc->curpos() - 1);
+	}
+
+	// Just in case the call failed and we couldn't catch it.
+	if(!argument_pass)
+	{
+		// Seek to the nearest padding byte, so that failed calls won't kill the universe.
+		while (true)
+		{
+			if (currentvc->GrabC() == opCBPADDING)
+			{
+				break;
+			}
+		}
+		// Exit while we already know we fail.
+		return;
 	}
 }
 

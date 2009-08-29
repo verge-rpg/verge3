@@ -327,7 +327,7 @@ private:
 	void HandlePluginFunc(int id);
 	void HandlePluginVarRead(int id);
 	void ExecuteBlock();
-	void ExecuteCallback(const VergeCallback& cb, bool argument_pass = false);
+	void ExecuteCallback(VergeCallback& cb, bool argument_pass = false);
 	void ExecuteUserFunc(int cimage, int i, bool argument_pass = false);
 
 	int GetIntArgument(int index);

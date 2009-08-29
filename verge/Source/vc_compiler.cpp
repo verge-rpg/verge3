@@ -4428,6 +4428,8 @@ void VCCompiler::HandleCallbackInvocation(callback_definition* func)
 
 		throw va("%s(%d) Callback invocation expects %d arguments. (Got %d)", sourcefile, linenum, size, i);
 	}
+	// Need to pad after the function call if the invocation fails due to it not existing.
+	output.EmitC(opCBPADDING);
 }
 
 void VCCompiler::HandleUserFunc()
