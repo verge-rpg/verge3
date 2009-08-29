@@ -2052,7 +2052,7 @@ fclose(f);*/
 		}
 		else if (TokenIs("callback"))
 		{			
-			SkipArguments();
+			SkipCallbackDefinition();
 			
 			// Name of variable/function.
 			GetIdentifierToken();
@@ -2199,6 +2199,46 @@ void VCCompiler::SkipArguments()
 		else if(TokenIs(")"))
 		{
 			bracketCount--;
+		}
+	}
+}
+
+void VCCompiler::SkipCallbackDefinition()
+{
+	int orig_line = linenum;
+	char orig_file[256];
+	strcpy(orig_file, sourcefile);
+
+	int bracketsExpected = 1;
+	int bracketsOpen = 0;
+
+	// Skip argument type definition.
+	// Account for nesting (which can happen due to callback definitions) by counting depth.
+	// Read until we're at 0 bracket depth again.
+	while(bracketsExpected > 0 || bracketsOpen > 0)
+	{
+		if (!source[srcofs])
+			throw va("%s(%d): Malformed callback declaration"
+				"(reached EOF;"
+				"currently %d brackets are still open,"
+				"and still expecting %d sets of brackets to appear).",
+				orig_file, orig_line, bracketsOpen, bracketsExpected);
+		GetToken();
+		if(TokenIs("callback"))
+		{
+			bracketsExpected++;
+		}
+		if(TokenIs("("))
+		{
+			if(bracketsExpected > 0)
+			{
+				bracketsExpected--;
+			}
+			bracketsOpen++;
+		}
+		else if(TokenIs(")"))
+		{
+			bracketsOpen--;
 		}
 	}
 }
@@ -2652,8 +2692,6 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 	(*def) = new callback_definition;
 	int numargs = 0;
 
-	Expect("(");
-
 	GetToken();
 	if (TokenIs("void")) 
 		(*def)->signature = t_VOID;
@@ -2736,7 +2774,6 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 		numargs++;
 	}
 	(*def)->numargs = numargs;
-	Expect(")");
 	Expect(")");
 }
 
@@ -2895,7 +2932,7 @@ void VCCompiler::CompilePass()
 		if (NextIs("callback"))
 		{
 			GetToken(); // Got the keyword.
-			SkipArguments(); // Get the callback definition
+			SkipCallbackDefinition(); // Get the callback definition
 
 			// Check if the token after the word token is a (.
 			if(NextIs(2, "("))

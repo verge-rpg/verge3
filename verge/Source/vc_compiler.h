@@ -376,6 +376,7 @@ private:
 	void SkipFunction();
 	void SkipDeclare();
 	void SkipArguments();
+	void SkipCallbackDefinition();
 	void CheckNameDup(char *s);
 
 	// Overkill (2006-05-06): 
