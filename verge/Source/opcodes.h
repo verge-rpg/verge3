@@ -107,6 +107,7 @@
 #define cbARRAY				112 // Global callback array
 #define cbUSERFUNC			113 // A function that returns a callback.
 #define opCBPADDING			114 // Needed after call attempt, so that failure won't mess the interpreter.
+#define opCBFUNCEXISTS		115	// Test if a function exists or not.
 
 // types are 1 = int, 3 = string, 4 = variable number of ints, 5 = void, 6 = struct
 

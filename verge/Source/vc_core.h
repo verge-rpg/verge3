@@ -327,6 +327,7 @@ private:
 	void HandlePluginFunc(int id);
 	void HandlePluginVarRead(int id);
 	void ExecuteBlock();
+	bool CallbackFunctionExists(VergeCallback& cb); // Check if callback has a non-null value.
 	void ExecuteCallback(VergeCallback& cb, bool calling_from_library); // Invoke a callback.
 	void ReleaseCallback(VergeCallback& cb); // Free a callback (or else memory will leak until program end).
 	void ExecuteUserFunc(int cimage, int i, bool argument_pass = false);

@@ -3462,7 +3462,7 @@ void VCCompiler::CompileAtom()
 		CompileAtom();
 		return;
 	} else if (NextIs("-")) {
-		// negation
+		// negation 
 		output.EmitC(iopNEGATE);
 		GetToken(); // skip -
 		CompileAtom();
@@ -3471,6 +3471,14 @@ void VCCompiler::CompileAtom()
 		// Unary + (ignore, but allow)
 		GetToken(); // skip +
 		CompileAtom();
+		return;
+	} else if (NextIs("FunctionExists")) {
+		// Function existance detection
+		GetToken(); // skip
+		Expect("(");
+		output.EmitC(opCBFUNCEXISTS);
+		CompileCallback(NULL);
+		Expect(")");
 		return;
 	}
 
@@ -3933,6 +3941,7 @@ bool VCCompiler::VerifySignatureMatch(callback_definition* expected, function_t*
 
 // Compile an expression for assignment to a callback variable.
 // The expression must match the definition of the variable.
+// If def is NULL, then any callback applies.
 void VCCompiler::CompileCallback(callback_definition* def)
 {
 	// A run-time resolved callback reference.
@@ -3960,13 +3969,13 @@ void VCCompiler::CompileCallback(callback_definition* def)
 	if (id_type == ID_LIBFUNC)
     {
 		bool fail = false;
-		if(libfuncs[id_index].returnType != def->signature)
+		if(def != NULL && libfuncs[id_index].returnType != def->signature)
 		{
 			fail = true;
 		}
 
 		int i = 0;
-		while (i < libfuncs[id_index].argumentTypes.size())
+		while (def != NULL && i < libfuncs[id_index].argumentTypes.size())
 		{
 			if(fail || libfuncs[id_index].argumentTypes[i] != def->argtype[i])
 			{
@@ -4000,7 +4009,7 @@ void VCCompiler::CompileCallback(callback_definition* def)
 		if(NextIs("("))
 		{
 			// First, we'd better whine if the function does not return a callback, or the callback returned is not the one we expected.
-			if(func->signature != t_CALLBACK || !VerifySignatureMatch(def, func->sigext.callback))
+			if(def != NULL && (func->signature != t_CALLBACK || !VerifySignatureMatch(def, func->sigext.callback)))
 			{
 				// TODO: comprehensive error report with full signatures printed.
 				throw va("%s(%d): Function %s's return value does not match the callback signature expected", sourcefile, linenum, func->name);
@@ -4014,7 +4023,7 @@ void VCCompiler::CompileCallback(callback_definition* def)
 		// so the function itself must recursively match the signature of the callback expected.
 		else
 		{
-			if(!VerifySignatureMatch(def, func))
+			if(def != NULL && !VerifySignatureMatch(def, func))
 			{
 				// TODO: comprehensive error report with full signatures printed.
 				throw va("%s(%d): Function %s does not match the callback signature expected", sourcefile, linenum, func->name);
@@ -4036,7 +4045,7 @@ void VCCompiler::CompileCallback(callback_definition* def)
 		// Value given to the callback is the return value of another callback.
 		if(NextIs("("))
 		{
-			if(!VerifySignatureMatch(def, ext.callback->sigext.callback))
+			if(def != NULL && !VerifySignatureMatch(def, ext.callback->sigext.callback))
 			{
 				throw va("%s(%d): Callback's return type does not match the callback signature expected", sourcefile, linenum);
 			}
@@ -4047,7 +4056,7 @@ void VCCompiler::CompileCallback(callback_definition* def)
 		else
 		{
 			// Make sure it matches.
-			if(!VerifySignatureMatch(def, ext.callback))
+			if(def != NULL && !VerifySignatureMatch(def, ext.callback))
 			{
 				throw va("%s(%d): Callback does not match the callback signature expected", sourcefile, linenum);
 			}

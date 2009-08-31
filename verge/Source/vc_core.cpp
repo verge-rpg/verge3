@@ -581,6 +581,8 @@ int VCCore::ProcessOperand()
 			return -1 * ProcessOperand();
 		case iopNOT:
 			return ~ProcessOperand();
+		case opCBFUNCEXISTS:
+			return CallbackFunctionExists(ResolveCallback());
 		default:
 			vcerr("VCCore::ProcessOperand() - Invalid intsource %d.", op);
 			break;
@@ -933,10 +935,32 @@ VergeCallback VCCore::ResolveCallback()
 			break;
 		// A string that names a function to resolve at runtime.
 		case t_STRING:
+		{
+			bool success = false;
 			cb.opType = 0;
 			cb.funcname = ResolveString();
 			cb.functionIndex = -1;
-			break;
+			// Try and find the name early and keep a numeric reference from then on.
+			if(cb.funcname.length() > 0)
+			{
+				// Check user funcs.
+				quad hash = FastHash(true, cb.funcname.c_str());
+				for(int i=0; i<NUM_CIMAGES; i++) {
+					TUserFuncMap find; find.hash = hash;
+					TUserFuncMap *end = userfuncMap[i]+userfuncs[i].size();
+					TUserFuncMap *found = std::lower_bound(userfuncMap[i], end, find );
+					if(found == end || found->hash != hash) continue;
+					
+					success = true;
+					cb.opType = opUSERFUNC;
+					cb.functionIndex = found->index;
+					cb.cimage = i;
+				}
+
+				// TODO: check lib funcs?
+			}
+		}
+		break;
 		// The null function.
 		case t_INT:
 			cb.opType = 0;
@@ -1090,36 +1114,25 @@ bool VCCore::CheckForVarargs()
 	return false;
 }
 
+bool VCCore::CallbackFunctionExists(VergeCallback& cb)
+{
+	// Return whether or not this is the null function.
+	// Otherwise, it must exist (und)
+	return cb.functionIndex != -1;
+}
+
 void VCCore::ExecuteCallback(VergeCallback& cb, bool calling_from_library)
 {
+	// Set return values to empty values, in case of failure.
 	vcreturn = 0;
 	vcretstr = empty_string;
 	vcretcb = VergeCallback();
+
+	// Null function.
+	// Skip past call.
 	if(cb.functionIndex == -1)
 	{
-		//vcerr("All aboard the fail train. %s %d", cb.funcname, cb.opType);
-		bool success = false;
-		// Try and find the name early and keep a numeric reference from then on.
-		if(cb.funcname.length() > 0)
-		{
-			quad hash = FastHash(true, cb.funcname.c_str());
-			for(int i=0; i<NUM_CIMAGES; i++) {
-				TUserFuncMap find; find.hash = hash;
-				TUserFuncMap *end = userfuncMap[i]+userfuncs[i].size();
-				TUserFuncMap *found = std::lower_bound( userfuncMap[i], end, find );
-				if(found == end || found->hash != hash) continue;
-				
-				success = true;
-				cb.opType = opUSERFUNC;
-				cb.functionIndex = found->index;
-				cb.cimage = i;
-			}
-			// Clear the string so this lookup is cached, whether it failed or succeeded.
-			cb.funcname = empty_string;
-		}
-		// Failed.
-		// Being called from interpreter, not outside code.
-		if(!success && !calling_from_library)
+		if(!calling_from_library)
 		{
 			int depth = 1;
 			byte c;

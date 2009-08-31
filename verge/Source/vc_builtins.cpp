@@ -193,7 +193,7 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"5", "RenderMap", "111" },
 	{"5", "SetButtonKey", "11" },
 	{"5", "SetButtonJB", "11" },
-	{"7", "FunctionExists", "3" },
+	{}, // {"7", "FunctionExists", "3" }, was promoted to an opcode.
 	{"1", "atan2", "11" },
 	{"5", "CopyImageToClipboard", "1" },
 	{"1", "GetImageFromClipboard", "" },
