@@ -4238,6 +4238,15 @@ void VCCompiler::HandleReturn()
 
 void VCCompiler::HandleLibraryFunc()
 {
+	static bool initialized = false;
+	static callback_definition voidNoArgsCallback;
+	if(!initialized)
+	{
+		voidNoArgsCallback.signature = t_VOID;
+		voidNoArgsCallback.numargs = 0;
+		initialized = true;
+	}
+
 
 	Expect("(");
 	output.EmitC(opLIBFUNC);
@@ -4274,6 +4283,14 @@ void VCCompiler::HandleLibraryFunc()
 					break;
 				case t_STRING:
 					CompileString();
+					if (NextIs(",")) GetToken();
+					break;
+				case t_CALLBACK:
+					// Void, no args callback.
+					// If for some reason there's a need for other callback types,
+					// add some new type enumerations to opcodes.h.
+					// And setup in the if(!initialized) { ... } segment above.
+					CompileCallback(&voidNoArgsCallback);
 					if (NextIs(",")) GetToken();
 					break;
 				case t_VARARG:

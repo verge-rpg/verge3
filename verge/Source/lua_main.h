@@ -157,6 +157,67 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 			}
 		}
 
+		// Get callback from argument list (Lua allocates a reference).
+		virtual VergeCallback ResolveCallback()
+		{
+			VergeCallback cb;
+			if(activeFunctionStackOffset < lua_gettop(L))
+			{
+				activeFunctionStackOffset++;
+
+				// Push the function onto the stack temporarily, so we can pass to the registry (which pops it)
+				lua_pushvalue(L, activeFunctionStackOffset);
+				cb.functionIndex = luaL_ref(L, LUA_REGISTRYINDEX);
+			}
+			else
+			{
+				dump("Function '" + libfuncs[activeFunctionIndex].name + "'"
+					+ " is trying to get more operands than are on the stack.");
+			}
+			return cb;
+		}
+
+		// Free callback (or else, memory bloat in Lua.).
+		virtual void ReleaseCallback(VergeCallback& cb)
+		{
+			luaL_unref(L, LUA_REGISTRYINDEX, cb.functionIndex);
+		}
+
+		// Invoke callback.
+		virtual void ExecuteCallback(VergeCallback& cb, bool calling_from_library)
+		{
+			//the gettop/settop is to recover the stack from the user having returned a value from the callback function (we dont want one)
+			int temp = lua_gettop(L);
+
+			// Lookup our error callback.
+			lua_getglobal(L, "__err");
+			int errhandler = lua_gettop(L);
+
+			lua_rawgeti(L, LUA_REGISTRYINDEX, cb.functionIndex);
+
+			// Call global function by string name.
+			if(lua_isstring(L, -1))
+			{
+				ExecuteFunctionString(lua_tostring(L, -1));
+			}
+			// Call function reference on stack.
+			else if(lua_isfunction(L, -1))
+			{
+				// Push arguments onto the stack (if any.)
+				for(int i = 0; i < argument_pass_list.size(); i++)
+				{
+					lua_pushstring(L, argument_pass_list[i].string_value.c_str());
+				}				
+				if(lua_pcall(L, argument_pass_list.size(), 0, errhandler))
+				{
+					err("Error when invoking callback function.");
+				}
+				ArgumentPassClear();
+			}
+
+			lua_settop(L, temp);
+		}
+
 		virtual bool CheckForVarargs()
 		{
 			return libfuncs[activeFunctionIndex].argumentTypes.size() <= lua_gettop(L);

@@ -1,9 +1,12 @@
 #ifndef _G_SCRIPT
 #define _G_SCRIPT
 
+// See below.
+struct VergeCallback;
+
 extern bool die;
 extern int vc_paranoid, vc_arraycheck;
-extern StringRef renderfunc, timerfunc;
+extern VergeCallback renderfunc, timerfunc;
 
 extern int event_tx;
 extern int event_ty;
@@ -54,7 +57,7 @@ struct VergeCallback
     
 	/// For direct references to a callback.
     // (VC) function index for library or user function
-    // (Lua) an index to the lua registry where this callback is held.
+    // (Lua) an index to the lua table where this callback is held.
     int functionIndex;
     // (VC only) Either opLIBFUNC or opUSERFUNC.
     int opType;
@@ -83,6 +86,9 @@ public:
 	virtual void DisplayError(CStringRef msg) = 0;
 	virtual int ResolveOperand() = 0;
 	virtual StringRef ResolveString() = 0;
+	virtual VergeCallback ResolveCallback() = 0; // Get callback from argument list (Lua allocates a reference).
+	virtual void ReleaseCallback(VergeCallback& cb) = 0; // Free callback (or else, memory bloat in Lua.).
+	virtual void ExecuteCallback(VergeCallback& cb, bool calling_from_library) = 0; // Invoke callback.
 	virtual bool CheckForVarargs() = 0;
 	virtual void ReadVararg(std::vector<argument_t>& vararg) = 0;
 	void vcerr(char *str, ...) {
@@ -123,8 +129,8 @@ public:
 	//TODO(GetStringArray);
 	static void HookButton(int b, CStringRef s);
 	static void HookKey(int k, CStringRef s);
-	void HookTimer(CStringRef s);
-	void HookRetrace(CStringRef s);
+	void HookTimer(VergeCallback s);
+	void HookRetrace(VergeCallback s);
 	static void Log(CStringRef s);
 	static void MessageBox(CStringRef msg);
 	static int Random(int min, int max);

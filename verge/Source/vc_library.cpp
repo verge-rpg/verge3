@@ -623,8 +623,8 @@ VC_LIBFUNC(vc_strdup) ()
 	se->vcretstr = se->Strdup(s,times);
 }
 
-VC_LIBFUNC(vc_HookTimer) () { se->HookTimer(se->ResolveString()); }
-VC_LIBFUNC(vc_HookRetrace) () { se->HookRetrace(se->ResolveString()); }
+VC_LIBFUNC(vc_HookTimer) () { se->HookTimer(se->ResolveCallback()); }
+VC_LIBFUNC(vc_HookRetrace) () { se->HookRetrace(se->ResolveCallback()); }
 VC_LIBFUNC(vc_HookKey) () { 
 	int k = se->ResolveOperand();
 	StringRef s = se->ResolveString();

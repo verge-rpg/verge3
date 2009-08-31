@@ -234,22 +234,29 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 
 	while(i < providedArgumentCount)
 	{
+		// NOTE: For all of these, checkin' the i + 1th stack index because Lua indices start at 1
 		if (i < declaredArgumentCount)
 		{
-			// Ints. Need to check i + 1th stack index because Lua indices start at 1
+			// Ints.
 			if(libfuncs[functionIndex].argumentTypes[i] == t_INT && !lua_isnumber(L, i + 1))
 			{
 				LuaError(L,"Problem invoking %s: Argument #%d to function must be a int.", libfuncs[functionIndex].name.c_str(), i + 1);
 			}
-			// Booleans.  Need to check i + 1th stack index because Lua indices start at 1
+			// Booleans.
 			else if(libfuncs[functionIndex].argumentTypes[i] == t_BOOL && !lua_isboolean(L, i + 1))
 			{
 				LuaError(L,"Problem invoking %s: Argument #%d to function must be a boolean (true/false value).", libfuncs[functionIndex].name.c_str(), i + 1);
 			}
-			// Strings.  Need to check i + 1th stack index because Lua indices start at 1
+			// Strings. 
 			else if(libfuncs[functionIndex].argumentTypes[i] == t_STRING && !lua_isstring(L, i + 1))
 			{
 				LuaError(L,"Problem invoking %s: Argument #%d to function must be a string.", libfuncs[functionIndex].name.c_str(), i + 1);
+			}
+			// Callback. Can be a string or a function name
+			else if(libfuncs[functionIndex].argumentTypes[i] == t_CALLBACK
+				&& !lua_isstring(L, i + 1) && !lua_isfunction(L, i + 1))
+			{
+				LuaError(L,"Problem invoking %s: Argument #%d to function must be a valid function reference or a string.", libfuncs[functionIndex].name.c_str(), i + 1);
 			}
 		}
 		// Now for varargs and stuff, we'll error if this is 'too many' args afterwards.

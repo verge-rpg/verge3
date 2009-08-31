@@ -498,7 +498,7 @@ int VCCore::ProcessOperand()
 			{
 				if (d>=0 && d<40)
 				{
-					ExecuteCallback(cb_stack[cb_stack_base+d]);
+					ExecuteCallback(cb_stack[cb_stack_base+d], false);
 				}
 				else
 				{
@@ -519,7 +519,7 @@ int VCCore::ProcessOperand()
 				c = currentvc->GrabC();
 				if(c == opCBINVOKE)
 				{
-					ExecuteCallback(vccallback[d]);
+					ExecuteCallback(vccallback[d], false);
 					return vcreturn;
 				}
 				else
@@ -547,7 +547,7 @@ int VCCore::ProcessOperand()
 				c = currentvc->GrabC();
 				if(c == opCBINVOKE)
 				{
-					ExecuteCallback(vccallback[d]);
+					ExecuteCallback(vccallback[d], false);
 					return vcreturn;
 				}
 				else
@@ -721,7 +721,7 @@ StringRef VCCore::ProcessString()
 			{
 				if (d>=0 && d<40)
 				{
-					ExecuteCallback(cb_stack[cb_stack_base+d]);
+					ExecuteCallback(cb_stack[cb_stack_base+d], false);
 				}
 				else
 				{
@@ -742,7 +742,7 @@ StringRef VCCore::ProcessString()
 				temp = currentvc->GrabC();
 				if(temp == opCBINVOKE)
 				{
-					ExecuteCallback(vccallback[d]);
+					ExecuteCallback(vccallback[d], false);
 					return vcretstr;
 				}
 				else
@@ -770,7 +770,7 @@ StringRef VCCore::ProcessString()
 				temp = currentvc->GrabC();
 				if(temp == opCBINVOKE)
 				{
-					ExecuteCallback(vccallback[d]);
+					ExecuteCallback(vccallback[d], false);
 					return vcretstr;
 				}
 				else
@@ -872,7 +872,7 @@ VergeCallback VCCore::ResolveCallback()
 				// Copying the return value from the invocation of some callback.
 				else if(temp == opCBINVOKE)
 				{
-					ExecuteCallback(cb_stack[cb_stack_base + d]);
+					ExecuteCallback(cb_stack[cb_stack_base + d], false);
 					return vcretcb;
 				}
 				// Huh.
@@ -897,7 +897,7 @@ VergeCallback VCCore::ResolveCallback()
 				}
 				else if(temp == opCBINVOKE)
 				{
-					ExecuteCallback(vccallback[d]);
+					ExecuteCallback(vccallback[d], false);
 					return vcretcb;
 				}
 			}
@@ -924,7 +924,7 @@ VergeCallback VCCore::ResolveCallback()
 				}
 				else if(temp == opCBINVOKE)
 				{
-					ExecuteCallback(vccallback[d]);
+					ExecuteCallback(vccallback[d], false);
 					return vcretcb;
 				}
 			}
@@ -947,6 +947,12 @@ VergeCallback VCCore::ResolveCallback()
 			break;
 	}
 	return cb;
+}
+
+void VCCore::ReleaseCallback(VergeCallback& cb)
+{
+	// In VC, there's no reference that needs freeing when a callback isn't hooked to the engine anymore.
+	// The same can't be said for Lua...
 }
 
 void VCCore::ExecuteBlock()
@@ -1084,7 +1090,7 @@ bool VCCore::CheckForVarargs()
 	return false;
 }
 
-void VCCore::ExecuteCallback(VergeCallback& cb, bool argument_pass)
+void VCCore::ExecuteCallback(VergeCallback& cb, bool calling_from_library)
 {
 	vcreturn = 0;
 	vcretstr = empty_string;
@@ -1113,7 +1119,7 @@ void VCCore::ExecuteCallback(VergeCallback& cb, bool argument_pass)
 		}
 		// Failed.
 		// Being called from interpreter, not outside code.
-		if(!success && !argument_pass)
+		if(!success && !calling_from_library)
 		{
 			int depth = 1;
 			byte c;
@@ -1146,7 +1152,7 @@ void VCCore::ExecuteCallback(VergeCallback& cb, bool argument_pass)
 
 	if(cb.opType == opUSERFUNC)
 	{
-		ExecuteUserFunc(cb.cimage, cb.functionIndex, argument_pass);
+		ExecuteUserFunc(cb.cimage, cb.functionIndex, calling_from_library);
 	}
 	else if(cb.opType == opLIBFUNC)
 	{
@@ -1158,7 +1164,7 @@ void VCCore::ExecuteCallback(VergeCallback& cb, bool argument_pass)
 	}
 
 	// Just in case the call failed and we couldn't catch it.
-	if(!argument_pass)
+	if(!calling_from_library)
 	{
 		int depth = 1;
 		byte c;
@@ -1549,7 +1555,7 @@ void VCCore::HandleAssign()
 			}
 			else if (c == opCBINVOKE)
 			{
-				ExecuteCallback(cb_stack[cb_stack_base+offset]);
+				ExecuteCallback(cb_stack[cb_stack_base+offset], false);
 			}
 			else
 			{
@@ -1576,7 +1582,7 @@ void VCCore::HandleAssign()
 			}
 			else if(c == opCBINVOKE)
 			{
-				ExecuteCallback(vccallback[offset]);
+				ExecuteCallback(vccallback[offset], false);
 			}
 			else
 			{
@@ -1608,7 +1614,7 @@ void VCCore::HandleAssign()
 			}
 			else if(c == opCBINVOKE)
 			{
-				ExecuteCallback(vccallback[offset]);
+				ExecuteCallback(vccallback[offset], false);
 			}
 			else
 			{

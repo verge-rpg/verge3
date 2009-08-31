@@ -13,7 +13,7 @@
 
 //------------------- script engine state variables ----------------
 int cur_stick = 0;
-StringRef renderfunc,timerfunc;
+VergeCallback renderfunc, timerfunc;
 
 int event_tx;
 int event_ty;
@@ -549,20 +549,19 @@ void EnforceNoDirectories(StringRef s)
 
 void HookTimer()
 {
-	if (!timerfunc.empty())
+	// To prevent hooktimer from happening before the script engine is loaded.
+	if(!se) return;
+
+	while (hooktimer)
 	{
-		while (hooktimer)
-		{
-			se->ExecuteFunctionString(timerfunc);
-			hooktimer--;
-		}
+		se->ExecuteCallback(timerfunc, true);
+		hooktimer--;
 	}
 }
 
 void HookRetrace()
 {
-	if (!renderfunc.empty())
-		se->ExecuteFunctionString(renderfunc);
+	se->ExecuteCallback(renderfunc, true);
 }
 
 image *ImageForHandle(int handle)
@@ -622,13 +621,15 @@ void ScriptEngine::HookKey(int k, CStringRef s) {
 	bindarray[k] = s;
 }
 
-void ScriptEngine::HookTimer(CStringRef s) {
+void ScriptEngine::HookTimer(VergeCallback cb) {
 	hooktimer = 0;
-	timerfunc = s;
+	se->ReleaseCallback(timerfunc);
+	timerfunc = cb;
 }
 
-void ScriptEngine::HookRetrace(CStringRef s) {
-	renderfunc = s;
+void ScriptEngine::HookRetrace(VergeCallback cb) {
+	se->ReleaseCallback(renderfunc);
+	renderfunc = cb;
 }
 
 void ScriptEngine::Log(CStringRef s) { log(s.c_str()); }
