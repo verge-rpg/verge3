@@ -2038,7 +2038,7 @@ fclose(f);*/
 		GetToken();
 
 		isFunc = false;
-		if (TokenIs("int") || TokenIs("string"))
+		if (TokenIs("int") || TokenIs("string") || TokenIs("str"))
 		{
 			GetIdentifierToken();
 			ParseWhitespace();
@@ -2073,13 +2073,13 @@ fclose(f);*/
 		}
 
 		// Global variable declaration.
-		if ((TokenIs("int") || TokenIs("string") || TokenIs("callback")) && !isFunc)
+		if ((TokenIs("int") || TokenIs("string") || TokenIs("str") || TokenIs("callback")) && !isFunc)
 		{
 			ParseGlobalDecl(type);
 			continue;
 		}
 		// Function declaration.
-		if ((TokenIs("void") || TokenIs("int") || TokenIs("string") || TokenIs("callback")) && isFunc)
+		if ((TokenIs("void") || TokenIs("int") || TokenIs("string")|| TokenIs("str") || TokenIs("callback")) && isFunc)
 		{
 			ParseFuncDecl(type);
 			continue;
@@ -2347,7 +2347,7 @@ void VCCompiler::ParseGlobalDecl(scan_t type)
 	{
 		var_type = t_INT;
 	}
-	else if(TokenIs("string"))
+	else if(TokenIs("string") || TokenIs("str"))
 	{
 		var_type = t_STRING;
 	}
@@ -2510,7 +2510,7 @@ void VCCompiler::ParseStructDecl(scan_t type)
 		{
             ParseStructDeclVar(mystruct, t_INT);
 		}
-		else if (TokenIs("string"))
+		else if (TokenIs("string") || TokenIs("str"))
 		{
             ParseStructDeclVar(mystruct, t_STRING);
 		}
@@ -2697,7 +2697,7 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 		(*def)->signature = t_VOID;
 	else if (TokenIs("int")) 
 		(*def)->signature = t_INT;
-	else if (TokenIs("string"))
+	else if (TokenIs("string") || TokenIs("str"))
 		(*def)->signature = t_STRING;
 	else if (TokenIs("callback"))
 	{
@@ -2723,7 +2723,7 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 		GetToken();
 		if (TokenIs("int"))	
 			(*def)->argtype[numargs] = t_INT;
-        else if (TokenIs("string")) 
+        else if (TokenIs("string") || TokenIs("str")) 
 			(*def)->argtype[numargs] = t_STRING;
 		else if (TokenIs("callback"))
 		{
@@ -2786,7 +2786,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 		myfunc->signature = t_VOID;
 	else if (TokenIs("int")) 
 		myfunc->signature = t_INT;
-	else if (TokenIs("string"))
+	else if (TokenIs("string") || TokenIs("str"))
 		myfunc->signature = t_STRING;
 	else if (TokenIs("callback"))
 	{
@@ -2819,7 +2819,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 
 		if (TokenIs("int"))	
 			myfunc->argtype[numargs] = t_INT;
-        else if (TokenIs("string")) 
+        else if (TokenIs("string") || TokenIs("str")) 
 			myfunc->argtype[numargs] = t_STRING;
 		else if (TokenIs("callback"))
 		{
@@ -3127,7 +3127,7 @@ void VCCompiler::CompileFunction(bool returns_callback)
 
 	while (!NextIs("}"))
 	{
-		while (NextIs("int") || NextIs("string") || NextIs("callback"))
+		while (NextIs("int") || NextIs("string") || NextIs("str") || NextIs("callback"))
 		{
 			char argtype;
 			GetToken();
@@ -3135,7 +3135,7 @@ void VCCompiler::CompileFunction(bool returns_callback)
 			{
 				argtype = t_INT;				
 			}
-			else if(TokenIs("string"))
+			else if(TokenIs("string") || TokenIs("str"))
 			{
 				argtype = t_STRING;
 			}
@@ -3377,7 +3377,7 @@ bool VCCompiler::TokenIsStringExpression()
 	{
 		return true;
 	}
-	if (TokenIs("str"))
+	if (TokenIs("str") || TokenIs("string"))
     {
 		if (NextIs("("))
 		{
@@ -3480,6 +3480,13 @@ void VCCompiler::CompileAtom()
 		CompileCallback(NULL);
 		Expect(")");
 		return;
+	} else if(NextIs("int")) {
+		// String-to-integer casting, alias for val().
+		GetToken(); // skip
+		output.EmitC(intLIBFUNC);
+		CheckIdentifier("val");
+        HandleLibraryFunc();
+        return;
 	}
 
     GetToken();
@@ -3689,7 +3696,7 @@ void VCCompiler::ProcessString()
     GetToken();
 	CheckIdentifier(token);
 
-	if (TokenIs("str"))
+	if (TokenIs("str") || TokenIs("string"))
     {
         output.EmitC(strINT);
         Expect("(");
