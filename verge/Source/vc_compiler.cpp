@@ -709,7 +709,7 @@ void VCCompiler::vprint(char *message, ...)
 	va_end   (lst);
 
 	FILE *f = fopen(VCLOG, "a");
-	fprintf(f, string);
+	fputs(string, f);
 	fclose(f);
 }
 
@@ -2259,12 +2259,12 @@ void VCCompiler::CheckNameDup(char *s)
 	// check vs. system library functions
 	for (i=0; i<NUM_LIBFUNCS; i++)
 		if (streq(libfuncs[i].name, token))
-			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+			throw va("%s(%d): %s is already claimed by a built-in library function. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. all other functions compiled so far
 	for(i=precompile_numfuncs; i<funcs[target_cimage].size(); i++)
 		if(streq(funcs[target_cimage][i]->name, token))
-			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+			throw va("%s(%d): %s is already claimed by a user function. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check reference core images if we're preventing duplicates
 	if(!permit_duplicates) {
@@ -2274,29 +2274,29 @@ void VCCompiler::CheckNameDup(char *s)
 				continue;
 			for(i=0; i<funcs[cimage].size(); i++)
 				if(streq(funcs[cimage][i]->name, token))
-					throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+					throw va("%s(%d): %s is already claimed by a user function. Please choose a unique name.", sourcefile, linenum, s);
 		}
 	}
 
 	// check vs. HVars
 	for (i=0; i<hvars.size(); i++)
 		if (streq(hvars[i]->name, token))
-        	throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+        	throw va("%s(%d): %s is already claimed by a built-in library variable. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. global ints
 	for (i=0; i<global_vars.size(); i++)
 		if (streq(global_vars[i]->name, token))
-			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+			throw va("%s(%d): %s is already claimed by a global user variable. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. struct types
 	for (i=0; i<struct_defs.size(); i++)
 		if (streq(struct_defs[i]->name, token))
-			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+			throw va("%s(%d): %s is already claimed by a user struct definition. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. struct instances
 	for (i=0; i<struct_instances.size(); i++)
 		if (streq(struct_instances[i]->name, token))
-			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+			throw va("%s(%d): %s is already claimed by a user global variable. Please choose a unique name.", sourcefile, linenum, s);
 }
 
 // Overkill (2006-05-06)
@@ -2315,17 +2315,17 @@ void VCCompiler::CheckStructElementNameDup(char *s, struct_definition *def)
 	// check vs. HVars
 	for (i=0; i<hvars.size(); i++)
 		if (streq(hvars[i]->name, token))
-        	throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+        	throw va("%s(%d): %s is already claimed by a built-in library variable. Please choose a unique name.", sourcefile, linenum, s);
 	
 	// check vs. struct types
 	for (i=0; i<struct_defs.size(); i++)
 		if (streq(struct_defs[i]->name, token))
-			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+			throw va("%s(%d): %s is already claimed by a user struct definition. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. existing elements in the struct.
 	for (i=0; i<def->elements.size(); i++)
 		if (streq(def->elements[i]->name, token))
-			throw va("%s(%d): %s is already defined. Please choose a unique name.", sourcefile, linenum, s);
+			throw va("%s(%d): %s is already claimed by another variable in this struct. Please choose a unique name.", sourcefile, linenum, s);
 }
 
 
@@ -3935,9 +3935,28 @@ bool VCCompiler::VerifySignatureMatch(callback_definition* expected, function_t*
 // The expression must match the definition of the variable.
 void VCCompiler::CompileCallback(callback_definition* def)
 {
+	// A run-time resolved callback reference.
+	if (CheckExpressionType() == t_STRING)
+	{
+		output.EmitC(t_STRING);
+		CompileString();
+		return;
+	}
+
+	// Okay, err. grab the token, and try the other cases.
     GetToken();
+
+	// The null function (the default value for callbacks).
+	if(TokenIs("0"))
+	{
+		output.EmitC(t_INT);
+		return;
+	}
+
+	// Okay, onto identifier named things.
 	CheckIdentifier(token);
 
+	// Library function reference.
 	if (id_type == ID_LIBFUNC)
     {
 		bool fail = false;
@@ -3969,12 +3988,14 @@ void VCCompiler::CompileCallback(callback_definition* def)
 		output.EmitW(id_index);
         return;
     }
+	// User function
     if (id_type == ID_USERFUNC)
     {
 		int index = id_index;
 		function_t *func = funcs[id_cimage][id_index];
 
 		// If it's a function call, then handle that.
+		// That means the the value given to the callback is the return value of the function call.
 		// The returned value from the call must be a callback that recursively matches the definition of the callback expected.
 		if(NextIs("("))
 		{
@@ -3989,6 +4010,7 @@ void VCCompiler::CompileCallback(callback_definition* def)
 			HandleUserFunc();
 		}
 		// A function reference, not a function call.
+		// That means the the value given to the callback is a reference to the function.
 		// so the function itself must recursively match the signature of the callback expected.
 		else
 		{
@@ -4008,9 +4030,10 @@ void VCCompiler::CompileCallback(callback_definition* def)
 	std::string varname = std::string(token);
 	ext_definition ext;
 	int type = HandleVariable(&ext);
-	// Found a callback, good.
+	// Found a callback variable.
 	if (type == t_CALLBACK)
 	{
+		// Value given to the callback is the return value of another callback.
 		if(NextIs("("))
 		{
 			if(!VerifySignatureMatch(def, ext.callback->sigext.callback))
@@ -4020,6 +4043,7 @@ void VCCompiler::CompileCallback(callback_definition* def)
 			GetToken();
 			HandleCallbackInvocation(ext.callback);
 		}
+		// Value given to the callback is a copy of the other callback.
 		else
 		{
 			// Make sure it matches.
@@ -4058,14 +4082,9 @@ void VCCompiler::CompileCallback(callback_definition* def)
 		}
 		throw va("%s(%d): %s is not a callback", sourcefile, linenum, varname.c_str());
 	}
-
 	if (TokenIsIntExpression())
 	{
 		throw va("%s(%d): Expected a callback, but the int expression, '%s', was found instead.", sourcefile, linenum, token);
-	}
-	if (TokenIsStringExpression())
-	{
-		throw va("%s(%d): Expected a callback, but the string expression, '%s', was found instead.", sourcefile, linenum, token);
 	}
 	throw va("%s(%d): %s is not a known callback identifier", sourcefile, linenum, token);
 }

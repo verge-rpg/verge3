@@ -881,6 +881,9 @@ VergeCallback VCCore::ResolveCallback()
 					vcerr("VCCore::ResolveCallback() - unknown callback reference opcode!");
 				}
 			}
+			else
+				vcerr("VCCore::ResolveCallback(): bad offset to vc_callbacks (local), %d", d);
+			break;
 		// Callback operation (global var)
 		case cbGLOBAL:
 			d = currentvc->GrabD();
@@ -927,9 +930,21 @@ VergeCallback VCCore::ResolveCallback()
 			}
 			else
 				vcerr("VCCore::ResolveCallback(): bad offset to vc_callbacks (var), %d", d);
-			break;			
+			break;
+		// A string that names a function to resolve at runtime.
+		case t_STRING:
+			cb.opType = 0;
+			cb.funcname = ResolveString();
+			cb.functionIndex = -1;
+			break;
+		// The null function.
+		case t_INT:
+			cb.opType = 0;
+			cb.functionIndex = -1;
+			break;
 		default:
 			vcerr("VCCore:ResolveCallback() - Unsupported callback expression opcode.");
+			break;
 	}
 	return cb;
 }
@@ -1040,9 +1055,16 @@ void VCCore::ReadVararg(std::vector<argument_t>& vararg)
 
 void VCCore::IgnoreVararg()
 {
+	byte c;
 	while (true)
 	{
-		if (currentvc->GrabC() == opVARARG_END)
+		c = currentvc->GrabC();
+		// String literal
+		if (c == strLITERAL)
+		{
+			currentvc->GrabString();
+		}
+		else if (c == opVARARG_END)
 		{
 			break;
 		}
@@ -1064,8 +1086,12 @@ bool VCCore::CheckForVarargs()
 
 void VCCore::ExecuteCallback(VergeCallback& cb, bool argument_pass)
 {
+	vcreturn = 0;
+	vcretstr = empty_string;
+	vcretcb = VergeCallback();
 	if(cb.functionIndex == -1)
 	{
+		//vcerr("All aboard the fail train. %s %d", cb.funcname, cb.opType);
 		bool success = false;
 		// Try and find the name early and keep a numeric reference from then on.
 		if(cb.funcname.length() > 0)
@@ -1078,6 +1104,7 @@ void VCCore::ExecuteCallback(VergeCallback& cb, bool argument_pass)
 				if(found == end || found->hash != hash) continue;
 				
 				success = true;
+				cb.opType = opUSERFUNC;
 				cb.functionIndex = found->index;
 				cb.cimage = i;
 			}
@@ -1088,12 +1115,27 @@ void VCCore::ExecuteCallback(VergeCallback& cb, bool argument_pass)
 		// Being called from interpreter, not outside code.
 		if(!success && !argument_pass)
 		{
+			int depth = 1;
+			byte c;
 			// Seek to the nearest padding byte, so that failed calls won't kill the universe.
-			while (true)
+			// Needs to account for string literals and nested stuff.
+			while (depth > 0)
 			{
-				if (currentvc->GrabC() == opCBPADDING)
+				c = currentvc->GrabC();
+				// String literal
+				if (c == strLITERAL)
 				{
-					break;
+					currentvc->GrabString();
+				}
+				// Callback invocation has a callback invocation as argument
+				// Skip this one too.
+				else if(c == opCBINVOKE)
+				{
+					depth++;
+				}
+				else if(c == opCBPADDING)
+				{
+					depth--;
 				}
 			}
 			// Exit while we already know we fail.
@@ -1118,15 +1160,29 @@ void VCCore::ExecuteCallback(VergeCallback& cb, bool argument_pass)
 	// Just in case the call failed and we couldn't catch it.
 	if(!argument_pass)
 	{
+		int depth = 1;
+		byte c;
 		// Seek to the nearest padding byte, so that failed calls won't kill the universe.
-		while (true)
+		// Needs to account for string literals and nested stuff.
+		while (depth > 0)
 		{
-			if (currentvc->GrabC() == opCBPADDING)
+			c = currentvc->GrabC();
+			// String literal
+			if (c == strLITERAL)
 			{
-				break;
+				currentvc->GrabString();
+			}
+			// Callback invocation has a callback invocation as argument
+			// Skip this one too.
+			else if(c == opCBINVOKE)
+			{
+				depth++;
+			}
+			else if(c == opCBPADDING)
+			{
+				depth--;
 			}
 		}
-		// Exit while we already know we fail.
 		return;
 	}
 }
