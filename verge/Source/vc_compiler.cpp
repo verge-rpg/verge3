@@ -1981,7 +1981,9 @@ bool VCCompiler::IsKeyword(char* s)
 		|| !strcmp(s,"default")
 		|| !strcmp(s,"and")
 		|| !strcmp(s,"or")
-		|| !strcmp(s,"not");
+		|| !strcmp(s,"not")
+		|| !strcmp(s,"callback")
+		|| !strcmp(s,"alias");
 }
 
 bool VCCompiler::IsHexEscapeSequence(char* s)
