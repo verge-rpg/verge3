@@ -56,14 +56,28 @@ public:
 	~HVar();
 };
 
-struct callback_definition;
-class struct_definition;
-union ext_definition
+enum ExtType
 {
-    callback_definition* callback;
-    struct_definition* structure;
+	EXT_CALLBACK, // Function pointer
+	EXT_ALIAS, // Strongly typed alias to another type.
+	EXT_STRUCT, // TBD.
+};
+struct callback_definition;
+struct alias_definition;
+class struct_definition;
+struct ext_definition
+{
+	union
+	{
+		callback_definition* callback;
+		struct_definition* structure;
+		alias_definition* alias;
+	};
+
+	ExtType type;
 };
 
+// Function pointer definition.
 struct callback_definition
 {
     int signature;
@@ -74,6 +88,14 @@ struct callback_definition
 
 	callback_definition();
 	~callback_definition();
+};
+
+// Strongly typed type-alias.
+struct alias_definition
+{
+	char type; // Type of expression.
+
+	char name[IDENTIFIER_LEN];
 };
 
 class global_var_t
@@ -288,6 +310,7 @@ public:
 
     void ScanPass(scan_t type);
     std::vector<struct_definition*> struct_defs;
+	std::vector<alias_definition*> alias_defs;
     std::vector<char*> pp_included_files;
     void check_for_circular_includes(char* filename);
     bool PreProcess(char *fn);
@@ -336,6 +359,7 @@ private:
 	bool IsNumberChar(char ch);
 	bool IsHexNumberChar(char ch);
 	void GetIdentifierToken();
+	int TypenameToTypeID(char* s);
 
 	// scanning pass component
 	std::vector<global_var_t*>					global_vars;
@@ -386,6 +410,7 @@ private:
 	void ParseGlobalDecl(scan_t type);
 	void ParseCallbackDefinition(callback_definition** def);
 	void ParseFuncDecl(scan_t type);
+	void ParseAliasDecl(scan_t type);
 	void ParseStructDecl(scan_t type);
     void ParseStructDeclVar(struct_definition* mystruct, int variable_type);
 	void ParseStructInstance(scan_t type);

@@ -111,6 +111,7 @@
 
 // types are 1 = int, 3 = string, 4 = variable number of ints, 5 = void, 6 = struct
 
+#define t_NOTFOUND			0 // Reserved for errors.
 #define t_INT				1
 #define t_STRING			3
 #define t_VARARG			4

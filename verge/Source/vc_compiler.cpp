@@ -2011,6 +2011,32 @@ void VCCompiler::GetIdentifierToken()
 	ParseIdentifier();
 }
 
+int VCCompiler::TypenameToTypeID(char* s)
+{
+	if(streq(s, "int"))
+	{
+		return t_INT;
+	}
+	if(streq(s, "string") || streq(s, "str"))
+	{
+		return t_STRING;
+	}
+	if(streq(s, "void"))
+	{
+		return t_VOID;
+	}
+	if(streq(s, "callback"))
+	{
+		return t_CALLBACK;
+	}
+	if(streq(s, "..."))
+	{
+		return t_VARARG;
+	}
+	// Couldn't figure it out.
+	return t_NOTFOUND;
+}
+
 /**************** Scanning Pass Component ****************/
 
 void VCCompiler::ScanPass(scan_t type)
@@ -2025,6 +2051,7 @@ void VCCompiler::ScanPass(scan_t type)
 		global_var_offset = 0;
 	}
 
+	bool isPrimitive;
 	bool isFunc;
 /*FILE *f = fopen("prepos.txt", "wb");  // FIXME remove
 source.SaveChunk(f);
@@ -2037,9 +2064,11 @@ fclose(f);*/
 		int save_srcofs = srcofs;
 		GetToken();
 
+		isPrimitive = false;
 		isFunc = false;
 		if (TokenIs("int") || TokenIs("string") || TokenIs("str"))
 		{
+			isPrimitive = true;
 			GetIdentifierToken();
 			ParseWhitespace();
 			if (source[srcofs] == '(')
@@ -2052,6 +2081,7 @@ fclose(f);*/
 		}
 		else if (TokenIs("callback"))
 		{			
+			isPrimitive = true;
 			SkipCallbackDefinition();
 			
 			// Name of variable/function.
@@ -2073,17 +2103,24 @@ fclose(f);*/
 		}
 
 		// Global variable declaration.
-		if ((TokenIs("int") || TokenIs("string") || TokenIs("str") || TokenIs("callback")) && !isFunc)
+		if (isPrimitive && !isFunc)
 		{
 			ParseGlobalDecl(type);
 			continue;
 		}
 		// Function declaration.
-		if ((TokenIs("void") || TokenIs("int") || TokenIs("string")|| TokenIs("str") || TokenIs("callback")) && isFunc)
+		if ((TokenIs("void") || isPrimitive) && isFunc)
 		{
 			ParseFuncDecl(type);
 			continue;
-		}		
+		}
+		// A strongly typed type-alias.
+		if(TokenIs("alias"))
+		{
+			ParseAliasDecl(type);
+			continue;
+		}
+
 		// Struct definition.
 		if (TokenIs("struct")) 
 		{
@@ -2112,8 +2149,8 @@ fclose(f);*/
 void VCCompiler::SkipDeclare()
 {
 	if(TokenIs("struct")) {
-		GetToken(); // struct
 		GetIdentifierToken(); // its name
+		GetToken(); // opening brace
 		SkipBrackets();
 		// get final ; if there is one
 		if(NextIs(";"))
@@ -2293,6 +2330,11 @@ void VCCompiler::CheckNameDup(char *s)
 		if (streq(struct_defs[i]->name, token))
 			throw va("%s(%d): %s is already claimed by a user struct definition. Please choose a unique name.", sourcefile, linenum, s);
 
+	// check vs. alias types
+	for (i=0; i<alias_defs.size(); i++)
+		if (streq(alias_defs[i]->name, token))
+			throw va("%s(%d): %s is already claimed by a type alias definition. Please choose a unique name.", sourcefile, linenum, s);
+
 	// check vs. struct instances
 	for (i=0; i<struct_instances.size(); i++)
 		if (streq(struct_instances[i]->name, token))
@@ -2322,6 +2364,11 @@ void VCCompiler::CheckStructElementNameDup(char *s, struct_definition *def)
 		if (streq(struct_defs[i]->name, token))
 			throw va("%s(%d): %s is already claimed by a user struct definition. Please choose a unique name.", sourcefile, linenum, s);
 
+	// check vs. alias types
+	for (i=0; i<alias_defs.size(); i++)
+		if (streq(alias_defs[i]->name, token))
+			throw va("%s(%d): %s is already claimed by a type alias definition. Please choose a unique name.", sourcefile, linenum, s);
+
 	// check vs. existing elements in the struct.
 	for (i=0; i<def->elements.size(); i++)
 		if (streq(def->elements[i]->name, token))
@@ -2343,17 +2390,14 @@ void VCCompiler::ParseGlobalDecl(scan_t type)
 
 	char var_type;
 	ext_definition ext;
-	if(TokenIs("int"))
+
+	var_type = TypenameToTypeID(token);
+	if(var_type == t_VOID || var_type == t_VARARG || var_type == t_NOTFOUND)
 	{
-		var_type = t_INT;
+		throw va("%s(%d): ParseGlobalDecl: unknown variable type %s found in global declaration", sourcefile, linenum, token);
 	}
-	else if(TokenIs("string") || TokenIs("str"))
+	if(var_type == t_CALLBACK)
 	{
-		var_type = t_STRING;
-	}
-	else if(TokenIs("callback"))
-	{
-		var_type = t_CALLBACK;
 		ParseCallbackDefinition(&(ext.callback));
 	}
 
@@ -2440,7 +2484,7 @@ void VCCompiler::ParseStructDeclVar(struct_definition* mystruct, int variable_ty
 	&&  variable_type != t_CALLBACK
     &&  variable_type != t_STRUCT)
     {
-        throw va("%s(%d) : assertion failure: expecting t_INT (%d) or t_STRING (%d) or t_STRUCT(%d) type; got %d", sourcefile, linenum, t_INT, t_STRING, t_STRUCT, variable_type);
+        throw va("%s(%d) : Invalid variable type %s found in struct definition.", sourcefile, linenum, token);
     }
 
     char type_name[80];
@@ -2485,6 +2529,40 @@ void VCCompiler::ParseStructDeclVar(struct_definition* mystruct, int variable_ty
     Expect(";");
 }
 
+void VCCompiler::ParseAliasDecl(scan_t type)
+{
+	switch(type)
+	{
+		case SCAN_IGNORE_NON_FUNC:
+			SkipDeclare();
+			return;
+		case SCAN_ERR_NON_FUNC:
+			throw va("%s(%d): Cannot declare new structs in map VC!", sourcefile, linenum);
+		case SCAN_ALL: // continue normally
+			break;
+	}
+
+	alias_definition *alias = new alias_definition;
+
+	// Grab name of the type to be aliased.
+	GetToken();
+	alias->type = TypenameToTypeID(token);
+	if(alias->type != t_INT && alias->type != t_STRING)
+	{
+		throw va("%s(%d): Type alias found for invalid type %s. Only aliases for int or string are allowed.", sourcefile, linenum, token);
+	}
+
+	// Grab name of new type.
+	GetToken();
+	CheckNameDup(token);
+	strcpy(alias->name, token);
+
+	vprint("alias type %s (for type id %d). \n", alias->name, alias->type);
+	alias_defs.push_back(alias);
+
+	Expect(";");
+}
+
 void VCCompiler::ParseStructDecl(scan_t type)
 {
 	switch(type) {
@@ -2506,21 +2584,15 @@ void VCCompiler::ParseStructDecl(scan_t type)
 	while (!NextIs("}"))
 	{
 		GetToken();
-		if (TokenIs("int"))
+		int var_type = TypenameToTypeID(token);
+		
+		if(var_type != t_NOTFOUND)
 		{
-            ParseStructDeclVar(mystruct, t_INT);
-		}
-		else if (TokenIs("string") || TokenIs("str"))
-		{
-            ParseStructDeclVar(mystruct, t_STRING);
-		}
-		else if (TokenIs("callback"))
-		{
-			ParseStructDeclVar(mystruct, t_CALLBACK);
+			ParseStructDeclVar(mystruct, var_type);
 		}
 		else
 		{
-            ParseStructDeclVar(mystruct, t_STRUCT);
+			ParseStructDeclVar(mystruct, t_STRUCT);
 		}
 	}
 	vprint("struct type declare %s: %d elements \n", mystruct->name, mystruct->elements.size());
@@ -2693,18 +2765,16 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 	int numargs = 0;
 
 	GetToken();
-	if (TokenIs("void")) 
-		(*def)->signature = t_VOID;
-	else if (TokenIs("int")) 
-		(*def)->signature = t_INT;
-	else if (TokenIs("string") || TokenIs("str"))
-		(*def)->signature = t_STRING;
-	else if (TokenIs("callback"))
+	
+	int sig = (*def)->signature = TypenameToTypeID(token);
+	// The token 'callback' is followed by a definition.
+	if (sig == t_CALLBACK)
 	{
-		(*def)->signature = t_CALLBACK;
 		ParseCallbackDefinition(&((*def)->sigext.callback));
 	}
-	else // Overkill (2006-05-06): More relevant errors where possible.
+	// Unhandled type.
+	// Give more relevant error messages when possible.
+	else if(sig == t_NOTFOUND || sig == t_VARARG)
 	{
 		// check vs. struct types
 		for (int i=0; i<struct_defs.size(); i++)
@@ -2716,25 +2786,20 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 		throw va("%s(%d): invalid argument type '%s' in callback definition", sourcefile, linenum, token);
 	}
 
-
 	Expect("(");
 	while (!NextIs(")"))
 	{
 		GetToken();
-		if (TokenIs("int"))	
-			(*def)->argtype[numargs] = t_INT;
-        else if (TokenIs("string") || TokenIs("str")) 
-			(*def)->argtype[numargs] = t_STRING;
-		else if (TokenIs("callback"))
+
+		int argtype = (*def)->argtype[numargs] = TypenameToTypeID(token);
+		// The token 'callback' is followed by a definition.
+		if (argtype == t_CALLBACK)
 		{
-			(*def)->argtype[numargs] = t_CALLBACK;
 			ParseCallbackDefinition(&((*def)->argext[numargs].callback));
 		}
-		else if (TokenIs("..."))
-		{
-			(*def)->argtype[numargs] = t_VARARG;
-		}
-		else // Overkill (2006-05-06): More relevant errors where possible.
+		// Unhandled type.
+		// Give more relevant error messages when possible.
+		else if (argtype == t_NOTFOUND || argtype == t_VOID)
 		{
 			// check vs. struct types
 			for (int i=0; i<struct_defs.size(); i++)
@@ -2751,7 +2816,7 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 			GetIdentifierToken();
 			CheckNameDup(token);
 		}
-		if ((*def)->argtype[numargs] != t_VARARG && NextIs(","))
+		if (argtype != t_VARARG && NextIs(","))
 		{
 			GetToken();	
 			if (NextIs(")"))
@@ -2762,7 +2827,7 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 		else if (!NextIs(")"))
 		{
 			GetToken();
-			if ((*def)->argtype[numargs] == t_VARARG)
+			if (argtype == t_VARARG)
 			{
 				throw va("%s(%d): variable argument lists must be the last argument of a variadic function.", sourcefile, linenum);
 			}
@@ -2782,18 +2847,15 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 	// type ignored -- always parse functions
 	function_t *myfunc = new function_t;
 
-	if (TokenIs("void")) 
-		myfunc->signature = t_VOID;
-	else if (TokenIs("int")) 
-		myfunc->signature = t_INT;
-	else if (TokenIs("string") || TokenIs("str"))
-		myfunc->signature = t_STRING;
-	else if (TokenIs("callback"))
+	int sig = myfunc->signature = TypenameToTypeID(token);
+	// The token 'callback' is followed by a definition.
+	if (sig == t_CALLBACK)
 	{
-		myfunc->signature = t_CALLBACK;
 		ParseCallbackDefinition(&(myfunc->sigext.callback));
 	}
-	else // Overkill (2006-05-06): More relevant errors where possible.
+	// Unhandled type.
+	// Give more relevant error messages when possible.
+	else if(sig == t_NOTFOUND || sig == t_VARARG)
 	{
 		// check vs. struct types
 		for (int i=0; i<struct_defs.size(); i++)
@@ -2817,20 +2879,15 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 	{
 		GetToken();
 
-		if (TokenIs("int"))	
-			myfunc->argtype[numargs] = t_INT;
-        else if (TokenIs("string") || TokenIs("str")) 
-			myfunc->argtype[numargs] = t_STRING;
-		else if (TokenIs("callback"))
+		int argtype = myfunc->argtype[numargs] = TypenameToTypeID(token);
+		// The token 'callback' is followed by a definition.
+		if (argtype == t_CALLBACK)
 		{
-			myfunc->argtype[numargs] = t_CALLBACK;
 			ParseCallbackDefinition(&(myfunc->argext[numargs].callback));
 		}
-		else if (TokenIs("..."))
-		{
-			myfunc->argtype[numargs] = t_VARARG;
-		}
-		else // Overkill (2006-05-06): More relevant errors where possible.
+		// Unhandled type.
+		// Give more relevant error messages when possible.
+		else if(argtype == t_NOTFOUND || argtype == t_VOID)
 		{
 			// check vs. struct types
 			for (int i=0; i<struct_defs.size(); i++)
@@ -2857,7 +2914,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 			}
 		}
 		strcpy(myfunc->localnames[numargs], token);
-		if (myfunc->argtype[numargs] != t_VARARG && NextIs(","))
+		if (argtype != t_VARARG && NextIs(","))
 		{
 			GetToken();	
 			if (NextIs(")"))
@@ -2868,7 +2925,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 		else if (!NextIs(")"))
 		{
 			GetToken();
-			if (myfunc->argtype[numargs] == t_VARARG)
+			if (argtype == t_VARARG)
 			{
 				throw va("%s(%d): variable argument lists must be the last argument of a variadic function.", sourcefile, linenum);
 			}
@@ -3069,10 +3126,16 @@ void VCCompiler::SkipVariables()
 	{
 		if (TokenIs("struct"))
 		{
-			GetToken(2);
+			GetToken(2); // name, open brace
 			SkipBrackets();
 			if (NextIs(";"))
 				Expect(";");
+			return;
+		}
+		if(TokenIs("alias"))
+		{
+			GetToken(2); // type, new name
+			Expect(";");
 			return;
 		}
 
@@ -3129,19 +3192,11 @@ void VCCompiler::CompileFunction(bool returns_callback)
 	{
 		while (NextIs("int") || NextIs("string") || NextIs("str") || NextIs("callback"))
 		{
-			char argtype;
 			GetToken();
-			if (TokenIs("int"))
+
+			char argtype = TypenameToTypeID(token);
+			if(argtype == t_CALLBACK)
 			{
-				argtype = t_INT;				
-			}
-			else if(TokenIs("string") || TokenIs("str"))
-			{
-				argtype = t_STRING;
-			}
-			else if(TokenIs("callback"))
-			{
-				argtype = t_CALLBACK;
 				ParseCallbackDefinition(&(in_func->argext[in_func->numlocals].callback));
 			}
 			in_func->argtype[in_func->numlocals] = argtype;
