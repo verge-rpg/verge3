@@ -692,6 +692,11 @@ VCCompiler::~VCCompiler()
 	{
 		delete struct_defs[i];
 	}
+	// free alias types
+	for (i=0; i<alias_defs.size(); i++)
+	{
+		delete alias_defs[i];
+	}
 
 	vprint("Done.");
 }
@@ -2824,25 +2829,46 @@ void VCCompiler::ParseAliasDecl(scan_t type)
 	Expect(";");
 }
 
-void VCCompiler::ParseStructDeclVar(struct_definition* mystruct, int variable_type)
+void VCCompiler::ParseStructMemberDecl(struct_definition* mystruct)
 {
-    if (variable_type != t_INT
-    &&  variable_type != t_STRING
-	&&  variable_type != t_CALLBACK
-    &&  variable_type != t_STRUCT)
-    {
-        throw va("%s(%d) : Invalid variable type %s found in struct definition.", sourcefile, linenum, token);
-    }
+	GetToken(); // Get the typename.
+	int variable_type = TypenameToTypeID(token);
 
     char type_name[80];
     strcpy(type_name, token);
 
 	ext_definition ext;
+	ext.type = EXT_NONE;
 
 	if(variable_type == t_CALLBACK)
 	{
+		ext.type = EXT_CALLBACK;
 		ParseCallbackDefinition(&(ext.callback));
 	}
+	else if(variable_type == t_NOTFOUND)
+	{
+		alias_definition* alias = FindAliasByName(token);
+		// Alias?
+		if(alias != NULL)
+		{
+			// The real data type to declare.
+			variable_type = alias->type;
+
+			// Keep alias reference in the extended definition info
+			ext.type = EXT_ALIAS;
+			ext.alias = alias;
+		}
+		else
+		{
+			// Couldn't find the type. Assume it's a structure, and resolve during code generation phase.
+			variable_type = t_STRUCT;
+		}
+	}
+	else if(variable_type == t_VOID || variable_type == t_VARARG)
+	{
+		throw va("%s(%d) : Invalid variable type %s found in struct definition.", sourcefile, linenum, token);
+	}
+
     while (true)
     {
         struct_element *myelem = new struct_element;
@@ -2896,17 +2922,7 @@ void VCCompiler::ParseStructDecl(scan_t type)
 	Expect("{");
 	while (!NextIs("}"))
 	{
-		GetToken();
-		int var_type = TypenameToTypeID(token);
-		
-		if(var_type != t_NOTFOUND)
-		{
-			ParseStructDeclVar(mystruct, var_type);
-		}
-		else
-		{
-			ParseStructDeclVar(mystruct, t_STRUCT);
-		}
+		ParseStructMemberDecl(mystruct);
 	}
 	vprint("struct type declare %s: %d elements \n", mystruct->name, mystruct->elements.size());
 	struct_defs.push_back(mystruct);

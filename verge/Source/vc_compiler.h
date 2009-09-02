@@ -416,7 +416,7 @@ private:
 	void ParseAliasDecl(scan_t type);
 
 	void ParseStructDecl(scan_t type);
-    void ParseStructDeclVar(struct_definition* mystruct, int variable_type);
+    void ParseStructMemberDecl(struct_definition* mystruct);
 	void ParseStructInstance(scan_t type);
 
 	// code generation component
