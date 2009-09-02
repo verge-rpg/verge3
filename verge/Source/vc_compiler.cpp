@@ -2103,6 +2103,26 @@ fclose(f);*/
 		{
 			isFunc = true;
 		}
+		else
+		{
+			// An aliased type?
+			if(FindAliasByName(token) != NULL)
+			{
+				// Currently only the int/string can be aliased.
+				// So the aliased type is a primitive.
+				isPrimitive = true;
+
+				GetIdentifierToken();
+				ParseWhitespace();
+				if (source[srcofs] == '(')
+				{
+					isFunc = true;
+				}
+				// restore
+				srcofs = save_srcofs;
+				GetToken();
+			}
+		}
 
 		// Global variable declaration.
 		if (isPrimitive && !isFunc)
@@ -2116,7 +2136,7 @@ fclose(f);*/
 			ParseFuncDecl(type);
 			continue;
 		}
-		// A strongly typed type-alias.
+		// A strong type definition.
 		if(TokenIs("alias"))
 		{
 			ParseAliasDecl(type);
@@ -2392,15 +2412,31 @@ void VCCompiler::ParseGlobalDecl(scan_t type)
 
 	char var_type;
 	ext_definition ext;
+	ext.type = EXT_NONE;
 
 	var_type = TypenameToTypeID(token);
+	if(var_type == t_CALLBACK)
+	{
+		ext.type = EXT_CALLBACK;
+		ParseCallbackDefinition(&(ext.callback));
+	}
+	// Aliased type?
+	{
+		alias_definition* alias = FindAliasByName(token);
+		if(alias != NULL)
+		{
+			// The real data type to declare.
+			var_type = alias->type;
+
+			// Keep alias reference in the extended definition info
+			ext.type = EXT_ALIAS;
+			ext.alias = alias;
+		}
+	}
+	// Couldn't resolve.
 	if(var_type == t_VOID || var_type == t_VARARG || var_type == t_NOTFOUND)
 	{
 		throw va("%s(%d): ParseGlobalDecl: unknown variable type %s found in global declaration", sourcefile, linenum, token);
-	}
-	if(var_type == t_CALLBACK)
-	{
-		ParseCallbackDefinition(&(ext.callback));
 	}
 
 	while (true)
@@ -2479,6 +2515,311 @@ void VCCompiler::ParseGlobalDecl(scan_t type)
 	Expect(";");
 }
 
+
+void VCCompiler::ParseCallbackDefinition(callback_definition** def)
+{
+	(*def) = new callback_definition;
+	int numargs = 0;
+
+	GetToken();
+	
+	(*def)->sigext.type = EXT_NONE;
+	int sig = (*def)->signature = TypenameToTypeID(token);
+	// The token 'callback' is followed by a definition.
+	if (sig == t_CALLBACK)
+	{
+		(*def)->sigext.type = EXT_CALLBACK;
+		ParseCallbackDefinition(&((*def)->sigext.callback));
+	}
+	else
+	{
+		// Aliased type?
+		{
+			alias_definition* alias = FindAliasByName(token);
+			if(alias != NULL)
+			{
+				// The real data type to declare.
+				sig = alias->type;
+
+				// Keep alias reference in the extended definition info
+				(*def)->sigext.type = EXT_ALIAS;
+				(*def)->sigext.alias = alias;
+			}
+		}
+		// Unhandled type.
+		// Give more relevant error messages when possible.
+		if(sig == t_NOTFOUND || sig == t_VARARG)
+		{
+			// check vs. struct types
+			for (int i=0; i<struct_defs.size(); i++)
+				if (streq(struct_defs[i]->name, token))
+				{
+					throw va("%s(%d): '%s' is a struct. Structs cannot be used as an argument type in a callback definition.", sourcefile, linenum, token);
+				}
+			// Otherwise: generic error.
+			throw va("%s(%d): invalid argument type '%s' in callback definition", sourcefile, linenum, token);
+		}
+	}
+
+	Expect("(");
+	while (!NextIs(")"))
+	{
+		GetToken();
+
+		(*def)->argext[numargs].type = EXT_NONE;
+		int argtype = (*def)->argtype[numargs] = TypenameToTypeID(token);
+		// The token 'callback' is followed by a definition.
+		if (argtype == t_CALLBACK)
+		{
+			(*def)->argext[numargs].type = EXT_CALLBACK;
+			ParseCallbackDefinition(&((*def)->argext[numargs].callback));
+		}
+		else
+		{
+			// Aliased type?
+			{
+				alias_definition* alias = FindAliasByName(token);
+				if(alias != NULL)
+				{
+					// The real data type to declare.
+					argtype = alias->type;
+
+					// Keep alias reference in the extended definition info
+					(*def)->argext[numargs].type = EXT_ALIAS;
+					(*def)->argext[numargs].alias = alias;
+				}
+			}
+			// Unhandled type.
+			// Give more relevant error messages when possible.
+			if (argtype == t_NOTFOUND || argtype == t_VOID)
+			{
+				// check vs. struct types
+				for (int i=0; i<struct_defs.size(); i++)
+					if (streq(struct_defs[i]->name, token))
+					{
+						throw va("%s(%d): '%s' is a struct. Structs cannot be used as an argument type in a callback definition.", sourcefile, linenum, token);
+					}
+				// Otherwise: generic error.
+				throw va("%s(%d): invalid argument type '%s' in callback definition", sourcefile, linenum, token);
+			}
+		}
+		
+		if(!NextIs(",") && !NextIs(")"))
+		{
+			GetIdentifierToken();
+			CheckNameDup(token);
+		}
+		if (argtype != t_VARARG && NextIs(","))
+		{
+			GetToken();	
+			if (NextIs(")"))
+			{
+				throw va("%s(%d) : syntax error: trailing comma not allowed in argument list", sourcefile, linenum);
+			}
+		}
+		else if (!NextIs(")"))
+		{
+			GetToken();
+			if (argtype == t_VARARG)
+			{
+				throw va("%s(%d): variable argument lists must be the last argument of a variadic function.", sourcefile, linenum);
+			}
+			else
+			{
+				throw va("%s(%d) : syntax error: arguments must be separated by commas. found: %s", sourcefile, linenum, token); 
+			}
+		}
+		numargs++;
+	}
+	(*def)->numargs = numargs;
+	Expect(")");
+}
+
+void VCCompiler::ParseFuncDecl(scan_t type) 
+{
+	// type ignored -- always parse functions
+	function_t *myfunc = new function_t;
+
+	myfunc->sigext.type = EXT_NONE;
+	int sig = myfunc->signature = TypenameToTypeID(token);
+	// The token 'callback' is followed by a definition.
+	if (sig == t_CALLBACK)
+	{
+		myfunc->sigext.type = EXT_CALLBACK;
+		ParseCallbackDefinition(&(myfunc->sigext.callback));
+	}
+	else
+	{
+		// Aliased type?
+		{
+			alias_definition* alias = FindAliasByName(token);
+			if(alias != NULL)
+			{
+				// The real data type to declare.
+				sig = alias->type;
+
+				// Keep alias reference in the extended definition info
+				myfunc->sigext.type = EXT_ALIAS;
+				myfunc->sigext.alias = alias;
+			}
+		}
+		// Unhandled type.
+		// Give more relevant error messages when possible.
+		if(sig == t_NOTFOUND || sig == t_VARARG)
+		{
+			// check vs. struct types
+			for (int i=0; i<struct_defs.size(); i++)
+				if (streq(struct_defs[i]->name, token))
+				{
+					throw va("%s(%d): '%s' is a struct. Structs cannot be used as a return type in a function.", sourcefile, linenum, token);
+				}
+			// Otherwise: generic error.
+			throw va("%s(%d) : error: invalid return type: %s", sourcefile, linenum, token);
+		}
+	}
+
+	myfunc->coreimage = target_cimage;
+
+	GetIdentifierToken();
+	CheckNameDup(token);
+
+	int numargs = 0;
+	strcpy(myfunc->name, token);
+	Expect("(");
+	while (!NextIs(")"))
+	{
+		GetToken();
+
+		myfunc->argext[numargs].type = EXT_NONE;
+		int argtype = myfunc->argtype[numargs] = TypenameToTypeID(token);
+		// The token 'callback' is followed by a definition.
+		if (argtype == t_CALLBACK)
+		{
+			myfunc->argext[numargs].type = EXT_CALLBACK;
+			ParseCallbackDefinition(&(myfunc->argext[numargs].callback));
+		}
+		else
+		{
+			// Aliased type?
+			{
+				alias_definition* alias = FindAliasByName(token);
+				if(alias != NULL)
+				{
+					// The real data type to declare.
+					argtype = alias->type;
+
+					// Keep alias reference in the extended definition info
+					myfunc->argext[numargs].type = EXT_ALIAS;
+					myfunc->argext[numargs].alias = alias;
+				}
+			}
+			// Unhandled type.
+			// Give more relevant error messages when possible.
+			if(argtype == t_NOTFOUND || argtype == t_VOID)
+			{
+				// check vs. struct types
+				for (int i=0; i<struct_defs.size(); i++)
+					if (streq(struct_defs[i]->name, token))
+					{
+						throw va("%s(%d): '%s' is a struct. Structs cannot be used as an argument type in a function.", sourcefile, linenum, token);
+					}
+				// Otherwise: generic error.
+				throw va("%s(%d): invalid argument type '%s'", sourcefile, linenum, token);
+			}
+		}
+		
+		GetIdentifierToken();
+		CheckNameDup(token);
+
+		if (streq(myfunc->name, token))
+		{
+			throw va("%s(%d) : error: '%s' : variable has same name as function", sourcefile, linenum, token);
+		}
+		for (int i = 0; i < numargs; i++)
+		{
+			if (streq(myfunc->localnames[i], token))
+			{
+				throw va("%s(%d) : error: '%s' : redefinition", sourcefile, linenum, token);
+			}
+		}
+		strcpy(myfunc->localnames[numargs], token);
+		if (argtype != t_VARARG && NextIs(","))
+		{
+			GetToken();	
+			if (NextIs(")"))
+			{
+				throw va("%s(%d) : syntax error: trailing comma not allowed in argument list", sourcefile, linenum);
+			}
+		}
+		else if (!NextIs(")"))
+		{
+			GetToken();
+			if (argtype == t_VARARG)
+			{
+				throw va("%s(%d): variable argument lists must be the last argument of a variadic function.", sourcefile, linenum);
+			}
+			else
+			{
+				throw va("%s(%d) : syntax error: arguments must be separated by commas. found: %s", sourcefile, linenum, token); 
+			}
+		}
+		numargs++;
+	}
+	myfunc->numargs = numargs;
+	Expect(")");
+	Expect("{");
+	SkipBrackets();
+
+	funcs[target_cimage].push_back(myfunc);
+	vprint("func %s found with %d args and shit.\n",myfunc->name, myfunc->numargs);
+}
+
+alias_definition* VCCompiler::FindAliasByName(char* name)
+{
+	for (int i=0; i < alias_defs.size(); i++)
+	{
+		if (streq(name, alias_defs[i]->name))
+		{
+			return alias_defs[i];
+		}
+	}
+	return NULL;
+}
+
+void VCCompiler::ParseAliasDecl(scan_t type)
+{
+	switch(type)
+	{
+		case SCAN_IGNORE_NON_FUNC:
+			SkipDeclare();
+			return;
+		case SCAN_ERR_NON_FUNC:
+			throw va("%s(%d): Cannot declare new structs in map VC!", sourcefile, linenum);
+		case SCAN_ALL: // continue normally
+			break;
+	}
+
+	alias_definition *alias = new alias_definition;
+
+	// Grab name of the type to be aliased.
+	GetToken();
+	alias->type = TypenameToTypeID(token);
+	if(alias->type != t_INT && alias->type != t_STRING)
+	{
+		throw va("%s(%d): Type alias found for invalid type %s. Only aliases for int or string are allowed.", sourcefile, linenum, token);
+	}
+
+	// Grab name of new type.
+	GetToken();
+	CheckNameDup(token);
+	strcpy(alias->name, token);
+
+	vprint("alias type %s (for type id %d). \n", alias->name, alias->type);
+	alias_defs.push_back(alias);
+
+	Expect(";");
+}
+
 void VCCompiler::ParseStructDeclVar(struct_definition* mystruct, int variable_type)
 {
     if (variable_type != t_INT
@@ -2529,40 +2870,6 @@ void VCCompiler::ParseStructDeclVar(struct_definition* mystruct, int variable_ty
         Expect(",");
     }
     Expect(";");
-}
-
-void VCCompiler::ParseAliasDecl(scan_t type)
-{
-	switch(type)
-	{
-		case SCAN_IGNORE_NON_FUNC:
-			SkipDeclare();
-			return;
-		case SCAN_ERR_NON_FUNC:
-			throw va("%s(%d): Cannot declare new structs in map VC!", sourcefile, linenum);
-		case SCAN_ALL: // continue normally
-			break;
-	}
-
-	alias_definition *alias = new alias_definition;
-
-	// Grab name of the type to be aliased.
-	GetToken();
-	alias->type = TypenameToTypeID(token);
-	if(alias->type != t_INT && alias->type != t_STRING)
-	{
-		throw va("%s(%d): Type alias found for invalid type %s. Only aliases for int or string are allowed.", sourcefile, linenum, token);
-	}
-
-	// Grab name of new type.
-	GetToken();
-	CheckNameDup(token);
-	strcpy(alias->name, token);
-
-	vprint("alias type %s (for type id %d). \n", alias->name, alias->type);
-	alias_defs.push_back(alias);
-
-	Expect(";");
 }
 
 void VCCompiler::ParseStructDecl(scan_t type)
@@ -2647,6 +2954,27 @@ void VCCompiler::ParseStructInstance(scan_t type)
 
 	Expect(";");
 }
+
+/**************** Compile Pass Component ****************/
+
+enum
+{
+	ID_NOMATCH,
+	ID_LIBFUNC,
+	ID_USERFUNC,
+	ID_VARIABLE,
+	ID_HVAR,
+	ID_GLOBALINT,
+	ID_GLOBALSTR,
+	ID_LOCALINT,
+	ID_LOCALSTR,
+	ID_STRUCT,
+	ID_PLUGINFUNC,
+	ID_PLUGINVAR,
+	ID_VARARG_LIST,
+	ID_LOCALCB,
+	ID_GLOBALCB,
+};
 
 // Overkill: Struct instances are created just before compilation.
 // This way it can ensure all struct types are defined,
@@ -2760,213 +3088,6 @@ void VCCompiler::CreateStructInstance(struct_instance *inst)
 		}
 	}
 }
-
-void VCCompiler::ParseCallbackDefinition(callback_definition** def)
-{
-	(*def) = new callback_definition;
-	int numargs = 0;
-
-	GetToken();
-	
-	int sig = (*def)->signature = TypenameToTypeID(token);
-	// The token 'callback' is followed by a definition.
-	if (sig == t_CALLBACK)
-	{
-		ParseCallbackDefinition(&((*def)->sigext.callback));
-	}
-	// Unhandled type.
-	// Give more relevant error messages when possible.
-	else if(sig == t_NOTFOUND || sig == t_VARARG)
-	{
-		// check vs. struct types
-		for (int i=0; i<struct_defs.size(); i++)
-			if (streq(struct_defs[i]->name, token))
-			{
-				throw va("%s(%d): '%s' is a struct. Structs cannot be used as an argument type in a callback definition.", sourcefile, linenum, token);
-			}
-		// Otherwise: generic error.
-		throw va("%s(%d): invalid argument type '%s' in callback definition", sourcefile, linenum, token);
-	}
-
-	Expect("(");
-	while (!NextIs(")"))
-	{
-		GetToken();
-
-		int argtype = (*def)->argtype[numargs] = TypenameToTypeID(token);
-		// The token 'callback' is followed by a definition.
-		if (argtype == t_CALLBACK)
-		{
-			ParseCallbackDefinition(&((*def)->argext[numargs].callback));
-		}
-		// Unhandled type.
-		// Give more relevant error messages when possible.
-		else if (argtype == t_NOTFOUND || argtype == t_VOID)
-		{
-			// check vs. struct types
-			for (int i=0; i<struct_defs.size(); i++)
-				if (streq(struct_defs[i]->name, token))
-				{
-					throw va("%s(%d): '%s' is a struct. Structs cannot be used as an argument type in a callback definition.", sourcefile, linenum, token);
-				}
-			// Otherwise: generic error.
-			throw va("%s(%d): invalid argument type '%s' in callback definition", sourcefile, linenum, token);
-		}
-		
-		if(!NextIs(",") && !NextIs(")"))
-		{
-			GetIdentifierToken();
-			CheckNameDup(token);
-		}
-		if (argtype != t_VARARG && NextIs(","))
-		{
-			GetToken();	
-			if (NextIs(")"))
-			{
-				throw va("%s(%d) : syntax error: trailing comma not allowed in argument list", sourcefile, linenum);
-			}
-		}
-		else if (!NextIs(")"))
-		{
-			GetToken();
-			if (argtype == t_VARARG)
-			{
-				throw va("%s(%d): variable argument lists must be the last argument of a variadic function.", sourcefile, linenum);
-			}
-			else
-			{
-				throw va("%s(%d) : syntax error: arguments must be separated by commas. found: %s", sourcefile, linenum, token); 
-			}
-		}
-		numargs++;
-	}
-	(*def)->numargs = numargs;
-	Expect(")");
-}
-
-void VCCompiler::ParseFuncDecl(scan_t type) 
-{
-	// type ignored -- always parse functions
-	function_t *myfunc = new function_t;
-
-	int sig = myfunc->signature = TypenameToTypeID(token);
-	// The token 'callback' is followed by a definition.
-	if (sig == t_CALLBACK)
-	{
-		ParseCallbackDefinition(&(myfunc->sigext.callback));
-	}
-	// Unhandled type.
-	// Give more relevant error messages when possible.
-	else if(sig == t_NOTFOUND || sig == t_VARARG)
-	{
-		// check vs. struct types
-		for (int i=0; i<struct_defs.size(); i++)
-			if (streq(struct_defs[i]->name, token))
-			{
-				throw va("%s(%d): '%s' is a struct. Structs cannot be used as a return type in a function.", sourcefile, linenum, token);
-			}
-		// Otherwise: generic error.
-		throw va("%s(%d) : error: invalid return type: %s", sourcefile, linenum, token);
-	}
-
-	myfunc->coreimage = target_cimage;
-
-	GetIdentifierToken();
-	CheckNameDup(token);
-
-	int numargs = 0;
-	strcpy(myfunc->name, token);
-	Expect("(");
-	while (!NextIs(")"))
-	{
-		GetToken();
-
-		int argtype = myfunc->argtype[numargs] = TypenameToTypeID(token);
-		// The token 'callback' is followed by a definition.
-		if (argtype == t_CALLBACK)
-		{
-			ParseCallbackDefinition(&(myfunc->argext[numargs].callback));
-		}
-		// Unhandled type.
-		// Give more relevant error messages when possible.
-		else if(argtype == t_NOTFOUND || argtype == t_VOID)
-		{
-			// check vs. struct types
-			for (int i=0; i<struct_defs.size(); i++)
-				if (streq(struct_defs[i]->name, token))
-				{
-					throw va("%s(%d): '%s' is a struct. Structs cannot be used as an argument type in a function.", sourcefile, linenum, token);
-				}
-			// Otherwise: generic error.
-			throw va("%s(%d): invalid argument type '%s'", sourcefile, linenum, token);
-		}
-		
-		GetIdentifierToken();
-		CheckNameDup(token);
-
-		if (streq(myfunc->name, token))
-		{
-			throw va("%s(%d) : error: '%s' : variable has same name as function", sourcefile, linenum, token);
-		}
-		for (int i = 0; i < numargs; i++)
-		{
-			if (streq(myfunc->localnames[i], token))
-			{
-				throw va("%s(%d) : error: '%s' : redefinition", sourcefile, linenum, token);
-			}
-		}
-		strcpy(myfunc->localnames[numargs], token);
-		if (argtype != t_VARARG && NextIs(","))
-		{
-			GetToken();	
-			if (NextIs(")"))
-			{
-				throw va("%s(%d) : syntax error: trailing comma not allowed in argument list", sourcefile, linenum);
-			}
-		}
-		else if (!NextIs(")"))
-		{
-			GetToken();
-			if (argtype == t_VARARG)
-			{
-				throw va("%s(%d): variable argument lists must be the last argument of a variadic function.", sourcefile, linenum);
-			}
-			else
-			{
-				throw va("%s(%d) : syntax error: arguments must be separated by commas. found: %s", sourcefile, linenum, token); 
-			}
-		}
-		numargs++;
-	}
-	myfunc->numargs = numargs;
-	Expect(")");
-	Expect("{");
-	SkipBrackets();
-
-	funcs[target_cimage].push_back(myfunc);
-	vprint("func %s found with %d args and shit.\n",myfunc->name, myfunc->numargs);
-}
-
-/**************** Compile Pass Component ****************/
-
-enum
-{
-	ID_NOMATCH,
-	ID_LIBFUNC,
-	ID_USERFUNC,
-	ID_VARIABLE,
-	ID_HVAR,
-	ID_GLOBALINT,
-	ID_GLOBALSTR,
-	ID_LOCALINT,
-	ID_LOCALSTR,
-	ID_STRUCT,
-	ID_PLUGINFUNC,
-	ID_PLUGINVAR,
-	ID_VARARG_LIST,
-	ID_LOCALCB,
-	ID_GLOBALCB,
-};
 
 void VCCompiler::CompilePass()
 {
@@ -3190,37 +3311,53 @@ void VCCompiler::CompileFunction(bool returns_callback)
 	in_func->codeofs = output.curpos();
 	in_func->numlocals = in_func->numargs;  // not really, but it'll be incremented as locals are declared
 
+	bool is_variable_declaration;
 	while (!NextIs("}"))
 	{
-		while (NextIs("int") || NextIs("string") || NextIs("str") || NextIs("callback"))
+		// Variable declaration? Try and see...
 		{
+			is_variable_declaration = true;
+			// Save old token, in case we're wrong.
+			int save_srcofs = srcofs;
 			GetToken();
 
 			char argtype = TypenameToTypeID(token);
+			ext_definition argext;
+			argext.type = EXT_NONE;
+
 			if(argtype == t_CALLBACK)
 			{
-				ParseCallbackDefinition(&(in_func->argext[in_func->numlocals].callback));
+				argext.type = EXT_CALLBACK;
+				ParseCallbackDefinition(&(argext.callback));
 			}
-			in_func->argtype[in_func->numlocals] = argtype;
-			GetIdentifierToken();
-			CheckNameDup(token);
-			for (int i = 0; i < in_func->numlocals; i++)
+			// Try other types.
+			if(argtype == t_NOTFOUND)
 			{
-				if (streq(token, in_func->localnames[i]))
+				// Alias?
+				alias_definition* alias = FindAliasByName(token);
+				if(alias != NULL)
 				{
-					throw va("%s(%d) : error: '%s' : redefinition", sourcefile, linenum, token);
+					// The real data type to declare.
+					argtype = alias->type;
+
+					// Keep alias reference in the extended definition info
+					argext.type = EXT_ALIAS;
+					argext.alias = alias;
 				}
 			}
-			memcpy(in_func->localnames[in_func->numlocals++], token, 80);
-			if (NextIs("=")) // initializer
+			// Failed. Restore to old position.
+			if(argtype != t_INT && argtype != t_STRING && argtype != t_CALLBACK)
 			{
-				CheckIdentifier(token);
-				HandleAssign();					
+				is_variable_declaration = false;
+				srcofs = save_srcofs;
 			}
-			while (!NextIs(";"))
+			// Local declaration list.
+			else
 			{
-				Expect(",");
 				in_func->argtype[in_func->numlocals] = argtype;
+				in_func->argext[in_func->numlocals] = argext;
+
+				// Name.
 				GetIdentifierToken();
 				CheckNameDup(token);
 				for (int i = 0; i < in_func->numlocals; i++)
@@ -3232,14 +3369,36 @@ void VCCompiler::CompileFunction(bool returns_callback)
 				}
 				memcpy(in_func->localnames[in_func->numlocals++], token, 80);
 				if (NextIs("=")) // initializer
-				{					
+				{
 					CheckIdentifier(token);
-					HandleAssign();
+					HandleAssign();					
 				}
+				while (!NextIs(";"))
+				{
+					Expect(",");
+					in_func->argtype[in_func->numlocals] = argtype;
+					in_func->argext[in_func->numlocals] = argext;
+					GetIdentifierToken();
+					CheckNameDup(token);
+					for (int i = 0; i < in_func->numlocals; i++)
+					{
+						if (streq(token, in_func->localnames[i]))
+						{
+							throw va("%s(%d) : error: '%s' : redefinition", sourcefile, linenum, token);
+						}
+					}
+					memcpy(in_func->localnames[in_func->numlocals++], token, 80);
+					if (NextIs("=")) // initializer
+					{					
+						CheckIdentifier(token);
+						HandleAssign();
+					}
+				}
+				Expect(";");
 			}
-			Expect(";");
 		}
-		if (!NextIs("}"))
+		// Wasn't a variable declaration. Must be a statement!
+		if (!is_variable_declaration)
 			CompileStatement();
 	}
 	Expect("}");

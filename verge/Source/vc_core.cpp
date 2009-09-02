@@ -1157,9 +1157,9 @@ void VCCore::ExecuteCallback(VergeCallback& cb, bool calling_from_library)
 					depth--;
 				}
 			}
-			// Exit while we already know we fail.
-			return;
 		}
+		// Exit while we already know we fail.
+		return;
 	}
 
 
@@ -1173,7 +1173,7 @@ void VCCore::ExecuteCallback(VergeCallback& cb, bool calling_from_library)
 	}
 	else
 	{
-		vcerr("ExecuteUserFunc: Invalid optype supplied for callback given! (%d)", currentvc->curpos() - 1);
+		vcerr("ExecuteUserFunc: Invalid optype supplied for callback given! (optype %d, %s call)", cb.opType, calling_from_library ? "library" : "internal");
 	}
 
 	// Just in case the call failed and we couldn't catch it.

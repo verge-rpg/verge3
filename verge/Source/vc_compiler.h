@@ -58,6 +58,7 @@ public:
 
 enum ExtType
 {
+	EXT_NONE, // Nothing special.
 	EXT_CALLBACK, // Function pointer
 	EXT_ALIAS, // Strongly typed alias to another type.
 	EXT_STRUCT, // TBD.
@@ -401,8 +402,8 @@ private:
 	void SkipDeclare();
 	void SkipArguments();
 	void SkipCallbackDefinition();
-	void CheckNameDup(char *s);
 
+	void CheckNameDup(char *s);
 	// Overkill (2006-05-06): 
 	// Elements inside structures have different naming rules.
 	void CheckStructElementNameDup (char *s, struct_definition *def);
@@ -410,7 +411,10 @@ private:
 	void ParseGlobalDecl(scan_t type);
 	void ParseCallbackDefinition(callback_definition** def);
 	void ParseFuncDecl(scan_t type);
+
+	alias_definition* FindAliasByName(char* name);
 	void ParseAliasDecl(scan_t type);
+
 	void ParseStructDecl(scan_t type);
     void ParseStructDeclVar(struct_definition* mystruct, int variable_type);
 	void ParseStructInstance(scan_t type);
