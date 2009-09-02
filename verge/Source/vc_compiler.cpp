@@ -2524,7 +2524,7 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 	GetToken();
 	
 	(*def)->sigext.type = EXT_NONE;
-	int sig = (*def)->signature = TypenameToTypeID(token);
+	int sig = TypenameToTypeID(token);
 	// The token 'callback' is followed by a definition.
 	if (sig == t_CALLBACK)
 	{
@@ -2560,6 +2560,7 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 			throw va("%s(%d): invalid argument type '%s' in callback definition", sourcefile, linenum, token);
 		}
 	}
+	(*def)->signature = sig;
 
 	Expect("(");
 	while (!NextIs(")"))
@@ -2567,7 +2568,7 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 		GetToken();
 
 		(*def)->argext[numargs].type = EXT_NONE;
-		int argtype = (*def)->argtype[numargs] = TypenameToTypeID(token);
+		int argtype = TypenameToTypeID(token);
 		// The token 'callback' is followed by a definition.
 		if (argtype == t_CALLBACK)
 		{
@@ -2603,6 +2604,7 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 				throw va("%s(%d): invalid argument type '%s' in callback definition", sourcefile, linenum, token);
 			}
 		}
+		(*def)->argtype[numargs] = argtype;
 		
 		if(!NextIs(",") && !NextIs(")"))
 		{
@@ -2641,7 +2643,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 	function_t *myfunc = new function_t;
 
 	myfunc->sigext.type = EXT_NONE;
-	int sig = myfunc->signature = TypenameToTypeID(token);
+	int sig = TypenameToTypeID(token);
 	// The token 'callback' is followed by a definition.
 	if (sig == t_CALLBACK)
 	{
@@ -2677,6 +2679,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 			throw va("%s(%d) : error: invalid return type: %s", sourcefile, linenum, token);
 		}
 	}
+	myfunc->signature = sig;
 
 	myfunc->coreimage = target_cimage;
 
@@ -2691,7 +2694,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 		GetToken();
 
 		myfunc->argext[numargs].type = EXT_NONE;
-		int argtype = myfunc->argtype[numargs] = TypenameToTypeID(token);
+		int argtype = TypenameToTypeID(token);
 		// The token 'callback' is followed by a definition.
 		if (argtype == t_CALLBACK)
 		{
@@ -2727,6 +2730,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 				throw va("%s(%d): invalid argument type '%s'", sourcefile, linenum, token);
 			}
 		}
+		myfunc->argtype[numargs] = argtype;
 		
 		GetIdentifierToken();
 		CheckNameDup(token);
