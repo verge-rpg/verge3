@@ -3482,8 +3482,9 @@ void VCCompiler::CheckIdentifier(char *s)
 			{
 				case t_INT: id_subtype = ID_GLOBALINT; break;
 				case t_STRING: id_subtype = ID_GLOBALSTR; break;
-				case t_CALLBACK: id_subtype = ID_GLOBALCB; id_ext = global_vars[i]->ext; break;
+				case t_CALLBACK: id_subtype = ID_GLOBALCB; break;
 			}
+			id_ext = global_vars[i]->ext;
 			id_array = (global_vars[i]->len > 0) ? 1 : 0; // len == 0 is a non-array
 			id_index = i;
 			return;
@@ -3503,12 +3504,14 @@ void VCCompiler::CheckIdentifier(char *s)
 						id_subtype = ID_LOCALINT;
 						id_array = 0;
 						id_index = i;
+						id_ext = in_func->argext[i];
 						return;
 					case t_STRING:
 						id_type = ID_VARIABLE;
 						id_subtype = ID_LOCALSTR;
 						id_array = 0;
 						id_index = i;
+						id_ext = in_func->argext[i];
 						return;
 					case t_CALLBACK:
 						id_type = ID_VARIABLE;
@@ -3609,38 +3612,12 @@ void VCCompiler::CheckIdentifier(char *s)
 // Checks if the token is definitely a string for error messages.
 bool VCCompiler::TokenIsStringExpression()
 {
-	if (TokenIs("\""))
+	if(streq(token, "\"")
+		|| streq(token, "str") || streq(token, "string")
+		|| streq(token, "left") || streq(token, "right") || streq(token, "mid"))
 	{
 		return true;
 	}
-	if (TokenIs("str") || TokenIs("string"))
-    {
-		if (NextIs("("))
-		{
-			return true;
-		}
-    }
-    if (TokenIs("left"))
-    {
-		if (NextIs("("))
-		{
-			return true;
-		}
-    }
-    if (TokenIs("right"))
-    {
-		if (NextIs("("))
-		{
-			return true;
-		}
-    }
-    if (TokenIs("mid"))
-    {
-		if (NextIs("("))
-		{
-			return true;
-		}
-    }
 	return false;
 }
 
@@ -3648,27 +3625,14 @@ bool VCCompiler::TokenIsStringExpression()
 // Checks if the token is definitely an int for error messages.
 bool VCCompiler::TokenIsIntExpression()
 {
-    if (chr_table[token[0]] == DIGIT)
-    {
-		return true;
-	}
-	if (TokenIs("("))
-    {
-		return true;
-	}
-	if (TokenIs("!") || TokenIs("not"))
+	if(chr_table[token[0]] == DIGIT
+		|| streq(token, "(")
+		|| streq(token, "!") || streq(token, "not")
+		|| streq(token, "~")
+		|| streq(token, "-")
+		|| streq(token, "int")
+		)
 	{
-		// logical negation
-		return true;
-	}
-	if (TokenIs("~"))
-	{
-		// binary NOT
-		return true;
-	}
-	if (TokenIs("-"))
-	{
-		// negation
 		return true;
 	}
 	return false;
@@ -3887,6 +3851,134 @@ void VCCompiler::CompileSubTerm()
 
 		CompileAtom();
 	}
+}
+
+void VCCompiler::CompileAliasExpression(alias_definition* alias)
+{
+	// Grab current token.
+	GetToken();
+
+	// Casting operator. Accept any expression that shares the same base as this.
+	if(streq(token, alias->name))
+	{
+		Expect("(");
+		switch(alias->type)
+		{
+			case t_INT: CompileOperand(); break;
+			case t_STRING: CompileString(); break;
+		}
+		Expect(")");
+		return;
+	}
+
+	// Check for variable or function.
+	CheckIdentifier(token);
+	// Since only user space can define aliases, we only need to check user functions.
+    if (id_type == ID_USERFUNC)
+    {
+		if (funcs[id_cimage][id_index]->signature != alias->type
+				|| funcs[id_cimage][id_index]->sigext.type != EXT_ALIAS || funcs[id_cimage][id_index]->sigext.alias != alias)
+		{
+		    throw va("%s(%d): %s does not return type %s", sourcefile, linenum, token, alias->name);
+		}
+
+		switch(alias->type)
+		{
+			case t_INT: output.EmitC(intUSERFUNC); HandleUserFunc(); output.EmitC(iopEND); break;
+			case t_STRING: output.EmitC(strUSERFUNC); HandleUserFunc(); output.EmitC(sEND); break;
+			default: throw va("%s(%d): CompileAliasExpression unknown alias typecode %d (branch: userfunc)", sourcefile, linenum, alias->type);
+		}
+        return;
+    }
+	// Plugin function? fail.
+	if(id_type == ID_PLUGINFUNC)
+	{
+		switch(alias->type)
+		{
+			case t_INT:
+				if(id_subtype != VCPlugins::RETURN_INT)
+					throw va("%s(%d): %s does not return type %s", sourcefile, linenum, token, alias->name);
+				break;
+			case t_STRING:
+				if(libfuncs[id_index].returnType != t_STRING)
+					throw va("%s(%d): %s does not return type %s", sourcefile, linenum, token, alias->name);
+				break;
+			default: throw va("%s(%d): CompileAliasExpression unknown typecode %d (branch: pluginfunc)", sourcefile, linenum, alias->type);
+		}
+		throw va("%s(%d): Return value from %s must to be converted into type %s to be used here.", sourcefile, linenum, token, alias->name);
+	}
+	// Library function? fail.
+    if (id_type == ID_LIBFUNC)
+    {
+		switch(alias->type)
+		{
+			case t_INT:
+				if(libfuncs[id_index].returnType != t_INT && libfuncs[id_index].returnType != t_BOOL)
+					throw va("%s(%d): %s does not return type %s", sourcefile, linenum, token, alias->name);
+				break;
+			case t_STRING:
+				if(libfuncs[id_index].returnType != t_STRING)
+					throw va("%s(%d): %s does not return type %s", sourcefile, linenum, token, alias->name);
+				break;
+			default: throw va("%s(%d): CompileAliasExpression unknown typecode %d (branch: libfunc)", sourcefile, linenum, alias->type);		
+		}
+		throw va("%s(%d): Return value from %s must to be converted into type %s to be used here.)", sourcefile, linenum, token, alias->name);
+	}
+
+	// Variable?
+	ext_definition ext;
+	int type = HandleVariable(&ext);
+
+	if(type == t_CALLBACK)
+	{
+		if(NextIs("("))
+		{
+			GetToken();
+			if (ext.callback->signature != alias->type
+					|| ext.callback->sigext.type != EXT_ALIAS || ext.callback->sigext.alias != alias)
+			{
+				throw va("%s(%d): Callback invocation does not return type %s", sourcefile, linenum, alias->name);
+			}
+			HandleCallbackInvocation(ext.callback);
+			switch(alias->type)
+			{
+				case t_INT: output.EmitC(iopEND); break;
+				case t_STRING: output.EmitC(sEND); break;
+				default: throw va("%s(%d): CompileAliasExpression unknown typecode %d (branch: callback)", sourcefile, linenum, alias->type);
+			}
+		}
+		else
+		{
+			throw va("%s(%d): Expected expression of type %s, but the callback expression, '%s', was found instead.", sourcefile, linenum, alias->name, token);
+		}
+		return;
+	}
+	// Found something.
+	if(type != -1)
+	{
+		if (type != alias->type || ext.type != EXT_ALIAS || ext.alias != alias)
+		{
+			throw va("%s(%d): Variable is not of type %s", sourcefile, linenum, alias->name);
+		}
+
+		switch(alias->type)
+		{
+			case t_INT: output.EmitC(iopEND); break;
+			case t_STRING: output.EmitC(sEND); break;
+			default: throw va("%s(%d): CompileAliasExpression unknown typecode %d (branch: variable)", sourcefile, linenum, alias->type);
+		}
+
+		return;
+	}
+	if(TokenIsStringExpression())
+	{
+		throw va("%s(%d): Expected expression of type %s, but found string expression '%s' instead", sourcefile, linenum, alias->name, token);
+	}
+	if(TokenIsIntExpression())
+	{
+		throw va("%s(%d): Expected expression of type %s, but found int expression '%s' instead", sourcefile, linenum, alias->name, token);
+	}
+	throw va("%s(%d): Could not resolve identifier '%s'!", sourcefile, linenum, token);
 }
 
 void VCCompiler::EmitStringLiteral()
@@ -4641,7 +4733,12 @@ void VCCompiler::HandleCallbackInvocation(callback_definition* func)
 		}
 		if (i < func->numargs)
 		{
-			switch (func->argtype[i])
+			if(func->argext[i].type == EXT_ALIAS)
+			{
+				CompileAliasExpression(func->argext[i].alias);
+				if (NextIs(",")) GetToken();
+			}
+			else switch (func->argtype[i])
 			{
 				case t_INT:
 					CompileOperand();
@@ -4746,7 +4843,12 @@ void VCCompiler::HandleUserFunc()
 		}
 		if (i < func->numargs)
 		{
-			switch (func->argtype[i])
+			if(func->argext[i].type == EXT_ALIAS)
+			{
+				CompileAliasExpression(func->argext[i].alias);
+				if (NextIs(",")) GetToken();
+			}
+			else switch (func->argtype[i])
 			{
 				case t_INT:
 					CompileOperand();
@@ -4863,6 +4965,7 @@ int VCCompiler::HandleVariable(ext_definition* ext)
 {
 	int vartype = -1; // Type of variable to be set.
 	int type = -1; // Overkill (2006-05-05): t_STRING or t_INT or t_CALLBACK. Type of value expected.
+
 	if (id_type == ID_NOMATCH)
 	{
 		return -1;
@@ -4883,18 +4986,22 @@ int VCCompiler::HandleVariable(ext_definition* ext)
 			case ID_GLOBALINT:
 				vartype = (id_array ? intARRAY : intGLOBAL);
 				type = t_INT;
+				if(ext) *ext = id_ext;
 				break;
 			case ID_GLOBALSTR:
 				vartype = (id_array ? strARRAY : strGLOBAL);
 				type = t_STRING;
+				if(ext) *ext = id_ext;
 				break;
 			case ID_LOCALINT:
 				vartype = intLOCAL;
 				type = t_INT;
+				if(ext) *ext = id_ext;
 				break;
 			case ID_LOCALSTR:
 				vartype = strLOCAL;
 				type = t_STRING;
+				if(ext) *ext = id_ext;
 				break;
 			case ID_LOCALCB:
 				vartype = cbLOCAL;
@@ -5162,9 +5269,9 @@ int VCCompiler::HandleVariable(ext_definition* ext)
 							break;
 						case t_CALLBACK:
 							vartype = (elem->len == 1 && !id_array) ? cbGLOBAL : cbARRAY;
-							if(ext) *ext = elem->ext;
 							break;
 					}
+					if(ext) *ext = elem->ext;
 
 					char itsname[80];
 					sprintf(itsname, "%c%s_%s", 1, struct_instances[struct_index]->name, elem->name);
@@ -5237,11 +5344,11 @@ void VCCompiler::HandleAssign()
 			throw va("%s(%d): plugin variable %s is not readable!", sourcefile, linenum, varname);
 	}
 
-	if (TokenIs("++") && type == t_INT) { output.EmitC(aINC); return; } else
-	if (TokenIs("--") && type == t_INT) { output.EmitC(aDEC); return; } else
-	if (TokenIs("+=") && type == t_INT) { output.EmitC(aINCSET); } else
+	if (TokenIs("++") && type == t_INT && ext.type != EXT_ALIAS) { output.EmitC(aINC); return; } else
+	if (TokenIs("--") && type == t_INT && ext.type != EXT_ALIAS) { output.EmitC(aDEC); return; } else
+	if (TokenIs("+=") && type == t_INT && ext.type != EXT_ALIAS) { output.EmitC(aINCSET); } else
 	// Overkill (2006-06-29): += Concatination operator implemented at last!
-	if (TokenIs("+=") && type == t_STRING)
+	if (TokenIs("+=") && type == t_STRING && ext.type != EXT_ALIAS)
     {
 		output.EmitC(aSET);
 
@@ -5251,7 +5358,7 @@ void VCCompiler::HandleAssign()
 		srcofs = thisofs;
 		output.EmitC(sADD);
 	} else
-	if (TokenIs("-=") && type == t_INT) { output.EmitC(aDECSET); } else
+	if (TokenIs("-=") && type == t_INT && ext.type != EXT_ALIAS) { output.EmitC(aDECSET); } else
 	// Overkill (2006-05-06): = assignment allowed if type is not a struct.
 	if (TokenIs("=") && (type == t_INT || type == t_STRING || type == t_CALLBACK))  { output.EmitC(aSET); } else
 	// Callbacks can be invoked.
@@ -5270,11 +5377,11 @@ void VCCompiler::HandleAssign()
 	{
 		if (type == t_INT)
 		{
-			throw va("%s(%d) Invalid integer assignment operator: \"%s\"", sourcefile, linenum, token);
+			throw va("%s(%d) Invalid %s assignment operator: \"%s\"", sourcefile, linenum, (ext.type == EXT_ALIAS) ? ext.alias->name : "integer", token);
 		}
 		else if (type == t_STRING)
 		{
-			throw va("%s(%d) Invalid string assignment operator: \"%s\"", sourcefile, linenum, token);
+			throw va("%s(%d) Invalid %s assignment operator: \"%s\"", sourcefile, linenum, (ext.type == EXT_ALIAS) ? ext.alias->name : "string", token);
 		}
 		else if (type == t_CALLBACK)
 		{
@@ -5306,6 +5413,11 @@ void VCCompiler::HandleAssign()
 		}
 	}
 
+	if(ext.type == EXT_ALIAS)
+	{
+		CompileAliasExpression(ext.alias);
+		return;
+	}
 	if (type == t_STRING)
 		CompileString();
 	else if (type == t_CALLBACK)

@@ -454,6 +454,8 @@ private:
 	void CompileTerm();
 	void CompileSubTerm();
 	void CompileAtom();
+	
+	void CompileAliasExpression(alias_definition* def);
 
 	bool VerifySignatureMatch(callback_definition* expected, function_t* value);
 	bool VerifySignatureMatch(callback_definition* expected, callback_definition* value);
