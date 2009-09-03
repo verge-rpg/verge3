@@ -1988,7 +1988,8 @@ bool VCCompiler::IsKeyword(char* s)
 		|| !strcmp(s,"or")
 		|| !strcmp(s,"not")
 		|| !strcmp(s,"callback")
-		|| !strcmp(s,"alias");
+		|| !strcmp(s,"alias")
+		|| !strcmp(s,"typedef");
 }
 
 bool VCCompiler::IsHexEscapeSequence(char* s)
@@ -2142,7 +2143,7 @@ fclose(f);*/
 			continue;
 		}
 		// A strong type definition.
-		if(TokenIs("alias"))
+		if(TokenIs("alias") || TokenIs("typedef"))
 		{
 			ParseAliasDecl(type);
 			continue;
@@ -2809,7 +2810,8 @@ void VCCompiler::ParseAliasDecl(scan_t type)
 	}
 
 	alias_definition *alias = new alias_definition;
-
+	alias->strong = TokenIs("typedef"); // Typedefs are strong definition, aliases are weak C-style.
+	
 	// Grab name of the type to be aliased.
 	GetToken();
 	alias->type = TypenameToTypeID(token);
@@ -3275,7 +3277,7 @@ void VCCompiler::SkipVariables()
 				Expect(";");
 			return;
 		}
-		if(TokenIs("alias"))
+		if(TokenIs("alias") || TokenIs("typedef"))
 		{
 			GetToken(2); // type, new name
 			Expect(";");
@@ -3391,7 +3393,7 @@ void VCCompiler::CompileFunction(bool returns_callback)
 				if (NextIs("=")) // initializer
 				{
 					CheckIdentifier(token);
-					HandleAssign();					
+					HandleAssign();	
 				}
 				while (!NextIs(";"))
 				{
@@ -4733,7 +4735,8 @@ void VCCompiler::HandleCallbackInvocation(callback_definition* func)
 		}
 		if (i < func->numargs)
 		{
-			if(func->argext[i].type == EXT_ALIAS)
+			// Typedef'd variable (Strong type aliasing).
+			if(func->argext[i].type == EXT_ALIAS && func->argext[i].alias->strong)
 			{
 				CompileAliasExpression(func->argext[i].alias);
 				if (NextIs(",")) GetToken();
@@ -4843,7 +4846,8 @@ void VCCompiler::HandleUserFunc()
 		}
 		if (i < func->numargs)
 		{
-			if(func->argext[i].type == EXT_ALIAS)
+			// Typedef'd variable (Strong type aliasing).
+			if(func->argext[i].type == EXT_ALIAS && func->argext[i].alias->strong)
 			{
 				CompileAliasExpression(func->argext[i].alias);
 				if (NextIs(",")) GetToken();
@@ -5344,11 +5348,11 @@ void VCCompiler::HandleAssign()
 			throw va("%s(%d): plugin variable %s is not readable!", sourcefile, linenum, varname);
 	}
 
-	if (TokenIs("++") && type == t_INT && ext.type != EXT_ALIAS) { output.EmitC(aINC); return; } else
-	if (TokenIs("--") && type == t_INT && ext.type != EXT_ALIAS) { output.EmitC(aDEC); return; } else
-	if (TokenIs("+=") && type == t_INT && ext.type != EXT_ALIAS) { output.EmitC(aINCSET); } else
+	if (TokenIs("++") && type == t_INT && !(ext.type == EXT_ALIAS && ext.alias->strong)) { output.EmitC(aINC); return; } else
+	if (TokenIs("--") && type == t_INT && !(ext.type == EXT_ALIAS && ext.alias->strong)) { output.EmitC(aDEC); return; } else
+	if (TokenIs("+=") && type == t_INT && !(ext.type == EXT_ALIAS && ext.alias->strong)) { output.EmitC(aINCSET); } else
 	// Overkill (2006-06-29): += Concatination operator implemented at last!
-	if (TokenIs("+=") && type == t_STRING && ext.type != EXT_ALIAS)
+	if (TokenIs("+=") && type == t_STRING && !(ext.type == EXT_ALIAS && ext.alias->strong))
     {
 		output.EmitC(aSET);
 
@@ -5358,7 +5362,7 @@ void VCCompiler::HandleAssign()
 		srcofs = thisofs;
 		output.EmitC(sADD);
 	} else
-	if (TokenIs("-=") && type == t_INT && ext.type != EXT_ALIAS) { output.EmitC(aDECSET); } else
+	if (TokenIs("-=") && type == t_INT && !(ext.type == EXT_ALIAS && ext.alias->strong)) { output.EmitC(aDECSET); } else
 	// Overkill (2006-05-06): = assignment allowed if type is not a struct.
 	if (TokenIs("=") && (type == t_INT || type == t_STRING || type == t_CALLBACK))  { output.EmitC(aSET); } else
 	// Callbacks can be invoked.
@@ -5413,7 +5417,8 @@ void VCCompiler::HandleAssign()
 		}
 	}
 
-	if(ext.type == EXT_ALIAS)
+	// Typedef'd variable (Strong type aliasing).
+	if(ext.type == EXT_ALIAS && ext.alias->strong)
 	{
 		CompileAliasExpression(ext.alias);
 		return;

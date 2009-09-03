@@ -91,11 +91,12 @@ struct callback_definition
 	~callback_definition();
 };
 
-// Strongly typed type-alias.
+// Strongly typed type-alias/define.
 struct alias_definition
 {
 	char type; // Type of expression.
 
+	bool strong; // Weak = 'alias' (like how C does typedefs), Strong = 'typdef' new type requiring casts.
 	char name[IDENTIFIER_LEN];
 };
 
