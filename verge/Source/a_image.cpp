@@ -167,13 +167,13 @@ image *xLoadImage_int(const char *fname,int tflag)
 		return newimage;
 	}
 	break;
-
-	case corona::PF_R8G8B8A8:
+	// Bad zero. You broke regular pngs that had a fully-255 alpha everywhere, because you never implemented the blitters.
+	/*case corona::PF_R8G8B8A8:
 		img = corona::ConvertImage(img,corona::PF_B8G8R8A8);
 		newimage=ImageFrom32bpp((byte*)img->getPixels(),img->getWidth(),img->getHeight());
 		delete img;
         return newimage;
-
+*/
 	default:
 	{
 		img = corona::ConvertImage(img,corona::PF_R8G8B8);
