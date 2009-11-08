@@ -622,7 +622,7 @@ void LUA::bindApi()
 		::err("Error function couldn't be initialized! The irony.");
 	}
 
-	lua_pushcfunction(L, ReadEntireFileIntoString, 1);
+	lua_pushcfunction(L, ReadEntireFileIntoString);
 	lua_setglobal(L, "__ReadEntireFileIntoString");
 
 	// Create an empty table!

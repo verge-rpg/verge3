@@ -1205,15 +1205,15 @@ static void print(int x, int y, image *dest, Font *font, CStringRef text, int wh
 		case 0:	
 			if (font == 0) {
 				::GotoXY(x, y);
-				::PrintString(text.c_str(), dest);
+				::PrintString("%s", dest, text.c_str());
 			} else font->PrintString("%s", x, y, dest, text.c_str());
 			break;
 		case 1:	
-			if (font == 0) ::PrintCenter(x, y, text.c_str(), dest);
+			if (font == 0) ::PrintCenter(x, y, "%s", dest, text.c_str());
 			else font->PrintCenter("%s", x, y, dest, text.c_str());
 			break;
 		case 2:	
-			if (font == 0) ::PrintRight(x, y, text.c_str(), dest);
+			if (font == 0) ::PrintRight(x, y, "%s", dest, text.c_str());
 			else font->PrintRight("%s", x, y, dest, text.c_str());
 			break;
 	}

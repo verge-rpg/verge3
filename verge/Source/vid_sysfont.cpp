@@ -86,7 +86,7 @@ void PrintString(const char *str, image *dest, ...)
 	char msg[1024];
 
 	va_start(argptr, dest);
-	vsprintf(msg, str, argptr);
+	vsnprintf(msg, 1024, str, argptr);
 	va_end(argptr);
 
 	int x1 = fontx;  // Remember where x where the line should start. -- Overkill 2005-12-28.
@@ -111,13 +111,13 @@ void PrintString(const char *str, image *dest, ...)
     PrintLine(&msg[start],&msg[end+1],dest);
 }
 
-void PrintRight(int x, int y, const char *str, image* dest)
+void PrintRight(int x, int y, const char *str, image* dest, ...)
 {
 	va_list argptr;
 	char msg[1024];
 
 	va_start(argptr, dest);
-	vsprintf(msg, str, argptr);
+	vsnprintf(msg, 1024, str, argptr);
 	va_end(argptr);
 
 	GotoXY(x, y);
@@ -148,7 +148,7 @@ void PrintCenter(int x, int y, const char *str, image *dest, ...)
 	char msg[1024];
 
 	va_start(argptr, dest);
-	vsprintf(msg, str, argptr);
+	vsnprintf(msg, 1024, str, argptr);
 	va_end(argptr);
 
 	GotoXY(x, y);

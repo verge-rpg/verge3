@@ -172,7 +172,7 @@ void Font::PrintString(char *str, int x, int y, image *dest, ...)
 	char msg[1024];
 
 	va_start(argptr, dest);
-	vsprintf(msg, str, argptr);
+	vsnprintf(msg, 1024, str, argptr);
 	va_end(argptr);
 
 	int start = 0, end = 0;
@@ -205,7 +205,7 @@ void Font::PrintRight(char *str, int x, int y, image *dest, ...)
 	int xsize = 0;
 
 	va_start(argptr, dest);
-	vsprintf(msg, str, argptr);
+	vsnprintf(msg, 1024, str, argptr);
 	va_end(argptr);
 
 	int start = 0, end = 0;
@@ -239,7 +239,7 @@ void Font::PrintCenter(char *str, int x, int y, image *dest, ...)
 	int xsize = 0;
 
 	va_start(argptr, dest);
-	vsprintf(msg, str, argptr);
+	vsnprintf(msg, 1024, str, argptr);
 	va_end(argptr);
 
 	int start = 0, end = 0;

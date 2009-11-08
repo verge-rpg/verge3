@@ -13,7 +13,7 @@
 #define SYSFONT_H
 
 void GotoXY(int, int);
-void PrintRight(int x1, int y1, const char *str, image *dest);
+void PrintRight(int x1, int y1, const char *str, image *dest, ...);
 void PrintCenter(int x1, int y1, const char *str, image *dest, ...);
 void print_char(char, image *dest);
 void PrintString(const char *, image *dest, ...);
