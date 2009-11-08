@@ -6,11 +6,6 @@
 #include "sincos.h"
 #include <algorithm>
 
-#define VCFILES				51
-#define VC_READ				1
-#define VC_WRITE			2
-#define VC_WRITE_APPEND		3 // Overkill (2006-07-05): Append mode added.
-
 //------------------- script engine state variables ----------------
 int cur_stick = 0;
 VergeCallback renderfunc, timerfunc;
@@ -35,17 +30,9 @@ StringRef _trigger_onEntityCollide;
 StringRef _trigger_afterPlayerMove;
 
 int _input_killswitch = 0;
-//--------------------------------
-
-struct FileRecord
-{
-	bool active;
-	FILE *fptr;
-	VFILE *vfptr;
-	int mode;
-};
 
 FileRecord vcfiles[VCFILES];
+//--------------------------------
 
 ScriptEngine::ScriptEngine() {}
 

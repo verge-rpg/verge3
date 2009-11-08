@@ -20,6 +20,7 @@
 
 #include "lua_main.h"
 #include "lua_vector.h"
+#include "g_script.h"
 #include <stdio.h>
 
 #include <string>
@@ -590,6 +591,26 @@ int LUA::GCHandleToString(lua_State *L)
 	return 1;
 }
 
+static int ReadEntireFileIntoString(lua_State *L)
+{
+	int handle = lua_tointeger(L, 1);
+	if (!handle) se->Error("FileReadln() - File is not open.");
+	if (handle > VCFILES) se->Error("FileReadln() - given file handle is not a valid file handle.");
+	if (!vcfiles[handle].active) se->Error("FileReadln() - given file handle is not open.");
+	if (vcfiles[handle].mode != VC_READ) se->Error("FileReadln() - given file handle is a write-mode file.");
+
+	vseek(vcfiles[handle].vfptr, 0, SEEK_END);
+	size_t size = vtell(vcfiles[handle].vfptr);
+	vseek(vcfiles[handle].vfptr, 0, SEEK_SET);
+
+	char* buf = new char[size];
+	_vread(buf, size, vcfiles[handle].vfptr);
+	lua_pushlstring(L, buf, size);
+	delete[] buf;
+
+	return 1;
+}
+
 void LUA::bindApi()
 {
 	int i;
@@ -600,6 +621,9 @@ void LUA::bindApi()
 	{
 		::err("Error function couldn't be initialized! The irony.");
 	}
+
+	lua_pushcfunction(L, ReadEntireFileIntoString, 1);
+	lua_setglobal(L, "__ReadEntireFileIntoString");
 
 	// Create an empty table!
 	lua_newtable(L);
@@ -878,12 +902,8 @@ void LUA::bindApi()
 		"		local filename = string.gsub(path, '%?', modulepath)\n"
 		"		local f = v3.FileOpen(filename, v3.FILE_READ)\n"
 		"		if f ~= 0 then\n"
-		"			local function reader()\n"
-		"				return v3.FileEOF(f) and '' or v3.FileReadLn(f)\n"
-		"			end\n"
-		"			\n"
 					// Read and compile the chunk.
-		"			chunk = assert(load(reader, filename))\n"
+		"			chunk = assert(loadstring(__ReadEntireFileIntoString(f), '@' .. filename))\n"
 		"			\n"
 					// Success?
 		"			return chunk\n"

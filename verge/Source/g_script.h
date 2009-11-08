@@ -25,6 +25,21 @@ extern StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
 extern StringRef _trigger_onEntityCollide;
 extern StringRef _trigger_afterPlayerMove;
 
+#define VCFILES				51
+#define VC_READ				1
+#define VC_WRITE			2
+#define VC_WRITE_APPEND		3 // Overkill (2006-07-05): Append mode added.
+
+struct FileRecord
+{
+	bool active;
+	FILE *fptr;
+	VFILE *vfptr;
+	int mode;
+};
+
+extern FileRecord vcfiles[VCFILES];
+
 void InitScriptEngine();
 void HookTimer();
 void HookRetrace();
