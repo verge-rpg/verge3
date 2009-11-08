@@ -489,10 +489,17 @@ void vgets(char *str, int len, VFILE *f)
    str[0] = '\0'; // return '' if fgets fails for consistency
    if (f->s)
    {
+	  // We need to check if we exceed EOF when we do these reads.
+	  // (add 1 here because fgets takes a length that requires space for the final null-character.)
+	  if (len + pack[f->v].files[f->i].curofs + 1 > pack[f->v].files[f->i].size)
+	  {
+		  len = pack[f->v].files[f->i].size - pack[f->v].files[f->i].curofs + 1;
+	  }
       if (pack[f->v].curofs != (pack[f->v].files[f->i].packofs + pack[f->v].files[f->i].curofs))
          fseek(f->fp, pack[f->v].files[f->i].curofs+pack[f->v].files[f->i].packofs, 0);
 	  int myofs = ftell(f->fp);
-	  fgets(str, len, f->fp);
+
+	  char* retval = fgets(str, len, f->fp);
 	  int dif = ftell(f->fp) - myofs;
       pack[f->v].files[f->i].curofs += dif;
       pack[f->v].curofs+=dif;
@@ -510,6 +517,8 @@ int vtell(VFILE* f)
 
 int veof(VFILE *f)
 {
+	if (!f->s)
+		return feof(f->fp);
 	return vtell(f) >= filesize(f);
 }
 
