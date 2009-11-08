@@ -107,6 +107,7 @@
 #define ENABLE_2XSAI
 //nominmax prevents windows.h from including lame min/max macros
 #define NOMINMAX
+#define snprintf _snprintf
 #endif
 
 /* xerxes system types */
