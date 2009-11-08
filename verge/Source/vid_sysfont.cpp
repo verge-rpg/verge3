@@ -46,26 +46,6 @@ void GotoXY(int x1, int y1)
 	fonty = y1;
 }
 
-void PrintRight(int x1, int y1, const char *str, image* dest)
-{
-	GotoXY(x1 - pixels(str), y1);
-	PrintString(str,dest);
-}
-
-void PrintCenter(int x1, int y1, const char *str, image *dest, ...)
-{
-	va_list argptr;
-	char msg[256];
-
-	va_start(argptr,dest);
-	vsprintf(msg,str,argptr);
-	va_end(argptr);
-	str=msg;
-
-	GotoXY(x1 - pixels(str)/2, y1);
-	PrintString(str, dest);
-}
-
 void print_char(char c, image *dest)
 {
 	char *img, w;
@@ -86,6 +66,20 @@ void print_char(char c, image *dest)
 	if (c == '*' - 32) fontx -= 1;
 }
 
+static void PrintLine(char *str, char *end, image *dest)
+{
+	for (; str < end; ++str)
+	{
+		print_char(*str, dest);
+		// No font subsets.
+		if (*str == '\f')
+		{
+			if (!*++str) return;
+			continue;
+		}
+	}
+}
+
 void PrintString(const char *str, image *dest, ...)
 {
 	va_list argptr;
@@ -94,37 +88,109 @@ void PrintString(const char *str, image *dest, ...)
 	va_start(argptr, dest);
 	vsprintf(msg, str, argptr);
 	va_end(argptr);
-	str = msg;
+
 	int x1 = fontx;  // Remember where x where the line should start. -- Overkill 2005-12-28.
-	for (; *str; ++str)
+	int start = 0, end = 0;
+
+	for (end = 0; msg[end]; end++)
 	{
-		print_char(*str, dest);
-		// New lines -- Overkill 2005-12-28.
-		if (*str == '\n' || *str == '\r')
+		if (msg[end] == '\n' || msg[end] == '\r')
 		{
-			if (*str == '\r')
-			{
-				// Checks for \r\n so they aren't parsed as two seperate line breaks.
-				if (!*++str) return;
-				if (*str != '\n')
-				{
-					--str;
-				}
-			}
-			GotoXY(x1, fonty + 7);
+			fontx = x1;
+			PrintLine(&msg[start], &msg[end], dest);
+
+			// Check for \r\n so they aren't parsed as two separate line breaks.
+			if (msg[end] == '\r' && msg[end+1] && msg[end+1] == '\n')
+				end++;
+			start = end + 1;
+
+			fonty += 7;
 		}
 	}
+	fontx = x1;
+    PrintLine(&msg[start],&msg[end+1],dest);
+}
+
+void PrintRight(int x, int y, const char *str, image* dest)
+{
+	va_list argptr;
+	char msg[1024];
+
+	va_start(argptr, dest);
+	vsprintf(msg, str, argptr);
+	va_end(argptr);
+
+	GotoXY(x, y);
+	int start = 0, end = 0;
+
+	for (end = 0; msg[end]; end++)
+	{
+		if (msg[end] == '\n' || msg[end] == '\r')
+		{
+			fontx = x - pixels(&msg[start],&msg[end]);
+			PrintLine(&msg[start], &msg[end], dest);
+
+			// Check for \r\n so they aren't parsed as two separate line breaks.
+			if (msg[end] == '\r' && msg[end+1] && msg[end+1] == '\n')
+				end++;
+			start = end + 1;
+
+			fonty += 7;
+		}
+	}
+	fontx = x - pixels(&msg[start],&msg[end+1]);
+    PrintLine(&msg[start],&msg[end+1],dest);
+}
+
+void PrintCenter(int x, int y, const char *str, image *dest, ...)
+{
+	va_list argptr;
+	char msg[1024];
+
+	va_start(argptr, dest);
+	vsprintf(msg, str, argptr);
+	va_end(argptr);
+
+	GotoXY(x, y);
+	int start = 0, end = 0;
+
+	for (end = 0; msg[end]; end++)
+	{
+		if (msg[end] == '\n' || msg[end] == '\r')
+		{
+			fontx = x - pixels(&msg[start],&msg[end]) / 2;
+			PrintLine(&msg[start], &msg[end], dest);
+
+			// Check for \r\n so they aren't parsed as two separate line breaks.
+			if (msg[end] == '\r' && msg[end+1] && msg[end+1] == '\n')
+				end++;
+			start = end + 1;
+
+			fonty += 7;
+		}
+	}
+	fontx = x - pixels(&msg[start],&msg[end+1]) / 2;
+    PrintLine(&msg[start],&msg[end+1],dest);
 }
 
 int pixels(const char *str, const char *end)
 {
 	int pix;
 
-	for (pix=0; *str && (!end||str!=end); ++str)
+	for (pix=0; *str && (!end||str<end); ++str)
 	{
-		char c = *str - 32;
-		if (c<0 || c>96) c = 2;
-		pix += *smal_tbl[(int)c]+1;
+		// No font subsets.
+		if (*str == '\f')
+		{
+			if (!*++str) break;
+			continue;
+		}
+		else
+		{
+			char c = *str - 32;
+			if (c<0 || c>96) c = 2;
+			pix += *smal_tbl[(int)c]+1;
+		}
 	}
 	return pix;
 }

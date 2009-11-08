@@ -183,13 +183,10 @@ void Font::PrintString(char *str, int x, int y, image *dest, ...)
 		{
 			PrintLine(&msg[start],&msg[end],x,y,dest);
 
-			start = end + 1;
-
 			// Check for \r\n so they aren't parsed as two separate line breaks.
-			if (msg[end] == '\r' && msg[start] && msg[start] == '\n')
-				start++;
-
-			end = start;
+			if (msg[end] == '\r' && msg[end+1] && msg[end+1] == '\n')
+				end++;
+			start = end + 1;
 
 			y += height;
 		}
@@ -220,13 +217,10 @@ void Font::PrintRight(char *str, int x, int y, image *dest, ...)
 			xsize = Pixels(&msg[start],&msg[end]);
 			PrintLine(&msg[start],&msg[end],x - (xsize),y,dest);
 
-			start = end + 1;
-
 			// Check for \r\n so they aren't parsed as two separate line breaks.
-			if (msg[end] == '\r' && msg[start] && msg[start] == '\n')
-				start++;
-
-			end = start;
+			if (msg[end] == '\r' && msg[end+1] && msg[end+1] == '\n')
+				end++;
+			start = end + 1;
 
 			y += height;
 		}
@@ -257,13 +251,10 @@ void Font::PrintCenter(char *str, int x, int y, image *dest, ...)
 			xsize = Pixels(&msg[start],&msg[end]);
 			PrintLine(&msg[start],&msg[end],x - (xsize/2),y,dest);
 
-			start = end + 1;
-
 			// Check for \r\n so they aren't parsed as two separate line breaks.
-			if (msg[end] == '\r' && msg[start] && msg[start] == '\n')
-				start++;
-
-			end = start;
+			if (msg[end] == '\r' && msg[end+1] && msg[end+1] == '\n')
+				end++;
+			start = end + 1;
 
 			y += height;
 		}
