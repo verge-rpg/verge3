@@ -3531,7 +3531,6 @@ void VCCompiler::CheckIdentifier(char *s)
 							GetToken();
 							GetToken();
 							snprintf(buf, 100, "@__argument.%s", token);
-							log("GOT TOKEN @__argument.%s\r\n", token);
 							for (i=0; i<hvars.size(); i++)
 								if (streq(buf, hvars[i]->name))
 								{
@@ -3539,9 +3538,11 @@ void VCCompiler::CheckIdentifier(char *s)
 									id_subtype = ID_HVAR;
 									id_array = (hvars[i]->dim) ? 1 : 0;
 									id_index = i;
-									log("EQUALS HVAR %s\r\n", hvars[i]->name);
 									return;
 								}
+							// If the member on the varargs list wasn't found,
+							// then we don't know what they're talking about.
+							id_type = ID_NOMATCH;
 						}
 						return;
 					default:
@@ -3598,7 +3599,6 @@ void VCCompiler::CheckIdentifier(char *s)
 		strncpy(buf2, s, 100);
 		GetToken(2);
 		snprintf(buf, 100, "%s.%s", buf2, token);
-		log("GOT TOKEN %s.%s\r\n", buf2, token);
 		for (i=0; i<hvars.size(); i++)
 			if (streq(buf, hvars[i]->name))
 			{
@@ -3606,7 +3606,6 @@ void VCCompiler::CheckIdentifier(char *s)
 				id_subtype = ID_HVAR;
 				id_array = (hvars[i]->dim) ? 1 : 0;
 				id_index = i;
-				log("EQUALS HVAR %s\r\n", hvars[i]->name);
 				return;
 			}
 	}
