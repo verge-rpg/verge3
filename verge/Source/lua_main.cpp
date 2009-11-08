@@ -904,7 +904,7 @@ void LUA::bindApi()
 		"		if f ~= 0 then\n"
 					// Read and compile the chunk.
 		"			chunk = assert(loadstring(__ReadEntireFileIntoString(f), '@' .. filename))\n"
-		"			\n"
+		"			v3.FileClose(f)\n"
 					// Success?
 		"			return chunk\n"
 		"		end\n"
