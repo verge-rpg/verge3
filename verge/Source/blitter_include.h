@@ -361,6 +361,8 @@ void T_Line(int x, int y, int xe, int ye, int color, image *dest)
 	}
 	
 	while(!finished) {
+		T_PutPixel<LT,true>(cx,cy,color,dest);
+		
 		if(xaccum < 0) {
 			xaccum += xincre;
 		} else {
@@ -374,12 +376,11 @@ void T_Line(int x, int y, int xe, int ye, int color, image *dest)
 			cy += ychange;
 			yaccum += yreset;
 		}
-		
-		T_PutPixel<LT,true>(cx,cy,color,dest);
-		
+
 		if(xreset == 0 && cx == xe) finished = 1;
 		if(yreset == 0 && cy == ye) finished = 1;
 	}
+	T_PutPixel<LT,true>(cx,cy,color,dest);
 	
 	/*
 	int dx = xe - x, dy = ye - y,
