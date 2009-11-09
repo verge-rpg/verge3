@@ -107,7 +107,6 @@
 #define ENABLE_2XSAI
 //nominmax prevents windows.h from including lame min/max macros
 #define NOMINMAX
-#define snprintf _snprintf
 #endif
 
 /* xerxes system types */
@@ -176,10 +175,12 @@ typedef unsigned char  byte;
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <io.h>
 #include "../fmod/fmod.h"
 #include "../corona/corona.h"
 #define strlwr _strlwr
 #define strupr _strupr
+#define snprintf _snprintf
 
 //mbg 04-nov-08 adding wii support
 #elif __WII__

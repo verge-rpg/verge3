@@ -514,6 +514,7 @@ void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
 		result = _findnext(handle, &rec);
 	}
 	_findclose(handle);
+	listPackFilePattern(res, pattern);
 }
 
 

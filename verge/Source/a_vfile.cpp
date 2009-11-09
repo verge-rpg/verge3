@@ -27,7 +27,7 @@ char headertag[]={ 'V','3','P','A','K',0 };
 
 bool Exist(const char *fname)
 {
-	FILE *tempf;
+	/*FILE *tempf;
 
 	tempf=fopen(fname,"rb");
 	if (tempf)
@@ -35,7 +35,18 @@ bool Exist(const char *fname)
 		fclose(tempf);
 		return true;
 	}
-	return false;
+	return false;*/
+
+	// Above stuff commented out because I thought faster detection of file existance could be nice.
+	// However, not every OS supports access().
+	// Leaving the above code in case your OS doesn't support POSIX standards.
+#ifdef __WIN32__
+	// Check if file exists and has read permissions.
+	return _access(fname, 4) != -1;
+#else
+	// Check if file exists and has read permissions.
+	return access(fname, R_OK) != -1;
+#endif
 }
 
 bool VExist(char *fname)
@@ -531,4 +542,199 @@ boost::shared_array<byte> vreadfile(const char *fname) {
 	vread(buf.get()+4,len,f);
 	vclose(f);
 	return buf;
+}
+
+int wildcmp(const char *wild, const char *string) {
+  // http://www.codeproject.com/KB/string/wildcmp.aspx
+  // Written by Jack Handy - jakkhandy@hotmail.com
+
+  const char *cp = NULL, *mp = NULL;
+
+  while ((*string) && (*wild != '*')) {
+    if ((*wild != *string) && (*wild != '?')) {
+      return 0;
+    }
+    wild++;
+    string++;
+  }
+
+  while (*string) {
+    if (*wild == '*') {
+      if (!*++wild) {
+        return 1;
+      }
+      mp = wild;
+      cp = string+1;
+    } else if ((*wild == *string) || (*wild == '?')) {
+      wild++;
+      string++;
+    } else {
+      wild = mp;
+      string = cp++;
+    }
+  }
+
+  while (*wild == '*') {
+    wild++;
+  }
+  return !*wild;
+}
+
+
+/*
+ * Copyright (c) 1989, 1993, 1994
+ *	The Regents of the University of California.  All rights reserved.
+ *
+ * This code is derived from software contributed to Berkeley by
+ * Guido van Rossum.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *	This product includes software developed by the University of
+ *	California, Berkeley and its contributors.
+ * 4. Neither the name of the University nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ *
+ * From FreeBSD fnmatch.c 1.11
+ * $Id: fnmatch.c,v 1.3 1997/08/19 02:34:30 jdp Exp $
+ *
+ * Function fnmatch() as specified in POSIX 1003.2-1992, section B.6.
+ * Compares a filename or pathname to a pattern.
+ *
+ * NOTE: Contains several alterations by Overkill to better suit Verge's needs.
+ *
+ */
+
+/* We #undef these before defining them because some losing systems
+   (HP-UX A.08.07 for example) define these in <unistd.h>.  */
+#undef	FNM_PATHNAME
+#undef	FNM_NOESCAPE
+#undef	FNM_PERIOD
+
+#define	FNM_NOMATCH	1	/* Match failed. */
+
+#define	FNM_NOESCAPE	0x01	/* Disable backslash escaping. */
+#define	FNM_PATHNAME	0x02	/* Slash must be matched by slash. */
+#define	FNM_PERIOD	0x04	/* Period must be matched by period. */
+#define	FNM_LEADING_DIR	0x08	/* Ignore /<tail> after Imatch. */
+#define	FNM_CASEFOLD	0x10	/* Case insensitive search. */
+#define FNM_PREFIX_DIRS	0x20	/* Directory prefixes of pattern match too. */
+
+#define	EOS	'\0'
+
+int
+fnmatch(const char *pattern, const char *string, int flags)
+{
+	const char *stringstart;
+	char c, test;
+
+	for (stringstart = string;;)
+		switch (c = *pattern++) {
+		case EOS:
+			if ((flags & FNM_LEADING_DIR) && (*string == '/' || *string == '\\'))
+				return (0);
+			return (*string == EOS ? 0 : FNM_NOMATCH);
+		case '?':
+			if (*string == EOS)
+				return (FNM_NOMATCH);
+			if (*string == '/' && (flags & FNM_PATHNAME))
+				return (FNM_NOMATCH);
+			if (*string == '.' && (flags & FNM_PERIOD) &&
+			    (string == stringstart ||
+			    ((flags & FNM_PATHNAME) && (*(string - 1) == '/' || *(string - 1) == '\\'))))
+				return (FNM_NOMATCH);
+			++string;
+			break;
+		case '*':
+			c = *pattern;
+			/* Collapse multiple stars. */
+			while (c == '*')
+				c = *++pattern;
+
+			if (*string == '.' && (flags & FNM_PERIOD) &&
+			    (string == stringstart ||
+			    ((flags & FNM_PATHNAME) && (*(string - 1) == '/' || *(string - 1) == '\\'))))
+				return (FNM_NOMATCH);
+
+			/* Optimize for pattern with * at end or before /. */
+			if (c == EOS)
+				if (flags & FNM_PATHNAME)
+					return ((flags & FNM_LEADING_DIR) ||
+					    (strchr(string, '/') == NULL || strchr(string, '\\') == NULL) ?
+					    0 : FNM_NOMATCH);
+				else
+					return (0);
+			else if ((c == '/' || c == '\\') && flags & FNM_PATHNAME) {
+				if ((string = strchr(string, '/')) == NULL || (string = strchr(string, '\\')) == NULL)
+					return (FNM_NOMATCH);
+				break;
+			}
+
+			/* General case, use recursion. */
+			while ((test = *string) != EOS) {
+				if (!fnmatch(pattern, string, flags & ~FNM_PERIOD))
+					return (0);
+				if ((test == '/' || test == '\\') && flags & FNM_PATHNAME)
+					break;
+				++string;
+			}
+			return (FNM_NOMATCH);
+		default:
+			if (c == *string)
+				;
+			else if ((flags & FNM_CASEFOLD) &&
+				 (tolower((unsigned char)c) ==
+				  tolower((unsigned char)*string)))
+				;
+			else if ((flags & FNM_PREFIX_DIRS) && *string == EOS &&
+			     (((c == '/' || c == '\\') && string != stringstart) ||
+			     (string == stringstart+1 && (*stringstart == '/' || *stringstart == '\\'))))
+				return (0);
+			else
+				return (FNM_NOMATCH);
+			string++;
+			break;
+		}
+	/* NOTREACHED */
+}
+
+
+// For listing files that are within a packfile that aren't also physical files.
+// This is called by a listFilePattern after already figuring out the list of physical files.
+void listPackFilePattern(std::vector<std::string> &res, CStringRef pattern)
+{
+	int i, j;
+	// Search the VFiles.
+	for (i=filesmounted-1; i>=0; i--)
+	{
+		for (j=0; j<pack[i].numfiles; j++)
+		{
+			// If the file matches the pattern, and it isn't also physically existant.
+			if (fnmatch(pattern.c_str(), (char*) pack[i].files[j].fname, FNM_PATHNAME | FNM_NOESCAPE | FNM_CASEFOLD) != FNM_NOMATCH && !Exist((char*) pack[i].files[j].fname))
+			{
+				res.push_back((char*) pack[i].files[j].fname);
+			}
+		}
+	}
 }

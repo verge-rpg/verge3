@@ -187,7 +187,6 @@ bool ExtensionIs(const char *f, const char *e)
 	return (!strcasecmp(spt, e));
 }
 
-
 //see
 //http://www.math.keio.ac.jp/~matumoto/cokus.c
 //for comments and attributation
