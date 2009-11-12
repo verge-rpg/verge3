@@ -2190,6 +2190,7 @@ void VCCompiler::SkipDeclare()
 		GetToken();
 		if (TokenIs("\""))
 		{
+			vprint("Parsing string in SkipDeclare(): %s(%d)\n", sourcefile, linenum);
 			while (source[srcofs] != '"')
 				srcofs++;
 			srcofs++;
@@ -2227,6 +2228,7 @@ void VCCompiler::SkipBrackets()
 					return;
 				}
 			}*/
+			vprint("Parsing string in SkipBrackets(): %s(%d)\n", sourcefile, linenum);
 			while (source[srcofs] != '"')
 				srcofs++;
 			srcofs++;
@@ -2482,12 +2484,34 @@ void VCCompiler::ParseGlobalDecl(scan_t type)
 					group--;
 				if (TokenIs("\""))          // Only special case is a quoted string.
 				{
+					vprint("Parsing string in ParseGlobalDecl(): %s(%d)\n", sourcefile, linenum);
 					initstr += '\"';
+					log("");
 					while (source[srcofs] != '\"')
 					{
 						if (!source[srcofs])
 							throw va("%s(%d): Reached unexpected end of file, probable missing end-quote (\")", sourcefile, linenum);
-						initstr += source[srcofs++];
+
+
+						if (srcofs == '\\')
+						{
+							srcofs++;
+							switch (source[srcofs])
+							{
+							case 'b': initstr += '\b'; break;
+							case 't': initstr += '\t'; break;
+							case 'n': initstr += '\n'; break;
+							case 'f': initstr += '\f'; break;
+							case 'r': initstr += '\r'; break;
+							case '0': initstr += '\0'; break;
+							default: initstr += source[srcofs]; break;
+							}
+							srcofs++;
+						}
+						else
+						{
+							initstr += source[srcofs++];
+						}
 					}
 					initstr += source[srcofs++];
 					source.setpos(srcofs);
@@ -3300,6 +3324,7 @@ void VCCompiler::SkipVariables()
 					group--;
 				if (TokenIs("\""))  // quoted string
 				{
+					vprint("Parsing string in SkipVariables(): %s(%d)\n", sourcefile, linenum);
 					while (source[srcofs++] != '\"') {}
 					source.setpos(srcofs);
 					if (!group && (NextIs(";") || NextIs(","))) break;
@@ -3988,16 +4013,37 @@ void VCCompiler::CompileAliasExpression(alias_definition* alias)
 
 void VCCompiler::EmitStringLiteral()
 {
+	vprint("Parsing string in EmitStringLiteral(): %s(%d)\n", sourcefile, linenum);
 	Expect("\"");
 	source.setpos(srcofs);    //FIXME: watch for this. Why do I have to set this? this may sneak up later.
     while (source[srcofs] != '\"')
     {
-        if (source[srcofs] == '\n')
+		if (source[srcofs] == '\n')
 			throw va("%s(%d): Unterminated string literal.", sourcefile, linenum);
-        output.EmitC(source.GrabC());
+		if (source[srcofs] == '\\')
+		{
+			source.GrabC();
+			srcofs++;
+			switch (source[srcofs])
+			{
+			case 'b': output.EmitC('\b'); break;
+			case 't': output.EmitC('\t'); break;
+			case 'n': output.EmitC('\n'); break;
+			case 'f': output.EmitC('\f'); break;
+			case 'r': output.EmitC('\r'); break;
+			case '0': output.EmitC('\0'); break;
+			default: output.EmitC(source[srcofs]); break;
+			}
+			source.GrabC();
+		}
+		else
+		{
+			output.EmitC(source.GrabC());
+		}
 		srcofs++;
     }
 	output.EmitC(0);
+	vprint("\n");
     Expect("\"");
 }
 
@@ -4021,6 +4067,7 @@ void VCCompiler::ProcessString()
 {
 	if (NextIs("\""))
     {
+		vprint("Parsing string in ProcessString(): %s(%d)\n", sourcefile, linenum);
         output.EmitC(strLITERAL);
         EmitStringLiteral();
         return;
