@@ -190,6 +190,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\MemoryFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MemoryFile.h"
+				>
+			</File>
+			<File
 				RelativePath="Open.h"
 				>
 			</File>

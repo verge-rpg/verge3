@@ -16,6 +16,21 @@
 
 #include "xerxes.h"
 
+corona::Image* load_image_from_packfile(const char* filename)
+{
+	VFILE* vf = vopen(filename);
+	if (!vf)
+	{
+		err("loadimage: couldn't load image %s; couldnt find a file or a vfile", filename);
+	}
+	int l = filesize(vf);
+	std::auto_ptr<char> buffer(new char[l]);
+	vread(buffer.get(), l, vf);
+	vclose(vf);
+	std::auto_ptr<corona::File> memfile(corona::CreateMemoryFile(buffer.get(), l));
+	return corona::OpenImage(memfile.get(), corona::FF_AUTODETECT, corona::PF_DONTCARE);
+}
+
 image* xLoadImage_int_respect8bitTransparency(const char* fname)
 {
 	image* newimage;
@@ -29,24 +44,7 @@ image* xLoadImage_int_respect8bitTransparency(const char* fname)
 	}
 	else
 	{
-		VFILE* vf = vopen(fname);
-		if (!vf)
-		{
-			err("loadimage: couldn't load image %s; couldnt find a file or a vfile", fname);
-		}
-		FILE* f = fopen("v3img_temp.$$$", "wb");
-		if (!f)
-		{
-			// TODO: implement
-		}
-		int l = filesize(vf);
-		char* buffer = new char[l];
-		vread(buffer, l, vf);
-		fwrite(buffer, 1, l, f);
-		vclose(vf);
-		fclose(f);
-		img = corona::OpenImage("v3img_temp.$$$", corona::FF_AUTODETECT, corona::PF_DONTCARE);
-		remove("v3img_temp.$$$");
+		img = load_image_from_packfile(fname);
 	}
 
 	if (!img)
@@ -117,18 +115,7 @@ image *xLoadImage_int(const char *fname,int tflag)
 		img = corona::OpenImage(fname,corona::FF_AUTODETECT,corona::PF_DONTCARE);
 	else
 	{
-		VFILE *vf = vopen(fname);
-		if (!vf)
-			err("loadimage: couldn't load image %s; couldnt find a file or a vfile",fname);
-		FILE *f = fopen("v3img_temp.$$$","wb");
-		int l = filesize(vf);
-		char *buffer = new char[l];
-		vread(buffer, l, vf);
-		fwrite(buffer, 1, l, f);
-		vclose(vf);
-		fclose(f);
-		img = corona::OpenImage("v3img_temp.$$$",corona::FF_AUTODETECT,corona::PF_DONTCARE);
-		remove("v3img_temp.$$$");
+		img = load_image_from_packfile(fname);
 	}
 	if(!img)
 		err("loadimage: couldn't load image %s; corona just bombed.",fname);
