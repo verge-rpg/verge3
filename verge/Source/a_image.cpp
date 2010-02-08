@@ -31,33 +31,72 @@ corona::Image* load_image_from_packfile(const char* filename)
 	return corona::OpenImage(memfile.get(), corona::FF_AUTODETECT, corona::PF_DONTCARE);
 }
 
+corona::Image* load_image_from_disk_or_packfile(const char* filename)
+{
+	corona::Image* img;
+	//log("loading image %s", filename);
+	if (Exist(filename))
+	{
+		img = corona::OpenImage(filename, corona::FF_AUTODETECT, corona::PF_DONTCARE);
+	}
+	else
+	{
+		img = load_image_from_packfile(filename);
+	}
+
+	if (!img)
+	{
+		err("loadimage: couldn't load image %s; corona just bombed.", filename);
+	}
+	return img;
+}
+
 image* create_image_from_24bit_corona(corona::Image* img)
 {
 	std::auto_ptr<corona::Image> converted_img(corona::ConvertImage(img, corona::PF_R8G8B8));
 	return ImageFrom24bpp((byte*)converted_img->getPixels(), converted_img->getWidth(), converted_img->getHeight());
 }
 
-image* xLoadImage_int_respect8bitTransparency(const char* fname)
+int convert_quad_palette_to_triplets(corona::Image* img)
 {
-	image* newimage;
-	
-	corona::Image* img;
-
-	//log("loading image %s", fname);
-	if (Exist(fname))
+	int transparency_index = 0;
+	unsigned char* p = (unsigned char*)img->getPalette();
+	int c = img->getPaletteSize();
+	unsigned char* ps = p + 4;
+	unsigned char* pd = p + 3;
+	for (int i = 1; i < c; i++)
 	{
-		img = corona::OpenImage(fname, corona::FF_AUTODETECT, corona::PF_DONTCARE);
+		*pd++ = *ps++;
+		*pd++ = *ps++;
+		*pd++ = *ps++;
+		if (!*ps++)
+		{
+			transparency_index = i;
+		}
 	}
-	else
-	{
-		img = load_image_from_packfile(fname);
-	}
+	return transparency_index;
+}
 
-	if (!img)
+image* create_image_from_8bit_corona(corona::Image* img, int transparency_index, int tflag)
+{
+	unsigned char *pal2 = (byte*)img->getPalette();
+	unsigned char pal[768];
+	memcpy(pal, pal2, img->getPaletteSize()*3);
+	if (tflag)
 	{
-		err("loadimage: couldn't load image %s; corona just bombed.", fname);
+		int ofs = 3*transparency_index;
+		pal[ofs++] = 255;
+		pal[ofs++] = 0;
+		pal[ofs++] = 255;
 	}
+	image* result = ImageFrom8bpp((byte*)img->getPixels(), img->getWidth(), img->getHeight(), pal);
+	delete img; /* corona::ConvertImage in the 24-bit path also does this */
+	return result;
+}
 
+image* load_image(const char* fname, bool use_transparency_index, int tflag)
+{
+	corona::Image* img = load_image_from_disk_or_packfile(fname);
 	if (img->getFormat() == corona::PF_I8)
 	{
 		int transparency_index = 0;
@@ -67,110 +106,29 @@ image* xLoadImage_int_respect8bitTransparency(const char* fname)
 			//8bpp gif loader
 			if (img->getPaletteFormat() == corona::PF_R8G8B8A8)
 			{
-				unsigned char* p = (unsigned char*) img->getPalette();
-				int c = img->getPaletteSize();
-				unsigned char* ps = p + 4;
-				unsigned char* pd = p + 3;
-				for (int i = 1; i < c; i++)
-				{
-					*pd++ = *ps++;
-					*pd++ = *ps++;
-					*pd++ = *ps++;
-					if (!*ps++)
-					{
-						transparency_index = i;
-					}
-				}
+				transparency_index = convert_quad_palette_to_triplets(img);
 			}
 			else
 			{
 				err("loadimage: couldnt load image %s; unexpected pixel format", fname);
 			}
 		}
-			
-		unsigned char* pal2 = (unsigned char*) img->getPalette();
-		unsigned char pal[768];
-		memcpy(pal, pal2, img->getPaletteSize()*3);		
 
-		int ofs = 3*transparency_index;
-		pal[ofs++] = 255;
-		pal[ofs++] = 0;
-		pal[ofs++] = 255;
+		return create_image_from_8bit_corona(img, use_transparency_index ? transparency_index : 0, tflag);
+	}
 
-		newimage = ImageFrom8bpp((unsigned char*) img->getPixels(), img->getWidth(), img->getHeight(), pal);
-		delete img;
-		return newimage;
-	}
-	else
-	{
-        return create_image_from_24bit_corona(img);
-	}
+    return create_image_from_24bit_corona(img);
+}
+
+image* xLoadImage_int_respect8bitTransparency(const char* fname)
+{
+	return load_image(fname, /*use_transparency_index*/true, /*tflag*/1);
 }
 
 image *xLoadImage_int(const char *fname,int tflag)
 {
-	image *newimage;
-
-	corona::Image *img;
-
-	//log("loading image %s",fname);
-	if (Exist(fname))
-		img = corona::OpenImage(fname,corona::FF_AUTODETECT,corona::PF_DONTCARE);
-	else
-	{
-		img = load_image_from_packfile(fname);
-	}
-	if(!img)
-		err("loadimage: couldn't load image %s; corona just bombed.",fname);
-
-	switch(img->getFormat())
-	{
-	case corona::PF_I8:
-	{
-		if(img->getPaletteFormat()!=corona::PF_R8G8B8) {
-
-			//we can convert this one. we get it with new corona 1.0.2
-			//8bpp gif loader
-			if(img->getPaletteFormat() == corona::PF_R8G8B8A8) {
-				unsigned char *p=(unsigned char *)img->getPalette();
-				int c = img->getPaletteSize();
-				unsigned char *ps = p+4, *pd = p+3;
-				for(int i=1;i<c;i++) {
-					*pd++ = *ps++;
-					*pd++ = *ps++;
-					*pd++ = *ps++;
-					ps++;
-				}
-			}
-			else err("loadimage: couldnt load image %s; unexpected pixel format",fname);
-		}
-
-		unsigned char *pal2=(byte*)img->getPalette();
-		unsigned char pal[768];
-		memcpy(pal, pal2, img->getPaletteSize()*3);
-		if(tflag)
-		{
-			pal[0]=255; pal[1]=0; pal[2]=255;
-		}
-		newimage=ImageFrom8bpp((byte*)img->getPixels(), img->getWidth(), img->getHeight(), pal);
-		delete img;
-		return newimage;
-	}
-	break;
-	// Bad zero. You broke regular pngs that had a fully-255 alpha everywhere, because you never implemented the blitters.
-	/*case corona::PF_R8G8B8A8:
-		img = corona::ConvertImage(img,corona::PF_B8G8R8A8);
-		newimage=ImageFrom32bpp((byte*)img->getPixels(),img->getWidth(),img->getHeight());
-		delete img;
-        return newimage;
-*/
-	default:
-	{
-		return create_image_from_24bit_corona(img);
-	}
-	}
+	return load_image(fname, /*use_transparency_index*/false, tflag);
 }
-
 
 image *xLoadImage(const char *fname)
 {
