@@ -31,6 +31,12 @@ corona::Image* load_image_from_packfile(const char* filename)
 	return corona::OpenImage(memfile.get(), corona::FF_AUTODETECT, corona::PF_DONTCARE);
 }
 
+image* create_image_from_24bit_corona(corona::Image* img)
+{
+	std::auto_ptr<corona::Image> converted_img(corona::ConvertImage(img, corona::PF_R8G8B8));
+	return ImageFrom24bpp((byte*)converted_img->getPixels(), converted_img->getWidth(), converted_img->getHeight());
+}
+
 image* xLoadImage_int_respect8bitTransparency(const char* fname)
 {
 	image* newimage;
@@ -97,10 +103,7 @@ image* xLoadImage_int_respect8bitTransparency(const char* fname)
 	}
 	else
 	{
-		img = corona::ConvertImage(img,corona::PF_R8G8B8);
-		newimage=ImageFrom24bpp((unsigned char *)img->getPixels(),img->getWidth(),img->getHeight());
-		delete img;
-        return newimage;
+        return create_image_from_24bit_corona(img);
 	}
 }
 
@@ -163,10 +166,7 @@ image *xLoadImage_int(const char *fname,int tflag)
 */
 	default:
 	{
-		img = corona::ConvertImage(img,corona::PF_R8G8B8);
-		newimage=ImageFrom24bpp((byte*)img->getPixels(),img->getWidth(),img->getHeight());
-		delete img;
-        return newimage;
+		return create_image_from_24bit_corona(img);
 	}
 	}
 }
