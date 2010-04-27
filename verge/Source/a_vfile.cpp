@@ -658,7 +658,7 @@ fnmatch(const char *pattern, const char *string, int flags)
 		case '?':
 			if (*string == EOS)
 				return (FNM_NOMATCH);
-			if (*string == '/' && (flags & FNM_PATHNAME))
+			if ((*string == '/' || *string == '\\') && (flags & FNM_PATHNAME))
 				return (FNM_NOMATCH);
 			if (*string == '.' && (flags & FNM_PERIOD) &&
 			    (string == stringstart ||
@@ -681,12 +681,12 @@ fnmatch(const char *pattern, const char *string, int flags)
 			if (c == EOS)
 				if (flags & FNM_PATHNAME)
 					return ((flags & FNM_LEADING_DIR) ||
-					    (strchr(string, '/') == NULL || strchr(string, '\\') == NULL) ?
+					    (strchr(string, '/') == NULL && strchr(string, '\\') == NULL) ?
 					    0 : FNM_NOMATCH);
 				else
 					return (0);
 			else if ((c == '/' || c == '\\') && flags & FNM_PATHNAME) {
-				if ((string = strchr(string, '/')) == NULL || (string = strchr(string, '\\')) == NULL)
+				if ((string = strchr(string, '/')) == NULL && (string = strchr(string, '\\')) == NULL)
 					return (FNM_NOMATCH);
 				break;
 			}
