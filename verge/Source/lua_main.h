@@ -101,11 +101,13 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 
 			if(exists)
 			{
+                invc++;
 				if(lua_pcall(L, argument_pass_list.size(), 0, errhandler))
 				{
 					err("Error when calling '" + func.str() + "'");
 				}
 				ArgumentPassClear();
+                invc--;
 			}
 
 			lua_settop(L, temp);
@@ -195,6 +197,7 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 
 			lua_rawgeti(L, LUA_REGISTRYINDEX, cb.functionIndex);
 
+            invc++;
 			// Call global function by string name.
 			if(lua_isstring(L, -1))
 			{
@@ -214,6 +217,7 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 				}
 				ArgumentPassClear();
 			}
+            invc--;
 
 			lua_settop(L, temp);
 		}

@@ -325,7 +325,8 @@ void onEntityCollision() {
 void ProcessControls()
 {
 	UpdateControls();
-	if( !myself || !myself->ready() ) {
+    // No player movement can be done if there's no ready player, or if there's a script active.
+	if( !myself || !myself->ready() || invc ) {
 		return;
 	}
 

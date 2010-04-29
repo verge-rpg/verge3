@@ -16,10 +16,11 @@
 
 struct VFILE
 {
-  FILE *fp;                           // real file pointer.
-  quad i;                             // which file index in vfile is it?
-  char s;                             // 0=real file 1=vfile;
-  int v;                             // if vfile, which vfile index
+  FILE *fp;                         // real file pointer.
+  quad i;                           // which file index in vfile is it?
+  char s;                           // 0=real file 1=vfile;
+  int v;                            // if vfile, which vfile index
+  int cachedSize;                   // The size of the file being read. Starts as -1.
 };
 
 struct filestruct

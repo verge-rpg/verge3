@@ -1165,11 +1165,15 @@ void VCCore::ExecuteCallback(VergeCallback& cb, bool calling_from_library)
 
 	if(cb.opType == opUSERFUNC)
 	{
+        invc++;
 		ExecuteUserFunc(cb.cimage, cb.functionIndex, calling_from_library);
+        invc--;
 	}
 	else if(cb.opType == opLIBFUNC)
 	{
+        invc++;
 		HandleLibFunc(cb.functionIndex);
+        invc--;
 	}
 	else
 	{

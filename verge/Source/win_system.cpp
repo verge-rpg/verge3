@@ -258,7 +258,7 @@ LRESULT APIENTRY win_auxWindowProc(HWND hWnd, UINT message,WPARAM wParam, LPARAM
 				if(!vid_window)
 					return false;
 
-				const int snap = 12;
+				const int snap = 16;
 				RECT *dr = (RECT*)lParam;
 				RECT r;
 				RECT wndr;
@@ -316,7 +316,7 @@ LRESULT APIENTRY win_gameWindowProc(HWND hWnd, UINT message,WPARAM wParam, LPARA
 				if(!vid_window)
 					return false;
 
-				const int snap = 12;
+				const int snap = 16;
 				RECT *dr = (RECT*)lParam;
 				RECT r;
 				RECT wndr;

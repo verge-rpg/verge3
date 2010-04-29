@@ -190,6 +190,7 @@ VFILE *vopen(const char *fname)
 
 	tmp -> fp=fopen(fname,"rb");
 	tmp -> s=0; tmp -> v=0; tmp -> i=0;
+    tmp->cachedSize = -1;
 	return tmp;
 }
 
@@ -427,7 +428,7 @@ void vclose(VFILE *f)
    delete f;
 }
 
-int filesize(VFILE *f)
+int _filesize(VFILE *f)
 {
    int oldpos, tmp;
 
@@ -440,6 +441,13 @@ int filesize(VFILE *f)
    tmp=ftell(f -> fp);
    fseek(f -> fp, oldpos, 0);
    return tmp;
+}
+
+int filesize(VFILE* f)
+{
+    if(f->cachedSize < 0)
+        f->cachedSize = _filesize(f);
+    return f->cachedSize;
 }
 
 void vseek(VFILE *f, int offset, int origin)
@@ -528,8 +536,6 @@ int vtell(VFILE* f)
 
 int veof(VFILE *f)
 {
-	if (!f->s)
-		return feof(f->fp);
 	return vtell(f) >= filesize(f);
 }
 

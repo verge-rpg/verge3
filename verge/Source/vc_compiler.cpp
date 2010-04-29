@@ -4018,9 +4018,9 @@ void VCCompiler::EmitStringLiteral()
 	source.setpos(srcofs);    //FIXME: watch for this. Why do I have to set this? this may sneak up later.
     while (source[srcofs] != '\"')
     {
-		if (source[srcofs] == '\n')
+		if (!source[srcofs] || source[srcofs] == '\n')
 			throw va("%s(%d): Unterminated string literal.", sourcefile, linenum);
-		if (source[srcofs] == '\\')
+		if (!vc_oldstring && source[srcofs] == '\\')
 		{
 			source.GrabC();
 			srcofs++;
@@ -5309,61 +5309,59 @@ int VCCompiler::HandleVariable(ext_definition* ext)
 				// Use this element's type to determine what operations can be done.
 				type = elem->type;
 			}
-			switch (elem->type)
+			if (elem->type != t_STRUCT)
 			{
-				case t_STRUCT: // Still a struct. okay.
-					break;
-				case t_INT:
-				case t_STRING:
-				case t_CALLBACK:
-					switch(elem->type)
-					{
-						case t_INT:
-							vartype = (elem->len == 1 && !id_array) ? intGLOBAL : intARRAY;
-							break;
-						case t_STRING:
-							vartype = (elem->len == 1 && !id_array) ? strGLOBAL : strARRAY;
-							break;
-						case t_CALLBACK:
-							vartype = (elem->len == 1 && !id_array) ? cbGLOBAL : cbARRAY;
-							break;
-					}
-					if(ext) *ext = elem->ext;
+                bool elem_is_array;
+				if(ext) *ext = elem->ext;
 
-					char itsname[80];
-					sprintf(itsname, "%c%s_%s", 1, struct_instances[struct_index]->name, elem->name);
-					// get index for this element
-					for (i=0; i<global_vars.size(); i++)
+				char itsname[512];
+				sprintf(itsname, "%c%s_%s", 1, struct_instances[struct_index]->name, elem->name);
+				// get index for this element
+				for (i=0; i<global_vars.size(); i++)
+				{
+					if (streq(global_vars[i]->name, itsname))
 					{
-						if (streq(global_vars[i]->name, itsname))
-						{
-							output.EmitC(vartype);
-							output.EmitD(i);
-							break;
-						}
+                        elem_is_array = global_vars[i]->len > 0;
+				        switch(elem->type)
+				        {
+					        case t_INT:
+						        vartype = (elem->len == 1 && !elem_is_array) ? intGLOBAL : intARRAY;
+						        break;
+					        case t_STRING:
+						        vartype = (elem->len == 1 && !elem_is_array) ? strGLOBAL : strARRAY;
+						        break;
+					        case t_CALLBACK:
+						        vartype = (elem->len == 1 && !elem_is_array) ? cbGLOBAL : cbARRAY;
+						        break;
+				        }
+						output.EmitC(vartype);
+						output.EmitD(i);
+						break;
 					}
-					// output array indexes.
-					if (id_array)
+				}
+				// output array indexes.
+				if (elem_is_array)
+				{
+                    int j = 0;
+					//log("Struct int arr: %d", struct_dim_ptr.size());
+					for (std::vector<int>::iterator it = struct_dim_ptr.begin();
+						it != struct_dim_ptr.end(); it++)
 					{
-						//log("Struct int arr: %d", struct_dim_ptr.size());
-						for (std::vector<int>::iterator it = struct_dim_ptr.begin();
-							it != struct_dim_ptr.end(); it++)
-						{
-							int thisofs = srcofs;
-							srcofs = *it;
-							int myarray = id_array;
-							CompileOperand();
-							id_array = myarray;
-							srcofs = thisofs;
-						}
-						for (int j=id_array; j<global_vars[i]->dim; j++)
-						{
-							Expect("[");
-							CompileOperand();
-							Expect("]");
-						}
+						int thisofs = srcofs;
+						srcofs = *it;
+						int myarray = id_array;
+						CompileOperand();
+						id_array = myarray;
+						srcofs = thisofs;
+                        j++;
 					}
-					break;
+					for (; j<global_vars[i]->dim; j++)
+					{
+						Expect("[");
+						CompileOperand();
+						Expect("]");
+					}
+				}
 			}
 			break;
 		}

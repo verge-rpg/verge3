@@ -243,7 +243,7 @@ typedef unsigned char  byte;
 #include "wii_platform.h"
 #else
 
-#include "vid_ddbase.h"
+#include "vid_gdibase.h"
 #include "win_joystick.h"
 #include "win_network.h"
 #include "win_keyboard.h"

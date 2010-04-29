@@ -883,29 +883,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="Source\vid_ddbase.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="Source\vid_ddblit.cpp"
 				>
 				<FileConfiguration
@@ -950,6 +927,10 @@
 						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\Source\vid_gdibase.cpp"
+				>
 			</File>
 			<File
 				RelativePath="Source\vid_manager.cpp"
@@ -1573,11 +1554,11 @@
 				>
 			</File>
 			<File
-				RelativePath="Source\vid_ddbase.h"
+				RelativePath=".\Source\vid_fbfx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Source\vid_fbfx.h"
+				RelativePath=".\Source\vid_gdibase.h"
 				>
 			</File>
 			<File

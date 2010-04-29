@@ -588,7 +588,7 @@ void T_Circle(int x, int y, int xradius, int yradius, int color, image *dest)
 }
 
 template<LUCENT_TYPE LT, int FILTER>
-static void _T_ColorFilter(image *img) {
+void _T_ColorFilter(image *img) {
 	int rr, gg, bb, z, c;
 
 	int x1,x2,y1,y2;
@@ -617,15 +617,13 @@ static void _T_ColorFilter(image *img) {
 			}
 			
 			T_PutPixel<LT,false>(x, y, c, img);
-
-			*data = c;
 		}
 		data += img->pitch - (x2-x1+1);
 	}
 }
 
 template<LUCENT_TYPE LT>
-static void T_ColorFilter(int filter, image *img)
+void T_ColorFilter(int filter, image *img)
 {
 	switch (filter)
 	{

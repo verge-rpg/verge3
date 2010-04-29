@@ -26,6 +26,8 @@
 
 int v3_xres=320, v3_yres=240, v3_bpp;
 int v3_window_xres=0, v3_window_yres = 0;
+// Overkill (2010-04-29): Aspect ratio enforcing.
+ScaleFormat v3_scale_win = SCALE_FORMAT_ASPECT, v3_scale_full = SCALE_FORMAT_STRETCH;
 
 bool windowmode=true;
 bool sound=true;
@@ -38,6 +40,7 @@ bool editcode = false;
 int gamerate = 100;
 int soundengine = 0;
 bool use_lua = false;
+bool vc_oldstring = false;
 
 VCCore *vc;
 
@@ -58,6 +61,23 @@ void LoadConfig()
 		v3_xres = cfg_GetIntKeyValue("xres");
 	if (cfg_KeyPresent("yres"))
 		v3_yres = cfg_GetIntKeyValue("yres");
+    // Overkill (2010-04-29): Scaling policies.
+    if (cfg_KeyPresent("scalewin"))
+    {
+        int value = cfg_GetIntKeyValue("scalewin");
+        if(value >= 0 && value < SCALE_FORMAT_COUNT)
+        {
+            v3_scale_win = (ScaleFormat) value;
+        }
+    }
+    if (cfg_KeyPresent("scalefull"))
+    {
+        int value = cfg_GetIntKeyValue("scalefull");
+        if(value >= 0 && value < SCALE_FORMAT_COUNT)
+        {
+            v3_scale_full = (ScaleFormat) value;
+        }
+    }
 	if (cfg_KeyPresent("bpp"))
 		v3_bpp = cfg_GetIntKeyValue("bpp");
 
@@ -101,6 +121,8 @@ void LoadConfig()
 	} else if (cfg_KeyPresent("logconsole-normalstdout")) {
 		logconsole = true;
 	}
+    if (cfg_KeyPresent("oldstring"))
+        vc_oldstring = true;
 
 	if (cfg_KeyPresent("mount1"))
 		MountVFile(cfg_GetKeyValue("mount1"));
