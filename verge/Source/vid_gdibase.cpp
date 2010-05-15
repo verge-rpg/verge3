@@ -27,9 +27,8 @@ class gdi_Window : public AuxWindow
 {
 public:
     BITMAPINFO bmi;
-    HDC hdc, frontDC, backDC;
-    HANDLE frontOld, backOld;
-    HBITMAP frontSurface;
+    HDC hdc, backDC;
+    HANDLE backOld;
     HBITMAP backSurface;
     void* backBuffer;
     
@@ -280,9 +279,14 @@ int dd_SetMode(int xres, int yres, int bpp, bool windowflag)
 			SetWindowPlacement(dd_gameWindow->hwnd,&wp);
 
 			if(dd_bWasMaximized)
+			{
+				ShowWindow(dd_gameWindow->hwnd,SW_RESTORE);
 				ShowWindow(dd_gameWindow->hwnd,SW_SHOWMAXIMIZED);
+			}
             else
+			{
                 ShowWindow(dd_gameWindow->hwnd,SW_RESTORE);
+			}
 		}
 
 		//must activate all auxwindows
@@ -504,13 +508,9 @@ void gdi_Window::createWindow()
 
 void gdi_Window::shutdown_win()
 {
-    DeleteDC(backDC);
     SelectObject(backDC, backOld);
     DeleteObject(backSurface);
-
-    DeleteDC(frontDC);
-    SelectObject(frontDC, frontOld);
-    DeleteObject(frontSurface);
+	DeleteDC(backDC);
 
     ReleaseDC(hwnd, hdc);
 }
@@ -635,12 +635,9 @@ void gdi_Window::flip_win()
 	ClientToScreen(hwnd, (POINT *)&r);
 	ClientToScreen(hwnd, (POINT *)&r + 1);
 
-    // Draw to front
-    BitBlt(frontDC, 0, 0, xres, yres, backDC, 0, 0, SRCCOPY); 
-    // Draw front to window (scale as necessary).
-    StretchBlt(hdc, (w - iw) / 2, (h - ih) / 2, iw, ih, frontDC, 0, 0, xres, yres, SRCCOPY);
+    // Draw back to window (scale as necessary).
+	StretchBlt(hdc, (w - iw) / 2, (h - ih) / 2, iw, ih, backDC, 0, 0, xres, yres, SRCCOPY);
 
-    
 	//render the screen
 	/*dx_win_ps->SetClipper(clipper);
 	dx_win_ps->Blt(&r, dx_win_bs, 0, DDBLT_WAIT, 0);*/
@@ -659,9 +656,6 @@ void gdi_Window::flip_win()
             BitBlt(hdc, 0, (h - ih) / 2 + ih, w, (h - ih) / 2, NULL, 0, 0, BLACKNESS);
 		//}
 	}
-
-    
-
 }
 
 void gdi_Window::flip_fullscreen()
@@ -755,18 +749,6 @@ int gdi_Window::set_win(int w, int h, int bpp)
         return 0;
     }
     backOld = SelectObject(backDC, backSurface);
-
-    frontDC = CreateCompatibleDC(hdc);
-    frontSurface = CreateCompatibleBitmap(hdc, w, h);
-    if(!frontSurface)
-    {
-        DeleteDC(backDC);
-        SelectObject(backDC, backOld);
-        DeleteObject(backSurface);
-        DeleteDC(frontDC);
-        return 0;
-    }
-    frontOld = SelectObject(frontDC, frontSurface);
 
 	if(bGameWindow)
 	{
@@ -912,7 +894,6 @@ int gdi_Window::set_fullscreen(int w, int h, int bpp)
 gdi_Window::gdi_Window(bool bGameWindow) : AuxWindow()
 {
 	img = 0;
-    frontSurface = 0;
     backSurface = 0;
     backBuffer = 0;    
 	bVisible = false;
