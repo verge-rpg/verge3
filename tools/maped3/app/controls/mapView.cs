@@ -206,16 +206,43 @@ namespace winmaped2 {
             int xmax = xmin + tw * 16;
 
             short[] tileMap = layer.Data;
-            for (int ty = 0; ty < th; ty++, cpy += 16) {
-                tp = (ty + mty) * layerWidth + mtx;
-                for (cpx = xmin; cpx < xmax; cpx += 16) {
-                    tile = tileMap[tp++];
-                    if (Global.RenderOptions.bAnimate) {
-                        tile = Global.FrameCalc.getframe(tile);
-                    }
+            if (Global.RenderOptions.bTranslucentEffects)
+            {
+                for (int ty = 0; ty < th; ty++, cpy += 16)
+                {
+                    tp = (ty + mty) * layerWidth + mtx;
+                    for (cpx = xmin; cpx < xmax; cpx += 16)
+                    {
+                        tile = tileMap[tp++];
+                        if (Global.RenderOptions.bAnimate)
+                        {
+                            tile = Global.FrameCalc.getframe(tile);
+                        }
 
-                    if (drawZero || tile != 0 && tile < vsp.tileCount) {
-                        Render.render(backBuffer, cpx, cpy, vsp.GetTile(tile).Image, false);
+                        if (drawZero || tile != 0 && tile < vsp.tileCount)
+                        {
+                            Render.renderAlpha(backBuffer, cpx, cpy, vsp.GetTile(tile).Image, 100 - layer.Translucency, false);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int ty = 0; ty < th; ty++, cpy += 16)
+                {
+                    tp = (ty + mty) * layerWidth + mtx;
+                    for (cpx = xmin; cpx < xmax; cpx += 16)
+                    {
+                        tile = tileMap[tp++];
+                        if (Global.RenderOptions.bAnimate)
+                        {
+                            tile = Global.FrameCalc.getframe(tile);
+                        }
+
+                        if (drawZero || tile != 0 && tile < vsp.tileCount)
+                        {
+                            Render.render(backBuffer, cpx, cpy, vsp.GetTile(tile).Image, false);
+                        }
                     }
                 }
             }

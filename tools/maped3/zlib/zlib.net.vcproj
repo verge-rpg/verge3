@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="zlib.net"
 	ProjectGUID="{1C1C2264-1C1F-4CC2-8747-FE3781AA1BF0}"
 	RootNamespace="zlib.net"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -70,6 +71,8 @@
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/zlib.net.pdb"
 				SubSystem="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/zlib.net.lib"
 				TargetMachine="1"
 			/>
@@ -90,9 +93,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -135,7 +135,6 @@
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -155,6 +154,8 @@
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				ImportLibrary="$(OutDir)/zlib.net.lib"
 				TargetMachine="1"
 			/>
@@ -177,9 +178,6 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
-				Name="VCWebDeploymentTool"
-			/>
-			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -191,19 +189,19 @@
 			Name="zlib"
 			>
 			<File
-				RelativePath="zlib-1.1.3\adler32.c"
+				RelativePath=".\zlib-1.1.3\adler32.c"
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\compress.c"
+				RelativePath=".\zlib-1.1.3\compress.c"
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\crc32.c"
+				RelativePath=".\zlib-1.1.3\crc32.c"
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\deflate.c"
+				RelativePath=".\zlib-1.1.3\deflate.c"
 				>
 			</File>
 			<File
@@ -211,11 +209,11 @@
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\gzio.c"
+				RelativePath=".\zlib-1.1.3\gzio.c"
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\infblock.c"
+				RelativePath=".\zlib-1.1.3\infblock.c"
 				>
 			</File>
 			<File
@@ -223,7 +221,7 @@
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\infcodes.c"
+				RelativePath=".\zlib-1.1.3\infcodes.c"
 				>
 			</File>
 			<File
@@ -231,7 +229,7 @@
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\inffast.c"
+				RelativePath=".\zlib-1.1.3\inffast.c"
 				>
 			</File>
 			<File
@@ -243,11 +241,11 @@
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\inflate.c"
+				RelativePath=".\zlib-1.1.3\inflate.c"
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\inftrees.c"
+				RelativePath=".\zlib-1.1.3\inftrees.c"
 				>
 			</File>
 			<File
@@ -255,7 +253,7 @@
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\infutil.c"
+				RelativePath=".\zlib-1.1.3\infutil.c"
 				>
 			</File>
 			<File
@@ -263,7 +261,7 @@
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\trees.c"
+				RelativePath=".\zlib-1.1.3\trees.c"
 				>
 			</File>
 			<File
@@ -271,7 +269,7 @@
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\uncompr.c"
+				RelativePath=".\zlib-1.1.3\uncompr.c"
 				>
 			</File>
 			<File
@@ -283,7 +281,7 @@
 				>
 			</File>
 			<File
-				RelativePath="zlib-1.1.3\zutil.c"
+				RelativePath=".\zlib-1.1.3\zutil.c"
 				>
 			</File>
 			<File

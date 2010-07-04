@@ -143,6 +143,57 @@ namespace winmaped2 {
             }
         }
 
+
+        private static void handlePixelAlpha(int src, ref int dest, int opacity, bool drawZero)
+        {
+            if (drawZero)
+            {
+                int r = (opacity * (((src >> 16) & 0xff) - ((dest >> 16) & 0xff)) / 100 + ((dest >> 16) & 0xff));
+                int g = (opacity * (((src >> 8) & 0xff) - ((dest >> 8) & 0xff)) / 100 + ((dest >> 8) & 0xff));
+                int b = (opacity * ((src & 0xff) - (dest & 0xff)) / 100 + (dest & 0xff));
+
+                dest = unchecked((r << 16) | (g << 8) | b | (int)0xFF000000);
+            }
+            else
+            {
+                if ((src & 0x00FFFFFF) != 0x00FF00FF)
+                {
+                    int r = (opacity * (((src >> 16) & 0xff) - ((dest >> 16) & 0xff)) / 100 + ((dest >> 16) & 0xff));
+                    int g = (opacity * (((src >> 8) & 0xff) - ((dest >> 8) & 0xff)) / 100 + ((dest >> 8) & 0xff));
+                    int b = (opacity * ((src & 0xff) - (dest & 0xff)) / 100 + (dest & 0xff));
+
+                    dest = unchecked((r << 16) | (g << 8) | b | (int)0xFF000000);
+                }
+            }
+        }
+
+        public unsafe static void renderAlpha(pr2.IRenderImage dest, int x, int y, pr2.IRenderImage src, int opacity, bool drawZero)
+        {
+            int xlen = src.Width;
+            int ylen = src.Height;
+            int* s = src.Buffer;
+            int* d = dest.Buffer;
+
+            int spitch = xlen;
+            int dpitch = dest.Pitch;
+
+            if (clip(ref x, ref y, ref xlen, ref ylen, ref s, ref d, spitch, dpitch, 0, dest.Width, 0, dest.Height))
+            {
+                return;
+            }
+
+            for (; ylen != 0; ylen--)
+            {
+                for (int xx = 0; xx < xlen; xx++)
+                {
+                    handlePixelAlpha(s[xx], ref d[xx], opacity, drawZero);
+                }
+
+                s += spitch;
+                d += dpitch;
+            }
+        }
+
         public static void renderBox(pr2.IRenderImage img, int x0, int y0, int w, int h, int color, Render.PixelOp op) {
             renderSolid(img, x0, y0, w, 1, color, op);
             renderSolid(img, x0, y0 + h - 1, w, 1, color, op);

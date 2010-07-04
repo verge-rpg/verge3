@@ -1,10 +1,7 @@
-namespace c
-{
-	#include <stdlib.h>
-	#include <string.h>
-	#include <windows.h>
-	#include <stdio.h>
-}
+#include <stdlib.h>
+#include <string.h>
+#include <windows.h>
+#include <stdio.h>
 
 #using <mscorlib.dll>
 using namespace System;
@@ -34,6 +31,8 @@ public:
 				return new System::String(S"ZLIB: Z_BUF_ERROR");
 			case Z_STREAM_ERROR:
 				return new System::String(S"ZLIB: Z_STREAM_ERROR");
+            default:
+                return new System::String(S"Unknown ZLIB error.");
 			}
 		}
 
@@ -48,7 +47,7 @@ public:
 
 	static Byte Encode(unsigned char *srcbuf, int srclen) []
 	{
-		int i;
+		unsigned int i;
 
 		if(srclen==0)
 		{
@@ -58,12 +57,12 @@ public:
 
 
 		unsigned int destlen=(int)((double)srclen*1.001+0.5)+12;
-		unsigned char *destbuf=(unsigned char *)c::malloc(destlen);
+		unsigned char *destbuf=(unsigned char *)malloc(destlen);
 		
 		int ok=zlib::compress(destbuf,(zlib::uLongf *)&destlen,srcbuf,srclen);
 		if(ok!=Z_OK)
 		{
-			c::free(destbuf);
+			free(destbuf);
 			throw( new ZLIB::Exception(ok));
 		}
 		
@@ -72,7 +71,7 @@ public:
 		for(i=0;i<destlen;i++)
 			dest[i]=destbuf[i];
 
-		c::free(destbuf);
+		free(destbuf);
 
 		return dest;		
 	}
@@ -98,8 +97,6 @@ private:
 public:
 	static Byte Decode(Byte src __gc [], int size) []
 	{
-		int i;
-
 		if(size==0)
 		{
 			Byte dest __gc []=__gc new Byte[0];

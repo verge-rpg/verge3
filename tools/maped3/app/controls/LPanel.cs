@@ -116,9 +116,20 @@ namespace winmaped2
 			_adjusted=true;
 		}
 
+        int _slideUpdate = 0;
 		private void SlideTo(int x)
 		{
 			mLayerRef.Translucency = 100 - Math.Max( Math.Min(x,100), 0 );
+            if (_slideUpdate == 0)
+            {
+                Global.ForceRedraws();
+                _slideUpdate = 10;
+            }
+            else
+            {
+                _slideUpdate--;
+            }
+            
 			Invalidate();
 		}
 
@@ -154,6 +165,7 @@ namespace winmaped2
 			else if ( e.Button == MouseButtons.Left && SliderRect.Contains(e.X,e.Y)&&mLayerRef.type==LayerType.Tile )
 			{
 				SliderHasFocus = true;
+                _slideUpdate = 0;
 				SlideTo(e.X - SliderRect.X);
 			}
 			else if ( e.Clicks==1&&e.Button==MouseButtons.Left&&e.X>45 )
@@ -183,8 +195,11 @@ namespace winmaped2
 		}
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
-			if(e.Button==MouseButtons.Left&&SliderHasFocus)
-				SliderHasFocus=false;
+            if (e.Button == MouseButtons.Left && SliderHasFocus)
+            {
+                SliderHasFocus = false;
+                Global.ForceRedraws();
+            }
 		}
 
 
