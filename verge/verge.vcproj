@@ -720,29 +720,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\p_datastructs.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\Source\snd_fmod.cpp"
 				>
 				<FileConfiguration
@@ -767,75 +744,6 @@
 			</File>
 			<File
 				RelativePath="Source\vc_builtins.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Source\vc_compiler.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Source\vc_core.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Source\vc_debug.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1531,22 +1439,6 @@
 			</File>
 			<File
 				RelativePath=".\Source\snd_fmod.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\snd_oakra.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\vc_compiler.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\vc_core.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\vc_debug.h"
 				>
 			</File>
 			<File

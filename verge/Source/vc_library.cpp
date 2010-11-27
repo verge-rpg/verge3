@@ -17,14 +17,6 @@
 #include "opcodes.h"
 #include <sstream>
 
-/****************************** data ******************************/
-
-extern VCCore *vc;
-
-int cf_r1, cf_g1, cf_b1;
-int cf_r2, cf_g2, cf_b2;
-int cf_rr, cf_gr, cf_br;
-
 /***************************** devilry ****************************/
 
 #define VC_LIBFUNC(name) \
@@ -1166,84 +1158,6 @@ VC_LIBFUNC(vc_fatan2) ()
 VC_LIBFUNC(vc_CopyImageToClipboard) () { se->CopyImageToClipboard(se->ResolveOperand()); }
 VC_LIBFUNC(vc_GetImageFromClipboard) () { se->vcreturn = se->GetImageFromClipboard(); }
 
-VC_LIBFUNC(vc_SetInt) ()
-{
-	StringRef intname = se->ResolveString();
-	int value = se->ResolveOperand();
-	vc->SetInt(intname.c_str(), value);
-}
-
-VC_LIBFUNC(vc_GetInt) ()
-{
-	StringRef intname = se->ResolveString();
-	se->vcreturn = vc->GetInt(intname.c_str());
-}
-
-VC_LIBFUNC(vc_IntExists) ()
-{
-	StringRef intname = se->ResolveString();
-
-	if( vc->IntExists(intname.c_str()) ) {
-		se->vcreturn = 1;
-	} else {
-		se->vcreturn = 0;
-	}
-}
-
-VC_LIBFUNC(vc_StrExists) ()
-{
-	StringRef strname = se->ResolveString();
-
-	if( vc->StrExists(strname.c_str()) ) {
-		se->vcreturn = 1;
-	} else {
-		se->vcreturn = 0;
-	}
-}
-
-VC_LIBFUNC(vc_SetString) ()
-{
-	StringRef strname = se->ResolveString();
-	StringRef value = se->ResolveString();
-	vc->SetStr(strname, value);
-}
-
-VC_LIBFUNC(vc_GetString) ()
-{
-	StringRef strname = se->ResolveString();
-	se->vcretstr = vc->GetStr(strname.c_str());
-}
-
-VC_LIBFUNC(vc_SetIntArray) ()
-{
-	StringRef intname = se->ResolveString();
-	int index = se->ResolveOperand();
-	int value = se->ResolveOperand();
-	vc->SetIntArray(intname.c_str(), index, value);
-}
-
-VC_LIBFUNC(vc_GetIntArray) ()
-{
-	StringRef intname = se->ResolveString();
-	int index = se->ResolveOperand();
-	se->vcreturn = vc->GetIntArray(intname.c_str(), index);
-}
-
-VC_LIBFUNC(vc_SetStringArray) ()
-{
-	StringRef strname = se->ResolveString();
-	int index = se->ResolveOperand();
-	StringRef value = se->ResolveString();
-	vc->SetStrArray(strname, index, value);
-}
-
-VC_LIBFUNC(vc_GetStringArray) ()
-{
-	StringRef strname = se->ResolveString();
-	int index = se->ResolveOperand();
-	se->vcretstr = vc->GetStrArray(strname, index);
-}
-
 VC_LIBFUNC(vc_FlipBlit) () {
 	int x = se->ResolveOperand();
 	int y = se->ResolveOperand();
@@ -1494,59 +1408,6 @@ VC_LIBFUNC(vc_FileWriteVSP) () {
 	se->FileWriteVSP(handle);
 }
 
-// Overkill (2006-07-20):
-// Compiles the specified MAP filename.
-VC_LIBFUNC(vc_CompileMap) ()
-{
-	if(releasemode)
-	{
-		se->vcerr("vc_CompileMap() - Can't compile map in release mode!");
-	}
-	#ifdef ALLOW_SCRIPT_COMPILATION
-
-	StringRef filename = se->ResolveString();
-	// Get the filename sans .map extension.
-	char *s = stripext(filename.c_str());
-	// If the vc file exists, compile it in.
-	if (Exist(va("%s.vc", s)))
-	{
-		if(!vcc->CompileMap(s)) {
-			showMessageBox(vcc->errmsg);
-			return;
-		}
-	}
-	else
-	{
-		se->vcerr("vc_CompileMap() - could not compile %s.vc!", s);
-	}
-	#endif
-}
-
-VC_LIBFUNC(vc_ListStructMembers) ()
-{
-	StringRef structname = se->ResolveString();
-	std::vector<StringRef> result;
-	vc->ListStructMembers(result, structname.c_str());
-	std::string temp;
-
-	for(std::vector<StringRef>::iterator i = result.begin();
-		i != result.end();
-		i++)
-	{
-		temp += (*i).str() + "|";
-	}
-
-	se->vcretstr = temp;
-}
-
-VC_LIBFUNC(vc_CopyArray) ()
-{
-	StringRef src = se->ResolveString();
-	StringRef dest = se->ResolveString();
-	bool result = vc->CopyArray(src.c_str(), dest.c_str());
-	se->vcreturn = result;
-}
-
 // Overkill (2006-11-20)
 VC_LIBFUNC(vc_SoundIsPlaying) () { se->vcreturn = ScriptEngine::SoundIsPlaying(se->ResolveOperand()); }
 
@@ -1624,26 +1485,6 @@ VC_LIBFUNC(vc_ListBuiltinDefines) ()
 		temp += std::string(hdefs[i].key) + "|";
 	}
 	se->vcretstr = temp;
-}
-
-VC_LIBFUNC(vc_GetUserSystemVcFunctionCount) ()
-{
-	se->vcreturn = 0;
-	se->vcreturn = vc->userfuncs[CIMAGE_SYSTEM].size();
-}
-
-VC_LIBFUNC(vc_GetUserSystemVcFunctionByIndex) ()
-{
-	int index = se->ResolveOperand();
-	int maxSize = vc->userfuncs[CIMAGE_SYSTEM].size();
-
-	if( index < 0 || index > maxSize )
-	{
-		se->vcerr("VC Execution error: Invalid offset: (%d).  Valid range: (0-%d)", index, maxSize );
-	}
-
-	StringRef myString = (vc->userfuncs[CIMAGE_SYSTEM].at(index))->name;
-	se->vcretstr = myString;
 }
 
 // Overkill (2008-04-17): Socket port can be switched to something besides 45150.
@@ -1758,7 +1599,7 @@ VC_LIBFUNC(vc_MessageBox) ()
 
 // ===================== End VC Standard Function Library =====================
 
-void VCCore::HandleLibFunc(word c)
+/*void VCCore::HandleLibFunc(word c)
 {
 	VcFunctionImpl ptr = dispatchTable[c];
 	if (ptr) {
@@ -1776,4 +1617,4 @@ void VCCore::HandleLibFunc(word c)
 		default:
 			se->vcerr("VC Execution error: Invalid vc STDLIB index. (%d)", (int) c);
 	}
-}
+}*/

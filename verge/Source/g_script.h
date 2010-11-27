@@ -5,7 +5,6 @@
 struct VergeCallback;
 
 extern bool die;
-extern int vc_paranoid, vc_arraycheck;
 extern VergeCallback renderfunc, timerfunc;
 
 extern int event_tx;

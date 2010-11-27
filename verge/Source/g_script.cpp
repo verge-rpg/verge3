@@ -10,6 +10,9 @@
 int cur_stick = 0;
 VergeCallback renderfunc, timerfunc;
 
+int invc;
+bool die;
+
 int event_tx;
 int event_ty;
 int event_zone;

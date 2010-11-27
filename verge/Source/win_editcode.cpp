@@ -8,11 +8,10 @@
 /// If you have altered this source file, please log your name, date, and what
 /// changes you made below this line.
 
-
 // A header! :O
 #include "xerxes.h"
 
-
+/*
 #define BTN_EVAL		100
 #define BTN_RELOADVC	101
 #define BTN_RELOADMAP	102
@@ -127,4 +126,4 @@ void InitEditCode()
 	SendMessage(hListboxVC,LB_ADDSTRING,0,(LPARAM)"system.vc");
 	SendMessage(hListboxVC,LB_ADDSTRING,0,(LPARAM)"(Current Map VC)");
 
-}
+}*/
