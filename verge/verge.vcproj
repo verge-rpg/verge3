@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../win32;../dumb/include;&quot;../lua/lua-5.1.2&quot;;&quot;../boost-1.37.0&quot;;../lua/luabind;&quot;../flac-1.1.4/include&quot;;../audiere/src;&quot;../UnitTest++/src&quot;"
+				AdditionalIncludeDirectories="../mmio/include;../zlib;../corona;../win32;../dumb/include;&quot;../lua/lua-5.1.2&quot;;../lua/luabind;&quot;../flac-1.1.4/include&quot;;../audiere/src;&quot;../UnitTest++/src&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;MIKMOD_STATIC;_CRT_SECURE_NO_DEPRECATE;USE_DUMB;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

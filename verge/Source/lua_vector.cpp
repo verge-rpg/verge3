@@ -16,6 +16,8 @@
 
 #include "xerxes.h"
 
+#include <cassert>
+
 #ifdef ENABLE_LUA
 
 #include "lua_vector.h"

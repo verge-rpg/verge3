@@ -103,15 +103,18 @@ void LUA::LoadMapScript(VFILE *f, const std::string& filename) {
 
 void LUA::loadFile(const char *fname) {
 
-	boost::shared_array<byte> buf = vreadfile(fname);
-	if(!buf.get())
+	byte* buf = getFileContent(fname);
+
+	if(!buf)
 		err("Error loading " + std::string(fname));
 
-	if(luaL_loadbuffer(L, (char*)buf.get()+4, *(int*)buf.get(), fname))
+	if(luaL_loadbuffer(L, (char*) buf + 4, *((int*) buf), fname))
 		err("Error loading " + std::string(fname));
 
 	if(lua_pcall(L, 0,0,0))
 		err("Error compiling " + std::string(fname));
+
+	delete buf;
 }
 
 void LUA::ExecAutoexec() {

@@ -15,7 +15,6 @@
  ****************************************************************/
 
 #include "xerxes.h"
-#include <boost/shared_array.hpp>
 
 // ***************************** Code *****************************
 
@@ -359,13 +358,13 @@ int veof(VFILE *f)
 	return vtell(f) >= filesize(f);
 }
 
-boost::shared_array<byte> vreadfile(const char *fname) {
+byte* getFileContent(const char *fname) {
 	VFILE *f = vopen(fname);
-	if(!f) return boost::shared_array<byte>(0);
+	if(!f) return 0;
 	int len = filesize(f);
-	boost::shared_array<byte> buf(new byte[len+4]);
-	*((int*)buf.get()) = len;
-	vread(buf.get()+4,len,f);
+	byte* buf = new byte[len+4];
+	*((int*)buf) = len;
+	vread(buf+4,len,f);
 	vclose(f);
 	return buf;
 }

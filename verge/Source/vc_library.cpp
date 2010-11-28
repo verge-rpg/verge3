@@ -15,6 +15,8 @@
 
 #include "xerxes.h"
 #include "opcodes.h"
+
+#include <algorithm>
 #include <sstream>
 
 /***************************** devilry ****************************/
