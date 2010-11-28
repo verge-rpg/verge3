@@ -101,13 +101,6 @@ void LoadConfig()
 		logconsole = true;
 	}
 
-	if (cfg_KeyPresent("mount1"))
-		MountVFile(cfg_GetKeyValue("mount1"));
-	if (cfg_KeyPresent("mount2"))
-		MountVFile(cfg_GetKeyValue("mount2"));
-	if (cfg_KeyPresent("mount3"))
-		MountVFile(cfg_GetKeyValue("mount3"));
-
 	void platform_ProcessConfig();
 	platform_ProcessConfig();
 }

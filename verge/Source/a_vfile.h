@@ -17,38 +17,11 @@
 struct VFILE
 {
   FILE *fp;                         // real file pointer.
-  quad i;                           // which file index in vfile is it?
-  char s;                           // 0=real file 1=vfile;
-  int v;                            // if vfile, which vfile index
   int cachedSize;                   // The size of the file being read. Starts as -1.
 };
 
-struct filestruct
-{
-  unsigned char fname[256];           // pathname thingo
-  int size;                           // size of the file
-  int packofs;                        // where the file can be found in PACK
-  int curofs;                         // current file offset.
-  char extractable;                   // irrelevant to runtime, but...
-  char override;                      // should we override?
-};
-
-struct mountstruct
-{
-  char mountname[80];                 // name of VRG packfile.
-  FILE *vhandle;                      // Real file-handle of packfile.
-  struct filestruct *files;           // File record array.
-  int numfiles;                       // number of files in pack.
-  int curofs;                         // Current filepointer.
-};
-
-extern mountstruct pack[10];
-extern int filesmounted;
-
 bool Exist(const char *fname);
-bool VExist(char *fname);
 VFILE *vopen(const char *fname);
-void MountVFile(char *fname);
 
 void flip(void *d, int size);
 
