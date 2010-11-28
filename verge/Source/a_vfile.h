@@ -82,6 +82,3 @@ int veof(VFILE *f);
 boost::shared_array<byte> vreadfile(const char *fname);
 
 inline void fread_le(int* dest, FILE *fp) { fread(dest,1,sizeof(int),fp); flip(dest,sizeof(int)); }
-
-int wildcmp(const char *wild, const char *string); // wildcmp - Written by Jack Handy - jakkhandy@hotmail.com
-void listPackFilePattern(std::vector<std::string> &res, CStringRef pattern);

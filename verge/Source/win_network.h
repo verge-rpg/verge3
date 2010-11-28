@@ -18,10 +18,8 @@
 #include <string>
 #include <exception>
 
-#include "a_string.h"
-
-StringRef getUrlText(CStringRef url);
-int getUrlImage(CStringRef url);
+std::string getUrlText(const std::string& url);
+int getUrlImage(const std::string& url);
 
 class NetworkException : public std::exception
 {

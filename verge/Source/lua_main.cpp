@@ -88,7 +88,7 @@ void LUA::compileSystem() {
 	loadFile("system.lua");
 }
 
-void LUA::LoadMapScript(VFILE *f, CStringRef filename) {
+void LUA::LoadMapScript(VFILE *f, const std::string& filename) {
 	int scriptsize;
 	vread(&scriptsize,4,f);
 	std::auto_ptr<char> temp(new char[scriptsize+1]);
@@ -96,9 +96,9 @@ void LUA::LoadMapScript(VFILE *f, CStringRef filename) {
 	temp.get()[scriptsize] = 0;
 
 	if(luaL_loadbuffer(L, temp.get(), strlen(temp.get()), filename.c_str()))
-		err("Error loading " + filename.str());
+		err("Error loading " + filename);
 	if(lua_pcall(L, 0, 0, 0))
-		err("Error compiling " + filename.str());
+		err("Error compiling " + filename);
 }
 
 void LUA::loadFile(const char *fname) {
@@ -414,7 +414,7 @@ int LUA::Get_Hvar(lua_State* L)
 		} 
 		else if(*type == '0' + t_STRING)
 		{
-			StringRef ret = lua->ReadHvar_str(strHSTR1, index, ofs);
+			std::string ret = lua->ReadHvar_str(strHSTR1, index, ofs);
 			lua_pushstring(L, ret.c_str());
 		} else lua->LuaError("Fatal Error Code Haberdasher");
 		return 1;
@@ -434,7 +434,7 @@ int LUA::Get_Hvar(lua_State* L)
 		} 
 		else if(*type == '0' + t_STRING)
 		{
-			StringRef ret = lua->ReadHvar_str(strHSTR0, index, 0);
+			std::string ret = lua->ReadHvar_str(strHSTR0, index, 0);
 			lua_pushstring(L, ret.c_str());
 		} else lua->LuaError("Fatal Error Code Sandman");
 		return 1;
@@ -476,7 +476,7 @@ int LUA::Set_Hvar(lua_State* L)
 		else if(*type == '0' + t_STRING)
 		{
 			if(!lua_isstring(L, 2)) lua->LuaError("value for v3 system variable `%s` must be a string", name);
-			StringRef value = lua_tostring(L, 2);
+			std::string value = lua_tostring(L, 2);
 			lua->WriteHvar_str(strHSTR1, index, ofs, value);
 		}
 	} 
@@ -499,7 +499,7 @@ int LUA::Set_Hvar(lua_State* L)
 		else if(*type == '0' + t_STRING)
 		{
 			if(!lua_isstring(L, 1)) lua->LuaError("value for v3 system variable `%s` must be a string", name);
-			StringRef value = lua_tostring(L, 1);
+			std::string value = lua_tostring(L, 1);
 			lua->WriteHvar_str(strHSTR0, index, 0, value);
 		}
 	}

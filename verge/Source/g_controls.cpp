@@ -23,7 +23,7 @@ byte b1, b2, b3, b4;
 byte kill_up, kill_down, kill_left, kill_right;
 byte kill_b1, kill_b2, kill_b3, kill_b4;
 
-StringRef bindbutton[4];
+std::string bindbutton[4];
 
 byte k_b1 = SCAN_ENTER,
      k_b2 = SCAN_ALT,

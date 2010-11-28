@@ -42,6 +42,8 @@
 
 #include <math.h>
 #include <vector>
+#include <map>
+#include <string>
 
 #ifdef WIN32
 #define __WIN32__ 1
@@ -195,10 +197,8 @@ typedef unsigned char  byte;
 #include "vid_sysfont.h"
 #include "a_common.h"
 #include "a_config.h"
-#include "a_string.h"
 #include "a_vfile.h"
 #include "a_codec.h"
-#include "a_dict.h"
 
 #ifdef __IPHONE__
 #include "vid_ddbase.h"
@@ -266,9 +266,6 @@ typedef unsigned char  byte;
 #include "g_engine.h"
 #include "g_editcode.h"
 #include "g_sound.h"
-#include "vc_compiler.h"
-#include "vc_core.h"
-#include "vc_debug.h"
 #include "g_startup.h"
 
 

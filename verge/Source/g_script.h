@@ -19,10 +19,10 @@ extern int __grue_actor_index;
 
 extern int invc;
 
-extern StringRef _trigger_onStep, _trigger_afterStep;
-extern StringRef _trigger_beforeEntityScript, _trigger_afterEntityScript;
-extern StringRef _trigger_onEntityCollide;
-extern StringRef _trigger_afterPlayerMove;
+extern std::string _trigger_onStep, _trigger_afterStep;
+extern std::string _trigger_beforeEntityScript, _trigger_afterEntityScript;
+extern std::string _trigger_onEntityCollide;
+extern std::string _trigger_afterPlayerMove;
 
 #define VCFILES				51
 #define VC_READ				1
@@ -59,7 +59,7 @@ struct argument_t
 {
 	byte type_id;
 	int int_value;
-	StringRef string_value;
+	std::string string_value;
 };
 
 // Callbacks used by Verge's hooks/builtins.
@@ -67,7 +67,7 @@ struct VergeCallback
 {
 	/// For resolving names at runtime
     // (VC/Lua) The name of the function to resolve.
-    StringRef funcname;
+    std::string funcname;
     
 	/// For direct references to a callback.
     // (VC) function index for library or user function
@@ -79,7 +79,7 @@ struct VergeCallback
     int cimage;
 
 	VergeCallback()
-		: funcname(empty_string), functionIndex(-1), opType(0), cimage(0)
+		: funcname(""), functionIndex(-1), opType(0), cimage(0)
 	{
 	}
 };
@@ -89,17 +89,17 @@ public:
 	ScriptEngine();
 
 	int vcreturn;
-	StringRef vcretstr;
+	std::string vcretstr;
 
 	void Error(const char *s, ...);
 
-	virtual bool ExecuteFunctionString(CStringRef script) = 0;
-	virtual bool FunctionExists(CStringRef func) = 0;
+	virtual bool ExecuteFunctionString(const std::string& script) = 0;
+	virtual bool FunctionExists(const std::string& func) = 0;
 	virtual void ExecAutoexec() = 0;
-	virtual void LoadMapScript(VFILE *f, CStringRef filename) = 0;
-	virtual void DisplayError(CStringRef msg) = 0;
+	virtual void LoadMapScript(VFILE *f, const std::string& filename) = 0;
+	virtual void DisplayError(const std::string& msg) = 0;
 	virtual int ResolveOperand() = 0;
-	virtual StringRef ResolveString() = 0;
+	virtual std::string ResolveString() = 0;
 	virtual VergeCallback ResolveCallback() = 0; // Get callback from argument list (Lua allocates a reference).
 	virtual void ReleaseCallback(VergeCallback& cb) = 0; // Free callback (or else, memory bloat in Lua.).
 	virtual void ExecuteCallback(VergeCallback& cb, bool calling_from_library) = 0; // Invoke callback.
@@ -115,10 +115,10 @@ public:
 		Error("%s",msg);
 	}
 
-	StringRef ReadHvar_str(int category, int loc, int ofs);
-	virtual StringRef ReadHvar_str_derived(int category, int loc, int ofs);
-	void WriteHvar_str(int category, int loc, int arg, CStringRef value);
-	virtual void WriteHvar_str_derived(int category, int loc, int arg, CStringRef value);
+	std::string ReadHvar_str(int category, int loc, int ofs);
+	virtual std::string ReadHvar_str_derived(int category, int loc, int ofs);
+	void WriteHvar_str(int category, int loc, int arg, const std::string& value);
+	virtual void WriteHvar_str_derived(int category, int loc, int arg, const std::string& value);
 
 	int ReadHvar(int category, int loc, int ofs);
 	virtual int ReadHvar_derived(int category, int loc, int ofs);
@@ -129,83 +129,49 @@ public:
 	std::vector<argument_t> argument_pass_list;
 
 	void ArgumentPassAddInt(int value);
-	void ArgumentPassAddString(StringRef value);
+	void ArgumentPassAddString(std::string value);
 	void ArgumentPassClear();
 
 	//script services
 	//VI.a. General Utility Functions
 	//TODO(CallFunction);
-	static void Exit(CStringRef message);
-	//TODO(FunctionExists);
-	//TODO(GetInt);
-	//TODO(GetIntArray);
-	//TODO(GetString);
-	//TODO(GetStringArray);
-	static void HookButton(int b, CStringRef s);
-	static void HookKey(int k, CStringRef s);
+	static void Exit(const std::string& message);
+	static void HookButton(int b, const std::string& s);
+	static void HookKey(int k, const std::string& s);
 	void HookTimer(VergeCallback s);
 	void HookRetrace(VergeCallback s);
-	static void Log(CStringRef s);
-	static void MessageBox(CStringRef msg);
+	static void Log(const std::string& s);
+	static void MessageBox(const std::string& msg);
 	static int Random(int min, int max);
-	static void SetAppName(CStringRef s);
+	static void SetAppName(const std::string& s);
 	static void SetButtonJB(int b, int jb);
 	static void SetButtonKey(int b, int k);
-	//TODO(SetInt);
-	//TODO(SetIntArray);
 	static void SetRandSeed(int seed);
 	static void SetResolution(int v3_xres, int v3_yres);
-	//TODO(SetString);
-	//TODO(SetStringArray);
 	static void Unpress(int n);
 	static void UpdateControls();
-	//VI.b. String Functions
-	static int Asc(CStringRef s);
-	static StringRef Chr(int c);
-	static StringRef GetToken(CStringRef s, CStringRef d, int i);
-	static StringRef Left(CStringRef str, int len);
-	static int Len(CStringRef s);
-	static StringRef Mid(CStringRef str, int pos, int len);
-	static StringRef Right(CStringRef str, int len);
-	static StringRef Str(int d);
-	static int Strcmp(CStringRef s1, CStringRef s2);
-	static StringRef Strdup(CStringRef s, int times);
-	static int TokenCount(CStringRef s, CStringRef d);
-	static StringRef ToLower(CStringRef str);
-	static StringRef ToUpper(CStringRef str);
-	static int Val(CStringRef s);
-	//VI.c. Dictionary Functions
-	//TODO(DictContains);
-	//TODO(DictFree);
-	//TODO(DictGetInt);
-	//TODO(DictGetString);
-	//TODO(DictNew);
-	//TODO(DictRemove);
-	//TODO(DictSetInt);
-	//TODO(DictSetString);
-	//TODO(DictSize);
 	//VI.d. Map Functions
 	static int GetObs(int x, int y);
 	static int GetObsPixel(int x, int y);
 	static int GetTile(int x, int y, int i);
 	static int GetZone(int x, int y);
-	static void Map(CStringRef map);
+	static void Map(const std::string& map);
 	static void Render();
 	static void RenderMap(int x, int y, int d);
 	static void SetObs(int x, int y, int c);
 	static void SetTile(int x, int y, int i, int z);
 	static void SetZone(int x, int y, int z);
 	//VI.e. Entity Functions
-	static void ChangeCHR(int e, CStringRef c);
-	static void EntityMove(int e, CStringRef s);
+	static void ChangeCHR(int e, const std::string& c);
+	static void EntityMove(int e, const std::string& s);
 	static void EntitySetWanderDelay(int e, int d);
 	static void EntitySetWanderRect(int e, int x1, int y1, int x2, int y2);
 	static void EntitySetWanderZone(int e);
-	static int EntitySpawn(int x, int y, CStringRef s);
+	static int EntitySpawn(int x, int y, const std::string& s);
 	static void EntityStalk(int stalker, int stalkee);
 	static void EntityStop(int e);
-	static void HookEntityRender(int i, CStringRef s);
-	static void PlayerMove(CStringRef s);
+	static void HookEntityRender(int i, const std::string& s);
+	static void PlayerMove(const std::string& s);
 	static void PlayerEntityMoveCleanup();
 	static void SetEntitiesPaused(int i);
 	static void SetPlayer(int e);
@@ -236,9 +202,9 @@ public:
 	static int ImageValid(int handle);
 	static int ImageWidth(int src);
 	static void Line(int x1, int y1, int x2, int y2, int c, int dst);
-	static int LoadImage(CStringRef fn);
-	static int LoadImage0(CStringRef fn);
-	static int LoadImage8(CStringRef fn);
+	static int LoadImage(const std::string& fn);
+	static int LoadImage0(const std::string& fn);
+	static int LoadImage8(const std::string& fn);
 	static int MakeColor(int r, int g, int b);
 	static int MixColor(int c1, int c2, int p);
 	static void Mosaic(int xgran, int ygran, int dst);
@@ -274,9 +240,9 @@ public:
 	static void FreeSound(int slot);
 	static int GetSongPos(int handle);
 	static int GetSongVolume(int handle);
-	static int LoadSong(CStringRef fn);
-	static int LoadSound(CStringRef fn);
-	static void PlayMusic(CStringRef fn);
+	static int LoadSong(const std::string& fn);
+	static int LoadSound(const std::string& fn);
+	static void PlayMusic(const std::string& fn);
 	static void PlaySong(int handle);
 	static int PlaySound(int slot, int volume);
 	static void SetMusicVolume(int v);
@@ -290,12 +256,12 @@ public:
 	static void EnableVariableWidth(int fh);
 	static int FontHeight(int f);
 	static void FreeFont(int f);
-	static int LoadFont(CStringRef filename, int width, int height);
-	static int LoadFontEx(CStringRef filename);
-	static void PrintCenter(int x, int y, int d, int fh, CStringRef text);
-	static void PrintRight(int x, int y, int d, int fh, CStringRef text);
-	static void PrintString(int x, int y, int d, int fh, CStringRef text);
-	static int TextWidth(int fh, CStringRef text);
+	static int LoadFont(const std::string& filename, int width, int height);
+	static int LoadFontEx(const std::string& filename);
+	static void PrintCenter(int x, int y, int d, int fh, const std::string& text);
+	static void PrintRight(int x, int y, int d, int fh, const std::string& text);
+	static void PrintString(int x, int y, int d, int fh, const std::string& text);
+	static int TextWidth(int fh, const std::string& text);
 	//VI.j. Math Functions
 	static int acos(int val);
 	static int facos(int val);
@@ -317,28 +283,28 @@ public:
 	static void FileClose(int handle);
 	static int FileCurrentPos(int handle);
 	static bool FileEOF(int handle);
-	static int FileOpen(CStringRef fname, int filemode);
+	static int FileOpen(const std::string& fname, int filemode);
 	static int FileReadByte(int handle);
-	static StringRef FileReadln(int handle);
+	static std::string FileReadln(int handle);
 	static int FileReadQuad(int handle);
-	static StringRef FileReadString(int handle);
-	static StringRef FileReadToken(int handle);
+	static std::string FileReadString(int handle);
+	static std::string FileReadToken(int handle);
 	static int FileReadWord(int handle);
 	static void FileSeekLine(int handle, int line);
 	static void FileSeekPos(int handle, int offset, int mode);
-	static void FileWrite(int handle, CStringRef s);
+	static void FileWrite(int handle, const std::string& s);
 	static void FileWriteByte(int handle, int var);
-	static void FileWriteln(int handle, CStringRef s);
+	static void FileWriteln(int handle, const std::string& s);
 	static void FileWriteQuad(int handle, int var);
-	static void FileWriteString(int handle, CStringRef s);
+	static void FileWriteString(int handle, const std::string& s);
 	static void FileWriteWord(int handle, int var);
-	static StringRef ListFilePattern(CStringRef pattern);
+	static std::string ListFilePattern(const std::string& pattern);
 	static void FileWriteCHR(int handle, int ent);
 	static void FileWriteMAP(int handle);
 	static void FileWriteVSP(int handle);
 	//VI.l. Window Managment Functions
 	static void WindowClose(int win);
-	static int WindowCreate(int x, int y, int w, int h, CStringRef s);
+	static int WindowCreate(int x, int y, int w, int h, const std::string& s);
 	static int WindowGetHeight(int win);
 	static int WindowGetImage(int win);
 	static int WindowGetWidth(int win);
@@ -349,7 +315,7 @@ public:
 	static void WindowSetPosition(int win, int x, int y);
 	static void WindowSetResolution(int win, int x, int y);
 	static void WindowSetSize(int win, int x, int y);
-	static void WindowSetTitle(int win, CStringRef s);
+	static void WindowSetTitle(int win, const std::string& s);
 	static void WindowShow(int win);
 	//VI.m. Movie Playback Functions
 	static void AbortMovie();
@@ -357,56 +323,53 @@ public:
 	static int MovieGetCurrFrame(int m);
 	static int MovieGetFramerate(int m);
 	static int MovieGetImage(int m);
-	static int MovieLoad(CStringRef s, bool mute);
+	static int MovieLoad(const std::string& s, bool mute);
 	static void MovieNextFrame(int m);
 	static void MoviePlay(int m, bool loop);
 	static void MovieRender(int m);
 	static void MovieSetFrame(int m, int f);
-	static int PlayMovie(CStringRef s);
+	static int PlayMovie(const std::string& s);
 	//VI.n. Netcode Functions
 	static void SetConnectionPort(int port);
-	static int Connect(CStringRef ip);
+	static int Connect(const std::string& ip);
 	static int GetConnection();
-	static int GetUrlImage(CStringRef url);
-	static StringRef GetUrlText(CStringRef url);
+	static int GetUrlImage(const std::string& url);
+	static std::string GetUrlText(const std::string& url);
 	static void SocketClose(int sh);
 	static bool SocketConnected(int sh);
-	static StringRef SocketGetFile(int sh, CStringRef override);
+	static std::string SocketGetFile(int sh, const std::string& override);
 	static int SocketGetInt(int sh);
-	static StringRef SocketGetString(int sh);
+	static std::string SocketGetString(int sh);
 	static bool SocketHasData(int sh);
-	static void SocketSendFile(int sh, CStringRef fn);
+	static void SocketSendFile(int sh, const std::string& fn);
 	static void SocketSendInt(int sh, int i);
-	static void SocketSendString(int sh, CStringRef str);
-	static StringRef SocketGetRaw(int sh, int len);
-	static void SocketSendRaw(int sh, CStringRef str);
+	static void SocketSendString(int sh, const std::string& str);
+	static std::string SocketGetRaw(int sh, int len);
+	static void SocketSendRaw(int sh, const std::string& str);
 	static int SocketByteCount(int sh); // Overkill (2008-04-20): Peek at how many bytes are in buffer. Requested by ustor.
 	//XX: unsorted functions and variables, mostly newly added and undocumented
-	static CStringRef Get_EntityChr(int arg);
-	static void Set_EntityChr(int arg, CStringRef chr);
+	static std::string Get_EntityChr(int arg);
+	static void Set_EntityChr(int arg, const std::string& chr);
 	static int Get_EntityFrameW(int ofs);
 	static int Get_EntityFrameH(int ofs);
-	static CStringRef Get_EntityDescription(int arg);
-	static void Set_EntityDescription(int arg, CStringRef val);
-	static void Set_EntityActivateScript(int arg, CStringRef val);
+	static std::string Get_EntityDescription(int arg);
+	static void Set_EntityDescription(int arg, const std::string& val);
+	static void Set_EntityActivateScript(int arg, const std::string& val);
 	static bool SoundIsPlaying(int chn);
 	static void RectVGrad(int x1, int y1, int x2, int y2, int c, int c2, int d);
 	static void RectHGrad(int x1, int y1, int x2, int y2, int c, int c2, int d);
 	static void RectRGrad(int x1, int y1, int x2, int y2, int c, int c2, int d);
 	static void Rect4Grad(int x1, int y1, int x2, int y2, int c1, int c2, int c3, int c4, int d);
-	static StringRef strovr(CStringRef rep, CStringRef source, int offset);
-	static StringRef WrapText(int wt_font, CStringRef wt_s, int wt_linelen);
-	static int strpos(CStringRef sub, CStringRef source, int start);
 	static int HSV(int h, int s, int v);
 	static int GetH(int col);
 	static int GetS(int col);
 	static int GetV(int col);
 	static void HueReplace(int hue_find, int hue_tolerance, int hue_replace, int image);
 	static void ColorReplace(int find, int replace, int image);
-	static StringRef GetKeyBuffer();
+	static std::string GetKeyBuffer();
 	static void FlushKeyBuffer();
 	static void SetKeyDelay(int d);
-	static StringRef GetEngineString(CStringRef key);
+	static std::string GetEngineString(const std::string& key);
 };
 
 

@@ -728,7 +728,7 @@ fnmatch(const char *pattern, const char *string, int flags)
 
 // For listing files that are within a packfile that aren't also physical files.
 // This is called by a listFilePattern after already figuring out the list of physical files.
-void listPackFilePattern(std::vector<std::string> &res, CStringRef pattern)
+void listPackFilePattern(std::vector<std::string> &res, const std::string& pattern)
 {
 	int i, j;
 	// Search the VFiles.

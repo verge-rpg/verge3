@@ -274,29 +274,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Source\a_dict.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\Source\a_handle.cpp"
 				>
 				<FileConfiguration
@@ -321,29 +298,6 @@
 			</File>
 			<File
 				RelativePath="Source\a_image.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Source\a_string.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1330,19 +1284,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\a_dict.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\a_handle.h"
 				>
 			</File>
 			<File
 				RelativePath="Source\a_image.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\a_string.h"
 				>
 			</File>
 			<File

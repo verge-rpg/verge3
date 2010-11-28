@@ -259,7 +259,7 @@ Socket::Socket(SOCKET socket)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-StringRef getUrlText(CStringRef url)
+std::string getUrlText(const std::string& url)
 {
 	HINTERNET h = InternetOpen("Verge 3.0", INTERNET_OPEN_TYPE_DIRECT, 0, 0, 0);
 	if (!h)
@@ -294,7 +294,7 @@ StringRef getUrlText(CStringRef url)
 	return toReturn;
 }
 
-int getUrlImage(CStringRef url)
+int getUrlImage(const std::string& url)
 {
 	int toReturn = 0;
 	HINTERNET h = InternetOpen("Verge 3.0", INTERNET_OPEN_TYPE_DIRECT, 0, 0, 0);

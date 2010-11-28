@@ -44,7 +44,7 @@ public:
 	int timer;	// A timer of how long the sprite has been active.
 	int layer;
 	int onmap;
-	StringRef thinkproc;
+	std::string thinkproc;
 };
 
 extern std::vector<sprite> sprites;

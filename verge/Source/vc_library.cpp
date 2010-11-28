@@ -56,38 +56,8 @@ void vc_initLibrary() {
 
 /****************************** code ******************************/
 
-dict *DictForHandle(int handle)
-{
-	if (handle == 0)
-		se->vcerr("DictForHandle() - Null dict reference, probably an uninitialized dict handle");
-
-	if (handle<0 || handle >= Handle::getHandleCount(HANDLE_TYPE_DICT) )
-		se->vcerr("DictForHandle() - Dict reference is bogus! (%d)", handle);
-
-	dict* ptr = (dict*) Handle::getPointer(HANDLE_TYPE_DICT,handle);
-
-	if (ptr == NULL)
-		se->vcerr("DictForHandle() - Dict reference is valid but no dict is allocated for this handle. You may have mistakenly freed it and continued to use it.");
-	return ptr;
-}
-
-void FreeDictHandle(int handle)
-{
-	Handle::free(HANDLE_TYPE_DICT,handle);
-}
-
-void SetHandleDict(int handle, dict *d)
-{
-	Handle::setPointer(HANDLE_TYPE_DICT, handle, (void*)d);
-}
-
-int HandleForDict(dict *d)
-{
-	return Handle::alloc(HANDLE_TYPE_DICT, d);
-}
-
 VC_LIBFUNC(vc_Exit) () {
-	StringRef message = se->ResolveString();
+	std::string message = se->ResolveString();
 	err("%s", message.c_str());
 }
 
@@ -372,7 +342,7 @@ VC_LIBFUNC(vc_ImageWidth) () { se->vcreturn = se->ImageWidth(se->ResolveOperand(
 VC_LIBFUNC(vc_ImageHeight) () { se->vcreturn = se->ImageHeight(se->ResolveOperand()); }
 
 VC_LIBFUNC(vc_LoadFontEx) () {
-	StringRef filename = se->ResolveString();
+	std::string filename = se->ResolveString();
 	int width = se->ResolveOperand();
 	int height = se->ResolveOperand();
 	se->vcreturn = se->LoadFont(filename,width,height);
@@ -387,7 +357,7 @@ VC_LIBFUNC(vc_SetCharacterWidth) ()
 }
 
 VC_LIBFUNC(vc_LoadFont) () {
-	StringRef filename = se->ResolveString();
+	std::string filename = se->ResolveString();
 	se->vcreturn = se->LoadFontEx(filename);
 }
 
@@ -398,7 +368,7 @@ VC_LIBFUNC(vc_PrintString) () {
 	int y = se->ResolveOperand();
 	int dest = se->ResolveOperand();
 	int fh =se->ResolveOperand();
-	StringRef text = se->ResolveString();
+	std::string text = se->ResolveString();
 	se->PrintString(x,y,dest,fh,text);
 }
 
@@ -407,7 +377,7 @@ VC_LIBFUNC(vc_PrintRight) () {
 	int y = se->ResolveOperand();
 	int dest = se->ResolveOperand();
 	int fh =se->ResolveOperand();
-	StringRef text = se->ResolveString();
+	std::string text = se->ResolveString();
 	se->PrintRight(x,y,dest,fh,text);
 }
 
@@ -416,14 +386,14 @@ VC_LIBFUNC(vc_PrintCenter) () {
 	int y = se->ResolveOperand();
 	int dest = se->ResolveOperand();
 	int fh =se->ResolveOperand();
-	StringRef text = se->ResolveString();
+	std::string text = se->ResolveString();
 	se->PrintCenter(x,y,dest,fh,text);
 }
 
 
 VC_LIBFUNC(vc_TextWidth) () {
 	int fh = se->ResolveOperand();
-	StringRef text = se->ResolveString();
+	std::string text = se->ResolveString();
 	se->vcreturn = se->TextWidth(fh,text);
 }
 
@@ -435,13 +405,10 @@ VC_LIBFUNC(vc_Random) () {
 	se->vcreturn = se->Random(min, max);
 }
 
-VC_LIBFUNC(vc_len) () { se->vcreturn = se->Len(se->ResolveString()); }
-VC_LIBFUNC(vc_val) () { se->vcreturn = se->Val(se->ResolveString()); }
-
 VC_LIBFUNC(vc_Unpress) () { se->Unpress(se->ResolveOperand()); }
 
 VC_LIBFUNC(vc_FileOpen) () {
-	StringRef fname = se->ResolveString();
+	std::string fname = se->ResolveString();
 	int mode = se->ResolveOperand();
 	se->vcreturn = se->FileOpen(fname,mode);
 }
@@ -450,13 +417,13 @@ VC_LIBFUNC(vc_FileClose) () { se->FileClose(se->ResolveOperand()); }
 
 VC_LIBFUNC(vc_FileWrite) () {
 	int handle = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->FileWrite(handle,s);
 }
 
 VC_LIBFUNC(vc_FileWriteln) () {
 	int handle = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->FileWriteln(handle,s);
 }
 
@@ -483,7 +450,7 @@ VC_LIBFUNC(vc_PlaySound) () {
 
 VC_LIBFUNC(vc_CallFunction) ()
 {
-	StringRef func = se->ResolveString();
+	std::string func = se->ResolveString();
 	std::vector<argument_t> arguments;
 	if (se->CheckForVarargs())
 	{
@@ -552,7 +519,7 @@ VC_LIBFUNC(vc_FileWriteQuad) () {
 
 VC_LIBFUNC(vc_FileWriteString) () {
 	int handle = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->FileWriteString(handle,s);
 }
 
@@ -597,41 +564,27 @@ VC_LIBFUNC(vc_TBlitLucent) ()
 
 VC_LIBFUNC(vc_Map) ()
 {
-	StringRef map = se->ResolveString();
+	std::string map = se->ResolveString();
 	se->Map(map);
-}
-
-VC_LIBFUNC(vc_strcmp) ()
-{
-	StringRef s1 = se->ResolveString();
-	StringRef s2 = se->ResolveString();
-	se->vcreturn = se->Strcmp(s1,s2);
-}
-
-VC_LIBFUNC(vc_strdup) ()
-{
-	StringRef s = se->ResolveString();
-	int times = se->ResolveOperand();
-	se->vcretstr = se->Strdup(s,times);
 }
 
 VC_LIBFUNC(vc_HookTimer) () { se->HookTimer(se->ResolveCallback()); }
 VC_LIBFUNC(vc_HookRetrace) () { se->HookRetrace(se->ResolveCallback()); }
 VC_LIBFUNC(vc_HookKey) () { 
 	int k = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->HookKey(k,s);
 }
 VC_LIBFUNC(vc_HookButton) () { 
 	int b = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->HookButton(b,s);
 }
 
 VC_LIBFUNC(vc_HookEntityRender) ()
 {
 	int i = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->HookEntityRender(i,s);
 }
 
@@ -776,7 +729,7 @@ VC_LIBFUNC(vc_WindowCreate) () {
 	int y = se->ResolveOperand();
 	int w = se->ResolveOperand();
 	int h = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->vcreturn = se->WindowCreate(x,y,w,h,s);
 }
 
@@ -806,7 +759,7 @@ VC_LIBFUNC(vc_WindowSetPosition) () {
 
 VC_LIBFUNC(vc_WindowSetTitle) () {
 	int win = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->WindowSetTitle(win,s);
 }
 
@@ -846,163 +799,6 @@ VC_LIBFUNC(vc_SetSongPos) () {
 
 VC_LIBFUNC(vc_SetMusicVolume) () { se->SetMusicVolume(se->ResolveOperand()); }
 
-
-VC_LIBFUNC(vc_TokenCount) () {
-	StringRef s = se->ResolveString();
-	StringRef d = se->ResolveString();
-	se->vcreturn = se->TokenCount(s,d);
-}
-
-VC_LIBFUNC(vc_GetToken) ()
-{
-	StringRef s = se->ResolveString();
-	StringRef d = se->ResolveString();
-	int i = se->ResolveOperand();
-	se->vcretstr = se->GetToken(s,d,i);
-}
-
-VC_LIBFUNC(vc_ToLower) () { se->vcretstr = se->ToLower(se->ResolveString()); }
-VC_LIBFUNC(vc_ToUpper) () { se->vcretstr = se->ToUpper(se->ResolveString()); }
-
-// Overkill: 2005-12-28
-// Thank you, Zip.
-VC_LIBFUNC(vc_strpos) ()
-{
-	StringRef sub = se->ResolveString();
-	StringRef source = se->ResolveString();
-	int start = se->ResolveOperand();
-	se->vcreturn = source.str().find(sub.str(), start);
-}
-
-// Overkill: 2005-12-28
-// Helper function.
-int GetTokenPos(StringRef teststr, StringRef tokens, int pos, int tok)
-{
-	int i = 0;
-	bool last = false;
-	int count = 0;
-	int length = teststr.length();
-	if (pos == 0)
-	{
-		return 0;
-	}
-	for (i = 0; i < teststr.length(); i++)
-	{
-		if (isdelim(teststr[i], tokens))
-		{
-			if (!last)
-			{
-				count++;
-				if (count == pos && tok == 0)
-				{
-					return i;
-				}
-				last = true;
-			}
-		}
-		else if (last)
-		{
-			if (count == pos)
-			{
-				return i;
-			}
-			last = false;
-		}
-	}
-	return 0;
-}
-
-// Overkill: 2005-12-28
-// Thank you, Zip.
-VC_LIBFUNC(vc_GetTokenPos) ()
-{
-
-	StringRef teststr = se->ResolveString();
-	StringRef tokens = se->ResolveString();
-	int pos = se->ResolveOperand();
-	int tok = se->ResolveOperand();
-	se->vcreturn = GetTokenPos(teststr, tokens, pos, tok);
-}
-
-
-// Overkill: 2005-12-28
-// Thank you, Zip.
-VC_LIBFUNC(vc_TokenLeft) ()	// Excludes token.
-{
-	StringRef full = se->ResolveString();
-	StringRef tokens = se->ResolveString();
-	int pos = se->ResolveOperand();
-	if (pos < 1)
-	{
-		se->vcretstr = empty_string;
-		return;
-	}
-	pos = GetTokenPos(full, tokens, pos, 0);
-	if (pos == full.length())
-	{
-		se->vcretstr = full;
-		return;
-	}
-	else
-	{
-		se->vcretstr = vc_strleft(full,pos);
-	}
-}
-
-// Overkill: 2005-12-28
-// Thank you, Zip.
-// Overkill (2006-07-28):
-//	Fixed a bug where it included the delimiter character in TokenRight()
-VC_LIBFUNC(vc_TokenRight) ()
-{
-	StringRef full = se->ResolveString();
-	StringRef tokens = se->ResolveString();
-	int pos = se->ResolveOperand();
-	if (pos < 1)
-	{
-		se->vcretstr = full;
-		return;
-	}
-	pos = GetTokenPos(full, tokens, pos, 1);
-	if (pos == full.length())
-	{
-		se->vcretstr = empty_string;
-		return;
-	}
-	else
-	{
-		se->vcretstr = vc_strright(full, full.length() - pos);
-	}
-}
-
-
-// Overkill: 2005-12-28
-// Thank you, Zip.
-VC_LIBFUNC(vc_strovr) ()
-{
-	StringRef rep = se->ResolveString();
-	StringRef source = se->ResolveString();
-	int offset = se->ResolveOperand();
-	se->vcretstr = strovr(source, rep, offset);
-}
-
-// Overkill: 2005-12-19
-// Thank you, Zip.
-VC_LIBFUNC(vc_WrapText) ()
-// Pass: The font to use, the string to wrap, the length in pixels to fit into
-// Return: The passed string with \n characters inserted as breaks
-// Assmes: The font is valid, and will overrun if a word is longer than linelen
-// Note: Existing breaks will be respected, but adjacent \n characters will be
-//     replaced with a single \n so add a space for multiple line breaks
-{
-
-	int wt_font = se->ResolveOperand();
-	StringRef wt_s = se->ResolveString();
-	int wt_linelen = se->ResolveOperand();
-	se->vcretstr = ScriptEngine::WrapText(wt_font,wt_s,wt_linelen);
-}
-
-
 VC_LIBFUNC(vc_FontHeight) () { se->vcreturn = se->FontHeight(se->ResolveOperand()); }
 
 VC_LIBFUNC(vc_MixColor) () {
@@ -1012,13 +808,11 @@ VC_LIBFUNC(vc_MixColor) () {
 	se->vcreturn = se->MixColor(c1,c2,p);
 }
 
-VC_LIBFUNC(vc_CHR) () { se->vcretstr = se->Chr(se->ResolveOperand()); }
-
 VC_LIBFUNC(vc_PlayMovie) () { se->vcreturn = se->PlayMovie(se->ResolveString()); }
 VC_LIBFUNC(vc_AbortMovie) () { se->AbortMovie(); }
 
 VC_LIBFUNC(vc_MovieLoad) () {
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	int mute = se->ResolveOperand();
 	se->vcreturn = se->MovieLoad(s,mute!=0);
 }
@@ -1065,7 +859,7 @@ VC_LIBFUNC(vc_SetObs) ()
 VC_LIBFUNC(vc_EntitySpawn) () {
 	int x = se->ResolveOperand();
 	int y = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->vcreturn = se->EntitySpawn(x,y,s);
 }
 
@@ -1081,19 +875,19 @@ VC_LIBFUNC(vc_EntityStalk) ()
 
 VC_LIBFUNC(vc_EntityMove) () {
 	int e = se->ResolveOperand();
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->EntityMove(e,s);
 }
 
 VC_LIBFUNC(vc_PlayerMove) ()
 {
-	StringRef s = se->ResolveString();
+	std::string s = se->ResolveString();
 	se->PlayerMove(s);
 }
 
 VC_LIBFUNC(vc_ChangeCHR) () {
 	int e = se->ResolveOperand();
-	StringRef c = se->ResolveString();
+	std::string c = se->ResolveString();
 	se->ChangeCHR(e,c);
 }
 VC_LIBFUNC(vc_EntitySetWanderZone) () { se->EntitySetWanderZone(se->ResolveOperand()); }
@@ -1138,7 +932,7 @@ VC_LIBFUNC(vc_SetButtonJB) () {
 
 VC_LIBFUNC(vc_FunctionExists) ()
 {
-	StringRef f = se->ResolveString();
+	std::string f = se->ResolveString();
 	se->vcreturn = se->FunctionExists(f.c_str());
 }
 
@@ -1176,7 +970,7 @@ VC_LIBFUNC(vc_SocketGetString) () { se->vcretstr = se->SocketGetString(se->Resol
 
 VC_LIBFUNC(vc_SocketSendString) () {
 	int sh = se->ResolveOperand();
-	StringRef str = se->ResolveString();
+	std::string str = se->ResolveString();
 	se->SocketSendString(sh,str);
 }
 
@@ -1201,79 +995,19 @@ VC_LIBFUNC(vc_GetUrlImage) () { se->vcreturn = se->GetUrlImage(se->ResolveString
 
 VC_LIBFUNC(vc_SocketSendFile) () {
 	int sh = se->ResolveOperand();
-	StringRef fn = se->ResolveString();
+	std::string fn = se->ResolveString();
 	se->SocketSendFile(sh,fn);
 }
 
 VC_LIBFUNC(vc_SocketGetFile) () {
 	int sh = se->ResolveOperand();
-	StringRef override = se->ResolveString();
+	std::string override = se->ResolveString();
 	se->vcretstr = se->SocketGetFile(sh,override); 
 }
 
 VC_LIBFUNC(vc_ListFilePattern) () { se->vcretstr = se->ListFilePattern(se->ResolveString());}
 
 VC_LIBFUNC(vc_ImageValid) () { se->vcreturn = se->ImageValid(se->ResolveOperand()); }
-VC_LIBFUNC(vc_Asc) () { se->vcreturn = se->Asc(se->ResolveString()); }
-
-VC_LIBFUNC(vc_DictNew) () {
-	dict *d = new dict();
-	se->vcreturn = HandleForDict(d);
-}
-
-VC_LIBFUNC(vc_DictFree) () {
-	int handle = se->ResolveOperand();
-	dict *d = DictForHandle(handle);
-	FreeDictHandle(handle);
-	delete d;
-}
-
-VC_LIBFUNC(vc_DictGetString) () {
-	dict *d = DictForHandle(se->ResolveOperand());
-	se->vcretstr = d->GetString(se->ResolveString());
-}
-
-VC_LIBFUNC(vc_DictSetString) () {
-	dict *d = DictForHandle(se->ResolveOperand());
-	StringRef key = se->ResolveString();
-	StringRef value = se->ResolveString();
-	d->SetString(key, value);
-}
-
-VC_LIBFUNC(vc_DictContains) () {
-	dict *d = DictForHandle(se->ResolveOperand());
-	se->vcreturn = d->ContainsString(se->ResolveString());
-}
-
-VC_LIBFUNC(vc_DictSize) () {
-	dict *d = DictForHandle(se->ResolveOperand());
-	se->vcreturn = d->Size();
-}
-
-VC_LIBFUNC(vc_DictGetInt) () {
-	dict *d = DictForHandle(se->ResolveOperand());
-	se->vcreturn = atoi(d->GetString(se->ResolveString()).c_str());
-}
-
-VC_LIBFUNC(vc_DictSetInt) () {
-	dict *d = DictForHandle(se->ResolveOperand());
-	StringRef key = se->ResolveString();
-	int value = se->ResolveOperand();
-	d->SetString(key, va("%d", value));
-}
-
-VC_LIBFUNC(vc_DictRemove) () {
-	dict *d = DictForHandle(se->ResolveOperand());
-	StringRef key = se->ResolveString();
-	d->RemoveString(key);
-}
-
-// Overkill: 2007-06-20
-VC_LIBFUNC(vc_DictListKeys) () {
-	dict *d = DictForHandle(se->ResolveOperand());
-	StringRef separator = se->ResolveString();
-	se->vcretstr = d->ListKeys(separator);
-}
 
 // Overkill: 12/18/05
 VC_LIBFUNC(vc_max) ()
@@ -1506,7 +1240,7 @@ VC_LIBFUNC(vc_SocketGetRaw) ()
 VC_LIBFUNC(vc_SocketSendRaw) ()
 {
 	int sh = se->ResolveOperand();
-	StringRef str = se->ResolveString();
+	std::string str = se->ResolveString();
 	se->SocketSendRaw(sh, str);
 }
 
@@ -1520,7 +1254,7 @@ VC_LIBFUNC(vc_SocketByteCount) ()
 
 VC_LIBFUNC(vc_GetSystemSaveDir)()
 {
-  StringRef appname = se->ResolveString();
+  std::string appname = se->ResolveString();
   se->vcretstr = GetSystemSaveDirectory(appname);
 }
 
