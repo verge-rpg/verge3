@@ -29,24 +29,18 @@ int v3_window_xres=0, v3_window_yres = 0;
 // Overkill (2010-04-29): Aspect ratio enforcing.
 ScaleFormat v3_scale_win = SCALE_FORMAT_ASPECT, v3_scale_full = SCALE_FORMAT_STRETCH;
 
-bool windowmode=true;
-bool sound=true;
-bool cheats=false;
+bool windowmode = true;
+bool sound = true;
+bool cheats = false;
 char mapname[255];
-bool releasemode=false;
 bool automax = true;
-bool decompile = false;
 bool editcode = false;
 int gamerate = 100;
 int soundengine = 0;
-bool use_lua = false;
-bool vc_oldstring = false;
 
-VCCore *vc;
-
-#ifdef ALLOW_SCRIPT_COMPILATION
-VCCompiler *vcc = 0;
-#endif
+int cf_r1, cf_g1, cf_b1;
+int cf_r2, cf_g2, cf_b2;
+int cf_rr, cf_gr, cf_br;
 
 /****************************** code ******************************/
 
@@ -55,8 +49,6 @@ void LoadConfig()
 	cfg_Init("verge.cfg");
 	cfg_SetDefaultKeyValue("startmap", "");
 
-	if (cfg_KeyPresent("lua"))
-		use_lua = cfg_GetIntKeyValue("lua") ? true : false;
 	if (cfg_KeyPresent("xres"))
 		v3_xres = cfg_GetIntKeyValue("xres");
 	if (cfg_KeyPresent("yres"))
@@ -78,9 +70,6 @@ void LoadConfig()
             v3_scale_full = (ScaleFormat) value;
         }
     }
-	if (cfg_KeyPresent("bpp"))
-		v3_bpp = cfg_GetIntKeyValue("bpp");
-
 	if (cfg_KeyPresent("window_x_res"))
 		v3_window_xres = cfg_GetIntKeyValue("window_x_res");
 	if (cfg_KeyPresent("window_y_res"))
@@ -96,22 +85,12 @@ void LoadConfig()
 		automax = cfg_GetIntKeyValue("automax") ? true : false;
 	if (cfg_KeyPresent("startmap"))
 		strcpy(mapname, cfg_GetKeyValue("startmap"));
-	if (cfg_KeyPresent("vcverbose"))
-		verbose = cfg_GetIntKeyValue("vcverbose");
-//	if (cfg_KeyPresent("paranoid"))                FIXME
-//		vc_paranoid = cfg_GetIntKeyValue("paranoid");
-	if (cfg_KeyPresent("arraycheck"))
-		vc_arraycheck = cfg_GetIntKeyValue("arraycheck");
 	if (cfg_KeyPresent("appname"))
 		setWindowTitle(cfg_GetKeyValue("appname"));
-	if (cfg_KeyPresent("releasemode"))
-		releasemode = cfg_GetIntKeyValue("releasemode") ? true : false;
 	if (cfg_KeyPresent("gamerate"))
 		gamerate = cfg_GetIntKeyValue("gamerate");
 	if (cfg_KeyPresent("v3isuberlikethetens"))
 		cheats = true;
-	if (cfg_KeyPresent("decompile"))
-		decompile = true;
 	if (cfg_KeyPresent("editcode"))
 		editcode = cfg_GetIntKeyValue("editcode") ? true : false;
 	if (cfg_KeyPresent("logconsole"))
@@ -121,27 +100,9 @@ void LoadConfig()
 	} else if (cfg_KeyPresent("logconsole-normalstdout")) {
 		logconsole = true;
 	}
-    if (cfg_KeyPresent("oldstring"))
-        vc_oldstring = true;
-
-	if (cfg_KeyPresent("mount1"))
-		MountVFile(cfg_GetKeyValue("mount1"));
-	if (cfg_KeyPresent("mount2"))
-		MountVFile(cfg_GetKeyValue("mount2"));
-	if (cfg_KeyPresent("mount3"))
-		MountVFile(cfg_GetKeyValue("mount3"));
 
 	void platform_ProcessConfig();
 	platform_ProcessConfig();
-
-	#ifndef ALLOW_SCRIPT_COMPILATION
-	releasemode = true;
-	editcode = false;
-	#endif
-
-	#ifndef ENABLE_LUA
-	if(use_lua) err("User asked for lua, but build does not have lua enabled!");
-	#endif
 }
 
 int getInitialWindowXres() {
@@ -300,11 +261,6 @@ void xmain(int argc, char *argv[])
 	joy_Init();
 	InitScriptEngine();
 
-	//---cross-platform plugins initialization
-//	extern void p_datastructs();
-	//p_datastructs();
-	//---------
-
 	gameWindow->setTitle(APPNAME);
 
 	if (sound) snd_Init(soundengine);
@@ -313,55 +269,14 @@ void xmain(int argc, char *argv[])
 	ResetSprites();
 	timer_Init(gamerate);
 
-	#ifdef ALLOW_SCRIPT_COMPILATION
-	if(!releasemode)
-		vcc = new VCCompiler();
-	#endif
-
-	#ifdef ALLOW_SCRIPT_COMPILATION
-	if(editcode) {
-		if(releasemode) {
-			err("Cannot edit code in release mode.");
-		}
-		if(!windowmode) {
-			err("Cannot edit code in full-screen mode.");
-		}
-		InitEditCode();
-	}
-	#endif
-
-	#ifdef ENABLE_LUA
 	LUA *lua;
-
-	if(use_lua)
-		se = lua = new LUA();
-	#endif
+	se = lua = new LUA();
 	
 	#ifdef ALLOW_SCRIPT_COMPILATION
-	if (!releasemode)
-	{
-		DisplayCompileImage();
-		#ifdef ENABLE_LUA
-		if(use_lua) {
-			lua->compileSystem();
-			CompileMaps("lua",lua);
-		} else 
-		#endif
-		{
-			bool result = vcc->CompileAll();
-			if (!result) err(vcc->errmsg);
-			vcc->ExportSystemXVC();
-			result = CompileMaps("vc",vcc);
-			if (!result) err(vcc->errmsg);
-		}
-	}
+	DisplayCompileImage();
+	lua->compileSystem();
+	CompileMaps("lua", lua);
 	#endif
-
-	if(!use_lua) {
-		se = vc = new VCCore();
-		if (decompile)
-			vc->Decompile();
-	}
 	
 	se->ExecAutoexec();
 

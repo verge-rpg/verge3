@@ -72,15 +72,15 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 		bool CompileMap(const char *fname);
 		
 		//ScriptEngine implementations
-		void DisplayError(const StringRef& msg)
+		void DisplayError(const std::string& msg)
 		{
 			::err(msg.c_str());
 		}
 		
-		virtual void LoadMapScript(VFILE *f, CStringRef filename);
+		virtual void LoadMapScript(VFILE *f, const std::string& filename);
 		virtual void ExecAutoexec();
 
-		virtual bool ExecuteFunctionString(const StringRef& func)
+		virtual bool ExecuteFunctionString(const std::string& func)
 		{
 			//the gettop/settop is to recover the stack from the user having returned a value from the callback function (we dont want one)
 			int temp = lua_gettop(L);
@@ -104,7 +104,7 @@ class LUA : public ScriptEngine, public MapScriptCompiler
                 invc++;
 				if(lua_pcall(L, argument_pass_list.size(), 0, errhandler))
 				{
-					err("Error when calling '" + func.str() + "'");
+					err("Error when calling '" + func + "'");
 				}
 				ArgumentPassClear();
                 invc--;
@@ -114,7 +114,7 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 			return exists;
 		}
 
-		virtual bool FunctionExists(const StringRef& func)
+		virtual bool FunctionExists(const std::string& func)
 		{
 			lua_getglobal(L, func.c_str());
 			bool ret = lua_isfunction(L, -1);
@@ -144,7 +144,7 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 			}
 		}
 
-		virtual StringRef ResolveString()
+		virtual std::string ResolveString()
 		{
 			if(activeFunctionStackOffset < lua_gettop(L))
 			{

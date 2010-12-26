@@ -22,7 +22,7 @@ void win_removeWindow(HWND window);
 
 void setWindowTitle(const char *str);
 
-StringRef clipboard_getText();
+std::string clipboard_getText();
 void clipboard_setText(const char *text);
 image *clipboard_getImage();
 void clipboard_putImage(image *img);
@@ -43,10 +43,10 @@ int getHour();
 int getMinute();
 int getSecond();
 
-void listFilePattern(std::vector<std::string> &res, CStringRef pattern);
+void listFilePattern(std::vector<std::string> &res, const std::string& pattern);
 
 
-void showMessageBox(CStringRef message);
-StringRef GetSystemSaveDirectory(CStringRef name);
+void showMessageBox(const std::string& message);
+std::string GetSystemSaveDirectory(const std::string& name);
 
 #endif

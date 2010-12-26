@@ -20,11 +20,17 @@
 
 /****************************** data ******************************/
 
-// Overkill (2006-06-30): Key buffer - stores ASCII keystrokes,
-// since verge sucks at reading input fast enough.
-std::string keybuffer;
+// Size of the key buffer.
+const int KEY_BUFFER_SIZE = 32;
+// The key buffer.
+char key_buffer[KEY_BUFFER_SIZE];
+// Position in the buffer which cycles through the range 0..KEY_BUFFER_SIZE - 1.
+int key_buffer_position = 0;
+// An ordered representation of the key buffer, for user-reading.
+char key_buffer_ordered[KEY_BUFFER_SIZE];
+
 // Overkill (2006-06-30): The delay before keys repeat. (Defaults to 0 - no repeat).
-int key_input_delay;
+int key_input_delay = 0;
 
 LPDIRECTINPUT dinput;
 DIPROPDWORD dipdw;
@@ -33,7 +39,7 @@ LPDIRECTINPUTDEVICE di_joy;
 char keys[256];
 byte lastpressed;
 byte lastkey;
-StringRef bindarray[256];
+std::string bindarray[256];
 
 byte key_ascii_tbl[128] =
 {
@@ -60,6 +66,8 @@ byte key_shift_tbl[128] =
 };
 
 /****************************** code ******************************/
+
+void AppendToKeyBuffer(char key);
 
 int ParseKeyEvent()
 {
@@ -96,16 +104,16 @@ int ParseKeyEvent()
 				// Backspace.
 				if (lastpressed == SCAN_BACKSP)
 				{
-					keybuffer = keybuffer + (char)8;
+					AppendToKeyBuffer('\b');
 				}
 				// Enter.
 				else if (lastpressed == SCAN_ENTER)
 				{
-					keybuffer = keybuffer + '\n';
+					AppendToKeyBuffer('\n');
 				}
 				else if (lastkey)
 				{
-					keybuffer = keybuffer + (char)lastkey;
+					AppendToKeyBuffer((char) lastkey);
 				}
 
 				if (lastpressed != repeatedkey)
@@ -175,24 +183,24 @@ int ParseKeyEvent()
 			&& repeatedkey > 0 && key_input_delay > 0)
 	{
 		// Overkill (2006-06-30): Add input to a key buffer.
-		byte mykey;
+		byte k;
 		if (keys[SCAN_LSHIFT] || keys[SCAN_RSHIFT])
-			mykey = key_shift_tbl[repeatedkey];
+			k = key_shift_tbl[repeatedkey];
 		else
-			mykey = key_ascii_tbl[repeatedkey];
+			k = key_ascii_tbl[repeatedkey];
 		// Backspace.
 		if (repeatedkey == SCAN_BACKSP)
 		{
-			keybuffer = keybuffer + (char)8;
+			AppendToKeyBuffer('\b');
 		}
 		// Enter.
 		else if (repeatedkey == SCAN_ENTER)
 		{
-			keybuffer = keybuffer + '\n';
+			AppendToKeyBuffer('\n');
 		}
-		else if (mykey)
+		else if (k)
 		{
-				keybuffer = keybuffer + (char)mykey;
+			AppendToKeyBuffer((char) k);
 		}
 		// Update the timestamp, so it'll repeat at a sane rate again.
 		key_timer = systemtime;
@@ -211,21 +219,45 @@ void UpdateKeyboard()
 	do
 	{
 		result = ParseKeyEvent();
-		// Overkill (2006-06-30): 
-		// If the string gets too long, shorten it to the 255 most recent characters.
-		if (keybuffer.length() > 255)
-		{
-			keybuffer = vc_strright(keybuffer,255).c_str();
-		}
 	}
 	while (result);
+}
+
+void AppendToKeyBuffer(char key)
+{
+	key_buffer[key_buffer_position++] = key;
+	if(key_buffer_position > KEY_BUFFER_SIZE)
+	{
+		key_buffer_position = 0;
+	}
+}
+
+const char* GetKeyBuffer()
+{
+	// Clear ordered buffer.
+	memset(key_buffer_ordered, 0, sizeof(key_buffer_ordered));
+
+	// Length increases for each non-null character in buffer.
+	int len = 0;
+
+	for(int i = 0; i < KEY_BUFFER_SIZE; i++)
+	{
+		char k = key_buffer[(key_buffer_position + i) % KEY_BUFFER_SIZE];
+		if(k)
+		{
+			key_buffer_ordered[len++] = k;
+		}
+	}
+
+	return key_buffer_ordered;
 }
 
 // Overkill (2006-06-30):
 // Clears the contents of the key buffer.
 void FlushKeyBuffer()
 {
-	keybuffer = "";
+	memset(key_buffer, 0, sizeof(key_buffer));
+	key_buffer_position = 0;
 }
 
 void ShutdownKeyboard()
@@ -247,9 +279,7 @@ void InitKeyboard()
 {
 	HRESULT hr;
 
-	// Overkill (2006-06-30):
-	// Initialize key buffer to an empty string.
-	keybuffer = "";
+	FlushKeyBuffer();
 
 	hr = DirectInputCreate(hMainInst, DIRECTINPUT_VERSION, &dinput, NULL);
 	if (FAILED(hr))

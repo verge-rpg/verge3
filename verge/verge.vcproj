@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../mikmod/include;../mmio/include;../zlib;../corona;../win32;../dumb/include;&quot;../lua/lua-5.1.2&quot;;&quot;../boost-1.37.0&quot;;../lua/luabind;&quot;../flac-1.1.4/include&quot;;../audiere/src;&quot;../UnitTest++/src&quot;"
+				AdditionalIncludeDirectories="../mmio/include;../zlib;../corona;../win32;../dumb/include;&quot;../lua/lua-5.1.2&quot;;../lua/luabind;&quot;../flac-1.1.4/include&quot;;../audiere/src;&quot;../UnitTest++/src&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;MIKMOD_STATIC;_CRT_SECURE_NO_DEPRECATE;USE_DUMB;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -274,29 +274,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Source\a_dict.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\Source\a_handle.cpp"
 				>
 				<FileConfiguration
@@ -321,29 +298,6 @@
 			</File>
 			<File
 				RelativePath="Source\a_image.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\Source\a_string.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -720,29 +674,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\p_datastructs.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\Source\snd_fmod.cpp"
 				>
 				<FileConfiguration
@@ -767,75 +698,6 @@
 			</File>
 			<File
 				RelativePath="Source\vc_builtins.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Source\vc_compiler.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Source\vc_core.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
-						PrecompiledHeaderThrough="xerxes.h"
-						PrecompiledHeaderFile="$(IntDir)\$(TargetName).pch"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="Source\vc_debug.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1422,19 +1284,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\a_dict.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\a_handle.h"
 				>
 			</File>
 			<File
 				RelativePath="Source\a_image.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\a_string.h"
 				>
 			</File>
 			<File
@@ -1531,22 +1385,6 @@
 			</File>
 			<File
 				RelativePath=".\Source\snd_fmod.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\snd_oakra.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\vc_compiler.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\vc_core.h"
-				>
-			</File>
-			<File
-				RelativePath="Source\vc_debug.h"
 				>
 			</File>
 			<File

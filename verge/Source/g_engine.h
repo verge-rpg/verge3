@@ -8,7 +8,7 @@
 /// If you have altered this source file, please log your name, date, and what
 /// changes you made below this line.
 
-
+extern bool engine_paused;
 extern Entity *entity[256];
 extern Entity *myself;
 extern int entities, player;

@@ -41,9 +41,9 @@ Entity::Entity(int x1, int y1, const char *chrfn)
 	framect = 0;
 	frame = 0;
 	face = SOUTH;
-	hookrender = empty_string;
-	script = empty_string;
-	description = empty_string;
+	hookrender = "";
+	script = "";
+	description = "";
 	memset(movestr, 0, 256);
 	obstructable = 0;
 	obstruction = 0;
@@ -539,7 +539,7 @@ void Entity::do_movescript()
 	}
 }
 
-void Entity::set_chr(CStringRef fname)
+void Entity::set_chr(const std::string& fname)
 {
     chr = RequestCHR(fname.c_str());
 	specframe = 0;

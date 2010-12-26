@@ -66,11 +66,11 @@ void setWindowTitle(const char *str) {
 	SetWindowText(hMainWnd, str);
 }
 
-StringRef clipboard_getText()
+std::string clipboard_getText()
 {
 	static char buf[4096];
 	if(!IsClipboardFormatAvailable(CF_TEXT))
-		return empty_string;
+		return "";
 
 	OpenClipboard(0);
 	HANDLE h = GetClipboardData(CF_TEXT);
@@ -80,7 +80,7 @@ StringRef clipboard_getText()
 		GlobalUnlock(h);
 	} else buf[0] = 0;
 	CloseClipboard();
-	if(!buf[0]) return empty_string;
+	if(!buf[0]) return "";
 	else return buf;
 }
 
@@ -503,7 +503,7 @@ int getSecond()
 	return time.wSecond	;
 }
 
-void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
+void listFilePattern(std::vector<std::string> &res, const std::string& pattern)
 {
 	_finddata_t rec;
 	int handle = _findfirst(pattern.c_str(), &rec);
@@ -514,17 +514,16 @@ void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
 		result = _findnext(handle, &rec);
 	}
 	_findclose(handle);
-	listPackFilePattern(res, pattern);
 }
 
 
-void showMessageBox(CStringRef message)
+void showMessageBox(const std::string& message)
 {
 	MessageBoxA(GetDesktopWindow(), message.c_str(), APPNAME, MB_OK | MB_TASKMODAL);
 }
 
-StringRef GetSystemSaveDirectory(CStringRef name)
+std::string GetSystemSaveDirectory(const std::string& name)
 {
-  static const StringRef dotSlash = "./";
+  static const std::string dotSlash = "./";
   return dotSlash;
 }

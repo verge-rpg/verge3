@@ -18,6 +18,7 @@
 
 /****************************** data ******************************/
 
+bool engine_paused;
 Entity	*entity[256];
 Entity	*myself = 0;
 int		entities;
