@@ -55,9 +55,9 @@ void doMessageBox(std::string msg)
 	gtk_widget_destroy(w);
 }
 
-StringRef GetSystemSaveDirectory(CStringRef name)
+std::string GetSystemSaveDirectory(std::string name)
 {
-	static const StringRef dotSlash = "./";
+	static const std::string dotSlash = "./";
 	return dotSlash;
 }
 #endif
@@ -279,7 +279,7 @@ int getSecond()
 // Returns a vector of filenames that match the given pattern.
 // As you can see, it uses glob to get them, so this will now
 // match any pattern intelligently.
-void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
+void listFilePattern(std::vector<std::string> &res, std::string pattern)
 {
 	glob_t pglob;
 	
@@ -353,7 +353,7 @@ void err(const char *str, ...)
 // show a message box to the user. Handles
 // mouse showing (and re-hiding if you ask for it)
 // and turns full screen off if it's on.
-void showMessageBox(CStringRef msg)
+void showMessageBox(std::string msg)
 {
 	if(!vid_window)
 		sdl_toggleFullscreen();

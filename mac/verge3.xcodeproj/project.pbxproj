@@ -11,10 +11,9 @@
 		661F5B1108770D45008AE4D7 /* g_editcode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 661F5B0F08770D45008AE4D7 /* g_editcode.cpp */; };
 		661F5B1208770D45008AE4D7 /* g_editcode.h in Headers */ = {isa = PBXBuildFile; fileRef = 661F5B1008770D45008AE4D7 /* g_editcode.h */; };
 		66248262085548A3008B043B /* macsplash.h in Headers */ = {isa = PBXBuildFile; fileRef = 66248261085548A3008B043B /* macsplash.h */; };
-		662B8C4D090B2F8B00E910BF /* a_dict.h in Headers */ = {isa = PBXBuildFile; fileRef = 662B8C4B090B2F8B00E910BF /* a_dict.h */; };
-		662B8C4E090B2F8B00E910BF /* a_dict.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 662B8C4C090B2F8B00E910BF /* a_dict.cpp */; };
 		66380C3007C968F700207F2B /* verge.icns in Resources */ = {isa = PBXBuildFile; fileRef = 66380C2F07C968F700207F2B /* verge.icns */; };
 		66380C7F07C96A0F00207F2B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 66380C7D07C96A0F00207F2B /* InfoPlist.strings */; };
+		665BF1C812C8342B00498C3A /* blitter_include.h in Headers */ = {isa = PBXBuildFile; fileRef = 665BF1C712C8342B00498C3A /* blitter_include.h */; };
 		66705D42101F63EF00A4C9A3 /* algebra3.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66705D37101F63EF00A4C9A3 /* algebra3.cpp */; };
 		66705D43101F63EF00A4C9A3 /* algebra3.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D38101F63EF00A4C9A3 /* algebra3.h */; };
 		66705D44101F63EF00A4C9A3 /* lua_main.h in Headers */ = {isa = PBXBuildFile; fileRef = 66705D39101F63EF00A4C9A3 /* lua_main.h */; };
@@ -135,7 +134,6 @@
 		66743AC507AF194500765A03 /* a_handle.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A7D07AF194500765A03 /* a_handle.h */; };
 		66743AC607AF194500765A03 /* a_image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743A7E07AF194500765A03 /* a_image.cpp */; };
 		66743AC707AF194500765A03 /* a_image.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A7F07AF194500765A03 /* a_image.h */; };
-		66743AC907AF194500765A03 /* a_string.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A8107AF194500765A03 /* a_string.h */; };
 		66743ACA07AF194500765A03 /* a_vfile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743A8207AF194500765A03 /* a_vfile.cpp */; };
 		66743ACB07AF194500765A03 /* a_vfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A8307AF194500765A03 /* a_vfile.h */; };
 		66743ACC07AF194500765A03 /* fontdef.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A8407AF194500765A03 /* fontdef.h */; };
@@ -161,12 +159,6 @@
 		66743AE107AF194500765A03 /* resource.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A9907AF194500765A03 /* resource.h */; };
 		66743AE207AF194500765A03 /* sincos.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A9A07AF194500765A03 /* sincos.h */; };
 		66743AE407AF194500765A03 /* vc_builtins.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743A9C07AF194500765A03 /* vc_builtins.cpp */; };
-		66743AE507AF194500765A03 /* vc_compiler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743A9D07AF194500765A03 /* vc_compiler.cpp */; };
-		66743AE607AF194500765A03 /* vc_compiler.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743A9E07AF194500765A03 /* vc_compiler.h */; };
-		66743AE807AF194500765A03 /* vc_core.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743AA007AF194500765A03 /* vc_core.cpp */; };
-		66743AE907AF194500765A03 /* vc_core.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743AA107AF194500765A03 /* vc_core.h */; };
-		66743AEA07AF194500765A03 /* vc_debug.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743AA207AF194500765A03 /* vc_debug.cpp */; };
-		66743AEB07AF194500765A03 /* vc_debug.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743AA307AF194500765A03 /* vc_debug.h */; };
 		66743AEC07AF194500765A03 /* vc_library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743AA407AF194500765A03 /* vc_library.cpp */; };
 		66743AF007AF194500765A03 /* vid_ddblit.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743AA807AF194500765A03 /* vid_ddblit.cpp */; };
 		66743AF107AF194500765A03 /* vid_manager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743AA907AF194500765A03 /* vid_manager.cpp */; };
@@ -174,7 +166,6 @@
 		66743AF307AF194500765A03 /* vid_sysfont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66743AAB07AF194500765A03 /* vid_sysfont.cpp */; };
 		66743AF407AF194500765A03 /* vid_sysfont.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743AAC07AF194500765A03 /* vid_sysfont.h */; };
 		66743B0507AF194500765A03 /* xerxes.h in Headers */ = {isa = PBXBuildFile; fileRef = 66743ABD07AF194500765A03 /* xerxes.h */; };
-		668634090A80F2BD00E20C3E /* p_datastructs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 668634080A80F2BD00E20C3E /* p_datastructs.cpp */; };
 		66A448B308EDDDBF00132604 /* g_sound.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A448B108EDDDBF00132604 /* g_sound.cpp */; };
 		66A448B408EDDDBF00132604 /* g_sound.h in Headers */ = {isa = PBXBuildFile; fileRef = 66A448B208EDDDBF00132604 /* g_sound.h */; };
 		66A448B708EDDE4500132604 /* snd_fmod.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66A448B508EDDE4500132604 /* snd_fmod.cpp */; };
@@ -276,7 +267,6 @@
 		66DE5FE60A6FA92400D6CEEA /* garlick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 66DE5FE40A6FA92400D6CEEA /* garlick.cpp */; };
 		66DE5FE70A6FA92400D6CEEA /* garlick.h in Headers */ = {isa = PBXBuildFile; fileRef = 66DE5FE50A6FA92400D6CEEA /* garlick.h */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		AAC5C5380F49201E00A8D3E0 /* a_string.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC5C5370F49201E00A8D3E0 /* a_string.cpp */; };
 		AAC5C53A0F49203700A8D3E0 /* vid_timeless.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC5C5390F49203700A8D3E0 /* vid_timeless.cpp */; };
 		AAC5C5440F4920CE00A8D3E0 /* vid_fbfx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAC5C5420F4920CE00A8D3E0 /* vid_fbfx.cpp */; };
 		AAC5C5450F4920CE00A8D3E0 /* vid_fbfx.h in Headers */ = {isa = PBXBuildFile; fileRef = AAC5C5430F4920CE00A8D3E0 /* vid_fbfx.h */; };
@@ -390,12 +380,11 @@
 		661F5B0F08770D45008AE4D7 /* g_editcode.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = g_editcode.cpp; path = ../verge/Source/g_editcode.cpp; sourceTree = SOURCE_ROOT; };
 		661F5B1008770D45008AE4D7 /* g_editcode.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = g_editcode.h; path = ../verge/Source/g_editcode.h; sourceTree = SOURCE_ROOT; };
 		66248261085548A3008B043B /* macsplash.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = macsplash.h; path = ../verge/Source/macsplash.h; sourceTree = SOURCE_ROOT; };
-		662B8C4B090B2F8B00E910BF /* a_dict.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = a_dict.h; path = ../verge/Source/a_dict.h; sourceTree = SOURCE_ROOT; };
-		662B8C4C090B2F8B00E910BF /* a_dict.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = a_dict.cpp; path = ../verge/Source/a_dict.cpp; sourceTree = SOURCE_ROOT; };
 		66380C2F07C968F700207F2B /* verge.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = verge.icns; sourceTree = "<group>"; };
 		66380C5407C969A300207F2B /* verge3_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = verge3_Prefix.pch; sourceTree = "<group>"; };
 		66380C7E07C96A0F00207F2B /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = InfoPlist.strings; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		66380C8A07C96A2C00207F2B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		665BF1C712C8342B00498C3A /* blitter_include.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = blitter_include.h; path = ../verge/Source/blitter_include.h; sourceTree = SOURCE_ROOT; };
 		66705D37101F63EF00A4C9A3 /* algebra3.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = algebra3.cpp; path = ../verge/Source/algebra3.cpp; sourceTree = SOURCE_ROOT; };
 		66705D38101F63EF00A4C9A3 /* algebra3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = algebra3.h; path = ../verge/Source/algebra3.h; sourceTree = SOURCE_ROOT; };
 		66705D39101F63EF00A4C9A3 /* lua_main.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = lua_main.h; path = ../verge/Source/lua_main.h; sourceTree = SOURCE_ROOT; };
@@ -513,7 +502,6 @@
 		66743A7D07AF194500765A03 /* a_handle.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = a_handle.h; path = ../verge/Source/a_handle.h; sourceTree = SOURCE_ROOT; };
 		66743A7E07AF194500765A03 /* a_image.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = a_image.cpp; path = ../verge/Source/a_image.cpp; sourceTree = SOURCE_ROOT; };
 		66743A7F07AF194500765A03 /* a_image.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = a_image.h; path = ../verge/Source/a_image.h; sourceTree = SOURCE_ROOT; };
-		66743A8107AF194500765A03 /* a_string.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = a_string.h; path = ../verge/Source/a_string.h; sourceTree = SOURCE_ROOT; };
 		66743A8207AF194500765A03 /* a_vfile.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = a_vfile.cpp; path = ../verge/Source/a_vfile.cpp; sourceTree = SOURCE_ROOT; };
 		66743A8307AF194500765A03 /* a_vfile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = a_vfile.h; path = ../verge/Source/a_vfile.h; sourceTree = SOURCE_ROOT; };
 		66743A8407AF194500765A03 /* fontdef.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = fontdef.h; path = ../verge/Source/fontdef.h; sourceTree = SOURCE_ROOT; };
@@ -539,12 +527,6 @@
 		66743A9907AF194500765A03 /* resource.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = resource.h; path = ../verge/Source/resource.h; sourceTree = SOURCE_ROOT; };
 		66743A9A07AF194500765A03 /* sincos.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = sincos.h; path = ../verge/Source/sincos.h; sourceTree = SOURCE_ROOT; };
 		66743A9C07AF194500765A03 /* vc_builtins.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vc_builtins.cpp; path = ../verge/Source/vc_builtins.cpp; sourceTree = SOURCE_ROOT; };
-		66743A9D07AF194500765A03 /* vc_compiler.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vc_compiler.cpp; path = ../verge/Source/vc_compiler.cpp; sourceTree = SOURCE_ROOT; };
-		66743A9E07AF194500765A03 /* vc_compiler.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = vc_compiler.h; path = ../verge/Source/vc_compiler.h; sourceTree = SOURCE_ROOT; };
-		66743AA007AF194500765A03 /* vc_core.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vc_core.cpp; path = ../verge/Source/vc_core.cpp; sourceTree = SOURCE_ROOT; };
-		66743AA107AF194500765A03 /* vc_core.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = vc_core.h; path = ../verge/Source/vc_core.h; sourceTree = SOURCE_ROOT; };
-		66743AA207AF194500765A03 /* vc_debug.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vc_debug.cpp; path = ../verge/Source/vc_debug.cpp; sourceTree = SOURCE_ROOT; };
-		66743AA307AF194500765A03 /* vc_debug.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = vc_debug.h; path = ../verge/Source/vc_debug.h; sourceTree = SOURCE_ROOT; };
 		66743AA407AF194500765A03 /* vc_library.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vc_library.cpp; path = ../verge/Source/vc_library.cpp; sourceTree = SOURCE_ROOT; };
 		66743AA807AF194500765A03 /* vid_ddblit.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vid_ddblit.cpp; path = ../verge/Source/vid_ddblit.cpp; sourceTree = SOURCE_ROOT; };
 		66743AA907AF194500765A03 /* vid_manager.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vid_manager.cpp; path = ../verge/Source/vid_manager.cpp; sourceTree = SOURCE_ROOT; };
@@ -552,7 +534,6 @@
 		66743AAB07AF194500765A03 /* vid_sysfont.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = vid_sysfont.cpp; path = ../verge/Source/vid_sysfont.cpp; sourceTree = SOURCE_ROOT; };
 		66743AAC07AF194500765A03 /* vid_sysfont.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = vid_sysfont.h; path = ../verge/Source/vid_sysfont.h; sourceTree = SOURCE_ROOT; };
 		66743ABD07AF194500765A03 /* xerxes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = xerxes.h; path = ../verge/Source/xerxes.h; sourceTree = SOURCE_ROOT; };
-		668634080A80F2BD00E20C3E /* p_datastructs.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = p_datastructs.cpp; path = ../verge/Source/p_datastructs.cpp; sourceTree = SOURCE_ROOT; };
 		66A448B108EDDDBF00132604 /* g_sound.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = g_sound.cpp; path = ../verge/Source/g_sound.cpp; sourceTree = SOURCE_ROOT; };
 		66A448B208EDDDBF00132604 /* g_sound.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = g_sound.h; path = ../verge/Source/g_sound.h; sourceTree = SOURCE_ROOT; };
 		66A448B508EDDE4500132604 /* snd_fmod.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = snd_fmod.cpp; path = ../verge/Source/snd_fmod.cpp; sourceTree = SOURCE_ROOT; };
@@ -654,7 +635,6 @@
 		66DE5FE40A6FA92400D6CEEA /* garlick.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = garlick.cpp; path = ../verge/Source/garlick.cpp; sourceTree = SOURCE_ROOT; };
 		66DE5FE50A6FA92400D6CEEA /* garlick.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = garlick.h; path = ../verge/Source/garlick.h; sourceTree = SOURCE_ROOT; };
 		8D1107320486CEB800E47090 /* verge3.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = verge3.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AAC5C5370F49201E00A8D3E0 /* a_string.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = a_string.cpp; path = ../verge/Source/a_string.cpp; sourceTree = SOURCE_ROOT; };
 		AAC5C5390F49203700A8D3E0 /* vid_timeless.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vid_timeless.cpp; path = ../verge/Source/vid_timeless.cpp; sourceTree = SOURCE_ROOT; };
 		AAC5C5420F4920CE00A8D3E0 /* vid_fbfx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vid_fbfx.cpp; path = ../verge/Source/vid_fbfx.cpp; sourceTree = SOURCE_ROOT; };
 		AAC5C5430F4920CE00A8D3E0 /* vid_fbfx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vid_fbfx.h; path = ../verge/Source/vid_fbfx.h; sourceTree = SOURCE_ROOT; };
@@ -912,20 +892,17 @@
 		66743A7207AF192A00765A03 /* verge3 */ = {
 			isa = PBXGroup;
 			children = (
+				665BF1C712C8342B00498C3A /* blitter_include.h */,
 				66743A7607AF194500765A03 /* a_codec.cpp */,
 				66743A7707AF194500765A03 /* a_codec.h */,
 				66743A7807AF194500765A03 /* a_common.cpp */,
 				66743A7907AF194500765A03 /* a_common.h */,
 				66743A7A07AF194500765A03 /* a_config.cpp */,
 				66743A7B07AF194500765A03 /* a_config.h */,
-				662B8C4C090B2F8B00E910BF /* a_dict.cpp */,
-				662B8C4B090B2F8B00E910BF /* a_dict.h */,
 				66743A7C07AF194500765A03 /* a_handle.cpp */,
 				66743A7D07AF194500765A03 /* a_handle.h */,
 				66743A7E07AF194500765A03 /* a_image.cpp */,
 				66743A7F07AF194500765A03 /* a_image.h */,
-				AAC5C5370F49201E00A8D3E0 /* a_string.cpp */,
-				66743A8107AF194500765A03 /* a_string.h */,
 				66743A8207AF194500765A03 /* a_vfile.cpp */,
 				66743A8307AF194500765A03 /* a_vfile.h */,
 				66705D37101F63EF00A4C9A3 /* algebra3.cpp */,
@@ -979,7 +956,6 @@
 				66B3754C07B2A4130068C75B /* mac_timer.h */,
 				66248261085548A3008B043B /* macsplash.h */,
 				66743A9807AF194500765A03 /* opcodes.h */,
-				668634080A80F2BD00E20C3E /* p_datastructs.cpp */,
 				66743A9907AF194500765A03 /* resource.h */,
 				66743A9A07AF194500765A03 /* sincos.h */,
 				66705D3C101F63EF00A4C9A3 /* snd_audiere.h */,
@@ -987,12 +963,6 @@
 				66A448B608EDDE4500132604 /* snd_fmod.h */,
 				66705D3D101F63EF00A4C9A3 /* snd_oakra.h */,
 				66743A9C07AF194500765A03 /* vc_builtins.cpp */,
-				66743A9D07AF194500765A03 /* vc_compiler.cpp */,
-				66743A9E07AF194500765A03 /* vc_compiler.h */,
-				66743AA007AF194500765A03 /* vc_core.cpp */,
-				66743AA107AF194500765A03 /* vc_core.h */,
-				66743AA207AF194500765A03 /* vc_debug.cpp */,
-				66743AA307AF194500765A03 /* vc_debug.h */,
 				66743AA407AF194500765A03 /* vc_library.cpp */,
 				66705D3E101F63EF00A4C9A3 /* vcsplash.h */,
 				66743AA807AF194500765A03 /* vid_ddblit.cpp */,
@@ -1191,7 +1161,6 @@
 				66743AC307AF194500765A03 /* a_config.h in Headers */,
 				66743AC507AF194500765A03 /* a_handle.h in Headers */,
 				66743AC707AF194500765A03 /* a_image.h in Headers */,
-				66743AC907AF194500765A03 /* a_string.h in Headers */,
 				66743ACB07AF194500765A03 /* a_vfile.h in Headers */,
 				66743ACC07AF194500765A03 /* fontdef.h in Headers */,
 				66743ACE07AF194500765A03 /* g_chr.h in Headers */,
@@ -1206,9 +1175,6 @@
 				66743AE007AF194500765A03 /* opcodes.h in Headers */,
 				66743AE107AF194500765A03 /* resource.h in Headers */,
 				66743AE207AF194500765A03 /* sincos.h in Headers */,
-				66743AE607AF194500765A03 /* vc_compiler.h in Headers */,
-				66743AE907AF194500765A03 /* vc_core.h in Headers */,
-				66743AEB07AF194500765A03 /* vc_debug.h in Headers */,
 				66743AF207AF194500765A03 /* vid_manager.h in Headers */,
 				66743AF407AF194500765A03 /* vid_sysfont.h in Headers */,
 				66743B0507AF194500765A03 /* xerxes.h in Headers */,
@@ -1229,7 +1195,6 @@
 				661F5B1208770D45008AE4D7 /* g_editcode.h in Headers */,
 				66A448B408EDDDBF00132604 /* g_sound.h in Headers */,
 				66A448B808EDDE4500132604 /* snd_fmod.h in Headers */,
-				662B8C4D090B2F8B00E910BF /* a_dict.h in Headers */,
 				66DE5FE70A6FA92400D6CEEA /* garlick.h in Headers */,
 				66CDF7C60C4E8EB900420943 /* g_script.h in Headers */,
 				AAC5C5450F4920CE00A8D3E0 /* vid_fbfx.h in Headers */,
@@ -1239,6 +1204,7 @@
 				66705D47101F63EF00A4C9A3 /* snd_audiere.h in Headers */,
 				66705D48101F63EF00A4C9A3 /* snd_oakra.h in Headers */,
 				66705D49101F63EF00A4C9A3 /* vcsplash.h in Headers */,
+				665BF1C812C8342B00498C3A /* blitter_include.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1360,7 +1326,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 66DE5FDB0A6FA8AF00D6CEEA /* Build configuration list for PBXProject "verge3" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* verge3 */;
 			projectDirPath = "";
 			projectReferences = (
@@ -1605,9 +1578,6 @@
 				66743ADB07AF194500765A03 /* g_startup.cpp in Sources */,
 				66743ADD07AF194500765A03 /* g_vsp.cpp in Sources */,
 				66743AE407AF194500765A03 /* vc_builtins.cpp in Sources */,
-				66743AE507AF194500765A03 /* vc_compiler.cpp in Sources */,
-				66743AE807AF194500765A03 /* vc_core.cpp in Sources */,
-				66743AEA07AF194500765A03 /* vc_debug.cpp in Sources */,
 				66743AEC07AF194500765A03 /* vc_library.cpp in Sources */,
 				66743AF007AF194500765A03 /* vid_ddblit.cpp in Sources */,
 				66743AF107AF194500765A03 /* vid_manager.cpp in Sources */,
@@ -1624,12 +1594,9 @@
 				661F5B1108770D45008AE4D7 /* g_editcode.cpp in Sources */,
 				66A448B308EDDDBF00132604 /* g_sound.cpp in Sources */,
 				66A448B708EDDE4500132604 /* snd_fmod.cpp in Sources */,
-				662B8C4E090B2F8B00E910BF /* a_dict.cpp in Sources */,
 				66DE5FE60A6FA92400D6CEEA /* garlick.cpp in Sources */,
-				668634090A80F2BD00E20C3E /* p_datastructs.cpp in Sources */,
 				66CDF7C50C4E8EB900420943 /* g_script.cpp in Sources */,
 				66CDF7C70C4E8EB900420943 /* lua_main.cpp in Sources */,
-				AAC5C5380F49201E00A8D3E0 /* a_string.cpp in Sources */,
 				AAC5C53A0F49203700A8D3E0 /* vid_timeless.cpp in Sources */,
 				AAC5C5440F4920CE00A8D3E0 /* vid_fbfx.cpp in Sources */,
 				66705D42101F63EF00A4C9A3 /* algebra3.cpp in Sources */,
@@ -2203,8 +2170,8 @@
 				FRAMEWORK_SEARCH_PATHS = ../sdl/;
 				GCC_WARN_NON_VIRTUAL_DESTRUCTOR = NO;
 				HEADER_SEARCH_PATHS = "../../boost-1.37.0/";
-				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Development;
 		};
@@ -2216,8 +2183,8 @@
 					i386,
 				);
 				FRAMEWORK_SEARCH_PATHS = ../sdl/;
-				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Deployment;
 		};
@@ -2225,8 +2192,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = ../sdl/;
-				MACOSX_DEPLOYMENT_TARGET = 10.3;
-				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Default;
 		};

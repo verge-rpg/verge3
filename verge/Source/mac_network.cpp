@@ -24,12 +24,12 @@
 #include "xerxes.h"
 
 #ifdef __LINUX__
-std::string getUrlText(CStringRef)
+std::string getUrlText(std::string)
 {
 	err("getUrlText is TODO in Linux");
 }
 
-int getUrlImage(CStringRef)
+int getUrlImage(std::string)
 {
 	err("getUrlImage is TODO in Linux");
 }
