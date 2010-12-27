@@ -49,8 +49,12 @@ VFILE *vopen(const char *fname)
 #ifdef __APPLE__
 	// swap backslashes in path for forward slashes
 	// (windows -> unix/max)
-	string converted = fname;
-	boost::algorithm::replace_all(converted, "\\", "/");
+    std::string converted = fname;
+    for (size_t pos = 0; pos < converted.length(); pos++) {
+        if (converted[pos] == '\\') {
+            converted[pos] = '/';
+        }
+    }
 	fname = converted.c_str();
 #endif
 	// All files using V* are read-only. To write a file, use regular i/o.

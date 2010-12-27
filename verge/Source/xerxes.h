@@ -16,7 +16,7 @@
 
 #ifdef __APPLE__
 #include "TargetConditionals.h"
-	#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
+	#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
 	#define __IPHONE__
 	#else
 	#define __OSX__

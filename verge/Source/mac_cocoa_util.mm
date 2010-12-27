@@ -1,12 +1,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <string>
 #include "mac_cocoa_util.h"
 
 // include C parts we can use directly
 extern "C++" {
 #include "SDL.h"
-#include "a_string.h"
 #include "g_editcode.h"
 }
 
@@ -34,7 +34,7 @@ void InitEditCode() {
 }
 
 // called to add a file to the pop-up
-void AddSourceFile(string s) {
+void AddSourceFile(std::string s) {
 	// retrieve SDLMain object from the NSApp
 	// then get the reloadController outlet
 	// (These are both hooked up in the nib file)
@@ -71,7 +71,7 @@ void ChangeToRootDirectory() {
 // Other parts of verge should call
 // showMessageBox instead, which handles
 // details like what to do for full-screen.
-void doMessageBox(string message)
+void doMessageBox(std::string message)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
@@ -82,15 +82,15 @@ void doMessageBox(string message)
 
 // call to retrieve a url's text
 // Returns the empty string on error
-string getUrlText(CStringRef inUrl) 
+std::string getUrlText(std::string inUrl) 
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
 	NSURL * url = [NSURL URLWithString: [NSString stringWithCString: inUrl.c_str()]];
 	NSString * contents = [NSString stringWithContentsOfURL: url];
-    string toReturn;
+    std::string toReturn;
 	if(contents != nil)
-        toReturn = string([contents cString]);
+        toReturn = std::string([contents cString]);
 
     [pool drain];
     return toReturn;
@@ -100,7 +100,7 @@ string getUrlText(CStringRef inUrl)
 // returns 0 if the URL is not reachable,
 // and will signal an err() if the image
 // is not loadable.
-int getUrlImage(CStringRef inUrl)
+int getUrlImage(std::string inUrl)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
@@ -120,7 +120,7 @@ int getUrlImage(CStringRef inUrl)
 	return toReturn;
 }
 
-StringRef GetSystemSaveDirectory(CStringRef name)
+std::string GetSystemSaveDirectory(std::string name)
 {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
@@ -132,7 +132,7 @@ StringRef GetSystemSaveDirectory(CStringRef name)
     }
     else
     {
-        StringRef temp = (std::string)"com.verge-rpg." + name.c_str();
+        std::string temp = (std::string)"com.verge-rpg." + name.c_str();
         NSString *prefsDirName = [NSString stringWithUTF8String:temp.c_str()];
         
         NSString *libDir = [arr objectAtIndex:0];
@@ -155,12 +155,16 @@ StringRef GetSystemSaveDirectory(CStringRef name)
 
 // called to reload the code in the file selector
 -(IBAction)reload:(id)sender {
-	runReload((char *)[[fileSelector titleOfSelectedItem] cString]);
+    // g_editcode seems to be all commented out, so we'll comment this, too
+    //	runReload((char *)[[fileSelector titleOfSelectedItem] cString]);
+    NSAssert(0, @"Code evaluation no longer supported");
 }
 
 // called to reload the current map
 -(IBAction)reloadMap:(id)sender {
-	reloadMap();
+    // g_editcode seems to be all commented out, so we'll comment this, too
+	//reloadMap();
+    NSAssert(0, @"Code evaluation no longer supported");
 }
 
 // called to reload a given file
@@ -168,7 +172,9 @@ StringRef GetSystemSaveDirectory(CStringRef name)
 // in there yet
 -(void)reloadFile:(NSString *)fname {
     [self addFile:fname];
-	runReload((char *)[fname cString]);
+    // g_editcode seems to be all commented out, so we'll comment this, too
+    //	runReload((char *)[fname cString]);
+    NSAssert(0, @"Code evaluation no longer supported");
 }
 
 // adds the given file to the pop-up list if
@@ -181,7 +187,9 @@ StringRef GetSystemSaveDirectory(CStringRef name)
 
 // called to eval the code in the evalField
 -(IBAction)eval:(id)sender {
-	runEval((char *)[[evalField stringValue] cString]);
+    // g_editcode seems to be all commented out, so we'll comment this, too
+    //	runEval((char *)[[evalField stringValue] cString]);
+    NSAssert(0, @"Code evaluation no longer supported");
 }
 
 // call to show the code editing window

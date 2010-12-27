@@ -16,8 +16,8 @@
 #include <string>
 #include <exception>
 
-std::string getUrlText(CStringRef url);
-int getUrlImage(CStringRef url);
+std::string getUrlText(std::string url);
+int getUrlImage(std::string url);
 
 class NetworkException : public std::exception
 {

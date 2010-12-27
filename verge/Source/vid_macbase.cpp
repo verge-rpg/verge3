@@ -262,7 +262,7 @@ void sdl_Window::setVisibility(bool vis)
 
 void sdl_Window::setTitle(const char *title)
 {
-	string titleConverted = title;
+    std::string titleConverted = title;
 	for(int i = 0; i < titleConverted.length(); i++) {
 		// check for high-ascii characters,
 		// remove them and give warning message

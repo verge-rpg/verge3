@@ -1306,8 +1306,12 @@ int ScriptEngine::FileOpen(const std::string& fname, int filemode) {
 	#ifdef __APPLE__
 	// swap backslashes in path for forward slashes
 	// (windows -> unix/max)
-	string converted = fname.str();
-	boost::algorithm::replace_all(converted, "\\", "/");
+    std::string converted = fname;
+    for (size_t pos = 0; pos < converted.length(); pos++) {
+        if (converted[pos] == '\\') {
+            converted[pos] = '/';
+        }
+    }
 	cpfname = converted.c_str();
 	#endif
 

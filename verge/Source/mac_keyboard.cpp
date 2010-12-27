@@ -21,7 +21,7 @@
 char keys[256];
 byte lastpressed;
 byte lastkey;
-StringRef bindarray[256];
+std::string bindarray[256];
 
 byte key_ascii_tbl[128] =
 {
