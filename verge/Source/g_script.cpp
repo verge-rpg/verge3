@@ -120,7 +120,7 @@ void ScriptEngine::WriteHvar(int category, int loc, int ofs, int value)
 				case 96: cameratracker = value; break;
 				case 101: playerstep = value >= 1 ? value : 1; break;
 				case 102: playerdiagonals = value ? 1 : 0; break;
-				default: vcerr("Unknown HVAR0 (%d) (set %d)", loc, value);
+				default: vcerr("Unknown HVAR0 a (%d) (set %d)", loc, value);
 			}
 			break;
 		case intHVAR1:
@@ -376,10 +376,12 @@ int ScriptEngine::ReadHvar(int category, int loc, int ofs)
 				case 51: return transColor;
 				case 59: return gameWindow->getHandle();
 				case 60: return lastkey;
+
 				case 80: return current_map ? current_map->mapwidth : 0;
 				case 81: return current_map ? current_map->mapheight : 0;
 				case 82: return current_map ? current_map->startx : 0;
 				case 83: return current_map ? current_map->starty : 0;
+					
 				case 87: return current_map ? 2 : 0;
 				case 90: return event_sprite; // Overkill (2006-07-28): No more HVAR error.
 				case 96: return cameratracker;
@@ -388,8 +390,9 @@ int ScriptEngine::ReadHvar(int category, int loc, int ofs)
 				case 103: return AppIsForeground;
 				case 116: return ReadHvar_derived(category,loc,ofs);
 				case 126: return event_entity_hit;
+				case 128: return current_map ? current_map->numlayers : 0;
 
-				default: vcerr("Unknown HVAR0 (%d)", loc);
+				default: vcerr("Unknown HVAR0 b (%d)", loc);
 			}
 			return -1;
 		case intHVAR1:
@@ -461,7 +464,7 @@ int ScriptEngine::ReadHvar_derived(int category, int loc, int ofs)
 	switch(category)
 	{
 		case intHVAR0:
-			vcerr("Unknown HVAR0 (%d)", loc); break;
+			vcerr("Unknown HVAR0 c (%d)", loc); break;
 		case intHVAR1:
 			vcerr("Unknown HVAR1 (%d, %d)", loc, ofs); break;
 		default:
@@ -475,7 +478,7 @@ void ScriptEngine::WriteHvar_derived(int category, int loc, int ofs, int value)
 	switch(category)
 	{
 		case intHVAR0:
-			vcerr("Unknown HVAR0 (%d)", loc); break;
+			vcerr("Unknown HVAR0 d (%d)", loc); break;
 		case intHVAR1:
 			vcerr("Unknown HVAR1 (%d, %d)", loc, ofs); break;
 		default:

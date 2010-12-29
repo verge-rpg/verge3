@@ -113,5 +113,7 @@ public:
 		int t=obslayer[((y>>4)*mapwidth)+(x>>4)];
 		return tileset->GetObs(t, x&15, y&15);
 	}
+	
+	int GetLayerCount() { return numlayers; }
 
 };

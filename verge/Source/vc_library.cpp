@@ -858,6 +858,13 @@ VC_LIBFUNC(vc_SetObs) ()
 	se->SetObs(x,y,c);
 }
 
+/*
+VC_LIBFUNC(vc_GetLayerCount) ()
+{
+	se->vcreturn = se->GetLayerCount();
+}
+*/
+
 VC_LIBFUNC(vc_EntitySpawn) () {
 	int x = se->ResolveOperand();
 	int y = se->ResolveOperand();

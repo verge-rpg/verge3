@@ -867,7 +867,7 @@ void LUA::bindApi()
 		"v3.curmap = _builtin_struct()\n"
 		"bind_hvar(0, 'curmap',\n"
 		"	'w', 'h', 'startx', 'starty', 'name', 'rstring', \n"
-		"	'music', 'tileset', 'path', 'savevsp' \n"
+		"	'music', 'tileset', 'path', 'savevsp', 'layers' \n"
 		")\n"
 
 		// Bind the layer builtins

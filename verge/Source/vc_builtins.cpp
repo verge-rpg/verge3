@@ -434,6 +434,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"3", "trigger.onEntityCollide", "" },// index 125
 	{"1", "event.entity_hit", "" }, //126
 	{"3", "trigger.after_playermove", "" }, //127
+	{"1", "curmap.layers", "" }, //128
 
 }; //when adding, remember to increment NUM_HVARS
 
