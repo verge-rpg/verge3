@@ -168,6 +168,22 @@ void ScriptEngine::WriteHvar(int category, int loc, int ofs, int value)
 				//case 113: ent.framew
 				//case 114: ent.frameh
 
+				case 129:
+					if (current_map)
+						if (ofs >= 0 && ofs < current_map->numzones)
+							current_map->zones[ofs]->method = value;
+					return;
+				case 130:
+					if (current_map)
+						if (ofs >= 0 && ofs < current_map->numzones)
+							current_map->zones[ofs]->percent = value;
+					return;
+				case 131:
+					if (current_map)
+						if (ofs >= 0 && ofs < current_map->numzones)
+							current_map->zones[ofs]->delay = value;
+					return;
+
 				default:
 					WriteHvar_derived(category,loc,ofs,value);
 			}
@@ -392,6 +408,8 @@ int ScriptEngine::ReadHvar(int category, int loc, int ofs)
 				case 126: return event_entity_hit;
 				case 128: return current_map ? current_map->numlayers : 0;
 
+				case 132: return current_map ? current_map->numzones : 0;
+					
 				default: vcerr("Unknown HVAR0 b (%d)", loc);
 			}
 			return -1;
@@ -447,6 +465,27 @@ int ScriptEngine::ReadHvar(int category, int loc, int ofs)
 				case 112: if (ofs>=0 && ofs<sprites.size()) return sprites[ofs].timer; return 0; // Overkill (2006-07-28)
 				case 113: return ScriptEngine::Get_EntityFrameW(ofs); // Overkill (2006-07-28)
 				case 114: return ScriptEngine::Get_EntityFrameH(ofs); // Overkill (2006-07-28)
+
+				case 129:
+					if (current_map)
+						if (ofs >= 0 && ofs < current_map->numzones)
+							return current_map->zones[ofs]->method;
+					return -1;
+				case 130:
+					if (current_map)
+						if (ofs >= 0 && ofs < current_map->numzones)
+							return current_map->zones[ofs]->percent;
+					return -1;
+				case 131:
+					if (current_map)
+						if (ofs >= 0 && ofs < current_map->numzones)
+							return current_map->zones[ofs]->delay;
+					return -1;
+				case 132:
+					if (current_map)
+						return current_map->numzones;
+					return -1;
+					
 				default:
 					return ReadHvar_derived(category,loc,ofs);
 			
@@ -466,7 +505,7 @@ int ScriptEngine::ReadHvar_derived(int category, int loc, int ofs)
 		case intHVAR0:
 			vcerr("Unknown HVAR0 c (%d)", loc); break;
 		case intHVAR1:
-			vcerr("Unknown HVAR1 (%d, %d)", loc, ofs); break;
+			vcerr("Unknown HVAR1 a (%d, %d)", loc, ofs); break;
 		default:
 			vcerr("Fatal Error Code Mongoose"); break;
 	}
@@ -480,7 +519,7 @@ void ScriptEngine::WriteHvar_derived(int category, int loc, int ofs, int value)
 		case intHVAR0:
 			vcerr("Unknown HVAR0 d (%d)", loc); break;
 		case intHVAR1:
-			vcerr("Unknown HVAR1 (%d, %d)", loc, ofs); break;
+			vcerr("Unknown HVAR1 b (%d, %d)", loc, ofs); break;
 		default:
 			vcerr("Fatal Error Code Sapience"); break;
 	}

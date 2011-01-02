@@ -867,7 +867,7 @@ void LUA::bindApi()
 		"v3.curmap = _builtin_struct()\n"
 		"bind_hvar(0, 'curmap',\n"
 		"	'w', 'h', 'startx', 'starty', 'name', 'rstring', \n"
-		"	'music', 'tileset', 'path', 'savevsp', 'layers' \n"
+		"	'music', 'tileset', 'path', 'savevsp', 'layers', 'zones' \n"
 		")\n"
 
 		// Bind the layer builtins
@@ -878,7 +878,7 @@ void LUA::bindApi()
 
 		// Bind the zone builtins
 		"v3.zone = _builtin_struct_collection()\n"
-		"bind_hvar(1, 'zone', 'name', 'event')\n"
+		"bind_hvar(1, 'zone', 'name', 'event', 'method', 'percent', 'delay')\n"
 
 		// Bind the sprite builtins
 		"v3.sprite = _builtin_struct_collection()\n"

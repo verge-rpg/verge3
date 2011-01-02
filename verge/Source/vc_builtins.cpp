@@ -348,7 +348,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "xwin", "" },
 	{"1", "ywin", "" },// index 40
 	{"1", "cameratracking", "" },
-	{"1", "entities", "" },
+	{"1", "entities", "" }, //entities 42
 	{"1", "entity.x", "1" },
 	{"1", "entity.y", "1" },
 	{"1", "entity.specframe", "1" },
@@ -399,7 +399,7 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "event.sprite", ""},// index 90
 	{"1", "layer.w", "1" },
 	{"1", "layer.h", "1" },
-	{"7", "layer.visible", "1" },
+	{"7", "layer.visible", "1" }, //93
 	{"1", "layer.lucent", "1" },
 	{"3", "clipboard.text", "" },
 	{"1", "cameratracker", "" },//96
@@ -436,6 +436,12 @@ char* libvars[NUM_HVARS][3] = {
 	{"3", "trigger.after_playermove", "" }, //127
 	{"1", "curmap.layers", "" }, //128
 
+	{"1", "zone.method", "1"},	// 129
+	{"1", "zone.percent", "1"},	// 130
+	{"1", "zone.delay", "1"},	// 131
+	{"1", "curmap.zones", ""},	// 132
+	
+	
 }; //when adding, remember to increment NUM_HVARS
 
 HdefDecl hdefs[NUM_HDEFS] = {
