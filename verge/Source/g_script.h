@@ -182,6 +182,7 @@ public:
 	static void Blit(int x, int y, int src, int dst);
 	static void BlitEntityFrame(int x, int y, int e, int f, int dst);
 	static void BlitLucent(int x, int y, int lucent, int src, int dst);
+	static void BlitObs(int x, int y, int t, int dst);
 	static void BlitTile(int x, int y, int t, int dst);
 	static void BlitWrap(int x, int y, int src, int dst);
 	static void Circle(int x1, int y1, int xr, int yr, int c, int dst);

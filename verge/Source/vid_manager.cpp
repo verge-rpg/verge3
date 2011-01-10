@@ -40,6 +40,7 @@ void   (*TAdditiveBlit) (int x, int y, image *src, image *dest);
 void   (*SubtractiveBlit) (int x, int y, image *src, image *dest);
 void   (*TSubtractiveBlit) (int x, int y, image *src, image *dest);
 void   (*BlitTile) (int x, int y, char *src, image *dest);
+void   (*BlitObs) (int x, int y, char *src, image *dest);
 void   (*TBlitTile) (int x, int y, char *src, image *dest);
 void   (*PutPixel) (int x, int y, int color, image *dest);
 void   (*Line) (int x, int y, int xe, int ye, int color, image *dest);

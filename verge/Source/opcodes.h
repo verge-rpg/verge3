@@ -121,7 +121,7 @@
 #define t_CALLBACK			8 // For function pointers.
 
 #define NUM_LIBFUNCS		281
-#define NUM_HVARS			133
+#define NUM_HVARS			134
 #define NUM_HDEFS			111
 
 struct VcFunctionDecl {

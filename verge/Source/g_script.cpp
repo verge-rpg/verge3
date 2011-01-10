@@ -409,6 +409,7 @@ int ScriptEngine::ReadHvar(int category, int loc, int ofs)
 				case 128: return current_map ? current_map->numlayers : 0;
 
 				case 132: return current_map ? current_map->numzones : 0;
+				case 133: return current_map ? current_map->tileset->numobs : 0;
 					
 				default: vcerr("Unknown HVAR0 b (%d)", loc);
 			}
@@ -484,6 +485,10 @@ int ScriptEngine::ReadHvar(int category, int loc, int ofs)
 				case 132:
 					if (current_map)
 						return current_map->numzones;
+					return -1;
+				case 133:
+					if (current_map)
+						return current_map->tileset->numobs;
 					return -1;
 					
 				default:
@@ -859,6 +864,14 @@ void ScriptEngine::BlitLucent(int x, int y, int lucent, int src, int dst) {
 	::Blit(x, y, s, d);
 	::SetLucent(oldalpha);
 }
+
+void ScriptEngine::BlitObs(int x, int y, int t, int dst) {
+	image *d = ImageForHandle(dst);
+	if (current_map) {
+		current_map->tileset->BlitObs(x, y, t, d);
+	}
+}
+
 void ScriptEngine::BlitTile(int x, int y, int t, int dst) {
 	image *d = ImageForHandle(dst);
 	if (current_map) {

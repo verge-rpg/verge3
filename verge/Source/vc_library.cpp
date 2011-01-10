@@ -590,6 +590,15 @@ VC_LIBFUNC(vc_HookEntityRender) ()
 	se->HookEntityRender(i,s);
 }
 
+VC_LIBFUNC(vc_BlitObs) ()
+{
+	int x = se->ResolveOperand();
+	int y = se->ResolveOperand();
+	int t = se->ResolveOperand();
+	int d = se->ResolveOperand();
+	se->BlitObs(x,y,t,d);
+}
+
 VC_LIBFUNC(vc_BlitTile) ()
 {
 	int x = se->ResolveOperand();

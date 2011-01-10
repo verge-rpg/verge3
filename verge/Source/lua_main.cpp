@@ -276,15 +276,14 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 		i++;
 	}
 
-	if (i < declaredArgumentCount || (i > declaredArgumentCount && !varargs))
-	{
+	if (i < declaredArgumentCount || (i > declaredArgumentCount && !varargs)) {
 		LuaError(L,"Problem invoking %s: Function expects %d arguments. (Got %d)", libfuncs[functionIndex].name.c_str(), declaredArgumentCount, i);
 	}
 }
 
 // Careful, this needs to be static and return an int so it can be bound to Lua.
-int LUA::InvokeBuiltinFunction(lua_State* L)
-{
+int LUA::InvokeBuiltinFunction(lua_State* L) {
+	
 	// Grab the function index upvalue
 	int functionIndex = (int)lua_tonumber(L, lua_upvalueindex(1));
 
@@ -301,8 +300,7 @@ int LUA::InvokeBuiltinFunction(lua_State* L)
 	VcFunctionImpl ptr = dispatchTable[functionIndex];
 	if (ptr) {
 		ptr();
-	}
-	else {
+	} else {
 		::err("Error calling function (index %d) '%s'", functionIndex, libfuncs[functionIndex].name.c_str());
 	}
 
@@ -867,9 +865,9 @@ void LUA::bindApi()
 		"v3.curmap = _builtin_struct()\n"
 		"bind_hvar(0, 'curmap',\n"
 		"	'w', 'h', 'startx', 'starty', 'name', 'rstring', \n"
-		"	'music', 'tileset', 'path', 'savevsp', 'layers', 'zones' \n"
+		"	'music', 'tileset', 'path', 'savevsp', 'layers', 'zones', 'numobs' \n"
 		")\n"
-
+						   
 		// Bind the layer builtins
 		"v3.layer = _builtin_struct_collection()\n"
 		"bind_hvar(1, 'layer',\n"

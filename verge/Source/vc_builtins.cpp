@@ -292,7 +292,8 @@ static VcFunctionDecl _libfuncs[NUM_LIBFUNCS] = {
 	{"1", "GetInputKillSwitch", ""},
 	{"5", "SetInputKillSwitch", "1"},
 	{"7", "IntExists", "3"},		// Grue, (2008-12-26)
-	{"7", "StrExists", "3"}
+	{"7", "StrExists", "3"},
+	{"5", "BlitObs", "1111" }
 };
 
 VcFunction *libfuncs;
@@ -440,6 +441,8 @@ char* libvars[NUM_HVARS][3] = {
 	{"1", "zone.percent", "1"},	// 130
 	{"1", "zone.delay", "1"},	// 131
 	{"1", "curmap.zones", ""},	// 132
+	
+	{"1", "curmap.numobs", ""}, // 133
 	
 	
 }; //when adding, remember to increment NUM_HVARS
