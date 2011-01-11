@@ -8,7 +8,7 @@
 
 //------------------- script engine state variables ----------------
 int cur_stick = 0;
-VergeCallback renderfunc, timerfunc;
+VergeCallback renderfunc, timerfunc, maploadfunc;
 
 int invc;
 bool die;
@@ -286,6 +286,7 @@ std::string ScriptEngine::ReadHvar_str(int category, int loc, int arg)
 			case 124: return _trigger_afterEntityScript;
 			case 125: return _trigger_onEntityCollide;
 			case 127: return _trigger_afterPlayerMove;
+			case 134: return current_map ? current_map->startupscript : "";
 			default: return ReadHvar_str_derived(category,loc,arg);
 		}
 		case strHSTR1:
@@ -601,6 +602,11 @@ void HookRetrace()
 	se->ExecuteCallback(renderfunc, true);
 }
 
+void HookMapLoad()
+{
+	se->ExecuteCallback(maploadfunc, true);
+}
+
 image *ImageForHandle(int handle)
 {
 	if (handle == 0)
@@ -667,6 +673,10 @@ void ScriptEngine::HookTimer(VergeCallback cb) {
 void ScriptEngine::HookRetrace(VergeCallback cb) {
 	se->ReleaseCallback(renderfunc);
 	renderfunc = cb;
+}
+
+void ScriptEngine::HookMapLoad(VergeCallback cb) {
+	maploadfunc = cb;
 }
 
 void ScriptEngine::Log(const std::string& s) { log(s.c_str()); }

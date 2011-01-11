@@ -572,6 +572,8 @@ VC_LIBFUNC(vc_Map) ()
 
 VC_LIBFUNC(vc_HookTimer) () { se->HookTimer(se->ResolveCallback()); }
 VC_LIBFUNC(vc_HookRetrace) () { se->HookRetrace(se->ResolveCallback()); }
+VC_LIBFUNC(vc_HookMapLoad) () { se->HookMapLoad(se->ResolveCallback()); }
+
 VC_LIBFUNC(vc_HookKey) () { 
 	int k = se->ResolveOperand();
 	std::string s = se->ResolveString();

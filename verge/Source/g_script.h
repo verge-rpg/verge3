@@ -5,7 +5,7 @@
 struct VergeCallback;
 
 extern bool die;
-extern VergeCallback renderfunc, timerfunc;
+extern VergeCallback renderfunc, timerfunc, maploadfunc;
 
 extern int event_tx;
 extern int event_ty;
@@ -42,6 +42,7 @@ extern FileRecord vcfiles[VCFILES];
 void InitScriptEngine();
 void HookTimer();
 void HookRetrace();
+void HookMapLoad();
 image *ImageForHandle(int handle);
 void FreeImageHandle(int handle);
 void SetHandleImage(int handle, image *img);
@@ -140,6 +141,7 @@ public:
 	static void HookKey(int k, const std::string& s);
 	void HookTimer(VergeCallback s);
 	void HookRetrace(VergeCallback s);
+	void HookMapLoad(VergeCallback s);
 	static void Log(const std::string& s);
 	static void MessageBox(const std::string& msg);
 	static int Random(int min, int max);

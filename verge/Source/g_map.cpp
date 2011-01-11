@@ -276,6 +276,7 @@ MAP::MAP(char *fname)
 	current_map = this;
 	se->LoadMapScript(f, mapfname);
 	vclose(f);
+	HookMapLoad();
 	se->ExecuteFunctionString(startupscript);
 }
 

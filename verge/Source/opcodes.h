@@ -109,7 +109,7 @@
 #define opCBPADDING			114 // Needed after call attempt, so that failure won't mess the interpreter.
 #define opCBFUNCEXISTS		115	// Test if a function exists or not.
 
-// types are 1 = int, 3 = string, 4 = variable number of ints, 5 = void, 6 = struct
+// types are 1 = int, 3 = string, 4 = variable number of ints, 5 = void, 6 = struct, 7 = boolean, 8 = callback
 
 #define t_NOTFOUND			0 // Reserved for errors.
 #define t_INT				1
@@ -120,8 +120,8 @@
 #define t_BOOL				7 // For better lua compatibility with builtins.
 #define t_CALLBACK			8 // For function pointers.
 
-#define NUM_LIBFUNCS		281
-#define NUM_HVARS			134
+#define NUM_LIBFUNCS		282
+#define NUM_HVARS			135
 #define NUM_HDEFS			111
 
 struct VcFunctionDecl {
