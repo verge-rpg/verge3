@@ -219,7 +219,7 @@ namespace winmaped2 {
                             tile = Global.FrameCalc.getframe(tile);
                         }
 
-                        if (drawZero || tile != 0 && tile < vsp.tileCount)
+                        if ((drawZero || tile != 0) && tile < vsp.tileCount)
                         {
                             Render.renderAlpha(backBuffer, cpx, cpy, vsp.GetTile(tile).Image, 100 - layer.Translucency, false);
                         }
