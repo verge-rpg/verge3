@@ -143,7 +143,8 @@ namespace winmaped2 {
         private MenuItem miViewToolbars;
         private MenuItem menuItem2;
         private CollapsiblePanel layerPanel;
-        
+
+		ContextMenu sidebarContextMenu;
 
         public MainWindow() {
             //
@@ -241,7 +242,7 @@ namespace winmaped2 {
             throttleDisplay = new ThrottleBuffer(500, new EventHandler(postRedisplay));
 
 
-            sidebarPanel.ContextMenu = new ContextMenu();
+			sidebarContextMenu = new ContextMenu();
             foreach (Control ctrl in sidebarPanel.Controls)
             {
                 if (ctrl is CollapsiblePanel)
@@ -254,7 +255,7 @@ namespace winmaped2 {
                         toolbarItem.Checked = panel.Visible;
                     };
                     miViewToolbars.MenuItems.Add(toolbarItem);
-                    sidebarPanel.ContextMenu.MenuItems.Add(panel.MenuItem);
+					sidebarContextMenu.MenuItems.Add(panel.MenuItem);
                 }
             }
 
@@ -332,174 +333,174 @@ namespace winmaped2 {
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
-            this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
-            this.miFile = new System.Windows.Forms.MenuItem();
-            this.miNewMap = new System.Windows.Forms.MenuItem();
-            this.miOpenMap = new System.Windows.Forms.MenuItem();
-            this.miClose = new System.Windows.Forms.MenuItem();
-            this.menuItem7 = new System.Windows.Forms.MenuItem();
-            this.miSave = new System.Windows.Forms.MenuItem();
-            this.miSaveAs = new System.Windows.Forms.MenuItem();
-            this.mruSeparator = new System.Windows.Forms.MenuItem();
-            this.misSave = new System.Windows.Forms.MenuItem();
-            this.miPreferences = new System.Windows.Forms.MenuItem();
-            this.menuItem11 = new System.Windows.Forms.MenuItem();
-            this.miExit = new System.Windows.Forms.MenuItem();
-            this.miEdit = new System.Windows.Forms.MenuItem();
-            this.miUndo = new System.Windows.Forms.MenuItem();
-            this.miRedo = new System.Windows.Forms.MenuItem();
-            this.miMap = new System.Windows.Forms.MenuItem();
-            this.miEditZones = new System.Windows.Forms.MenuItem();
-            this.miEditEntities = new System.Windows.Forms.MenuItem();
-            this.menuItem8 = new System.Windows.Forms.MenuItem();
-            this.miMapProperties = new System.Windows.Forms.MenuItem();
-            this.miVsp = new System.Windows.Forms.MenuItem();
-            this.miEditTiles = new System.Windows.Forms.MenuItem();
-            this.miEditAnims = new System.Windows.Forms.MenuItem();
-            this.miArrangeTiles = new System.Windows.Forms.MenuItem();
-            this.menuItem15 = new System.Windows.Forms.MenuItem();
-            this.miImportTiles = new System.Windows.Forms.MenuItem();
-            this.miImportAgain = new System.Windows.Forms.MenuItem();
-            this.menuItem9 = new System.Windows.Forms.MenuItem();
-            this.miExportTiles = new System.Windows.Forms.MenuItem();
-            this.miExportTilesToImage = new System.Windows.Forms.MenuItem();
-            this.miExportTilesToImageGrid = new System.Windows.Forms.MenuItem();
-            this.miExportTilesToClipboard = new System.Windows.Forms.MenuItem();
-            this.miExportTilesToClipboardGrid = new System.Windows.Forms.MenuItem();
-            this.menuItem13 = new System.Windows.Forms.MenuItem();
-            this.miChangeVSP = new System.Windows.Forms.MenuItem();
-            this.miChangeVspExisting = new System.Windows.Forms.MenuItem();
-            this.miChangeVspBlank = new System.Windows.Forms.MenuItem();
-            this.miView = new System.Windows.Forms.MenuItem();
-            this.miViewToolbars = new System.Windows.Forms.MenuItem();
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
-            this.Zoom1x = new System.Windows.Forms.MenuItem();
-            this.miZoom2x = new System.Windows.Forms.MenuItem();
-            this.miZoom4x = new System.Windows.Forms.MenuItem();
-            this.miHelp = new System.Windows.Forms.MenuItem();
-            this.miShowHelp = new System.Windows.Forms.MenuItem();
-            this.menuItem16 = new System.Windows.Forms.MenuItem();
-            this.mi_rft = new System.Windows.Forms.MenuItem();
-            this.miAbout = new System.Windows.Forms.MenuItem();
-            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.statusBar = new System.Windows.Forms.StatusBar();
-            this.sbpLoadInfo = new System.Windows.Forms.StatusBarPanel();
-            this.sbpCursorInfo = new System.Windows.Forms.StatusBarPanel();
-            this.sbpSelection = new System.Windows.Forms.StatusBarPanel();
-            this.sbpZoom = new System.Windows.Forms.StatusBarPanel();
-            this.toolPanel = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
-            this.sidebarPanel = new System.Windows.Forms.FlowLayoutPanel();
-            this.toolbarImages = new System.Windows.Forms.ImageList(this.components);
-            this.mapPanel = new System.Windows.Forms.Panel();
-            this.mainpanel = new System.Windows.Forms.Panel();
-            this.openVspDialog = new System.Windows.Forms.OpenFileDialog();
-            this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
-            this.saveVspDialog = new System.Windows.Forms.SaveFileDialog();
-            this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
-            this.mapController = new winmaped2.MapController();
-            this.sizeGrip = new winmaped2.SizeGrip();
-            this.toolPalletePanel = new winmaped2.CollapsiblePanel();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.toolPalette = new winmaped2.ToolPalette();
-            this.radioButton6 = new winmaped2.ToolPalette.ToolButton();
-            this.b_runmap = new System.Windows.Forms.Button();
-            this.radioButton5 = new winmaped2.ToolPalette.ToolButton();
-            this.radioButton3 = new winmaped2.ToolPalette.ToolButton();
-            this.radioButton2 = new winmaped2.ToolPalette.ToolButton();
-            this.radioButton1 = new winmaped2.ToolPalette.ToolButton();
-            this.radioButton4 = new winmaped2.ToolPalette.ToolButton();
-            this.layerPanel = new winmaped2.CollapsiblePanel();
-            this.lPanel = new winmaped2.LayerPanel();
-            this.panel4 = new System.Windows.Forms.Panel();
-            this.l_rstring = new System.Windows.Forms.Label();
-            this.b_layeradd = new System.Windows.Forms.Button();
-            this.b_layerdown = new System.Windows.Forms.Button();
-            this.b_layerup = new System.Windows.Forms.Button();
-            this.b_layerdel = new System.Windows.Forms.Button();
-            this.b_layerproperties = new System.Windows.Forms.Button();
-            this.tilesPanel = new winmaped2.CollapsiblePanel();
-            this.ctTilesP = new System.Windows.Forms.Panel();
-            this.button3 = new System.Windows.Forms.Button();
-            this.vspc_obs = new winmaped2.VSPController();
-            this.vspController = new winmaped2.VSPController();
-            this.p_zones = new System.Windows.Forms.Panel();
-            this.l_szone = new System.Windows.Forms.Label();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.lv_zonelist = new winmaped2.ListViewIndexed();
-            this.ch_zoneid = new System.Windows.Forms.ColumnHeader();
-            this.ch_zonename = new System.Windows.Forms.ColumnHeader();
-            this.p_ents = new System.Windows.Forms.Panel();
-            this.l_sent = new System.Windows.Forms.Label();
-            this.b_editents = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.lv_ents = new System.Windows.Forms.ListView();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
-            this.b_gotoent = new System.Windows.Forms.Button();
-            this.g_tiles = new System.Windows.Forms.GroupBox();
-            this.TileViewA = new winmaped2.TileViewer();
-            this.TileViewB = new winmaped2.TileViewer();
-            this.g_obs = new System.Windows.Forms.GroupBox();
-            this.tv_obs = new winmaped2.TileViewer();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.minimapPanel = new winmaped2.CollapsiblePanel();
-            this.ctMinimapP = new System.Windows.Forms.Panel();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.tb_zoom = new System.Windows.Forms.TrackBar();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.miniMap = new winmaped2.MiniMapControl();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.cb_transeffects = new System.Windows.Forms.CheckBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.clipboardPanel = new winmaped2.CollapsiblePanel();
-            this.mcClipboard = new winmaped2.MapController();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpLoadInfo)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpCursorInfo)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpSelection)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpZoom)).BeginInit();
-            this.toolPanel.SuspendLayout();
-            this.sidebarPanel.SuspendLayout();
-            this.mapPanel.SuspendLayout();
-            this.mainpanel.SuspendLayout();
-            this.toolPalletePanel.SuspendLayout();
-            this.toolPalette.SuspendLayout();
-            this.layerPanel.SuspendLayout();
-            this.panel4.SuspendLayout();
-            this.tilesPanel.SuspendLayout();
-            this.ctTilesP.SuspendLayout();
-            this.p_zones.SuspendLayout();
-            this.p_ents.SuspendLayout();
-            this.g_tiles.SuspendLayout();
-            this.g_obs.SuspendLayout();
-            this.minimapPanel.SuspendLayout();
-            this.ctMinimapP.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_zoom)).BeginInit();
-            this.panel2.SuspendLayout();
-            this.groupBox1.SuspendLayout();
-            this.clipboardPanel.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // mainMenu
-            // 
-            this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.components = new System.ComponentModel.Container();
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
+			this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
+			this.miFile = new System.Windows.Forms.MenuItem();
+			this.miNewMap = new System.Windows.Forms.MenuItem();
+			this.miOpenMap = new System.Windows.Forms.MenuItem();
+			this.miClose = new System.Windows.Forms.MenuItem();
+			this.menuItem7 = new System.Windows.Forms.MenuItem();
+			this.miSave = new System.Windows.Forms.MenuItem();
+			this.miSaveAs = new System.Windows.Forms.MenuItem();
+			this.mruSeparator = new System.Windows.Forms.MenuItem();
+			this.misSave = new System.Windows.Forms.MenuItem();
+			this.miPreferences = new System.Windows.Forms.MenuItem();
+			this.menuItem11 = new System.Windows.Forms.MenuItem();
+			this.miExit = new System.Windows.Forms.MenuItem();
+			this.miEdit = new System.Windows.Forms.MenuItem();
+			this.miUndo = new System.Windows.Forms.MenuItem();
+			this.miRedo = new System.Windows.Forms.MenuItem();
+			this.miMap = new System.Windows.Forms.MenuItem();
+			this.miEditZones = new System.Windows.Forms.MenuItem();
+			this.miEditEntities = new System.Windows.Forms.MenuItem();
+			this.menuItem8 = new System.Windows.Forms.MenuItem();
+			this.miMapProperties = new System.Windows.Forms.MenuItem();
+			this.miVsp = new System.Windows.Forms.MenuItem();
+			this.miEditTiles = new System.Windows.Forms.MenuItem();
+			this.miEditAnims = new System.Windows.Forms.MenuItem();
+			this.miArrangeTiles = new System.Windows.Forms.MenuItem();
+			this.menuItem15 = new System.Windows.Forms.MenuItem();
+			this.miImportTiles = new System.Windows.Forms.MenuItem();
+			this.miImportAgain = new System.Windows.Forms.MenuItem();
+			this.menuItem9 = new System.Windows.Forms.MenuItem();
+			this.miExportTiles = new System.Windows.Forms.MenuItem();
+			this.miExportTilesToImage = new System.Windows.Forms.MenuItem();
+			this.miExportTilesToImageGrid = new System.Windows.Forms.MenuItem();
+			this.miExportTilesToClipboard = new System.Windows.Forms.MenuItem();
+			this.miExportTilesToClipboardGrid = new System.Windows.Forms.MenuItem();
+			this.menuItem13 = new System.Windows.Forms.MenuItem();
+			this.miChangeVSP = new System.Windows.Forms.MenuItem();
+			this.miChangeVspExisting = new System.Windows.Forms.MenuItem();
+			this.miChangeVspBlank = new System.Windows.Forms.MenuItem();
+			this.miView = new System.Windows.Forms.MenuItem();
+			this.miViewToolbars = new System.Windows.Forms.MenuItem();
+			this.menuItem2 = new System.Windows.Forms.MenuItem();
+			this.Zoom1x = new System.Windows.Forms.MenuItem();
+			this.miZoom2x = new System.Windows.Forms.MenuItem();
+			this.miZoom4x = new System.Windows.Forms.MenuItem();
+			this.miHelp = new System.Windows.Forms.MenuItem();
+			this.miShowHelp = new System.Windows.Forms.MenuItem();
+			this.menuItem16 = new System.Windows.Forms.MenuItem();
+			this.mi_rft = new System.Windows.Forms.MenuItem();
+			this.miAbout = new System.Windows.Forms.MenuItem();
+			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+			this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+			this.statusBar = new System.Windows.Forms.StatusBar();
+			this.sbpLoadInfo = new System.Windows.Forms.StatusBarPanel();
+			this.sbpCursorInfo = new System.Windows.Forms.StatusBarPanel();
+			this.sbpSelection = new System.Windows.Forms.StatusBarPanel();
+			this.sbpZoom = new System.Windows.Forms.StatusBarPanel();
+			this.toolPanel = new System.Windows.Forms.Panel();
+			this.button1 = new System.Windows.Forms.Button();
+			this.sidebarPanel = new System.Windows.Forms.FlowLayoutPanel();
+			this.toolPalletePanel = new winmaped2.CollapsiblePanel();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.toolPalette = new winmaped2.ToolPalette();
+			this.radioButton6 = new winmaped2.ToolPalette.ToolButton();
+			this.b_runmap = new System.Windows.Forms.Button();
+			this.radioButton5 = new winmaped2.ToolPalette.ToolButton();
+			this.radioButton3 = new winmaped2.ToolPalette.ToolButton();
+			this.radioButton2 = new winmaped2.ToolPalette.ToolButton();
+			this.radioButton1 = new winmaped2.ToolPalette.ToolButton();
+			this.radioButton4 = new winmaped2.ToolPalette.ToolButton();
+			this.layerPanel = new winmaped2.CollapsiblePanel();
+			this.lPanel = new winmaped2.LayerPanel();
+			this.panel4 = new System.Windows.Forms.Panel();
+			this.l_rstring = new System.Windows.Forms.Label();
+			this.b_layeradd = new System.Windows.Forms.Button();
+			this.b_layerdown = new System.Windows.Forms.Button();
+			this.b_layerup = new System.Windows.Forms.Button();
+			this.b_layerdel = new System.Windows.Forms.Button();
+			this.b_layerproperties = new System.Windows.Forms.Button();
+			this.tilesPanel = new winmaped2.CollapsiblePanel();
+			this.ctTilesP = new System.Windows.Forms.Panel();
+			this.button3 = new System.Windows.Forms.Button();
+			this.vspc_obs = new winmaped2.VSPController();
+			this.vspController = new winmaped2.VSPController();
+			this.p_zones = new System.Windows.Forms.Panel();
+			this.l_szone = new System.Windows.Forms.Label();
+			this.button2 = new System.Windows.Forms.Button();
+			this.label1 = new System.Windows.Forms.Label();
+			this.lv_zonelist = new winmaped2.ListViewIndexed();
+			this.ch_zoneid = new System.Windows.Forms.ColumnHeader();
+			this.ch_zonename = new System.Windows.Forms.ColumnHeader();
+			this.p_ents = new System.Windows.Forms.Panel();
+			this.l_sent = new System.Windows.Forms.Label();
+			this.b_editents = new System.Windows.Forms.Button();
+			this.label3 = new System.Windows.Forms.Label();
+			this.lv_ents = new System.Windows.Forms.ListView();
+			this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
+			this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+			this.b_gotoent = new System.Windows.Forms.Button();
+			this.g_tiles = new System.Windows.Forms.GroupBox();
+			this.TileViewA = new winmaped2.TileViewer();
+			this.TileViewB = new winmaped2.TileViewer();
+			this.g_obs = new System.Windows.Forms.GroupBox();
+			this.tv_obs = new winmaped2.TileViewer();
+			this.button4 = new System.Windows.Forms.Button();
+			this.button5 = new System.Windows.Forms.Button();
+			this.minimapPanel = new winmaped2.CollapsiblePanel();
+			this.ctMinimapP = new System.Windows.Forms.Panel();
+			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.tb_zoom = new System.Windows.Forms.TrackBar();
+			this.panel2 = new System.Windows.Forms.Panel();
+			this.miniMap = new winmaped2.MiniMapControl();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.cb_transeffects = new System.Windows.Forms.CheckBox();
+			this.checkBox1 = new System.Windows.Forms.CheckBox();
+			this.toolbarImages = new System.Windows.Forms.ImageList(this.components);
+			this.mapPanel = new System.Windows.Forms.Panel();
+			this.mainpanel = new System.Windows.Forms.Panel();
+			this.mapController = new winmaped2.MapController();
+			this.sizeGrip = new winmaped2.SizeGrip();
+			this.openVspDialog = new System.Windows.Forms.OpenFileDialog();
+			this.openImageDialog = new System.Windows.Forms.OpenFileDialog();
+			this.saveVspDialog = new System.Windows.Forms.SaveFileDialog();
+			this.saveImageDialog = new System.Windows.Forms.SaveFileDialog();
+			this.clipboardPanel = new winmaped2.CollapsiblePanel();
+			this.mcClipboard = new winmaped2.MapController();
+			((System.ComponentModel.ISupportInitialize)(this.sbpLoadInfo)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpCursorInfo)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpSelection)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpZoom)).BeginInit();
+			this.toolPanel.SuspendLayout();
+			this.sidebarPanel.SuspendLayout();
+			this.toolPalletePanel.SuspendLayout();
+			this.toolPalette.SuspendLayout();
+			this.layerPanel.SuspendLayout();
+			this.panel4.SuspendLayout();
+			this.tilesPanel.SuspendLayout();
+			this.ctTilesP.SuspendLayout();
+			this.p_zones.SuspendLayout();
+			this.p_ents.SuspendLayout();
+			this.g_tiles.SuspendLayout();
+			this.g_obs.SuspendLayout();
+			this.minimapPanel.SuspendLayout();
+			this.ctMinimapP.SuspendLayout();
+			this.groupBox3.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.tb_zoom)).BeginInit();
+			this.panel2.SuspendLayout();
+			this.groupBox1.SuspendLayout();
+			this.mapPanel.SuspendLayout();
+			this.mainpanel.SuspendLayout();
+			this.clipboardPanel.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// mainMenu
+			// 
+			this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miFile,
             this.miEdit,
             this.miMap,
             this.miVsp,
             this.miView,
             this.miHelp});
-            // 
-            // miFile
-            // 
-            this.miFile.Index = 0;
-            this.miFile.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			// 
+			// miFile
+			// 
+			this.miFile.Index = 0;
+			this.miFile.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miNewMap,
             this.miOpenMap,
             this.miClose,
@@ -511,137 +512,137 @@ namespace winmaped2 {
             this.miPreferences,
             this.menuItem11,
             this.miExit});
-            this.miFile.Text = "&File";
-            this.miFile.Popup += new System.EventHandler(this.FileMenu_Popup);
-            // 
-            // miNewMap
-            // 
-            this.miNewMap.Index = 0;
-            this.miNewMap.Shortcut = System.Windows.Forms.Shortcut.CtrlN;
-            this.miNewMap.Text = "&New...";
-            this.miNewMap.Click += new System.EventHandler(this.miNewMap_Click);
-            // 
-            // miOpenMap
-            // 
-            this.miOpenMap.Index = 1;
-            this.miOpenMap.Shortcut = System.Windows.Forms.Shortcut.CtrlO;
-            this.miOpenMap.Text = "&Open...";
-            this.miOpenMap.Click += new System.EventHandler(this.mOpenMap_Click);
-            // 
-            // miClose
-            // 
-            this.miClose.Index = 2;
-            this.miClose.Text = "&Close";
-            this.miClose.Click += new System.EventHandler(this.miClose_Click);
-            // 
-            // menuItem7
-            // 
-            this.menuItem7.Index = 3;
-            this.menuItem7.Text = "-";
-            // 
-            // miSave
-            // 
-            this.miSave.Index = 4;
-            this.miSave.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
-            this.miSave.Text = "Save";
-            this.miSave.Click += new System.EventHandler(this.miSave_Click);
-            // 
-            // miSaveAs
-            // 
-            this.miSaveAs.Index = 5;
-            this.miSaveAs.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftS;
-            this.miSaveAs.Text = "Save As...";
-            this.miSaveAs.Click += new System.EventHandler(this.miSaveAs_Click);
-            // 
-            // mruSeparator
-            // 
-            this.mruSeparator.Index = 6;
-            this.mruSeparator.Text = "-";
-            // 
-            // misSave
-            // 
-            this.misSave.Index = 7;
-            this.misSave.Text = "-";
-            // 
-            // miPreferences
-            // 
-            this.miPreferences.Index = 8;
-            this.miPreferences.Text = "&Preferences...";
-            this.miPreferences.Click += new System.EventHandler(this.menuItem10_Click);
-            // 
-            // menuItem11
-            // 
-            this.menuItem11.Index = 9;
-            this.menuItem11.Text = "-";
-            // 
-            // miExit
-            // 
-            this.miExit.Index = 10;
-            this.miExit.Shortcut = System.Windows.Forms.Shortcut.AltF4;
-            this.miExit.Text = "E&xit";
-            this.miExit.Click += new System.EventHandler(this.mitemExit_Click);
-            // 
-            // miEdit
-            // 
-            this.miEdit.Index = 1;
-            this.miEdit.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.miFile.Text = "&File";
+			this.miFile.Popup += new System.EventHandler(this.FileMenu_Popup);
+			// 
+			// miNewMap
+			// 
+			this.miNewMap.Index = 0;
+			this.miNewMap.Shortcut = System.Windows.Forms.Shortcut.CtrlN;
+			this.miNewMap.Text = "&New...";
+			this.miNewMap.Click += new System.EventHandler(this.miNewMap_Click);
+			// 
+			// miOpenMap
+			// 
+			this.miOpenMap.Index = 1;
+			this.miOpenMap.Shortcut = System.Windows.Forms.Shortcut.CtrlO;
+			this.miOpenMap.Text = "&Open...";
+			this.miOpenMap.Click += new System.EventHandler(this.mOpenMap_Click);
+			// 
+			// miClose
+			// 
+			this.miClose.Index = 2;
+			this.miClose.Text = "&Close";
+			this.miClose.Click += new System.EventHandler(this.miClose_Click);
+			// 
+			// menuItem7
+			// 
+			this.menuItem7.Index = 3;
+			this.menuItem7.Text = "-";
+			// 
+			// miSave
+			// 
+			this.miSave.Index = 4;
+			this.miSave.Shortcut = System.Windows.Forms.Shortcut.CtrlS;
+			this.miSave.Text = "Save";
+			this.miSave.Click += new System.EventHandler(this.miSave_Click);
+			// 
+			// miSaveAs
+			// 
+			this.miSaveAs.Index = 5;
+			this.miSaveAs.Shortcut = System.Windows.Forms.Shortcut.CtrlShiftS;
+			this.miSaveAs.Text = "Save As...";
+			this.miSaveAs.Click += new System.EventHandler(this.miSaveAs_Click);
+			// 
+			// mruSeparator
+			// 
+			this.mruSeparator.Index = 6;
+			this.mruSeparator.Text = "-";
+			// 
+			// misSave
+			// 
+			this.misSave.Index = 7;
+			this.misSave.Text = "-";
+			// 
+			// miPreferences
+			// 
+			this.miPreferences.Index = 8;
+			this.miPreferences.Text = "&Preferences...";
+			this.miPreferences.Click += new System.EventHandler(this.menuItem10_Click);
+			// 
+			// menuItem11
+			// 
+			this.menuItem11.Index = 9;
+			this.menuItem11.Text = "-";
+			// 
+			// miExit
+			// 
+			this.miExit.Index = 10;
+			this.miExit.Shortcut = System.Windows.Forms.Shortcut.AltF4;
+			this.miExit.Text = "E&xit";
+			this.miExit.Click += new System.EventHandler(this.mitemExit_Click);
+			// 
+			// miEdit
+			// 
+			this.miEdit.Index = 1;
+			this.miEdit.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miUndo,
             this.miRedo});
-            this.miEdit.Text = "Edit";
-            this.miEdit.Popup += new System.EventHandler(this.miEdit_Popup);
-            // 
-            // miUndo
-            // 
-            this.miUndo.Index = 0;
-            this.miUndo.Shortcut = System.Windows.Forms.Shortcut.CtrlZ;
-            this.miUndo.Text = "Undo";
-            this.miUndo.Click += new System.EventHandler(this.miUndo_Click);
-            // 
-            // miRedo
-            // 
-            this.miRedo.Enabled = false;
-            this.miRedo.Index = 1;
-            this.miRedo.Text = "Redo";
-            this.miRedo.Click += new System.EventHandler(this.miRedo_Click);
-            // 
-            // miMap
-            // 
-            this.miMap.Index = 2;
-            this.miMap.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.miEdit.Text = "Edit";
+			this.miEdit.Popup += new System.EventHandler(this.miEdit_Popup);
+			// 
+			// miUndo
+			// 
+			this.miUndo.Index = 0;
+			this.miUndo.Shortcut = System.Windows.Forms.Shortcut.CtrlZ;
+			this.miUndo.Text = "Undo";
+			this.miUndo.Click += new System.EventHandler(this.miUndo_Click);
+			// 
+			// miRedo
+			// 
+			this.miRedo.Enabled = false;
+			this.miRedo.Index = 1;
+			this.miRedo.Text = "Redo";
+			this.miRedo.Click += new System.EventHandler(this.miRedo_Click);
+			// 
+			// miMap
+			// 
+			this.miMap.Index = 2;
+			this.miMap.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miEditZones,
             this.miEditEntities,
             this.menuItem8,
             this.miMapProperties});
-            this.miMap.Text = "&Map";
-            // 
-            // miEditZones
-            // 
-            this.miEditZones.Index = 0;
-            this.miEditZones.Text = "&Edit Zones...";
-            this.miEditZones.Click += new System.EventHandler(this.miEditZones_Click);
-            // 
-            // miEditEntities
-            // 
-            this.miEditEntities.Index = 1;
-            this.miEditEntities.Shortcut = System.Windows.Forms.Shortcut.CtrlE;
-            this.miEditEntities.Text = "&Edit Entities...";
-            this.miEditEntities.Click += new System.EventHandler(this.menuItem2_Click);
-            // 
-            // menuItem8
-            // 
-            this.menuItem8.Index = 2;
-            this.menuItem8.Text = "-";
-            // 
-            // miMapProperties
-            // 
-            this.miMapProperties.Index = 3;
-            this.miMapProperties.Text = "&Properties...";
-            this.miMapProperties.Click += new System.EventHandler(this.miMapProperties_Click);
-            // 
-            // miVsp
-            // 
-            this.miVsp.Index = 3;
-            this.miVsp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.miMap.Text = "&Map";
+			// 
+			// miEditZones
+			// 
+			this.miEditZones.Index = 0;
+			this.miEditZones.Text = "&Edit Zones...";
+			this.miEditZones.Click += new System.EventHandler(this.miEditZones_Click);
+			// 
+			// miEditEntities
+			// 
+			this.miEditEntities.Index = 1;
+			this.miEditEntities.Shortcut = System.Windows.Forms.Shortcut.CtrlE;
+			this.miEditEntities.Text = "&Edit Entities...";
+			this.miEditEntities.Click += new System.EventHandler(this.menuItem2_Click);
+			// 
+			// menuItem8
+			// 
+			this.menuItem8.Index = 2;
+			this.menuItem8.Text = "-";
+			// 
+			// miMapProperties
+			// 
+			this.miMapProperties.Index = 3;
+			this.miMapProperties.Text = "&Properties...";
+			this.miMapProperties.Click += new System.EventHandler(this.miMapProperties_Click);
+			// 
+			// miVsp
+			// 
+			this.miVsp.Index = 3;
+			this.miVsp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miEditTiles,
             this.miEditAnims,
             this.miArrangeTiles,
@@ -652,983 +653,984 @@ namespace winmaped2 {
             this.miExportTiles,
             this.menuItem13,
             this.miChangeVSP});
-            this.miVsp.Text = "&Tiles";
-            // 
-            // miEditTiles
-            // 
-            this.miEditTiles.Index = 0;
-            this.miEditTiles.Shortcut = System.Windows.Forms.Shortcut.CtrlT;
-            this.miEditTiles.Text = "&Edit Tiles...";
-            this.miEditTiles.Click += new System.EventHandler(this.miEditTiles_Click);
-            // 
-            // miEditAnims
-            // 
-            this.miEditAnims.Index = 1;
-            this.miEditAnims.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
-            this.miEditAnims.Text = "Edit &Animations...";
-            this.miEditAnims.Click += new System.EventHandler(this.miEditAnims_Click);
-            // 
-            // miArrangeTiles
-            // 
-            this.miArrangeTiles.Index = 2;
-            this.miArrangeTiles.Text = "Arrange...";
-            this.miArrangeTiles.Click += new System.EventHandler(this.menuItem1_Click);
-            // 
-            // menuItem15
-            // 
-            this.menuItem15.Index = 3;
-            this.menuItem15.Text = "-";
-            // 
-            // miImportTiles
-            // 
-            this.miImportTiles.Index = 4;
-            this.miImportTiles.Text = "&Import...";
-            this.miImportTiles.Click += new System.EventHandler(this.miImport_Click);
-            // 
-            // miImportAgain
-            // 
-            this.miImportAgain.Enabled = false;
-            this.miImportAgain.Index = 5;
-            this.miImportAgain.Text = "Import Again";
-            this.miImportAgain.Click += new System.EventHandler(this.miImportAgain_Click);
-            // 
-            // menuItem9
-            // 
-            this.menuItem9.Index = 6;
-            this.menuItem9.Text = "-";
-            // 
-            // miExportTiles
-            // 
-            this.miExportTiles.Index = 7;
-            this.miExportTiles.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.miVsp.Text = "&Tiles";
+			// 
+			// miEditTiles
+			// 
+			this.miEditTiles.Index = 0;
+			this.miEditTiles.Shortcut = System.Windows.Forms.Shortcut.CtrlT;
+			this.miEditTiles.Text = "&Edit Tiles...";
+			this.miEditTiles.Click += new System.EventHandler(this.miEditTiles_Click);
+			// 
+			// miEditAnims
+			// 
+			this.miEditAnims.Index = 1;
+			this.miEditAnims.Shortcut = System.Windows.Forms.Shortcut.CtrlA;
+			this.miEditAnims.Text = "Edit &Animations...";
+			this.miEditAnims.Click += new System.EventHandler(this.miEditAnims_Click);
+			// 
+			// miArrangeTiles
+			// 
+			this.miArrangeTiles.Index = 2;
+			this.miArrangeTiles.Text = "Arrange...";
+			this.miArrangeTiles.Click += new System.EventHandler(this.menuItem1_Click);
+			// 
+			// menuItem15
+			// 
+			this.menuItem15.Index = 3;
+			this.menuItem15.Text = "-";
+			// 
+			// miImportTiles
+			// 
+			this.miImportTiles.Index = 4;
+			this.miImportTiles.Text = "&Import...";
+			this.miImportTiles.Click += new System.EventHandler(this.miImport_Click);
+			// 
+			// miImportAgain
+			// 
+			this.miImportAgain.Enabled = false;
+			this.miImportAgain.Index = 5;
+			this.miImportAgain.Text = "Import Again";
+			this.miImportAgain.Click += new System.EventHandler(this.miImportAgain_Click);
+			// 
+			// menuItem9
+			// 
+			this.menuItem9.Index = 6;
+			this.menuItem9.Text = "-";
+			// 
+			// miExportTiles
+			// 
+			this.miExportTiles.Index = 7;
+			this.miExportTiles.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miExportTilesToImage,
             this.miExportTilesToImageGrid,
             this.miExportTilesToClipboard,
             this.miExportTilesToClipboardGrid});
-            this.miExportTiles.Text = "Export";
-            // 
-            // miExportTilesToImage
-            // 
-            this.miExportTilesToImage.Index = 0;
-            this.miExportTilesToImage.Text = "To Image...";
-            this.miExportTilesToImage.Click += new System.EventHandler(this.miExportImageGridless_Click);
-            // 
-            // miExportTilesToImageGrid
-            // 
-            this.miExportTilesToImageGrid.Index = 1;
-            this.miExportTilesToImageGrid.Text = "To Image w/ Grid...";
-            this.miExportTilesToImageGrid.Click += new System.EventHandler(this.miExportToImage_Click);
-            // 
-            // miExportTilesToClipboard
-            // 
-            this.miExportTilesToClipboard.Index = 2;
-            this.miExportTilesToClipboard.Text = "To Clipboard...";
-            this.miExportTilesToClipboard.Click += new System.EventHandler(this.miExportClipboardGridless_Click);
-            // 
-            // miExportTilesToClipboardGrid
-            // 
-            this.miExportTilesToClipboardGrid.Index = 3;
-            this.miExportTilesToClipboardGrid.Text = "To Clipboard w/ Grid...";
-            this.miExportTilesToClipboardGrid.Click += new System.EventHandler(this.mi_ExportClipboard_Click);
-            // 
-            // menuItem13
-            // 
-            this.menuItem13.Index = 8;
-            this.menuItem13.Text = "-";
-            this.menuItem13.Visible = false;
-            // 
-            // miChangeVSP
-            // 
-            this.miChangeVSP.Index = 9;
-            this.miChangeVSP.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.miExportTiles.Text = "Export";
+			// 
+			// miExportTilesToImage
+			// 
+			this.miExportTilesToImage.Index = 0;
+			this.miExportTilesToImage.Text = "To Image...";
+			this.miExportTilesToImage.Click += new System.EventHandler(this.miExportImageGridless_Click);
+			// 
+			// miExportTilesToImageGrid
+			// 
+			this.miExportTilesToImageGrid.Index = 1;
+			this.miExportTilesToImageGrid.Text = "To Image w/ Grid...";
+			this.miExportTilesToImageGrid.Click += new System.EventHandler(this.miExportToImage_Click);
+			// 
+			// miExportTilesToClipboard
+			// 
+			this.miExportTilesToClipboard.Index = 2;
+			this.miExportTilesToClipboard.Text = "To Clipboard...";
+			this.miExportTilesToClipboard.Click += new System.EventHandler(this.miExportClipboardGridless_Click);
+			// 
+			// miExportTilesToClipboardGrid
+			// 
+			this.miExportTilesToClipboardGrid.Index = 3;
+			this.miExportTilesToClipboardGrid.Text = "To Clipboard w/ Grid...";
+			this.miExportTilesToClipboardGrid.Click += new System.EventHandler(this.mi_ExportClipboard_Click);
+			// 
+			// menuItem13
+			// 
+			this.menuItem13.Index = 8;
+			this.menuItem13.Text = "-";
+			this.menuItem13.Visible = false;
+			// 
+			// miChangeVSP
+			// 
+			this.miChangeVSP.Index = 9;
+			this.miChangeVSP.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miChangeVspExisting,
             this.miChangeVspBlank});
-            this.miChangeVSP.Text = "Change Currently Used";
-            this.miChangeVSP.Visible = false;
-            // 
-            // miChangeVspExisting
-            // 
-            this.miChangeVspExisting.Index = 0;
-            this.miChangeVspExisting.Text = "To Existing...";
-            this.miChangeVspExisting.Click += new System.EventHandler(this.miChangeVspExisting_Click);
-            // 
-            // miChangeVspBlank
-            // 
-            this.miChangeVspBlank.Index = 1;
-            this.miChangeVspBlank.Text = "To New";
-            // 
-            // miView
-            // 
-            this.miView.Index = 4;
-            this.miView.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.miChangeVSP.Text = "Change Currently Used";
+			this.miChangeVSP.Visible = false;
+			// 
+			// miChangeVspExisting
+			// 
+			this.miChangeVspExisting.Index = 0;
+			this.miChangeVspExisting.Text = "To Existing...";
+			this.miChangeVspExisting.Click += new System.EventHandler(this.miChangeVspExisting_Click);
+			// 
+			// miChangeVspBlank
+			// 
+			this.miChangeVspBlank.Index = 1;
+			this.miChangeVspBlank.Text = "To New";
+			// 
+			// miView
+			// 
+			this.miView.Index = 4;
+			this.miView.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miViewToolbars,
             this.menuItem2,
             this.Zoom1x,
             this.miZoom2x,
             this.miZoom4x});
-            this.miView.Text = "Vie&w";
-            this.miView.Popup += new System.EventHandler(this.miView_Popup);
-            // 
-            // miViewToolbars
-            // 
-            this.miViewToolbars.Index = 0;
-            this.miViewToolbars.Text = "&Toolbars";
-            // 
-            // menuItem2
-            // 
-            this.menuItem2.Index = 1;
-            this.menuItem2.Text = "-";
-            // 
-            // Zoom1x
-            // 
-            this.Zoom1x.Index = 2;
-            this.Zoom1x.RadioCheck = true;
-            this.Zoom1x.Shortcut = System.Windows.Forms.Shortcut.Ctrl1;
-            this.Zoom1x.Text = "Zoom: 1x";
-            this.Zoom1x.Click += new System.EventHandler(this.menuItem4_Click);
-            // 
-            // miZoom2x
-            // 
-            this.miZoom2x.Index = 3;
-            this.miZoom2x.RadioCheck = true;
-            this.miZoom2x.Shortcut = System.Windows.Forms.Shortcut.Ctrl2;
-            this.miZoom2x.Text = "Zoom: 2x";
-            this.miZoom2x.Click += new System.EventHandler(this.menuItem5_Click);
-            // 
-            // miZoom4x
-            // 
-            this.miZoom4x.Index = 4;
-            this.miZoom4x.RadioCheck = true;
-            this.miZoom4x.Shortcut = System.Windows.Forms.Shortcut.Ctrl3;
-            this.miZoom4x.Text = "Zoom: 4x";
-            this.miZoom4x.Click += new System.EventHandler(this.menuItem6_Click);
-            // 
-            // miHelp
-            // 
-            this.miHelp.Index = 5;
-            this.miHelp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+			this.miView.Text = "Vie&w";
+			this.miView.Popup += new System.EventHandler(this.miView_Popup);
+			// 
+			// miViewToolbars
+			// 
+			this.miViewToolbars.Index = 0;
+			this.miViewToolbars.Text = "&Toolbars";
+			// 
+			// menuItem2
+			// 
+			this.menuItem2.Index = 1;
+			this.menuItem2.Text = "-";
+			// 
+			// Zoom1x
+			// 
+			this.Zoom1x.Index = 2;
+			this.Zoom1x.RadioCheck = true;
+			this.Zoom1x.Shortcut = System.Windows.Forms.Shortcut.Ctrl1;
+			this.Zoom1x.Text = "Zoom: 1x";
+			this.Zoom1x.Click += new System.EventHandler(this.menuItem4_Click);
+			// 
+			// miZoom2x
+			// 
+			this.miZoom2x.Index = 3;
+			this.miZoom2x.RadioCheck = true;
+			this.miZoom2x.Shortcut = System.Windows.Forms.Shortcut.Ctrl2;
+			this.miZoom2x.Text = "Zoom: 2x";
+			this.miZoom2x.Click += new System.EventHandler(this.menuItem5_Click);
+			// 
+			// miZoom4x
+			// 
+			this.miZoom4x.Index = 4;
+			this.miZoom4x.RadioCheck = true;
+			this.miZoom4x.Shortcut = System.Windows.Forms.Shortcut.Ctrl3;
+			this.miZoom4x.Text = "Zoom: 4x";
+			this.miZoom4x.Click += new System.EventHandler(this.menuItem6_Click);
+			// 
+			// miHelp
+			// 
+			this.miHelp.Index = 5;
+			this.miHelp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.miShowHelp,
             this.menuItem16,
             this.mi_rft,
             this.miAbout});
-            this.miHelp.Text = "&Help";
-            // 
-            // miShowHelp
-            // 
-            this.miShowHelp.Index = 0;
-            this.miShowHelp.Text = "&Help...";
-            this.miShowHelp.Click += new System.EventHandler(this.menuItem14_Click);
-            // 
-            // menuItem16
-            // 
-            this.menuItem16.Index = 1;
-            this.menuItem16.Text = "-";
-            this.menuItem16.Visible = false;
-            // 
-            // mi_rft
-            // 
-            this.mi_rft.Index = 2;
-            this.mi_rft.Text = "&Register File Associations...";
-            this.mi_rft.Click += new System.EventHandler(this.mi_rft_Click);
-            // 
-            // miAbout
-            // 
-            this.miAbout.Index = 3;
-            this.miAbout.Text = "A&bout...";
-            this.miAbout.Click += new System.EventHandler(this.miAbout_Click);
-            // 
-            // saveFileDialog
-            // 
-            this.saveFileDialog.DefaultExt = "map";
-            this.saveFileDialog.Filter = "MAP Files (*.map)|*.map|All Files (*.*)|*.*";
-            // 
-            // openFileDialog
-            // 
-            this.openFileDialog.Filter = "MAP Files (*.map)|*.map|All Files (*.*)|*.*";
-            // 
-            // statusBar
-            // 
-            this.statusBar.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.statusBar.Location = new System.Drawing.Point(0, 410);
-            this.statusBar.Name = "statusBar";
-            this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
+			this.miHelp.Text = "&Help";
+			// 
+			// miShowHelp
+			// 
+			this.miShowHelp.Index = 0;
+			this.miShowHelp.Text = "&Help...";
+			this.miShowHelp.Click += new System.EventHandler(this.menuItem14_Click);
+			// 
+			// menuItem16
+			// 
+			this.menuItem16.Index = 1;
+			this.menuItem16.Text = "-";
+			this.menuItem16.Visible = false;
+			// 
+			// mi_rft
+			// 
+			this.mi_rft.Index = 2;
+			this.mi_rft.Text = "&Register File Associations...";
+			this.mi_rft.Click += new System.EventHandler(this.mi_rft_Click);
+			// 
+			// miAbout
+			// 
+			this.miAbout.Index = 3;
+			this.miAbout.Text = "A&bout...";
+			this.miAbout.Click += new System.EventHandler(this.miAbout_Click);
+			// 
+			// saveFileDialog
+			// 
+			this.saveFileDialog.DefaultExt = "map";
+			this.saveFileDialog.Filter = "MAP Files (*.map)|*.map|All Files (*.*)|*.*";
+			// 
+			// openFileDialog
+			// 
+			this.openFileDialog.Filter = "MAP Files (*.map)|*.map|All Files (*.*)|*.*";
+			// 
+			// statusBar
+			// 
+			this.statusBar.Font = new System.Drawing.Font("Tahoma", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.statusBar.Location = new System.Drawing.Point(0, 350);
+			this.statusBar.Name = "statusBar";
+			this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.sbpLoadInfo,
             this.sbpCursorInfo,
             this.sbpSelection,
             this.sbpZoom});
-            this.statusBar.ShowPanels = true;
-            this.statusBar.Size = new System.Drawing.Size(1069, 24);
-            this.statusBar.TabIndex = 1;
-            // 
-            // sbpLoadInfo
-            // 
-            this.sbpLoadInfo.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
-            this.sbpLoadInfo.Name = "sbpLoadInfo";
-            this.sbpLoadInfo.Width = 602;
-            // 
-            // sbpCursorInfo
-            // 
-            this.sbpCursorInfo.Alignment = System.Windows.Forms.HorizontalAlignment.Center;
-            this.sbpCursorInfo.MinWidth = 150;
-            this.sbpCursorInfo.Name = "sbpCursorInfo";
-            this.sbpCursorInfo.Width = 150;
-            // 
-            // sbpSelection
-            // 
-            this.sbpSelection.MinWidth = 200;
-            this.sbpSelection.Name = "sbpSelection";
-            this.sbpSelection.Text = "Selected Tiles: 0, 0";
-            this.sbpSelection.Width = 200;
-            // 
-            // sbpZoom
-            // 
-            this.sbpZoom.MinWidth = 100;
-            this.sbpZoom.Name = "sbpZoom";
-            this.sbpZoom.Text = "Zoom:";
-            // 
-            // toolPanel
-            // 
-            this.toolPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.toolPanel.Controls.Add(this.button1);
-            this.toolPanel.Controls.Add(this.sidebarPanel);
-            this.toolPanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.toolPanel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.toolPanel.Location = new System.Drawing.Point(677, 0);
-            this.toolPanel.Name = "toolPanel";
-            this.toolPanel.Size = new System.Drawing.Size(392, 410);
-            this.toolPanel.TabIndex = 2;
-            // 
-            // button1
-            // 
-            this.button1.Dock = System.Windows.Forms.DockStyle.Left;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button1.Location = new System.Drawing.Point(0, 0);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(16, 408);
-            this.button1.TabIndex = 5;
-            this.button1.Text = ">";
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // sidebarPanel
-            // 
-            this.sidebarPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.sidebarPanel.AutoScroll = true;
-            this.sidebarPanel.Controls.Add(this.toolPalletePanel);
-            this.sidebarPanel.Controls.Add(this.layerPanel);
-            this.sidebarPanel.Controls.Add(this.tilesPanel);
-            this.sidebarPanel.Controls.Add(this.minimapPanel);
-            this.sidebarPanel.Location = new System.Drawing.Point(18, 4);
-            this.sidebarPanel.Name = "sidebarPanel";
-            this.sidebarPanel.Size = new System.Drawing.Size(369, 404);
-            this.sidebarPanel.TabIndex = 16;
-            // 
-            // toolbarImages
-            // 
-            this.toolbarImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("toolbarImages.ImageStream")));
-            this.toolbarImages.TransparentColor = System.Drawing.Color.Transparent;
-            this.toolbarImages.Images.SetKeyName(0, "");
-            this.toolbarImages.Images.SetKeyName(1, "");
-            // 
-            // mapPanel
-            // 
-            this.mapPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.mapPanel.Controls.Add(this.mainpanel);
-            this.mapPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mapPanel.Location = new System.Drawing.Point(0, 0);
-            this.mapPanel.Name = "mapPanel";
-            this.mapPanel.Size = new System.Drawing.Size(677, 410);
-            this.mapPanel.TabIndex = 5;
-            this.mapPanel.Resize += new System.EventHandler(this.mapPanel_Resize);
-            // 
-            // mainpanel
-            // 
-            this.mainpanel.Controls.Add(this.mapController);
-            this.mainpanel.Controls.Add(this.sizeGrip);
-            this.mainpanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mainpanel.ForeColor = System.Drawing.Color.Coral;
-            this.mainpanel.Location = new System.Drawing.Point(0, 0);
-            this.mainpanel.Name = "mainpanel";
-            this.mainpanel.Size = new System.Drawing.Size(673, 406);
-            this.mainpanel.TabIndex = 10;
-            this.mainpanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainpanel_Paint);
-            // 
-            // openVspDialog
-            // 
-            this.openVspDialog.Filter = "VSP Files(*.vsp)|*.vsp";
-            this.openVspDialog.RestoreDirectory = true;
-            // 
-            // openImageDialog
-            // 
-            this.openImageDialog.Filter = "Image Files (*.png,*.jpg,*.jpeg,*.pcx,*.bmp,*.tga,*.gif)|*.png;*.jpg;*.jpeg;*.pcx" +
-                ";*.bmp;*.tga;*.gif";
-            this.openImageDialog.RestoreDirectory = true;
-            // 
-            // saveVspDialog
-            // 
-            this.saveVspDialog.DefaultExt = "vsp";
-            this.saveVspDialog.Filter = "VSP Files (*.vsp)|*.vsp";
-            this.saveVspDialog.RestoreDirectory = true;
-            // 
-            // saveImageDialog
-            // 
-            this.saveImageDialog.Filter = "Portable Network Graphics File (*.png)|*.png";
-            this.saveImageDialog.RestoreDirectory = true;
-            // 
-            // mapController
-            // 
-            this.mapController.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mapController.Location = new System.Drawing.Point(0, 0);
-            this.mapController.Name = "mapController";
-            this.mapController.ParentMap = null;
-            this.mapController.Size = new System.Drawing.Size(673, 406);
-            this.mapController.TabIndex = 0;
-            this.mapController.ZoomLevel = 2;
-            // 
-            // sizeGrip
-            // 
-            this.sizeGrip.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.sizeGrip.ForeColor = System.Drawing.Color.Coral;
-            this.sizeGrip.Location = new System.Drawing.Point(653, 388);
-            this.sizeGrip.Name = "sizeGrip";
-            this.sizeGrip.Size = new System.Drawing.Size(16, 16);
-            this.sizeGrip.TabIndex = 3;
-            // 
-            // toolPalletePanel
-            // 
-            this.toolPalletePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.toolPalletePanel.Controls.Add(this.groupBox2);
-            this.toolPalletePanel.Controls.Add(this.toolPalette);
-            this.toolPalletePanel.Location = new System.Drawing.Point(3, 3);
-            this.toolPalletePanel.Name = "toolPalletePanel";
-            this.toolPalletePanel.Size = new System.Drawing.Size(341, 118);
-            this.toolPalletePanel.TabIndex = 0;
-            this.toolPalletePanel.Title = "Tools";
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.Location = new System.Drawing.Point(172, 17);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(152, 94);
-            this.groupBox2.TabIndex = 1;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Tool Properties";
-            // 
-            // toolPalette
-            // 
-            this.toolPalette.Controls.Add(this.radioButton6);
-            this.toolPalette.Controls.Add(this.b_runmap);
-            this.toolPalette.Controls.Add(this.radioButton5);
-            this.toolPalette.Controls.Add(this.radioButton3);
-            this.toolPalette.Controls.Add(this.radioButton2);
-            this.toolPalette.Controls.Add(this.radioButton1);
-            this.toolPalette.Controls.Add(this.radioButton4);
-            this.toolPalette.Location = new System.Drawing.Point(2, 17);
-            this.toolPalette.Name = "toolPalette";
-            this.toolPalette.Size = new System.Drawing.Size(168, 94);
-            this.toolPalette.TabIndex = 0;
-            // 
-            // radioButton6
-            // 
-            this.radioButton6.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton6.Image = ((System.Drawing.Image)(resources.GetObject("radioButton6.Image")));
-            this.radioButton6.Location = new System.Drawing.Point(4, 40);
-            this.radioButton6.Name = "radioButton6";
-            this.radioButton6.Size = new System.Drawing.Size(32, 32);
-            this.radioButton6.TabIndex = 6;
-            this.radioButton6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // b_runmap
-            // 
-            this.b_runmap.Image = ((System.Drawing.Image)(resources.GetObject("b_runmap.Image")));
-            this.b_runmap.Location = new System.Drawing.Point(132, 40);
-            this.b_runmap.Name = "b_runmap";
-            this.b_runmap.Size = new System.Drawing.Size(32, 32);
-            this.b_runmap.TabIndex = 5;
-            this.b_runmap.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.b_runmap.Click += new System.EventHandler(this.button3_Click_1);
-            // 
-            // radioButton5
-            // 
-            this.radioButton5.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton5.Image = ((System.Drawing.Image)(resources.GetObject("radioButton5.Image")));
-            this.radioButton5.Location = new System.Drawing.Point(132, 8);
-            this.radioButton5.Name = "radioButton5";
-            this.radioButton5.Size = new System.Drawing.Size(32, 32);
-            this.radioButton5.TabIndex = 4;
-            // 
-            // radioButton3
-            // 
-            this.radioButton3.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton3.Image = ((System.Drawing.Image)(resources.GetObject("radioButton3.Image")));
-            this.radioButton3.Location = new System.Drawing.Point(36, 8);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(32, 32);
-            this.radioButton3.TabIndex = 2;
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton2.Image = ((System.Drawing.Image)(resources.GetObject("radioButton2.Image")));
-            this.radioButton2.Location = new System.Drawing.Point(100, 8);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(32, 32);
-            this.radioButton2.TabIndex = 1;
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton1.Image = ((System.Drawing.Image)(resources.GetObject("radioButton1.Image")));
-            this.radioButton1.Location = new System.Drawing.Point(4, 8);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(32, 32);
-            this.radioButton1.TabIndex = 0;
-            this.radioButton1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // radioButton4
-            // 
-            this.radioButton4.Appearance = System.Windows.Forms.Appearance.Button;
-            this.radioButton4.Image = ((System.Drawing.Image)(resources.GetObject("radioButton4.Image")));
-            this.radioButton4.Location = new System.Drawing.Point(68, 8);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(32, 32);
-            this.radioButton4.TabIndex = 3;
-            // 
-            // layerPanel
-            // 
-            this.layerPanel.Controls.Add(this.lPanel);
-            this.layerPanel.Controls.Add(this.panel4);
-            this.layerPanel.Location = new System.Drawing.Point(3, 127);
-            this.layerPanel.Name = "layerPanel";
-            this.layerPanel.Size = new System.Drawing.Size(341, 186);
-            this.layerPanel.TabIndex = 1;
-            this.layerPanel.Title = "Layers";
-            // 
-            // lPanel
-            // 
-            this.lPanel.AutoScroll = true;
-            this.lPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lPanel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lPanel.Location = new System.Drawing.Point(0, 48);
-            this.lPanel.Name = "lPanel";
-            this.lPanel.Size = new System.Drawing.Size(341, 138);
-            this.lPanel.TabIndex = 0;
-            this.lPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.lPanel_Paint);
-            // 
-            // panel4
-            // 
-            this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel4.Controls.Add(this.l_rstring);
-            this.panel4.Controls.Add(this.b_layeradd);
-            this.panel4.Controls.Add(this.b_layerdown);
-            this.panel4.Controls.Add(this.b_layerup);
-            this.panel4.Controls.Add(this.b_layerdel);
-            this.panel4.Controls.Add(this.b_layerproperties);
-            this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel4.Location = new System.Drawing.Point(0, 16);
-            this.panel4.Name = "panel4";
-            this.panel4.Size = new System.Drawing.Size(341, 32);
-            this.panel4.TabIndex = 1;
-            // 
-            // l_rstring
-            // 
-            this.l_rstring.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.l_rstring.Location = new System.Drawing.Point(8, 0);
-            this.l_rstring.Name = "l_rstring";
-            this.l_rstring.Size = new System.Drawing.Size(128, 32);
-            this.l_rstring.TabIndex = 1;
-            this.l_rstring.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // b_layeradd
-            // 
-            this.b_layeradd.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.b_layeradd.Image = ((System.Drawing.Image)(resources.GetObject("b_layeradd.Image")));
-            this.b_layeradd.Location = new System.Drawing.Point(304, 0);
-            this.b_layeradd.Name = "b_layeradd";
-            this.b_layeradd.Size = new System.Drawing.Size(32, 32);
-            this.b_layeradd.TabIndex = 0;
-            this.b_layeradd.Click += new System.EventHandler(this.b_layeradd_Click);
-            // 
-            // b_layerdown
-            // 
-            this.b_layerdown.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.b_layerdown.Image = ((System.Drawing.Image)(resources.GetObject("b_layerdown.Image")));
-            this.b_layerdown.Location = new System.Drawing.Point(224, 0);
-            this.b_layerdown.Name = "b_layerdown";
-            this.b_layerdown.Size = new System.Drawing.Size(32, 32);
-            this.b_layerdown.TabIndex = 0;
-            this.b_layerdown.Click += new System.EventHandler(this.b_layerdown_Click);
-            // 
-            // b_layerup
-            // 
-            this.b_layerup.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.b_layerup.Image = ((System.Drawing.Image)(resources.GetObject("b_layerup.Image")));
-            this.b_layerup.Location = new System.Drawing.Point(184, 0);
-            this.b_layerup.Name = "b_layerup";
-            this.b_layerup.Size = new System.Drawing.Size(32, 32);
-            this.b_layerup.TabIndex = 0;
-            this.b_layerup.Click += new System.EventHandler(this.b_layerup_Click);
-            // 
-            // b_layerdel
-            // 
-            this.b_layerdel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.b_layerdel.Image = ((System.Drawing.Image)(resources.GetObject("b_layerdel.Image")));
-            this.b_layerdel.Location = new System.Drawing.Point(264, 0);
-            this.b_layerdel.Name = "b_layerdel";
-            this.b_layerdel.Size = new System.Drawing.Size(32, 32);
-            this.b_layerdel.TabIndex = 0;
-            this.b_layerdel.Click += new System.EventHandler(this.b_layerdel_Click);
-            // 
-            // b_layerproperties
-            // 
-            this.b_layerproperties.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.b_layerproperties.Image = ((System.Drawing.Image)(resources.GetObject("b_layerproperties.Image")));
-            this.b_layerproperties.Location = new System.Drawing.Point(144, 0);
-            this.b_layerproperties.Name = "b_layerproperties";
-            this.b_layerproperties.Size = new System.Drawing.Size(32, 32);
-            this.b_layerproperties.TabIndex = 0;
-            this.b_layerproperties.Click += new System.EventHandler(this.b_layerproperties_Click);
-            // 
-            // tilesPanel
-            // 
-            this.tilesPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tilesPanel.Controls.Add(this.ctTilesP);
-            this.tilesPanel.Location = new System.Drawing.Point(3, 319);
-            this.tilesPanel.Name = "tilesPanel";
-            this.tilesPanel.Size = new System.Drawing.Size(341, 304);
-            this.tilesPanel.TabIndex = 2;
-            this.tilesPanel.Title = "Tiles";
-            // 
-            // ctTilesP
-            // 
-            this.ctTilesP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.ctTilesP.Controls.Add(this.button3);
-            this.ctTilesP.Controls.Add(this.vspc_obs);
-            this.ctTilesP.Controls.Add(this.vspController);
-            this.ctTilesP.Controls.Add(this.p_zones);
-            this.ctTilesP.Controls.Add(this.p_ents);
-            this.ctTilesP.Controls.Add(this.g_tiles);
-            this.ctTilesP.Controls.Add(this.g_obs);
-            this.ctTilesP.Controls.Add(this.button4);
-            this.ctTilesP.Controls.Add(this.button5);
-            this.ctTilesP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ctTilesP.Location = new System.Drawing.Point(0, 16);
-            this.ctTilesP.Name = "ctTilesP";
-            this.ctTilesP.Size = new System.Drawing.Size(341, 288);
-            this.ctTilesP.TabIndex = 13;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(192, 176);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(144, 24);
-            this.button3.TabIndex = 10;
-            this.button3.Text = "Edit Tiles";
-            this.button3.Click += new System.EventHandler(this.miEditTiles_Click);
-            // 
-            // vspc_obs
-            // 
-            this.vspc_obs.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.vspc_obs.Location = new System.Drawing.Point(0, 0);
-            this.vspc_obs.Name = "vspc_obs";
-            this.vspc_obs.Size = new System.Drawing.Size(340, 164);
-            this.vspc_obs.TabIndex = 9;
-            // 
-            // vspController
-            // 
-            this.vspController.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.vspController.Location = new System.Drawing.Point(0, 0);
-            this.vspController.Name = "vspController";
-            this.vspController.Size = new System.Drawing.Size(340, 164);
-            this.vspController.TabIndex = 0;
-            // 
-            // p_zones
-            // 
-            this.p_zones.Controls.Add(this.l_szone);
-            this.p_zones.Controls.Add(this.button2);
-            this.p_zones.Controls.Add(this.label1);
-            this.p_zones.Controls.Add(this.lv_zonelist);
-            this.p_zones.Location = new System.Drawing.Point(0, 0);
-            this.p_zones.Name = "p_zones";
-            this.p_zones.Size = new System.Drawing.Size(340, 164);
-            this.p_zones.TabIndex = 9;
-            this.p_zones.Visible = false;
-            // 
-            // l_szone
-            // 
-            this.l_szone.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.l_szone.Location = new System.Drawing.Point(8, 8);
-            this.l_szone.Name = "l_szone";
-            this.l_szone.Size = new System.Drawing.Size(136, 16);
-            this.l_szone.TabIndex = 5;
-            this.l_szone.Text = "Selected Zone: 0";
-            // 
-            // button2
-            // 
-            this.button2.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.button2.Location = new System.Drawing.Point(264, 0);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(72, 24);
-            this.button2.TabIndex = 4;
-            this.button2.Text = "Edit Zones";
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // label1
-            // 
-            this.label1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label1.Location = new System.Drawing.Point(146, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(48, 16);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Zones";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lv_zonelist
-            // 
-            this.lv_zonelist.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.statusBar.ShowPanels = true;
+			this.statusBar.Size = new System.Drawing.Size(1069, 24);
+			this.statusBar.TabIndex = 1;
+			// 
+			// sbpLoadInfo
+			// 
+			this.sbpLoadInfo.AutoSize = System.Windows.Forms.StatusBarPanelAutoSize.Spring;
+			this.sbpLoadInfo.Name = "sbpLoadInfo";
+			this.sbpLoadInfo.Width = 603;
+			// 
+			// sbpCursorInfo
+			// 
+			this.sbpCursorInfo.Alignment = System.Windows.Forms.HorizontalAlignment.Center;
+			this.sbpCursorInfo.MinWidth = 150;
+			this.sbpCursorInfo.Name = "sbpCursorInfo";
+			this.sbpCursorInfo.Width = 150;
+			// 
+			// sbpSelection
+			// 
+			this.sbpSelection.MinWidth = 200;
+			this.sbpSelection.Name = "sbpSelection";
+			this.sbpSelection.Text = "Selected Tiles: 0, 0";
+			this.sbpSelection.Width = 200;
+			// 
+			// sbpZoom
+			// 
+			this.sbpZoom.MinWidth = 100;
+			this.sbpZoom.Name = "sbpZoom";
+			this.sbpZoom.Text = "Zoom:";
+			// 
+			// toolPanel
+			// 
+			this.toolPanel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.toolPanel.Controls.Add(this.button1);
+			this.toolPanel.Controls.Add(this.sidebarPanel);
+			this.toolPanel.Dock = System.Windows.Forms.DockStyle.Right;
+			this.toolPanel.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.toolPanel.Location = new System.Drawing.Point(677, 0);
+			this.toolPanel.Name = "toolPanel";
+			this.toolPanel.Size = new System.Drawing.Size(392, 350);
+			this.toolPanel.TabIndex = 2;
+			// 
+			// button1
+			// 
+			this.button1.Dock = System.Windows.Forms.DockStyle.Left;
+			this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.button1.Location = new System.Drawing.Point(0, 0);
+			this.button1.Name = "button1";
+			this.button1.Size = new System.Drawing.Size(16, 348);
+			this.button1.TabIndex = 5;
+			this.button1.Text = ">";
+			this.button1.Click += new System.EventHandler(this.button1_Click);
+			// 
+			// sidebarPanel
+			// 
+			this.sidebarPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.sidebarPanel.AutoScroll = true;
+			this.sidebarPanel.Controls.Add(this.toolPalletePanel);
+			this.sidebarPanel.Controls.Add(this.layerPanel);
+			this.sidebarPanel.Controls.Add(this.tilesPanel);
+			this.sidebarPanel.Controls.Add(this.minimapPanel);
+			this.sidebarPanel.Location = new System.Drawing.Point(18, 4);
+			this.sidebarPanel.Name = "sidebarPanel";
+			this.sidebarPanel.Size = new System.Drawing.Size(369, 344);
+			this.sidebarPanel.TabIndex = 16;
+			this.sidebarPanel.MouseClick += new System.Windows.Forms.MouseEventHandler(this.sidebarPanel_MouseClick);
+			// 
+			// toolPalletePanel
+			// 
+			this.toolPalletePanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.toolPalletePanel.Controls.Add(this.groupBox2);
+			this.toolPalletePanel.Controls.Add(this.toolPalette);
+			this.toolPalletePanel.Location = new System.Drawing.Point(3, 3);
+			this.toolPalletePanel.Name = "toolPalletePanel";
+			this.toolPalletePanel.Size = new System.Drawing.Size(341, 118);
+			this.toolPalletePanel.TabIndex = 0;
+			this.toolPalletePanel.Title = "Tools";
+			// 
+			// groupBox2
+			// 
+			this.groupBox2.Location = new System.Drawing.Point(172, 17);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(152, 94);
+			this.groupBox2.TabIndex = 1;
+			this.groupBox2.TabStop = false;
+			this.groupBox2.Text = "Tool Properties";
+			// 
+			// toolPalette
+			// 
+			this.toolPalette.Controls.Add(this.radioButton6);
+			this.toolPalette.Controls.Add(this.b_runmap);
+			this.toolPalette.Controls.Add(this.radioButton5);
+			this.toolPalette.Controls.Add(this.radioButton3);
+			this.toolPalette.Controls.Add(this.radioButton2);
+			this.toolPalette.Controls.Add(this.radioButton1);
+			this.toolPalette.Controls.Add(this.radioButton4);
+			this.toolPalette.Location = new System.Drawing.Point(2, 17);
+			this.toolPalette.Name = "toolPalette";
+			this.toolPalette.Size = new System.Drawing.Size(168, 94);
+			this.toolPalette.TabIndex = 0;
+			// 
+			// radioButton6
+			// 
+			this.radioButton6.Appearance = System.Windows.Forms.Appearance.Button;
+			this.radioButton6.Image = ((System.Drawing.Image)(resources.GetObject("radioButton6.Image")));
+			this.radioButton6.Location = new System.Drawing.Point(4, 40);
+			this.radioButton6.Name = "radioButton6";
+			this.radioButton6.Size = new System.Drawing.Size(32, 32);
+			this.radioButton6.TabIndex = 6;
+			this.radioButton6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// b_runmap
+			// 
+			this.b_runmap.Image = ((System.Drawing.Image)(resources.GetObject("b_runmap.Image")));
+			this.b_runmap.Location = new System.Drawing.Point(132, 40);
+			this.b_runmap.Name = "b_runmap";
+			this.b_runmap.Size = new System.Drawing.Size(32, 32);
+			this.b_runmap.TabIndex = 5;
+			this.b_runmap.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.b_runmap.Click += new System.EventHandler(this.button3_Click_1);
+			// 
+			// radioButton5
+			// 
+			this.radioButton5.Appearance = System.Windows.Forms.Appearance.Button;
+			this.radioButton5.Image = ((System.Drawing.Image)(resources.GetObject("radioButton5.Image")));
+			this.radioButton5.Location = new System.Drawing.Point(132, 8);
+			this.radioButton5.Name = "radioButton5";
+			this.radioButton5.Size = new System.Drawing.Size(32, 32);
+			this.radioButton5.TabIndex = 4;
+			// 
+			// radioButton3
+			// 
+			this.radioButton3.Appearance = System.Windows.Forms.Appearance.Button;
+			this.radioButton3.Image = ((System.Drawing.Image)(resources.GetObject("radioButton3.Image")));
+			this.radioButton3.Location = new System.Drawing.Point(36, 8);
+			this.radioButton3.Name = "radioButton3";
+			this.radioButton3.Size = new System.Drawing.Size(32, 32);
+			this.radioButton3.TabIndex = 2;
+			// 
+			// radioButton2
+			// 
+			this.radioButton2.Appearance = System.Windows.Forms.Appearance.Button;
+			this.radioButton2.Image = ((System.Drawing.Image)(resources.GetObject("radioButton2.Image")));
+			this.radioButton2.Location = new System.Drawing.Point(100, 8);
+			this.radioButton2.Name = "radioButton2";
+			this.radioButton2.Size = new System.Drawing.Size(32, 32);
+			this.radioButton2.TabIndex = 1;
+			// 
+			// radioButton1
+			// 
+			this.radioButton1.Appearance = System.Windows.Forms.Appearance.Button;
+			this.radioButton1.Image = ((System.Drawing.Image)(resources.GetObject("radioButton1.Image")));
+			this.radioButton1.Location = new System.Drawing.Point(4, 8);
+			this.radioButton1.Name = "radioButton1";
+			this.radioButton1.Size = new System.Drawing.Size(32, 32);
+			this.radioButton1.TabIndex = 0;
+			this.radioButton1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// radioButton4
+			// 
+			this.radioButton4.Appearance = System.Windows.Forms.Appearance.Button;
+			this.radioButton4.Image = ((System.Drawing.Image)(resources.GetObject("radioButton4.Image")));
+			this.radioButton4.Location = new System.Drawing.Point(68, 8);
+			this.radioButton4.Name = "radioButton4";
+			this.radioButton4.Size = new System.Drawing.Size(32, 32);
+			this.radioButton4.TabIndex = 3;
+			// 
+			// layerPanel
+			// 
+			this.layerPanel.Controls.Add(this.lPanel);
+			this.layerPanel.Controls.Add(this.panel4);
+			this.layerPanel.Location = new System.Drawing.Point(3, 127);
+			this.layerPanel.Name = "layerPanel";
+			this.layerPanel.Size = new System.Drawing.Size(341, 186);
+			this.layerPanel.TabIndex = 1;
+			this.layerPanel.Title = "Layers";
+			// 
+			// lPanel
+			// 
+			this.lPanel.AutoScroll = true;
+			this.lPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.lPanel.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.lPanel.Location = new System.Drawing.Point(0, 48);
+			this.lPanel.Name = "lPanel";
+			this.lPanel.Size = new System.Drawing.Size(341, 138);
+			this.lPanel.TabIndex = 0;
+			this.lPanel.Paint += new System.Windows.Forms.PaintEventHandler(this.lPanel_Paint);
+			// 
+			// panel4
+			// 
+			this.panel4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.panel4.Controls.Add(this.l_rstring);
+			this.panel4.Controls.Add(this.b_layeradd);
+			this.panel4.Controls.Add(this.b_layerdown);
+			this.panel4.Controls.Add(this.b_layerup);
+			this.panel4.Controls.Add(this.b_layerdel);
+			this.panel4.Controls.Add(this.b_layerproperties);
+			this.panel4.Dock = System.Windows.Forms.DockStyle.Top;
+			this.panel4.Location = new System.Drawing.Point(0, 16);
+			this.panel4.Name = "panel4";
+			this.panel4.Size = new System.Drawing.Size(341, 32);
+			this.panel4.TabIndex = 1;
+			// 
+			// l_rstring
+			// 
+			this.l_rstring.Font = new System.Drawing.Font("Courier New", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.l_rstring.Location = new System.Drawing.Point(8, 0);
+			this.l_rstring.Name = "l_rstring";
+			this.l_rstring.Size = new System.Drawing.Size(128, 32);
+			this.l_rstring.TabIndex = 1;
+			this.l_rstring.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// b_layeradd
+			// 
+			this.b_layeradd.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.b_layeradd.Image = ((System.Drawing.Image)(resources.GetObject("b_layeradd.Image")));
+			this.b_layeradd.Location = new System.Drawing.Point(304, 0);
+			this.b_layeradd.Name = "b_layeradd";
+			this.b_layeradd.Size = new System.Drawing.Size(32, 32);
+			this.b_layeradd.TabIndex = 0;
+			this.b_layeradd.Click += new System.EventHandler(this.b_layeradd_Click);
+			// 
+			// b_layerdown
+			// 
+			this.b_layerdown.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.b_layerdown.Image = ((System.Drawing.Image)(resources.GetObject("b_layerdown.Image")));
+			this.b_layerdown.Location = new System.Drawing.Point(224, 0);
+			this.b_layerdown.Name = "b_layerdown";
+			this.b_layerdown.Size = new System.Drawing.Size(32, 32);
+			this.b_layerdown.TabIndex = 0;
+			this.b_layerdown.Click += new System.EventHandler(this.b_layerdown_Click);
+			// 
+			// b_layerup
+			// 
+			this.b_layerup.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.b_layerup.Image = ((System.Drawing.Image)(resources.GetObject("b_layerup.Image")));
+			this.b_layerup.Location = new System.Drawing.Point(184, 0);
+			this.b_layerup.Name = "b_layerup";
+			this.b_layerup.Size = new System.Drawing.Size(32, 32);
+			this.b_layerup.TabIndex = 0;
+			this.b_layerup.Click += new System.EventHandler(this.b_layerup_Click);
+			// 
+			// b_layerdel
+			// 
+			this.b_layerdel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.b_layerdel.Image = ((System.Drawing.Image)(resources.GetObject("b_layerdel.Image")));
+			this.b_layerdel.Location = new System.Drawing.Point(264, 0);
+			this.b_layerdel.Name = "b_layerdel";
+			this.b_layerdel.Size = new System.Drawing.Size(32, 32);
+			this.b_layerdel.TabIndex = 0;
+			this.b_layerdel.Click += new System.EventHandler(this.b_layerdel_Click);
+			// 
+			// b_layerproperties
+			// 
+			this.b_layerproperties.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+			this.b_layerproperties.Image = ((System.Drawing.Image)(resources.GetObject("b_layerproperties.Image")));
+			this.b_layerproperties.Location = new System.Drawing.Point(144, 0);
+			this.b_layerproperties.Name = "b_layerproperties";
+			this.b_layerproperties.Size = new System.Drawing.Size(32, 32);
+			this.b_layerproperties.TabIndex = 0;
+			this.b_layerproperties.Click += new System.EventHandler(this.b_layerproperties_Click);
+			// 
+			// tilesPanel
+			// 
+			this.tilesPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.tilesPanel.Controls.Add(this.ctTilesP);
+			this.tilesPanel.Location = new System.Drawing.Point(3, 319);
+			this.tilesPanel.Name = "tilesPanel";
+			this.tilesPanel.Size = new System.Drawing.Size(341, 304);
+			this.tilesPanel.TabIndex = 2;
+			this.tilesPanel.Title = "Tiles";
+			// 
+			// ctTilesP
+			// 
+			this.ctTilesP.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+			this.ctTilesP.Controls.Add(this.button3);
+			this.ctTilesP.Controls.Add(this.vspc_obs);
+			this.ctTilesP.Controls.Add(this.vspController);
+			this.ctTilesP.Controls.Add(this.p_zones);
+			this.ctTilesP.Controls.Add(this.p_ents);
+			this.ctTilesP.Controls.Add(this.g_tiles);
+			this.ctTilesP.Controls.Add(this.g_obs);
+			this.ctTilesP.Controls.Add(this.button4);
+			this.ctTilesP.Controls.Add(this.button5);
+			this.ctTilesP.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctTilesP.Location = new System.Drawing.Point(0, 16);
+			this.ctTilesP.Name = "ctTilesP";
+			this.ctTilesP.Size = new System.Drawing.Size(341, 288);
+			this.ctTilesP.TabIndex = 13;
+			// 
+			// button3
+			// 
+			this.button3.Location = new System.Drawing.Point(192, 176);
+			this.button3.Name = "button3";
+			this.button3.Size = new System.Drawing.Size(144, 24);
+			this.button3.TabIndex = 10;
+			this.button3.Text = "Edit Tiles";
+			this.button3.Click += new System.EventHandler(this.miEditTiles_Click);
+			// 
+			// vspc_obs
+			// 
+			this.vspc_obs.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.vspc_obs.Location = new System.Drawing.Point(0, 0);
+			this.vspc_obs.Name = "vspc_obs";
+			this.vspc_obs.Size = new System.Drawing.Size(340, 164);
+			this.vspc_obs.TabIndex = 9;
+			// 
+			// vspController
+			// 
+			this.vspController.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.vspController.Location = new System.Drawing.Point(0, 0);
+			this.vspController.Name = "vspController";
+			this.vspController.Size = new System.Drawing.Size(340, 164);
+			this.vspController.TabIndex = 0;
+			// 
+			// p_zones
+			// 
+			this.p_zones.Controls.Add(this.l_szone);
+			this.p_zones.Controls.Add(this.button2);
+			this.p_zones.Controls.Add(this.label1);
+			this.p_zones.Controls.Add(this.lv_zonelist);
+			this.p_zones.Location = new System.Drawing.Point(0, 0);
+			this.p_zones.Name = "p_zones";
+			this.p_zones.Size = new System.Drawing.Size(340, 164);
+			this.p_zones.TabIndex = 9;
+			this.p_zones.Visible = false;
+			// 
+			// l_szone
+			// 
+			this.l_szone.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.l_szone.Location = new System.Drawing.Point(8, 8);
+			this.l_szone.Name = "l_szone";
+			this.l_szone.Size = new System.Drawing.Size(136, 16);
+			this.l_szone.TabIndex = 5;
+			this.l_szone.Text = "Selected Zone: 0";
+			// 
+			// button2
+			// 
+			this.button2.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.button2.Location = new System.Drawing.Point(264, 0);
+			this.button2.Name = "button2";
+			this.button2.Size = new System.Drawing.Size(72, 24);
+			this.button2.TabIndex = 4;
+			this.button2.Text = "Edit Zones";
+			this.button2.Click += new System.EventHandler(this.button2_Click);
+			// 
+			// label1
+			// 
+			this.label1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label1.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.label1.Location = new System.Drawing.Point(146, 0);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(48, 16);
+			this.label1.TabIndex = 2;
+			this.label1.Text = "Zones";
+			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lv_zonelist
+			// 
+			this.lv_zonelist.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.ch_zoneid,
             this.ch_zonename});
-            this.lv_zonelist.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lv_zonelist.FullRowSelect = true;
-            this.lv_zonelist.GridLines = true;
-            this.lv_zonelist.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.lv_zonelist.HideSelection = false;
-            this.lv_zonelist.Location = new System.Drawing.Point(0, 28);
-            this.lv_zonelist.MultiSelect = false;
-            this.lv_zonelist.Name = "lv_zonelist";
-            this.lv_zonelist.Size = new System.Drawing.Size(340, 136);
-            this.lv_zonelist.TabIndex = 1;
-            this.lv_zonelist.UseCompatibleStateImageBehavior = false;
-            this.lv_zonelist.View = System.Windows.Forms.View.Details;
-            this.lv_zonelist.SelectedIndexChanged += new System.EventHandler(this.lv_zonelist_SelectedIndexChanged);
-            this.lv_zonelist.DoubleClick += new System.EventHandler(this.lv_zonelist_DoubleClick);
-            // 
-            // ch_zoneid
-            // 
-            this.ch_zoneid.Text = "ID";
-            this.ch_zoneid.Width = 44;
-            // 
-            // ch_zonename
-            // 
-            this.ch_zonename.Text = "Name";
-            this.ch_zonename.Width = 262;
-            // 
-            // p_ents
-            // 
-            this.p_ents.Controls.Add(this.l_sent);
-            this.p_ents.Controls.Add(this.b_editents);
-            this.p_ents.Controls.Add(this.label3);
-            this.p_ents.Controls.Add(this.lv_ents);
-            this.p_ents.Controls.Add(this.b_gotoent);
-            this.p_ents.Location = new System.Drawing.Point(0, 0);
-            this.p_ents.Name = "p_ents";
-            this.p_ents.Size = new System.Drawing.Size(340, 164);
-            this.p_ents.TabIndex = 9;
-            this.p_ents.Visible = false;
-            // 
-            // l_sent
-            // 
-            this.l_sent.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.l_sent.Location = new System.Drawing.Point(8, 8);
-            this.l_sent.Name = "l_sent";
-            this.l_sent.Size = new System.Drawing.Size(136, 16);
-            this.l_sent.TabIndex = 4;
-            this.l_sent.Text = "Selected Entity: 0";
-            // 
-            // b_editents
-            // 
-            this.b_editents.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.b_editents.Location = new System.Drawing.Point(264, 0);
-            this.b_editents.Name = "b_editents";
-            this.b_editents.Size = new System.Drawing.Size(72, 24);
-            this.b_editents.TabIndex = 3;
-            this.b_editents.Text = "Edit Entities";
-            this.b_editents.Click += new System.EventHandler(this.b_editents_Click);
-            // 
-            // label3
-            // 
-            this.label3.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label3.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.label3.Location = new System.Drawing.Point(146, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(48, 16);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Entities";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // lv_ents
-            // 
-            this.lv_ents.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+			this.lv_zonelist.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.lv_zonelist.FullRowSelect = true;
+			this.lv_zonelist.GridLines = true;
+			this.lv_zonelist.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.lv_zonelist.HideSelection = false;
+			this.lv_zonelist.Location = new System.Drawing.Point(0, 28);
+			this.lv_zonelist.MultiSelect = false;
+			this.lv_zonelist.Name = "lv_zonelist";
+			this.lv_zonelist.Size = new System.Drawing.Size(340, 136);
+			this.lv_zonelist.TabIndex = 1;
+			this.lv_zonelist.UseCompatibleStateImageBehavior = false;
+			this.lv_zonelist.View = System.Windows.Forms.View.Details;
+			this.lv_zonelist.SelectedIndexChanged += new System.EventHandler(this.lv_zonelist_SelectedIndexChanged);
+			this.lv_zonelist.DoubleClick += new System.EventHandler(this.lv_zonelist_DoubleClick);
+			// 
+			// ch_zoneid
+			// 
+			this.ch_zoneid.Text = "ID";
+			this.ch_zoneid.Width = 44;
+			// 
+			// ch_zonename
+			// 
+			this.ch_zonename.Text = "Name";
+			this.ch_zonename.Width = 262;
+			// 
+			// p_ents
+			// 
+			this.p_ents.Controls.Add(this.l_sent);
+			this.p_ents.Controls.Add(this.b_editents);
+			this.p_ents.Controls.Add(this.label3);
+			this.p_ents.Controls.Add(this.lv_ents);
+			this.p_ents.Controls.Add(this.b_gotoent);
+			this.p_ents.Location = new System.Drawing.Point(0, 0);
+			this.p_ents.Name = "p_ents";
+			this.p_ents.Size = new System.Drawing.Size(340, 164);
+			this.p_ents.TabIndex = 9;
+			this.p_ents.Visible = false;
+			// 
+			// l_sent
+			// 
+			this.l_sent.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.l_sent.Location = new System.Drawing.Point(8, 8);
+			this.l_sent.Name = "l_sent";
+			this.l_sent.Size = new System.Drawing.Size(136, 16);
+			this.l_sent.TabIndex = 4;
+			this.l_sent.Text = "Selected Entity: 0";
+			// 
+			// b_editents
+			// 
+			this.b_editents.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.b_editents.Location = new System.Drawing.Point(264, 0);
+			this.b_editents.Name = "b_editents";
+			this.b_editents.Size = new System.Drawing.Size(72, 24);
+			this.b_editents.TabIndex = 3;
+			this.b_editents.Text = "Edit Entities";
+			this.b_editents.Click += new System.EventHandler(this.b_editents_Click);
+			// 
+			// label3
+			// 
+			this.label3.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.label3.ForeColor = System.Drawing.SystemColors.ControlText;
+			this.label3.Location = new System.Drawing.Point(146, 0);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(48, 16);
+			this.label3.TabIndex = 2;
+			this.label3.Text = "Entities";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lv_ents
+			// 
+			this.lv_ents.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
-            this.lv_ents.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.lv_ents.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lv_ents.FullRowSelect = true;
-            this.lv_ents.GridLines = true;
-            this.lv_ents.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.lv_ents.HideSelection = false;
-            this.lv_ents.Location = new System.Drawing.Point(0, 28);
-            this.lv_ents.MultiSelect = false;
-            this.lv_ents.Name = "lv_ents";
-            this.lv_ents.Size = new System.Drawing.Size(340, 136);
-            this.lv_ents.TabIndex = 1;
-            this.lv_ents.UseCompatibleStateImageBehavior = false;
-            this.lv_ents.View = System.Windows.Forms.View.Details;
-            this.lv_ents.SelectedIndexChanged += new System.EventHandler(this.lv_ents_SelectedIndexChanged);
-            this.lv_ents.DoubleClick += new System.EventHandler(this.lv_ents_DoubleClick);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "ID";
-            this.columnHeader1.Width = 44;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Name";
-            this.columnHeader2.Width = 262;
-            // 
-            // b_gotoent
-            // 
-            this.b_gotoent.Enabled = false;
-            this.b_gotoent.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.b_gotoent.Location = new System.Drawing.Point(208, 0);
-            this.b_gotoent.Name = "b_gotoent";
-            this.b_gotoent.Size = new System.Drawing.Size(48, 24);
-            this.b_gotoent.TabIndex = 3;
-            this.b_gotoent.Text = "Goto";
-            this.b_gotoent.Click += new System.EventHandler(this.b_gotoent_Click);
-            // 
-            // g_tiles
-            // 
-            this.g_tiles.Controls.Add(this.TileViewA);
-            this.g_tiles.Controls.Add(this.TileViewB);
-            this.g_tiles.Location = new System.Drawing.Point(8, 168);
-            this.g_tiles.Name = "g_tiles";
-            this.g_tiles.Size = new System.Drawing.Size(176, 104);
-            this.g_tiles.TabIndex = 3;
-            this.g_tiles.TabStop = false;
-            this.g_tiles.Visible = false;
-            // 
-            // TileViewA
-            // 
-            this.TileViewA.ActiveObsTile = null;
-            this.TileViewA.ActiveTile = null;
-            this.TileViewA.ActiveTileIndex = 0;
-            this.TileViewA.Location = new System.Drawing.Point(16, 24);
-            this.TileViewA.Name = "TileViewA";
-            this.TileViewA.Size = new System.Drawing.Size(64, 64);
-            this.TileViewA.TabIndex = 0;
-            // 
-            // TileViewB
-            // 
-            this.TileViewB.ActiveObsTile = null;
-            this.TileViewB.ActiveTile = null;
-            this.TileViewB.ActiveTileIndex = 0;
-            this.TileViewB.Location = new System.Drawing.Point(96, 24);
-            this.TileViewB.Name = "TileViewB";
-            this.TileViewB.Size = new System.Drawing.Size(64, 64);
-            this.TileViewB.TabIndex = 1;
-            // 
-            // g_obs
-            // 
-            this.g_obs.Controls.Add(this.tv_obs);
-            this.g_obs.Location = new System.Drawing.Point(8, 168);
-            this.g_obs.Name = "g_obs";
-            this.g_obs.Size = new System.Drawing.Size(96, 104);
-            this.g_obs.TabIndex = 9;
-            this.g_obs.TabStop = false;
-            this.g_obs.Visible = false;
-            // 
-            // tv_obs
-            // 
-            this.tv_obs.ActiveObsTile = null;
-            this.tv_obs.ActiveTile = null;
-            this.tv_obs.ActiveTileIndex = 0;
-            this.tv_obs.Location = new System.Drawing.Point(16, 24);
-            this.tv_obs.Name = "tv_obs";
-            this.tv_obs.Size = new System.Drawing.Size(64, 64);
-            this.tv_obs.TabIndex = 0;
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(192, 208);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(144, 24);
-            this.button4.TabIndex = 10;
-            this.button4.Text = "Edit Animations";
-            this.button4.Click += new System.EventHandler(this.miEditAnims_Click);
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(192, 240);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(144, 24);
-            this.button5.TabIndex = 10;
-            this.button5.Text = "Arrange Tiles";
-            this.button5.Click += new System.EventHandler(this.menuItem1_Click);
-            // 
-            // minimapPanel
-            // 
-            this.minimapPanel.Controls.Add(this.ctMinimapP);
-            this.minimapPanel.Location = new System.Drawing.Point(3, 629);
-            this.minimapPanel.Name = "minimapPanel";
-            this.minimapPanel.Size = new System.Drawing.Size(341, 227);
-            this.minimapPanel.TabIndex = 3;
-            this.minimapPanel.Title = "Minimap";
-            // 
-            // ctMinimapP
-            // 
-            this.ctMinimapP.Controls.Add(this.groupBox3);
-            this.ctMinimapP.Controls.Add(this.panel2);
-            this.ctMinimapP.Controls.Add(this.groupBox1);
-            this.ctMinimapP.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ctMinimapP.Location = new System.Drawing.Point(0, 16);
-            this.ctMinimapP.Name = "ctMinimapP";
-            this.ctMinimapP.Size = new System.Drawing.Size(341, 211);
-            this.ctMinimapP.TabIndex = 15;
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.Controls.Add(this.tb_zoom);
-            this.groupBox3.Location = new System.Drawing.Point(216, 88);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(120, 64);
-            this.groupBox3.TabIndex = 12;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Zoom";
-            // 
-            // tb_zoom
-            // 
-            this.tb_zoom.LargeChange = 1;
-            this.tb_zoom.Location = new System.Drawing.Point(8, 16);
-            this.tb_zoom.Maximum = 4;
-            this.tb_zoom.Minimum = 1;
-            this.tb_zoom.Name = "tb_zoom";
-            this.tb_zoom.Size = new System.Drawing.Size(104, 40);
-            this.tb_zoom.TabIndex = 0;
-            this.tb_zoom.Value = 1;
-            this.tb_zoom.Scroll += new System.EventHandler(this.tb_zoom_Scroll);
-            // 
-            // panel2
-            // 
-            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel2.Controls.Add(this.miniMap);
-            this.panel2.Location = new System.Drawing.Point(8, 8);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(204, 200);
-            this.panel2.TabIndex = 6;
-            // 
-            // miniMap
-            // 
-            this.miniMap.Controller = null;
-            this.miniMap.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.miniMap.Location = new System.Drawing.Point(0, 0);
-            this.miniMap.Name = "miniMap";
-            this.miniMap.Size = new System.Drawing.Size(200, 200);
-            this.miniMap.TabIndex = 0;
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.cb_transeffects);
-            this.groupBox1.Controls.Add(this.checkBox1);
-            this.groupBox1.Location = new System.Drawing.Point(216, 8);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(120, 80);
-            this.groupBox1.TabIndex = 11;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Render Options";
-            // 
-            // cb_transeffects
-            // 
-            this.cb_transeffects.Checked = true;
-            this.cb_transeffects.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cb_transeffects.Location = new System.Drawing.Point(8, 40);
-            this.cb_transeffects.Name = "cb_transeffects";
-            this.cb_transeffects.Size = new System.Drawing.Size(88, 32);
-            this.cb_transeffects.TabIndex = 11;
-            this.cb_transeffects.Text = "Translucent Effects";
-            this.cb_transeffects.TextAlign = System.Drawing.ContentAlignment.TopLeft;
-            this.cb_transeffects.CheckedChanged += new System.EventHandler(this.cb_transeffects_CheckedChanged);
-            // 
-            // checkBox1
-            // 
-            this.checkBox1.Location = new System.Drawing.Point(8, 16);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(96, 24);
-            this.checkBox1.TabIndex = 10;
-            this.checkBox1.Text = "Animate";
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // clipboardPanel
-            // 
-            this.clipboardPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.clipboardPanel.Controls.Add(this.mcClipboard);
-            this.clipboardPanel.Enabled = false;
-            this.clipboardPanel.Location = new System.Drawing.Point(3, 629);
-            this.clipboardPanel.Name = "clipboardPanel";
-            this.clipboardPanel.Size = new System.Drawing.Size(341, 191);
-            this.clipboardPanel.TabIndex = 1;
-            this.clipboardPanel.Title = "Clipboard";
-            this.clipboardPanel.Visible = false;
-            // 
-            // mcClipboard
-            // 
-            this.mcClipboard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.mcClipboard.Location = new System.Drawing.Point(0, 16);
-            this.mcClipboard.Name = "mcClipboard";
-            this.mcClipboard.ParentMap = null;
-            this.mcClipboard.Size = new System.Drawing.Size(341, 175);
-            this.mcClipboard.TabIndex = 0;
-            this.mcClipboard.ZoomLevel = 2;
-            // 
-            // MainWindow
-            // 
-            this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(1069, 434);
-            this.Controls.Add(this.mapPanel);
-            this.Controls.Add(this.toolPanel);
-            this.Controls.Add(this.statusBar);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.KeyPreview = true;
-            this.Menu = this.mainMenu;
-            this.Name = "MainWindow";
-            this.Text = "VERGE MapEd3.0";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.mainWindow_Load);
-            this.Closing += new System.ComponentModel.CancelEventHandler(this.MainWindow_Closing);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainWindow_KeyDown);
-            ((System.ComponentModel.ISupportInitialize)(this.sbpLoadInfo)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpCursorInfo)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpSelection)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.sbpZoom)).EndInit();
-            this.toolPanel.ResumeLayout(false);
-            this.sidebarPanel.ResumeLayout(false);
-            this.mapPanel.ResumeLayout(false);
-            this.mainpanel.ResumeLayout(false);
-            this.toolPalletePanel.ResumeLayout(false);
-            this.toolPalette.ResumeLayout(false);
-            this.layerPanel.ResumeLayout(false);
-            this.panel4.ResumeLayout(false);
-            this.tilesPanel.ResumeLayout(false);
-            this.ctTilesP.ResumeLayout(false);
-            this.p_zones.ResumeLayout(false);
-            this.p_ents.ResumeLayout(false);
-            this.g_tiles.ResumeLayout(false);
-            this.g_obs.ResumeLayout(false);
-            this.minimapPanel.ResumeLayout(false);
-            this.ctMinimapP.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tb_zoom)).EndInit();
-            this.panel2.ResumeLayout(false);
-            this.groupBox1.ResumeLayout(false);
-            this.clipboardPanel.ResumeLayout(false);
-            this.ResumeLayout(false);
+			this.lv_ents.Dock = System.Windows.Forms.DockStyle.Bottom;
+			this.lv_ents.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.lv_ents.FullRowSelect = true;
+			this.lv_ents.GridLines = true;
+			this.lv_ents.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+			this.lv_ents.HideSelection = false;
+			this.lv_ents.Location = new System.Drawing.Point(0, 28);
+			this.lv_ents.MultiSelect = false;
+			this.lv_ents.Name = "lv_ents";
+			this.lv_ents.Size = new System.Drawing.Size(340, 136);
+			this.lv_ents.TabIndex = 1;
+			this.lv_ents.UseCompatibleStateImageBehavior = false;
+			this.lv_ents.View = System.Windows.Forms.View.Details;
+			this.lv_ents.SelectedIndexChanged += new System.EventHandler(this.lv_ents_SelectedIndexChanged);
+			this.lv_ents.DoubleClick += new System.EventHandler(this.lv_ents_DoubleClick);
+			// 
+			// columnHeader1
+			// 
+			this.columnHeader1.Text = "ID";
+			this.columnHeader1.Width = 44;
+			// 
+			// columnHeader2
+			// 
+			this.columnHeader2.Text = "Name";
+			this.columnHeader2.Width = 262;
+			// 
+			// b_gotoent
+			// 
+			this.b_gotoent.Enabled = false;
+			this.b_gotoent.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.b_gotoent.Location = new System.Drawing.Point(208, 0);
+			this.b_gotoent.Name = "b_gotoent";
+			this.b_gotoent.Size = new System.Drawing.Size(48, 24);
+			this.b_gotoent.TabIndex = 3;
+			this.b_gotoent.Text = "Goto";
+			this.b_gotoent.Click += new System.EventHandler(this.b_gotoent_Click);
+			// 
+			// g_tiles
+			// 
+			this.g_tiles.Controls.Add(this.TileViewA);
+			this.g_tiles.Controls.Add(this.TileViewB);
+			this.g_tiles.Location = new System.Drawing.Point(8, 168);
+			this.g_tiles.Name = "g_tiles";
+			this.g_tiles.Size = new System.Drawing.Size(176, 104);
+			this.g_tiles.TabIndex = 3;
+			this.g_tiles.TabStop = false;
+			this.g_tiles.Visible = false;
+			// 
+			// TileViewA
+			// 
+			this.TileViewA.ActiveObsTile = null;
+			this.TileViewA.ActiveTile = null;
+			this.TileViewA.ActiveTileIndex = 0;
+			this.TileViewA.Location = new System.Drawing.Point(16, 24);
+			this.TileViewA.Name = "TileViewA";
+			this.TileViewA.Size = new System.Drawing.Size(64, 64);
+			this.TileViewA.TabIndex = 0;
+			// 
+			// TileViewB
+			// 
+			this.TileViewB.ActiveObsTile = null;
+			this.TileViewB.ActiveTile = null;
+			this.TileViewB.ActiveTileIndex = 0;
+			this.TileViewB.Location = new System.Drawing.Point(96, 24);
+			this.TileViewB.Name = "TileViewB";
+			this.TileViewB.Size = new System.Drawing.Size(64, 64);
+			this.TileViewB.TabIndex = 1;
+			// 
+			// g_obs
+			// 
+			this.g_obs.Controls.Add(this.tv_obs);
+			this.g_obs.Location = new System.Drawing.Point(8, 168);
+			this.g_obs.Name = "g_obs";
+			this.g_obs.Size = new System.Drawing.Size(96, 104);
+			this.g_obs.TabIndex = 9;
+			this.g_obs.TabStop = false;
+			this.g_obs.Visible = false;
+			// 
+			// tv_obs
+			// 
+			this.tv_obs.ActiveObsTile = null;
+			this.tv_obs.ActiveTile = null;
+			this.tv_obs.ActiveTileIndex = 0;
+			this.tv_obs.Location = new System.Drawing.Point(16, 24);
+			this.tv_obs.Name = "tv_obs";
+			this.tv_obs.Size = new System.Drawing.Size(64, 64);
+			this.tv_obs.TabIndex = 0;
+			// 
+			// button4
+			// 
+			this.button4.Location = new System.Drawing.Point(192, 208);
+			this.button4.Name = "button4";
+			this.button4.Size = new System.Drawing.Size(144, 24);
+			this.button4.TabIndex = 10;
+			this.button4.Text = "Edit Animations";
+			this.button4.Click += new System.EventHandler(this.miEditAnims_Click);
+			// 
+			// button5
+			// 
+			this.button5.Location = new System.Drawing.Point(192, 240);
+			this.button5.Name = "button5";
+			this.button5.Size = new System.Drawing.Size(144, 24);
+			this.button5.TabIndex = 10;
+			this.button5.Text = "Arrange Tiles";
+			this.button5.Click += new System.EventHandler(this.menuItem1_Click);
+			// 
+			// minimapPanel
+			// 
+			this.minimapPanel.Controls.Add(this.ctMinimapP);
+			this.minimapPanel.Location = new System.Drawing.Point(3, 629);
+			this.minimapPanel.Name = "minimapPanel";
+			this.minimapPanel.Size = new System.Drawing.Size(341, 227);
+			this.minimapPanel.TabIndex = 3;
+			this.minimapPanel.Title = "Minimap";
+			// 
+			// ctMinimapP
+			// 
+			this.ctMinimapP.Controls.Add(this.groupBox3);
+			this.ctMinimapP.Controls.Add(this.panel2);
+			this.ctMinimapP.Controls.Add(this.groupBox1);
+			this.ctMinimapP.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.ctMinimapP.Location = new System.Drawing.Point(0, 16);
+			this.ctMinimapP.Name = "ctMinimapP";
+			this.ctMinimapP.Size = new System.Drawing.Size(341, 211);
+			this.ctMinimapP.TabIndex = 15;
+			// 
+			// groupBox3
+			// 
+			this.groupBox3.Controls.Add(this.tb_zoom);
+			this.groupBox3.Location = new System.Drawing.Point(216, 88);
+			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.Size = new System.Drawing.Size(120, 64);
+			this.groupBox3.TabIndex = 12;
+			this.groupBox3.TabStop = false;
+			this.groupBox3.Text = "Zoom";
+			// 
+			// tb_zoom
+			// 
+			this.tb_zoom.LargeChange = 1;
+			this.tb_zoom.Location = new System.Drawing.Point(8, 16);
+			this.tb_zoom.Maximum = 4;
+			this.tb_zoom.Minimum = 1;
+			this.tb_zoom.Name = "tb_zoom";
+			this.tb_zoom.Size = new System.Drawing.Size(104, 42);
+			this.tb_zoom.TabIndex = 0;
+			this.tb_zoom.Value = 1;
+			this.tb_zoom.Scroll += new System.EventHandler(this.tb_zoom_Scroll);
+			// 
+			// panel2
+			// 
+			this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.panel2.Controls.Add(this.miniMap);
+			this.panel2.Location = new System.Drawing.Point(8, 8);
+			this.panel2.Name = "panel2";
+			this.panel2.Size = new System.Drawing.Size(204, 200);
+			this.panel2.TabIndex = 6;
+			// 
+			// miniMap
+			// 
+			this.miniMap.Controller = null;
+			this.miniMap.Cursor = System.Windows.Forms.Cursors.Hand;
+			this.miniMap.Location = new System.Drawing.Point(0, 0);
+			this.miniMap.Name = "miniMap";
+			this.miniMap.Size = new System.Drawing.Size(200, 200);
+			this.miniMap.TabIndex = 0;
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.cb_transeffects);
+			this.groupBox1.Controls.Add(this.checkBox1);
+			this.groupBox1.Location = new System.Drawing.Point(216, 8);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(120, 80);
+			this.groupBox1.TabIndex = 11;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Render Options";
+			// 
+			// cb_transeffects
+			// 
+			this.cb_transeffects.Checked = true;
+			this.cb_transeffects.CheckState = System.Windows.Forms.CheckState.Checked;
+			this.cb_transeffects.Location = new System.Drawing.Point(8, 40);
+			this.cb_transeffects.Name = "cb_transeffects";
+			this.cb_transeffects.Size = new System.Drawing.Size(88, 32);
+			this.cb_transeffects.TabIndex = 11;
+			this.cb_transeffects.Text = "Translucent Effects";
+			this.cb_transeffects.TextAlign = System.Drawing.ContentAlignment.TopLeft;
+			this.cb_transeffects.CheckedChanged += new System.EventHandler(this.cb_transeffects_CheckedChanged);
+			// 
+			// checkBox1
+			// 
+			this.checkBox1.Location = new System.Drawing.Point(8, 16);
+			this.checkBox1.Name = "checkBox1";
+			this.checkBox1.Size = new System.Drawing.Size(96, 24);
+			this.checkBox1.TabIndex = 10;
+			this.checkBox1.Text = "Animate";
+			this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+			// 
+			// toolbarImages
+			// 
+			this.toolbarImages.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("toolbarImages.ImageStream")));
+			this.toolbarImages.TransparentColor = System.Drawing.Color.Transparent;
+			this.toolbarImages.Images.SetKeyName(0, "");
+			this.toolbarImages.Images.SetKeyName(1, "");
+			// 
+			// mapPanel
+			// 
+			this.mapPanel.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.mapPanel.Controls.Add(this.mainpanel);
+			this.mapPanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.mapPanel.Location = new System.Drawing.Point(0, 0);
+			this.mapPanel.Name = "mapPanel";
+			this.mapPanel.Size = new System.Drawing.Size(677, 350);
+			this.mapPanel.TabIndex = 5;
+			this.mapPanel.Resize += new System.EventHandler(this.mapPanel_Resize);
+			// 
+			// mainpanel
+			// 
+			this.mainpanel.Controls.Add(this.mapController);
+			this.mainpanel.Controls.Add(this.sizeGrip);
+			this.mainpanel.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.mainpanel.ForeColor = System.Drawing.Color.Coral;
+			this.mainpanel.Location = new System.Drawing.Point(0, 0);
+			this.mainpanel.Name = "mainpanel";
+			this.mainpanel.Size = new System.Drawing.Size(673, 346);
+			this.mainpanel.TabIndex = 10;
+			this.mainpanel.Paint += new System.Windows.Forms.PaintEventHandler(this.mainpanel_Paint);
+			// 
+			// mapController
+			// 
+			this.mapController.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.mapController.Location = new System.Drawing.Point(0, 0);
+			this.mapController.Name = "mapController";
+			this.mapController.ParentMap = null;
+			this.mapController.Size = new System.Drawing.Size(673, 346);
+			this.mapController.TabIndex = 0;
+			this.mapController.ZoomLevel = 2;
+			// 
+			// sizeGrip
+			// 
+			this.sizeGrip.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.sizeGrip.ForeColor = System.Drawing.Color.Coral;
+			this.sizeGrip.Location = new System.Drawing.Point(653, 328);
+			this.sizeGrip.Name = "sizeGrip";
+			this.sizeGrip.Size = new System.Drawing.Size(16, 16);
+			this.sizeGrip.TabIndex = 3;
+			// 
+			// openVspDialog
+			// 
+			this.openVspDialog.Filter = "VSP Files(*.vsp)|*.vsp";
+			this.openVspDialog.RestoreDirectory = true;
+			// 
+			// openImageDialog
+			// 
+			this.openImageDialog.Filter = "Image Files (*.png,*.jpg,*.jpeg,*.pcx,*.bmp,*.tga,*.gif)|*.png;*.jpg;*.jpeg;*.pcx" +
+				";*.bmp;*.tga;*.gif";
+			this.openImageDialog.RestoreDirectory = true;
+			// 
+			// saveVspDialog
+			// 
+			this.saveVspDialog.DefaultExt = "vsp";
+			this.saveVspDialog.Filter = "VSP Files (*.vsp)|*.vsp";
+			this.saveVspDialog.RestoreDirectory = true;
+			// 
+			// saveImageDialog
+			// 
+			this.saveImageDialog.Filter = "Portable Network Graphics File (*.png)|*.png";
+			this.saveImageDialog.RestoreDirectory = true;
+			// 
+			// clipboardPanel
+			// 
+			this.clipboardPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+						| System.Windows.Forms.AnchorStyles.Right)));
+			this.clipboardPanel.Controls.Add(this.mcClipboard);
+			this.clipboardPanel.Enabled = false;
+			this.clipboardPanel.Location = new System.Drawing.Point(3, 629);
+			this.clipboardPanel.Name = "clipboardPanel";
+			this.clipboardPanel.Size = new System.Drawing.Size(341, 191);
+			this.clipboardPanel.TabIndex = 1;
+			this.clipboardPanel.Title = "Clipboard";
+			this.clipboardPanel.Visible = false;
+			// 
+			// mcClipboard
+			// 
+			this.mcClipboard.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.mcClipboard.Location = new System.Drawing.Point(0, 16);
+			this.mcClipboard.Name = "mcClipboard";
+			this.mcClipboard.ParentMap = null;
+			this.mcClipboard.Size = new System.Drawing.Size(341, 175);
+			this.mcClipboard.TabIndex = 0;
+			this.mcClipboard.ZoomLevel = 2;
+			// 
+			// MainWindow
+			// 
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.ClientSize = new System.Drawing.Size(1069, 374);
+			this.Controls.Add(this.mapPanel);
+			this.Controls.Add(this.toolPanel);
+			this.Controls.Add(this.statusBar);
+			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+			this.KeyPreview = true;
+			this.Menu = this.mainMenu;
+			this.Name = "MainWindow";
+			this.Text = "VERGE MapEd3.0";
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+			this.Load += new System.EventHandler(this.mainWindow_Load);
+			this.Closing += new System.ComponentModel.CancelEventHandler(this.MainWindow_Closing);
+			this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainWindow_KeyDown);
+			((System.ComponentModel.ISupportInitialize)(this.sbpLoadInfo)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpCursorInfo)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpSelection)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.sbpZoom)).EndInit();
+			this.toolPanel.ResumeLayout(false);
+			this.sidebarPanel.ResumeLayout(false);
+			this.toolPalletePanel.ResumeLayout(false);
+			this.toolPalette.ResumeLayout(false);
+			this.layerPanel.ResumeLayout(false);
+			this.panel4.ResumeLayout(false);
+			this.tilesPanel.ResumeLayout(false);
+			this.ctTilesP.ResumeLayout(false);
+			this.p_zones.ResumeLayout(false);
+			this.p_ents.ResumeLayout(false);
+			this.g_tiles.ResumeLayout(false);
+			this.g_obs.ResumeLayout(false);
+			this.minimapPanel.ResumeLayout(false);
+			this.ctMinimapP.ResumeLayout(false);
+			this.groupBox3.ResumeLayout(false);
+			this.groupBox3.PerformLayout();
+			((System.ComponentModel.ISupportInitialize)(this.tb_zoom)).EndInit();
+			this.panel2.ResumeLayout(false);
+			this.groupBox1.ResumeLayout(false);
+			this.mapPanel.ResumeLayout(false);
+			this.mainpanel.ResumeLayout(false);
+			this.clipboardPanel.ResumeLayout(false);
+			this.ResumeLayout(false);
 
         }
         #endregion
@@ -2691,6 +2693,13 @@ namespace winmaped2 {
             Global.ActiveMap.vsp.ExportToClipboard(0);
             statusBar.Panels[0].Text = "Exported tiles to clipboard.";
         }
+
+		private void sidebarPanel_MouseClick(object sender, MouseEventArgs e)
+		{
+			if (e.Button == MouseButtons.Right)
+				sidebarContextMenu.Show(sidebarPanel, e.Location);
+
+		}
 
  
     }
