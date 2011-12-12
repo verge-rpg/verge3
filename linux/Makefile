@@ -31,5 +31,5 @@ SDL_LDFLAGS = $(shell /home/salviati/root/bin/sdl-config --libs)
 GTK_CFLAGS = $(shell pkg-config --cflags gtk+-2.0)
 GTK_LDFLAGS = $(shell pkg-config --libs gtk+-2.0)
 CFLAGS = -c $(SDL_CFLAGS) $(GTK_CFLAGS) -O2 -Wall -fpermissive -ggdb -D__LINUX__
-LDFLAGS = -lm -lc -lpng -lcorona -lz -llua -lluabind -laudiere  $(SDL_LDFLAGS) $(GTK_LDFLAGS)
+LDFLAGS = -lm -lc -lpng -lcorona -lz -llua -laudiere  $(SDL_LDFLAGS) $(GTK_LDFLAGS)
 CXXFLAGS = $(CFLAGS)
