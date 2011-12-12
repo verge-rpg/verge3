@@ -1,0 +1,19 @@
+This is a GNU/Linux build of http://github.com/Bananattack/verge3
+
+To compile, just cd to src directory and run make.
+Make sure to edit the Makefile and make sure that you are using the sdl-config
+for SDL-1.3.
+
+Dependencies: libpng, corona, zlib, lua-5.1, luabind, audiere, giflib, gtk2, SDL-1.3
+
+You only need the verge/Source/ and linux/ directories, the rest is unused.
+
+Current status:
+-Compiles OK (with a bunch of warnings).
+-Need to tackle the problem with Windows' path  delimiter '\' in resource files.
+-Need to specify namespaces in Lua scripts (v3 for verge).
+
+Changes:
+-Switched to Audiere
+-Copied threads.h from Audiere tree under verge/Source/
+-Check for nil pointer before using it (snd_audiere.h)
