@@ -19,7 +19,7 @@
 
 #include "xerxes.h"
 #include "snd_fmod.h"
-#include "../fmod/fmod.h"
+#include "fmod.h"
 #include "garlick.h"
 
 #ifdef SND_USE_FMOD

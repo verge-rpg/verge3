@@ -20,7 +20,7 @@ public:
 	private:
 		GarlickFile *gf;
 		AudiereFile(GarlickFile *gf) { this->gf = gf; }
-		~AudiereFile() { 
+		~AudiereFile() {
 			GarlickClose(gf);
 		}
 	public:
@@ -53,13 +53,13 @@ public:
 	}
 
 	std::map<OutputStream *, int> channels;
-	int registerChannel(OutputStream *os) { 
+	int registerChannel(OutputStream *os) {
 		ScopedLock lock(this);
 		int h = Handle::alloc(HANDLE_TYPE_AUDCHN,(void*)os);
 		channels[os] = h;
 		return h;
 	}
-	void unregisterChannel(OutputStream *os) { 
+	void unregisterChannel(OutputStream *os) {
 		ScopedLock lock(this);
 		int h = channels[os];
 		if(h==0) return; //wasnt a sound effect
@@ -67,23 +67,23 @@ public:
 		channels.erase(os);
 		os->unref();
 	}
-	
+
 	class MyStopCallback : public RefImplementation<audiere::StopCallback> {
 	public:
 		SoundEngine_Audiere *eng;
-		void __stdcall streamStopped(StopEvent* event) {
+		void streamStopped(StopEvent* event) {
 			eng->unregisterChannel(event->getOutputStream());
 		}
 	};
 
 	MyStopCallback myStopCallback;
 
-	
-	
+
+
 	bool init() {
-		device = AudioDevicePtr(OpenDevice("winmm"));
-		device->registerCallback(&myStopCallback);
+		device = AudioDevicePtr(OpenDevice());
 		if (!device) return false;
+		device->registerCallback(&myStopCallback);
 		return true;
 	}
 
@@ -96,7 +96,7 @@ public:
 	void PlayMusic(const std::string &sng) {
 		AudiereFile *af = AudiereFile::tryOpen(sng);
 		if(!af) err("Could not open specified music file: %s",sng.c_str());
-		
+
 		StopMusic();
 		music = OpenSound(device,FilePtr(af),true);
 		if(!music) err("Could not open specified music file: %s",sng.c_str());
@@ -104,7 +104,7 @@ public:
 		music->setRepeat(true);
 		music->play();
 	}
-	void StopMusic() { 
+	void StopMusic() {
 		if(music) music->unref(); music = 0;
 	}
 	void SetMusicVolume(int v) {
@@ -147,7 +147,7 @@ public:
 	int LoadSong(const std::string &sng) {
 		AudiereFile *af = AudiereFile::tryOpen(sng);
 		if(!af) err("Could not load specified music file: %s",sng.c_str());
-		
+
 		StopMusic();
 		OutputStream *os = OpenSound(device,FilePtr(af),true);
 		if(!os) err("Could not load specified music file: %s",sng.c_str());
@@ -176,7 +176,7 @@ public:
 	int GetSongVol(int h) {
 		return (int)songHandles[h]->getVolume()*100;
 	}
-	
+
 	void FreeSong(int h) {
 		StopSong(h);
 		songHandles[h]->unref();

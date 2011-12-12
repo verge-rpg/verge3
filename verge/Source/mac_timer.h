@@ -12,6 +12,9 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include "SDL.h"
+typedef Uint32 (*SDL_NewTimerCallback)(Uint32 interval, void* param);
+
 extern quad systemtime, timer, vctimer, hooktimer;
 
 class xTimer

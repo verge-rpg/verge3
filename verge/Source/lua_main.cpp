@@ -75,7 +75,7 @@ bool LUA::CompileMap(const char *f) {
 
 	// we need to endian flip this so that it gets read properly
 	flip(&scriptlen,4);
-	
+
 	fwrite(&scriptlen,4,1,mo);
 	fwrite(temp.get(),1,scriptlen,mo);
 	fclose(mo);
@@ -251,7 +251,7 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 			{
 				LuaError(L,"Problem invoking %s: Argument #%d to function must be a boolean (true/false value).", libfuncs[functionIndex].name.c_str(), i + 1);
 			}
-			// Strings. 
+			// Strings.
 			else if(libfuncs[functionIndex].argumentTypes[i] == t_STRING && !lua_isstring(L, i + 1))
 			{
 				LuaError(L,"Problem invoking %s: Argument #%d to function must be a string.", libfuncs[functionIndex].name.c_str(), i + 1);
@@ -283,7 +283,7 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 
 // Careful, this needs to be static and return an int so it can be bound to Lua.
 int LUA::InvokeBuiltinFunction(lua_State* L) {
-	
+
 	// Grab the function index upvalue
 	int functionIndex = (int)lua_tonumber(L, lua_upvalueindex(1));
 
@@ -363,7 +363,7 @@ void LUA::BindHvar(lua_State* L, int index)
 	while(*tmp) *tmp++ = (*tmp=='.'?'_':tolower(*tmp));
 
 	lua_getglobal(L, "v3");
-	
+
 	//setup the getter
 	lua_pushstring(L, namebuf);
 	lua_pushinteger (L, index);
@@ -380,7 +380,7 @@ void LUA::BindHvar(lua_State* L, int index)
 	lua_pushlightuserdata (L, (void*)this);
 	lua_pushcclosure(L, &LUA::Set_Hvar, 2);
 	lua_rawset (L, -3); //v3.[xform] = LuaVerge_Set_Hvar
-	
+
 	lua_pop(L, -1); //pop v3 namespace
 }
 
@@ -407,12 +407,12 @@ int LUA::Get_Hvar(lua_State* L)
 		{
 			int ret = lua->ReadHvar(intHVAR1, index, ofs);
 			lua_pushinteger(L, ret);
-		} 
+		}
 		else if(*type == '0' + t_BOOL)
 		{
 			int ret = lua->ReadHvar(intHVAR1, index, ofs);
 			lua_pushboolean(L, ret);
-		} 
+		}
 		else if(*type == '0' + t_STRING)
 		{
 			std::string ret = lua->ReadHvar_str(strHSTR1, index, ofs);
@@ -432,7 +432,7 @@ int LUA::Get_Hvar(lua_State* L)
 		{
 			int ret = lua->ReadHvar(intHVAR0, index, 0);
 			lua_pushboolean(L, ret);
-		} 
+		}
 		else if(*type == '0' + t_STRING)
 		{
 			std::string ret = lua->ReadHvar_str(strHSTR0, index, 0);
@@ -473,14 +473,14 @@ int LUA::Set_Hvar(lua_State* L)
 			if(!lua_isboolean(L, 2)) lua->LuaError("value for v3 system variable `%s` must be an boolean", name);
 			int value = lua_toboolean(L, 2);
 			lua->WriteHvar(intHVAR1, index, ofs, value);
-		} 
+		}
 		else if(*type == '0' + t_STRING)
 		{
 			if(!lua_isstring(L, 2)) lua->LuaError("value for v3 system variable `%s` must be a string", name);
 			std::string value = lua_tostring(L, 2);
 			lua->WriteHvar_str(strHSTR1, index, ofs, value);
 		}
-	} 
+	}
 	else if(*dimlist == 0)
 	{
 		if(args < 1) lua->LuaError("setting v3 system variable `%s` requires a value parameter",name);
@@ -496,7 +496,7 @@ int LUA::Set_Hvar(lua_State* L)
 			if(!lua_isboolean(L, 1)) lua->LuaError("value for v3 system variable `%s` must be an boolean", name);
 			int value = lua_toboolean(L, 1);
 			lua->WriteHvar(intHVAR0, index, 0, value);
-		} 
+		}
 		else if(*type == '0' + t_STRING)
 		{
 			if(!lua_isstring(L, 1)) lua->LuaError("value for v3 system variable `%s` must be a string", name);
@@ -505,7 +505,7 @@ int LUA::Set_Hvar(lua_State* L)
 		}
 	}
 	else lua->LuaError("Fatal Error Code Antarctica");
-	
+
 	return 0;
 }
 
@@ -567,14 +567,14 @@ int LUA::GCHandleConstruct(lua_State* L)
 int LUA::GCHandleDestruct(lua_State* L)
 {
 	LUA::GCHandle* gch = (LUA::GCHandle*) lua_touserdata(L, 1);
-	
+
 	// Push v3 namespace
 	lua_getglobal(L, "v3");
 
 	// Get the value of v3[destructor_name]
 	lua_getfield(L, -1, gch->destructor_name);
 	// remove v3 namespace from stack
-	lua_remove(L, -2);	
+	lua_remove(L, -2);
 
 	// Push the argument
 	lua_pushinteger(L, gch->handle);
@@ -633,7 +633,7 @@ void LUA::bindApi()
 
 	// now that v3 namespace exists, it is a fine time to install the vector stuff
 	luaopen_vector(L);
-	
+
 	// Metatable boilerplate that basically handles variable handling magic.
 	status = luaL_dostring(L,
 		"v3.get_hvar0 = {}\n"
@@ -829,7 +829,7 @@ void LUA::bindApi()
 		// Bind the clipboard builtins.
 		"v3.clipboard = _builtin_struct()\n"
 		"bind_hvar(0, 'clipboard', 'text')\n"
-		
+
 		// Bind the mouse related builtins
 		"v3.mouse = _builtin_struct()\n"
 		"bind_hvar(0, 'mouse', 'x', 'y', 'l', 'r', 'm', 'w')\n"
@@ -867,7 +867,7 @@ void LUA::bindApi()
 		"	'w', 'h', 'startx', 'starty', 'name', 'rstring', \n"
 		"	'music', 'tileset', 'path', 'savevsp', 'layers', 'zones', 'numobs','startupscript' \n"
 		")\n"
-						   
+
 		// Bind the layer builtins
 		"v3.layer = _builtin_struct_collection()\n"
 		"bind_hvar(1, 'layer',\n"
@@ -894,7 +894,7 @@ void LUA::bindApi()
 		")\n"
 	);
 	if(status) ::err("Failed to load the LuaVerge hvar boilerplates!");
-	
+
 	luaL_dostring(L,
 		"function v3.vpkloader(modulename)\n"
 			// Find the source in a vpk.

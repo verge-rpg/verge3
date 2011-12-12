@@ -58,12 +58,13 @@
 #endif
 
 #ifdef __OSX__
-#include "../fmod/fmod.h"
+#include "fmod.h"
 #define SND_USE_FMOD
 #endif
 
 #ifdef __LINUX__
-#define SND_USE_FMOD
+//#define SND_USE_FMOD
+#define SND_USE_AUDIERE
 #endif
 
 
@@ -154,7 +155,8 @@ typedef unsigned char  byte;
 #include <strings.h>
 #include <unistd.h>
 #include <SDL.h>
-#include <fmod.h>
+//#include "fmod.h"
+#include <audiere.h>
 #include <corona.h>
 #include <gtk/gtk.h>
 
