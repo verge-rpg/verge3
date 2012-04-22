@@ -16,6 +16,7 @@
 
 #include "xerxes.h"
 #include <cassert>
+#include <memory>
 
 corona::Image* load_image_from_packfile(const char* filename)
 {

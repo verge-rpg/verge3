@@ -1,38 +1,39 @@
 function testkey()
-	log("wtf");
-	mapalert("you hit w key!");
+	v3.log("you hit w key!");
+	--v3.MapAlert("you hit w key!");
 end
 
 function testloop()
-	local imMouseCursor = LoadImage( "mouse-cursor.pcx" );
+	local imMouseCursor = v3.LoadImage( "mouse-cursor.pcx" );
 
 	while(true) do
-		rectfill(0,0,320,240,makecolor(0,100,200),screen);
-		printstring(0,0,screen,0,tostring(joy[0].button[2]));
-		tblit(
-			mouse.x,mouse.y,
+		v3.rectfill(0,0,320,240,v3.makecolor(0,100,200),v3.screen);
+		v3.printstring(0,0,v3.screen,0,tostring(v3.joy.up));
+		--v3.PrintString(0,0,v3.screen,0,"Hello");
+		v3.tblit(
+			v3.mouse.x, v3.mouse.y,
 			imMouseCursor,
-			screen
+			v3.screen
 		);
-		showpage();
+		v3.showpage();
 	end
 	
 end
 
-local sfx = loadsound("slidewhistledown.wav");
+local sfx = v3.LoadSound("slidewhistledown.wav");
 
 function whizz()
-	log(str(playsound(sfx,100)));
+	v3.log((v3.PlaySound(sfx,100)));
 end
 
 function spam()
-	StopMusic();
-	StopSong(musics[1]);StopSong(musics[2]);StopSong(musics[3]);StopSong(musics[4]);StopSong(musics[5]);
-	if(lastpressed == SCAN_1) then PlaySong(musics[1]); end
-	if(lastpressed == SCAN_2) then PlaySong(musics[2]); end
-	if(lastpressed == SCAN_3) then PlaySong(musics[3]); end
-	if(lastpressed == SCAN_4) then PlaySong(musics[4]); end
-	if(lastpressed == SCAN_5) then PlaySong(musics[5]); end
+	v3.StopMusic();
+	--v3.StopSong(musics[1]); v3.StopSong(musics[2]); v3.StopSong(musics[3]); v3.StopSong(musics[4]); v3.StopSong(musics[5]);
+	--if(lastpressed == v3.SCAN_1) then v3.PlaySong(musics[1]); end
+	--if(lastpressed == v3.SCAN_2) then v3.PlaySong(musics[2]); end
+	--if(lastpressed == v3.SCAN_3) then v3.PlaySong(musics[3]); end
+	--if(lastpressed == v3.SCAN_4) then v3.PlaySong(musics[4]); end
+	--if(lastpressed == v3.SCAN_5) then v3.PlaySong(musics[5]); end
 end
 
 function autoexec()
@@ -44,15 +45,15 @@ function autoexec()
 --	musics[5] = LoadSong("cd-level5.it");
 	
 	--playmusic("cd-credits.it");
-	HookKey(SCAN_W,"testkey");
-	HookKey(SCAN_E,"whizz");
-	HookKey(SCAN_1,"spam");
-	HookKey(SCAN_2,"spam");
-	HookKey(SCAN_3,"spam");
-	HookKey(SCAN_4,"spam");
-	HookKey(SCAN_5,"spam");
+	v3.HookKey(v3.SCAN_W,"testkey");
+	v3.HookKey(v3.SCAN_E,"whizz");
+	v3.HookKey(v3.SCAN_1,"spam");
+	v3.HookKey(v3.SCAN_2,"spam");
+	v3.HookKey(v3.SCAN_3,"spam");
+	v3.HookKey(v3.SCAN_4,"spam");
+	v3.HookKey(v3.SCAN_5,"spam");
 	--entities[3].tx = 9;
-	map("bumville.map");
+	v3.Map("bumville.map");
 	
-	--testloop();
+	testloop();
 end
