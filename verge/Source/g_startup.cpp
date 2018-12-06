@@ -41,6 +41,7 @@ int gamerate = 100;
 int soundengine = 0;
 bool use_lua = false;
 bool vc_oldstring = false;
+bool showpage_auto_sleep = true;
 
 VCCore *vc;
 
@@ -131,6 +132,9 @@ void LoadConfig()
 	if (cfg_KeyPresent("mount3"))
 		MountVFile(cfg_GetKeyValue("mount3"));
 
+    if (cfg_KeyPresent("autosleep"))
+		showpage_auto_sleep = cfg_GetIntKeyValue("autosleep") ? true : false;
+
 	void platform_ProcessConfig();
 	platform_ProcessConfig();
 
@@ -182,6 +186,11 @@ void ShowPage()
 	TimedProcessSprites();
 	RenderSprites();
 	Flip();
+
+    if (showpage_auto_sleep)
+    {
+        Sleep(1);
+    }
 }
 
 #ifndef NOSPLASHSCREEN

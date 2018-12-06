@@ -1,4 +1,5 @@
 void AutoExec()
 {
+    while (1) { ShowPage(); }
     Exit("VC script launched successfully");
 }
