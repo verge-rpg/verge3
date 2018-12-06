@@ -2419,7 +2419,7 @@ void VCCompiler::ParseGlobalDecl(scan_t type)
 	}
 
 	char var_type;
-	ext_definition ext;
+    ext_definition ext = {0};
 	ext.type = EXT_NONE;
 
 	var_type = TypenameToTypeID(token);
@@ -2863,7 +2863,7 @@ void VCCompiler::ParseStructMemberDecl(struct_definition* mystruct)
     char type_name[80];
     strcpy(type_name, token);
 
-	ext_definition ext;
+    ext_definition ext = {0};
 	ext.type = EXT_NONE;
 
 	if(variable_type == t_CALLBACK)
@@ -3369,7 +3369,7 @@ void VCCompiler::CompileFunction(bool returns_callback)
 			GetToken();
 
 			char argtype = TypenameToTypeID(token);
-			ext_definition argext;
+            ext_definition argext = {0};
 			argext.type = EXT_NONE;
 
 			if(argtype == t_CALLBACK)
@@ -3640,20 +3640,26 @@ void VCCompiler::CheckIdentifier(char *s)
 
 // Overkill (2006-06-30):
 // Checks if the token is definitely a string for error messages.
-bool VCCompiler::TokenIsStringExpression()
+bool VCCompiler::TokenIsStringExpression(bool preventAmbiguity)
 {
-	if(streq(token, "\"")
-		|| streq(token, "str") || streq(token, "string")
+	if(streq(token, "\""))
+    {
+        return true;
+    }
+    if (streq(token, "str") || streq(token, "string")
 		|| streq(token, "left") || streq(token, "right") || streq(token, "mid"))
 	{
-		return true;
+        if (!preventAmbiguity && NextIs("("))
+        {
+		    return true;
+        }
 	}
 	return false;
 }
 
 // Overkill (2006-06-30):
 // Checks if the token is definitely an int for error messages.
-bool VCCompiler::TokenIsIntExpression()
+bool VCCompiler::TokenIsIntExpression(bool preventAmbiguity)
 {
 	if(chr_table[token[0]] == DIGIT
 		|| streq(token, "(")
@@ -3760,7 +3766,7 @@ void VCCompiler::CompileAtom()
 
 	int varofs = srcofs;
 	std::string varname = std::string(token);
-	ext_definition ext;
+    ext_definition ext = {0};
 	int type = HandleVariable(&ext);
 	// Found an int, good.
 	if (type == t_INT)
@@ -3808,7 +3814,7 @@ void VCCompiler::CompileAtom()
 
 	// Overkill (2006-06-30): At this point, there are no matches.
 	// Try and see if they passed a string instead.
-	if (TokenIsStringExpression())
+	if (TokenIsStringExpression(false))
 	{
 		throw va("%s(%d): Expected an int, but the string expression, '%s', was found instead.", sourcefile, linenum, token);
 	}
@@ -3956,7 +3962,7 @@ void VCCompiler::CompileAliasExpression(alias_definition* alias)
 	}
 
 	// Variable?
-	ext_definition ext;
+    ext_definition ext = {0};
 	int type = HandleVariable(&ext);
 
 	if(type == t_CALLBACK)
@@ -4000,11 +4006,11 @@ void VCCompiler::CompileAliasExpression(alias_definition* alias)
 
 		return;
 	}
-	if(TokenIsStringExpression())
+	if(TokenIsStringExpression(false))
 	{
 		throw va("%s(%d): Expected expression of type %s, but found string expression '%s' instead", sourcefile, linenum, alias->name, token);
 	}
-	if(TokenIsIntExpression())
+	if(TokenIsIntExpression(false))
 	{
 		throw va("%s(%d): Expected expression of type %s, but found int expression '%s' instead", sourcefile, linenum, alias->name, token);
 	}
@@ -4147,7 +4153,7 @@ void VCCompiler::ProcessString()
 
 	int varofs = srcofs;
 	std::string varname = std::string(token);
-	ext_definition ext;
+    ext_definition ext = {0};
 	int type = HandleVariable(&ext);
 	// Found a string, good.
 	if (type == t_STRING)
@@ -4194,7 +4200,7 @@ void VCCompiler::ProcessString()
 		throw va("%s(%d): %s is not a string", sourcefile, linenum, varname.c_str());
 	}
 
-	if (TokenIsIntExpression())
+	if (TokenIsIntExpression(false))
 	{
 		throw va("%s(%d): Expected a string, but the int expression, '%s', was found instead.", sourcefile, linenum, token);
 	}
@@ -4335,7 +4341,7 @@ bool VCCompiler::VerifySignatureMatch(callback_definition* expected, function_t*
 void VCCompiler::CompileCallback(callback_definition* def)
 {
 	// A run-time resolved callback reference.
-	if (CheckExpressionType() == t_STRING)
+	if (CheckExpressionType(false) == t_STRING)
 	{
 		output.EmitC(t_STRING);
 		CompileString();
@@ -4427,7 +4433,7 @@ void VCCompiler::CompileCallback(callback_definition* def)
 
 	int varofs = srcofs;
 	std::string varname = std::string(token);
-	ext_definition ext;
+    ext_definition ext = {0};
 	int type = HandleVariable(&ext);
 	// Found a callback variable.
 	if (type == t_CALLBACK)
@@ -4481,7 +4487,7 @@ void VCCompiler::CompileCallback(callback_definition* def)
 		}
 		throw va("%s(%d): %s is not a callback", sourcefile, linenum, varname.c_str());
 	}
-	if (TokenIsIntExpression())
+	if (TokenIsIntExpression(false))
 	{
 		throw va("%s(%d): Expected a callback, but the int expression, '%s', was found instead.", sourcefile, linenum, token);
 	}
@@ -4496,7 +4502,7 @@ void VCCompiler::CompileStatement()
 
 	// Syntactic sugar for CallFunction, via parentheses after a string.
 	// Allows for "MyFunction"(); instead of CallFunction("MyFunction");
-	if (CheckExpressionType() == t_STRING)
+	if (CheckExpressionType(true) == t_STRING)
 	{
 		int temp = output.curpos();
 		CompileString();
@@ -4518,7 +4524,7 @@ void VCCompiler::CompileStatement()
 				{
 					break;
 				}
-				int type = CheckExpressionType();
+				int type = CheckExpressionType(false);
 				output.EmitC(type);
 				if (type == -1)
 				{
@@ -4703,7 +4709,7 @@ void VCCompiler::HandleLibraryFunc()
 		}
 		else
 		{
-			int type = CheckExpressionType();
+			int type = CheckExpressionType(false);
 			output.EmitC(type);
 			if (type == -1)
 			{
@@ -4816,7 +4822,7 @@ void VCCompiler::HandleCallbackInvocation(callback_definition* func)
 		}
 		else
 		{
-			int type = CheckExpressionType();
+			int type = CheckExpressionType(false);
 			output.EmitC(type);
 			if (type == -1)
 			{
@@ -4927,7 +4933,7 @@ void VCCompiler::HandleUserFunc()
 		}
 		else
 		{
-			int type = CheckExpressionType();
+			int type = CheckExpressionType(false);
 			output.EmitC(type);
 			if (type == -1)
 			{
@@ -4985,19 +4991,19 @@ void VCCompiler::HandleUserFunc()
 	id_cimage = mycimage;
 }
 
-int VCCompiler::CheckExpressionType()
+int VCCompiler::CheckExpressionType(bool preventAmbiguity)
 {
 	int type;
 	int thisofs = srcofs;
 
 	GetToken();
 
-	if (TokenIsStringExpression())
+	if (TokenIsStringExpression(preventAmbiguity))
 	{
 		srcofs = thisofs;
 		return t_STRING;
 	}
-	if (TokenIsIntExpression())
+	if (TokenIsIntExpression(preventAmbiguity))
 	{
 		srcofs = thisofs;
 		return t_INT;
@@ -5390,7 +5396,7 @@ void VCCompiler::HandleAssign()
 	output.EmitC(opASSIGN);
 
 	int varofs = srcofs;
-	ext_definition ext;
+    ext_definition ext = {0};
 	type = HandleVariable(&ext);
 
 	GetToken();

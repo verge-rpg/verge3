@@ -441,9 +441,9 @@ private:
 
 	function_t* FetchFunction(char *s);
 	void CheckIdentifier(char *s);
-	int CheckExpressionType(); // Overkill: Checks what type the next token is.
-	bool TokenIsStringExpression();
-	bool TokenIsIntExpression();
+	int CheckExpressionType(bool preventAmbiguity); // Overkill: Checks what type the next token is.
+	bool TokenIsStringExpression(bool preventAmbiguity);
+	bool TokenIsIntExpression(bool preventAmbiguity);
 	struct_element ResolveStruct();
 	void EmitStringLiteral();
 	void EmitSingleStringLiteral();
