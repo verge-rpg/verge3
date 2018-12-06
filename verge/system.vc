@@ -1,5 +1,9 @@
 void AutoExec()
 {
-    while (1) { ShowPage(); }
+    while (1) 
+    { 
+        RectFill(0, 0, ImageWidth(screen) - 1, ImageHeight(screen) - 1, RGB(255, 0, 0), screen);
+        ShowPage();
+    }
     Exit("VC script launched successfully");
 }
