@@ -13,7 +13,11 @@
 #define _G_SOUND_CPP
 #include "garlick.h"
 #ifdef __WIN32__
+#define DELAYIMP_INSECURE_WRITABLE_HOOKS 
 #include <delayimp.h>
+
+PfnDliHook __pfnDliNotifyHook2;
+PfnDliHook __pfnDliFailureHook2;
 #endif
 
 #ifdef SND_USE_AUDIERE
@@ -40,7 +44,7 @@ FARPROC WINAPI FmodFailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */
 
 
 bool snd_Init(int soundEngine) {
-	snd_engine = 0;
+	snd_engine = nullptr;
 
 #ifdef SND_USE_FMOD
 	if(soundEngine == 0)
@@ -61,7 +65,21 @@ bool snd_Init(int soundEngine) {
 
 	#ifdef _WIN32
 	if(soundEngine == 0)
+    {
+        HMODULE lib = LoadLibrary(TEXT("fmod.dll"));
+
+        if (lib == nullptr)
+        {
+#ifdef SND_USE_AUDIERE
+            if (snd_Init(2))
+            {
+                return true;
+            }
+#endif
+        }
+
 		__pfnDliFailureHook2 = FmodFailHook;
+    }
 	#endif
 	
 	if(snd_engine)
@@ -70,7 +88,7 @@ bool snd_Init(int soundEngine) {
 	
 	#ifdef _WIN32
 	if(soundEngine == 0)
-		__pfnDliFailureHook2 = 0;
+		__pfnDliFailureHook2 = nullptr;
 	#endif
 
 	return ret;

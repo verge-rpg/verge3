@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="lua-5.1.2">
+      <UniqueIdentifier>{b5a43be9-db8d-4960-aa1b-1909303e38dd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lua-5.1.2\lapi.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lauxlib.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lbaselib.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lcode.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\ldblib.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\ldebug.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\ldo.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\ldump.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lfunc.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lgc.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\linit.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\liolib.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\llex.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lmathlib.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lmem.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\loadlib.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lobject.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lopcodes.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\loslib.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lparser.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lstate.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lstring.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lstrlib.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\ltable.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\ltablib.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\ltm.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lundump.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lvm.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\lzio.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-5.1.2\print.c">
+      <Filter>lua-5.1.2</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lua-5.1.2\luaconf.h" />
+  </ItemGroup>
+</Project>

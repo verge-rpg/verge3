@@ -49,6 +49,9 @@
 #if _MSC_VER <= 1600 || defined __BORLANDC__ /* @@@ [2G limit] */
 #define fseeko fseek
 #define ftello ftell
+#elif defined(_MSC_VER)
+#define fseeko _fseeki64
+#define ftello _ftelli64
 #endif
 #else
 #include <sys/types.h> /* some flavors of BSD (like OS X) require this to get time_t */

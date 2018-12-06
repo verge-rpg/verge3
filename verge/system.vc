@@ -1,0 +1,4 @@
+void AutoExec()
+{
+    Exit("VC script launched successfully");
+}

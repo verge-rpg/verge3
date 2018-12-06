@@ -255,12 +255,20 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 	private:
 		void err(const std::string &msg)
 		{
-			::err("%s: %s",msg.c_str(),lua_tostring(L, -1));
+            const auto context = lua_tostring(L, -1);
+            if (context != nullptr)
+            {
+                ::err("%s: %s", msg.c_str(), context);
+            }
+            else
+            {
+                ::err("%s", msg.c_str());
+            }
 		}
 
 		void dump(const std::string &msg)
 		{
-			::err("%s",msg.c_str());
+			::err("%s", msg.c_str());
 			//todo - dump stacktrace or offending line or something
 		}
 
