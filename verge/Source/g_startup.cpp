@@ -42,6 +42,7 @@ int soundengine = 0;
 bool use_lua = false;
 bool vc_oldstring = false;
 bool showpage_auto_sleep = true;
+int last_showpage = 0;
 
 VCCore *vc;
 
@@ -187,10 +188,11 @@ void ShowPage()
 	RenderSprites();
 	Flip();
 
-    if (showpage_auto_sleep)
+    if (systemtime - last_showpage <= 0 && showpage_auto_sleep)
     {
         Sleep(1);
     }
+    last_showpage = systemtime;
 }
 
 #ifndef NOSPLASHSCREEN
