@@ -14,18 +14,17 @@
     <ProjectGuid>{607215A8-486D-4862-8E9D-08DA26E7A90F}</ProjectGuid>
     <RootNamespace>verge</RootNamespace>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>7</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -59,7 +58,6 @@
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>../mikmod/include;../mmio/include;../zlib;../corona;../win32;../dumb/include;../lua/lua-5.1.2;../boost-1.37.0;../lua/luabind;../flac-1.1.4/include;../audiere/src;../UnitTest++/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;MIKMOD_STATIC;_CRT_SECURE_NO_DEPRECATE;USE_DUMB;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
@@ -67,6 +65,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <DisableSpecificWarnings>4018;4731;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>DelayImp.lib;msacm32.lib;vfw32.lib;winmm.lib;ws2_32.lib;../win32/dxguid.lib;../win32/ddraw.lib;../win32/dinput.lib;wininet.lib;../zlib/debug/zlib.lib;../corona/output/debug/corona.lib;../flac-1.1.4/obj/$(Configuration)/lib/libFLAC_static.lib;user32.lib;gdi32.lib;../fmod/fmodvc.lib;../lua/$(Configuration)/lua.lib;../audiere/vc7/bin/$(Configuration)/audiere.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -104,6 +103,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4018;4731;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <AdditionalDependencies>delayimp.lib;msacm32.lib;vfw32.lib;winmm.lib;ws2_32.lib;../win32/dxguid.lib;../win32/ddraw.lib;../win32/dinput.lib;wininet.lib;../zlib/release/zlib.lib;../corona/output/release/corona.lib;user32.lib;gdi32.lib;../fmod/fmodvc.lib;../flac-1.1.4/obj/$(Configuration)/lib/libFLAC_static.lib;ole32.lib;../audiere/vc7/bin/$(Configuration)/audiere.lib;%(AdditionalDependencies)</AdditionalDependencies>

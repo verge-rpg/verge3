@@ -1,6 +1,7 @@
 *.exp
 *.lib
 *.pdb
+*.idb
 *.vcxproj.user
 *.obj
 *.suo
