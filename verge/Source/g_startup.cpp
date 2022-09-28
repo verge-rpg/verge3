@@ -96,6 +96,8 @@ void LoadConfig()
 		soundengine = cfg_GetIntKeyValue("soundengine");
 	if (cfg_KeyPresent("automax"))
 		automax = cfg_GetIntKeyValue("automax") ? true : false;
+	if (cfg_KeyPresent("tilesize"))
+		G_TILESIZE = cfg_GetIntKeyValue("tilesize");
 	if (cfg_KeyPresent("startmap"))
 		strcpy(mapname, cfg_GetKeyValue("startmap"));
 	if (cfg_KeyPresent("vcverbose"))

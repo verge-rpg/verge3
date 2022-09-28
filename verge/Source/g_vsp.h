@@ -8,6 +8,7 @@
 /// If you have altered this source file, please log your name, date, and what
 /// changes you made below this line.
 
+#include "xerxes.h"
 
 struct vspanim_r
 {
@@ -48,8 +49,8 @@ public:
 	{
 		if (!t) return 0;
 		if (t>=numobs || t<0) return 1;
-		if (x<0 || y<0 || x>15 || y>15) return 1;
-		return obs[(t*256)+(y*16)+x];
+		if (x<0 || y<0 || x>=G_TILESIZE || y>=G_TILESIZE) return 1;
+		return obs[(t*G_TILESIZE*G_TILESIZE)+(y*G_TILESIZE)+x];
 	}
 
 };

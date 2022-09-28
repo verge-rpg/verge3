@@ -17,7 +17,6 @@
 #define NE					6
 #define SW					7
 #define SE					8
-#define FOLLOWDISTANCE		16
 
 #define ENT_AUTOFACE		1
 #define ENT_OBSTRUCTS		2
@@ -84,5 +83,5 @@ public:
 	char movestr[256];
 	int moveofs;
 	Entity *follow, *follower;
-	int pathx[FOLLOWDISTANCE], pathy[FOLLOWDISTANCE], pathf[FOLLOWDISTANCE];
+	int pathx[128], pathy[128], pathf[128];
 };

@@ -792,7 +792,7 @@ void ScriptEngine::EntitySetWanderZone(int e) {
 	if (e<0 || e >= entities) return;
 	else entity[e]->SetWanderZone();
 }
-int ScriptEngine::EntitySpawn(int x, int y, CStringRef s) { return AllocateEntity(x*16,y*16,s.c_str()); }
+int ScriptEngine::EntitySpawn(int x, int y, CStringRef s) { return AllocateEntity(x*G_TILESIZE,y*G_TILESIZE,s.c_str()); }
 void ScriptEngine::EntityStalk(int stalker, int stalkee) {
 	if (stalker<0 || stalker>=entities)
 		return;

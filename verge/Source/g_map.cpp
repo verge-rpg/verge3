@@ -201,7 +201,7 @@ MAP::MAP(char *fname)
 		vread(script, 256, f); // this is the actual script
 		vseek(f, o1, 0);
 
-		int i = AllocateEntity(x1*16, y1*16, chrname);
+		int i = AllocateEntity(x1*G_TILESIZE, y1*G_TILESIZE, chrname);
 
 		entity[i]->description = description;
 		entity[i]->script = script;
@@ -261,7 +261,7 @@ MAP::MAP(char *fname)
 		vread(&x2, 4, f);
 		vread(&y2, 4, f);
 
-		int idx = AllocateEntity(tx*16, ty*16, chrfn);
+		int idx = AllocateEntity(tx*G_TILESIZE, ty*G_TILESIZE, chrfn);
 		entity[idx]->setface(eface);
 		entity[idx]->setspeed(speed);
 		entity[idx]->script = escript;
@@ -356,8 +356,8 @@ void MAP::save(FILE *f)
 	{
 		//log("ENT %d of %d", i, entities);
 		// Tile coords.
-		int x = entity[i]->x / 16;
-		int y = entity[i]->y / 16;
+		int x = entity[i]->x / G_TILESIZE;
+		int y = entity[i]->y / G_TILESIZE;
 		fwrite(&x, 1, 2, out);
 		fwrite(&y, 1, 2, out);
 		fwrite(&entity[i]->face, 1, 1, out);
@@ -452,10 +452,10 @@ void MAP::BlitLayer(int l, int tx, int ty, int xwin, int ywin, image *dest)
     // xwin and ywin are non-zero, we would jump unless we compensate
 	int oxw = layer.x_offset + (int) ((float) xwin * layer.parallax_x);
 	int oyw = layer.y_offset + (int) ((float) ywin * layer.parallax_y);
-	int xofs = -(oxw & 15);
-	int yofs = -(oyw & 15);
-	int xtc = oxw >> 4;
-	int ytc = oyw >> 4;
+	int xofs = -(oxw % G_TILESIZE);
+	int yofs = -(oyw % G_TILESIZE);
+	int xtc = oxw / G_TILESIZE;
+	int ytc = oyw / G_TILESIZE;
 
 	if(TRANSPARENT)
 		if (layer.lucent)
@@ -470,10 +470,10 @@ void MAP::BlitLayer(int l, int tx, int ty, int xwin, int ywin, image *dest)
 			int c = layer.GetTile(xtc+x,ytc+y);
 			if(TRANSPARENT) {
 				if(c)
-					tileset->TBlit((x*16)+xofs, (y*16)+yofs, c, dest);
+					tileset->TBlit((x*G_TILESIZE)+xofs, (y*G_TILESIZE)+yofs, c, dest);
 			}
 			else
-				tileset->Blit((x*16)+xofs, (y*16)+yofs, c, dest);
+				tileset->Blit((x*G_TILESIZE)+xofs, (y*G_TILESIZE)+yofs, c, dest);
 		}
 	}
 	if (dest == screen)
@@ -492,17 +492,17 @@ void MAP::BlitObs(int tx, int ty, int xwin, int ywin, image *dest)
 
 	oxw = xwin;
 	oyw = ywin;
-	xofs =- (oxw & 15);
-	yofs =- (oyw & 15);
-	xtc = oxw >> 4;
-	ytc = oyw >> 4;
+	xofs =- (oxw % G_TILESIZE);
+	yofs =- (oyw % G_TILESIZE);
+	xtc = oxw / G_TILESIZE;
+	ytc = oyw / G_TILESIZE;
 
 	SetLucent(50);
 	for (i = 0; i < ty; i++)
 		for (j = 0; j< tx; j++)
 		{
 			c = obslayer[(((ytc + i) * mapwidth) + xtc + j)];
-			if (c) tileset->BlitObs((j * 16) + xofs, (i * 16) + yofs, c, dest);
+			if (c) tileset->BlitObs((j * G_TILESIZE) + xofs, (i * G_TILESIZE) + yofs, c, dest);
 		}
 	SetLucent(0);
 }
@@ -514,8 +514,8 @@ void MAP::render(int x, int y, image *dest)
 
 //	curlayer = 0;
 	src = renderstring;
-	tx = (dest -> width / 16) + 2 ;
-	ty = (dest -> height / 16) + 2;
+	tx = (dest -> width / G_TILESIZE) + 2 ;
+	ty = (dest -> height / G_TILESIZE) + 2;
 
 	while (*src)
 	{
@@ -546,8 +546,8 @@ void MAP::render(int x, int y, image *dest)
 void MAP::render(int x, int y, image *dest)
 {
 	bool first = true;
-	int tx = (dest -> width / 16) + 2;
-	int ty = (dest -> height / 16) + 2;
+	int tx = (dest -> width / G_TILESIZE) + 2;
+	int ty = (dest -> height / G_TILESIZE) + 2;
 	char *src = renderstring;
 	char token[10];
 

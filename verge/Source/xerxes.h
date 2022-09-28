@@ -14,6 +14,8 @@
 #define ALLOW_SCRIPT_COMPILATION
 #define ENABLE_LUA
 
+extern int G_TILESIZE;
+
 #ifdef __APPLE__
 #include "TargetConditionals.h"
 	#if defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR)
