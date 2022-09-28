@@ -166,7 +166,7 @@ void VSP::save(FILE *f)
 	}
 	// Obstruction tiles
 	fwrite(&numobs, 1, 4, f);
-	cfwrite(obs, 1, numobs*256, f);
+	cfwrite(obs, 1, numobs*G_TILESIZE*G_TILESIZE, f);
 }
 
 void VSP::UpdateAnimations()
