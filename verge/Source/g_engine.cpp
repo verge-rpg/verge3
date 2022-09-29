@@ -195,10 +195,10 @@ bool ObstructAt(int x, int y)
 	if( current_map->obstructpixel(x, y) ) {
 		
 		if( isEntityCollisionCapturing() ) {
-			event_tx = x/16;
-			event_ty = y/16;
+			event_tx = x/G_TILESIZE;
+			event_ty = y/G_TILESIZE;
 			event_entity = __grue_actor_index;
-			event_zone = current_map->zone(x/16, y/16);
+			event_zone = current_map->zone(x/G_TILESIZE, y/G_TILESIZE);
 			event_entity_hit = -1;
 			onEntityCollision();
 		}
@@ -211,8 +211,8 @@ bool ObstructAt(int x, int y)
 	if( ent_idx > -1 ) {
 
 		if( isEntityCollisionCapturing() ) {
-			event_tx = x/16;
-			event_ty = y/16;
+			event_tx = x/G_TILESIZE;
+			event_ty = y/G_TILESIZE;
 			event_entity = __grue_actor_index;
 			event_zone = -1;
 			event_entity_hit = ent_idx;
@@ -563,8 +563,8 @@ void ProcessControls()
 					default: err("ProcessControls() - uwahh? invalid myself->face parameter");
 				}
 			}
-			event_tx = entity[i]->getx()/16;
-			event_ty = entity[i]->gety()/16;
+			event_tx = entity[i]->getx()/G_TILESIZE;
+			event_ty = entity[i]->gety()/G_TILESIZE;
 			event_entity = i;
 			int cur_timer = timer;
 			beforeEntityActivation();
@@ -574,14 +574,14 @@ void ProcessControls()
 			return;
 		}
 
-		int cz = current_map->zone(ex/16, ey/16);
+		int cz = current_map->zone(ex/G_TILESIZE, ey/G_TILESIZE);
 		if (cz && strlen(current_map->zones[cz]->script) && current_map->zones[cz]->method)
 		{
 			int cur_timer = timer;
 
 			event_zone = cz;
-			event_tx = ex/16;
-			event_ty = ey/16;
+			event_tx = ex/G_TILESIZE;
+			event_ty = ey/G_TILESIZE;
 			event_entity = i;
 
 			se->ExecuteFunctionString(current_map->zones[cz]->script);
@@ -628,8 +628,8 @@ void Render()
 	if( cheats && !inscroller && lastpressed == 41 )
 		MapScroller();
 
-	int rmap = (current_map->mapwidth * 16);
-	int dmap = (current_map->mapheight * 16);
+	int rmap = (current_map->mapwidth * G_TILESIZE);
+	int dmap = (current_map->mapheight * G_TILESIZE);
 
 	switch (cameratracking)
 	{
@@ -703,17 +703,17 @@ void TimedProcessEntities()
 		if (done) break;
 		if (myself)
 		{
-			px = (myself->getx()+(myself->hotw/2)) / 16;
-			py = (myself->gety()+(myself->hoth/2)) / 16;
+			px = (myself->getx()+(myself->hotw/2)) / G_TILESIZE;
+			py = (myself->gety()+(myself->hoth/2)) / G_TILESIZE;
 		}
 		ProcessEntities();
 		if (!invc) ProcessControls();
 		if (myself && !invc)
 		{
-			if ((px != (myself->getx()+(myself->hotw/2)) / 16) || (py != (myself->gety()+(myself->hoth/2)) / 16))
+			if ((px != (myself->getx()+(myself->hotw/2)) / G_TILESIZE) || (py != (myself->gety()+(myself->hoth/2)) / G_TILESIZE))
 			{
-				px = (myself->getx()+(myself->hotw/2)) / 16;
-				py = (myself->gety()+(myself->hoth/2)) / 16;
+				px = (myself->getx()+(myself->hotw/2)) / G_TILESIZE;
+				py = (myself->gety()+(myself->hoth/2)) / G_TILESIZE;
 				
 				event_tx = px;
 				event_ty = py;

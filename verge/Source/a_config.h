@@ -12,6 +12,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <string>
+#include <vector>
+
 #ifdef __LINUX__
 #define _ASSERTE assert
 #endif

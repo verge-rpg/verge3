@@ -47,7 +47,7 @@ Entity::Entity(int x1, int y1, const char *chrfn)
 	memset(movestr, 0, 256);
 	obstructable = 0;
 	obstruction = 0;
-	for (int i=0; i<FOLLOWDISTANCE; i++)
+	for (int i=0; i<G_TILESIZE; i++)
 		pathx[i] = x,
 		pathy[i] = y,
 		pathf[i] = SOUTH;
@@ -72,7 +72,7 @@ void Entity::setxy(int x1, int y1)
 	y = y1 * 65536;
 	if (follower) follower->setxy(x1, y1);
 	set_waypoint(x1, y1);
-	for (int i=0; i<FOLLOWDISTANCE; i++)
+	for (int i=0; i<G_TILESIZE; i++)
 		pathx[i] = x,
 		pathy[i] = y,
 		pathf[i] = SOUTH;
@@ -167,12 +167,12 @@ void Entity::stalk(Entity *e)
 {
 	follow = e;
 	e->follower = this;
-	for (int i=0; i<FOLLOWDISTANCE; i++)
-		pathx[i] = follow->pathx[FOLLOWDISTANCE-1],
-		pathy[i] = follow->pathy[FOLLOWDISTANCE-1],
+	for (int i=0; i<G_TILESIZE; i++)
+		pathx[i] = follow->pathx[G_TILESIZE-1],
+		pathy[i] = follow->pathy[G_TILESIZE-1],
 		pathf[i] = SOUTH;
-	x = follow->pathx[FOLLOWDISTANCE-1];
-	y = follow->pathy[FOLLOWDISTANCE-1];
+	x = follow->pathx[G_TILESIZE-1];
+	y = follow->pathy[G_TILESIZE-1];
 	set_waypoint(x/65536, y/65536);
     movecode = 0;
 	obstruction = false;
@@ -215,7 +215,7 @@ void Entity::move_tick()
 	framect++;
 
 	// update pathxy for following
-	for (int i=FOLLOWDISTANCE-2; i>=0; i--)
+	for (int i=G_TILESIZE-2; i>=0; i--)
 		pathx[i+1] = pathx[i],
 		pathy[i+1] = pathy[i],
 		pathf[i+1] = pathf[i];
@@ -231,9 +231,9 @@ void Entity::move_tick()
     // of different lengths are ok in a stalking chain.
 	if (follow)
 	{
-		x = follow->pathx[FOLLOWDISTANCE-1];
-		y = follow->pathy[FOLLOWDISTANCE-1];
-		face = follow->pathf[FOLLOWDISTANCE-1];
+		x = follow->pathx[G_TILESIZE-1];
+		y = follow->pathy[G_TILESIZE-1];
+		face = follow->pathf[G_TILESIZE-1];
 		set_waypoint(x/65536, y/65536);
 		if (follower)
 			follower->move_tick();
@@ -367,8 +367,8 @@ bool Entity::ObstructDir(int d)
 void Entity::do_wanderzone()
 {
 	bool ub=false, db=false, lb=false, rb=false;
-	int ex = getx()/16;
-	int ey = gety()/16;
+	int ex = getx()/G_TILESIZE;
+	int ey = gety()/G_TILESIZE;
 	int myzone = current_map->zone(ex, ey);
 
 	if (ObstructDir(EAST) || current_map->zone(ex+1, ey) != myzone) rb=true;
@@ -386,19 +386,19 @@ void Entity::do_wanderzone()
 		{
 			case 0:
 				if (rb) break;
-				set_waypoint_relative(16, 0);
+				set_waypoint_relative(G_TILESIZE, 0);
 				return;
 			case 1:
 				if (lb) break;
-				set_waypoint_relative(-16, 0);
+				set_waypoint_relative(-G_TILESIZE, 0);
 				return;
 			case 2:
 				if (db) break;
-				set_waypoint_relative(0, 16);
+				set_waypoint_relative(0, G_TILESIZE);
 				return;
 			case 3:
 				if (ub) break;
-				set_waypoint_relative(0, -16);
+				set_waypoint_relative(0, -G_TILESIZE);
 				return;
 		}
 	}
@@ -407,8 +407,8 @@ void Entity::do_wanderzone()
 void Entity::do_wanderbox()
 {
 	bool ub=false, db=false, lb=false, rb=false;
-	int ex = getx()/16;
-	int ey = gety()/16;
+	int ex = getx()/G_TILESIZE;
+	int ey = gety()/G_TILESIZE;
 
 	if (ObstructDir(EAST) || ex+1 > wx2) rb=true;
 	if (ObstructDir(WEST) || ex-1 < wx1) lb=true;
@@ -425,19 +425,19 @@ void Entity::do_wanderbox()
 		{
 			case 0:
 				if (rb) break;
-				set_waypoint_relative(16, 0);
+				set_waypoint_relative(G_TILESIZE, 0);
 				return;
 			case 1:
 				if (lb) break;
-				set_waypoint_relative(-16, 0);
+				set_waypoint_relative(-G_TILESIZE, 0);
 				return;
 			case 2:
 				if (db) break;
-				set_waypoint_relative(0, 16);
+				set_waypoint_relative(0, G_TILESIZE);
 				return;
 			case 3:
 				if (ub) break;
-				set_waypoint_relative(0, -16);
+				set_waypoint_relative(0, -G_TILESIZE);
 				return;
 		}
 	}
@@ -456,7 +456,7 @@ void Entity::do_movescript()
 
     // reset to tile-based at the start of a movestring
     if(moveofs == 0) {
-        movemult = 16;
+        movemult = G_TILESIZE;
     }
 
 	while ((movestr[moveofs] >= '0' && movestr[moveofs] <= '9') || movestr[moveofs] == ' ' || movestr[moveofs] == '-')
@@ -515,11 +515,11 @@ void Entity::do_movescript()
 			case 'B': moveofs = 0; break;
 			case 'X': moveofs++;
 				arg = atoi(&movestr[moveofs]);
-				set_waypoint(arg*16, gety());
+				set_waypoint(arg*G_TILESIZE, gety());
 				break;
 			case 'Y': moveofs++;
 				arg = atoi(&movestr[moveofs]);
-				set_waypoint(getx(), arg*16);
+				set_waypoint(getx(), arg*G_TILESIZE);
 				break;
 			case 'Z': moveofs++;
 				specframe = atoi(&movestr[moveofs]);
@@ -527,7 +527,7 @@ void Entity::do_movescript()
 			case 'P': movemult = 1;
 				moveofs++;
 				break;
-			case 'T': movemult = 16;
+			case 'T': movemult = G_TILESIZE;
 				moveofs++;
 				break;
 			case 'H':
@@ -584,7 +584,7 @@ void Entity::draw()
 	if (chr)
 		chr->render(zx, zy, frame, screen);
 	else
-		DrawRect(zx, zy, zx + 15, zy + 15, MakeColor(255,255,255), screen);
+		DrawRect(zx, zy, zx + G_TILESIZE-1, zy + G_TILESIZE-1, MakeColor(255,255,255), screen);
 }
 
 void Entity::SetWanderZone()

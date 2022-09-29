@@ -109,9 +109,9 @@ public:
 
 	int obstructpixel(int x, int y)
 	{
-		if (x<0 || y<0 || (x>>4)>=mapwidth || (y>>4)>=mapheight) return 1;
-		int t=obslayer[((y>>4)*mapwidth)+(x>>4)];
-		return tileset->GetObs(t, x&15, y&15);
+		if (x<0 || y<0 || (x/G_TILESIZE)>=mapwidth || (y/G_TILESIZE)>=mapheight) return 1;
+		int t=obslayer[((y/G_TILESIZE)*mapwidth)+(x/G_TILESIZE)];
+		return tileset->GetObs(t, x%G_TILESIZE, y%G_TILESIZE);
 	}
 
 };

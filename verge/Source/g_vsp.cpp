@@ -74,8 +74,8 @@ void VSP::LoadVSP(VFILE *f)
 
 	int tilesize;
 	vread(&tilesize, 4, f);
-	if (tilesize != 16)
-		err("VSP::LoadVSP() - bzzzzzzzzttt. Try a 16x16 vsp! %d",tilesize);
+	if (tilesize != G_TILESIZE)
+		err("VSP::LoadVSP() - bzzzzzzzzttt. Try a %dx%d vsp!",tilesize,tilesize);
 
 	int format;
 	vread(&format, 4, f);
@@ -84,13 +84,13 @@ void VSP::LoadVSP(VFILE *f)
 	int compression;
 	vread(&compression, 4, f);
 	if (compression != VSP_ZLIB) err("huhhruhoeijfaoijrf..fdpok no compression? tell vecna!!!");
-	byte *tiledatabuf = new byte[16*16*3*numtiles];
-	cvread(tiledatabuf, 16*16*3*numtiles, f);
+	byte *tiledatabuf = new byte[G_TILESIZE*G_TILESIZE*3*numtiles];
+	cvread(tiledatabuf, G_TILESIZE*G_TILESIZE*3*numtiles, f);
 
-	container = new image(16, 16);
+	container = new image(G_TILESIZE, G_TILESIZE);
 	container->delete_data();
 
-	vspdata = ImageFrom24bpp(tiledatabuf, 16, 16*numtiles);
+	vspdata = ImageFrom24bpp(tiledatabuf, G_TILESIZE, G_TILESIZE*numtiles);
 	delete[] tiledatabuf;
 
 	vread(&numanims, 4, f);
@@ -107,8 +107,8 @@ void VSP::LoadVSP(VFILE *f)
 	ValidateAnimations();
 
 	vread(&numobs, 4, f);
-	obs = new char[numobs*256];
-	cvread(obs, numobs*256, f);
+	obs = new char[numobs*G_TILESIZE*G_TILESIZE];
+	cvread(obs, numobs*G_TILESIZE*G_TILESIZE, f);
 
 	// initialize tile anim stuff
 	tileidx = new int[numtiles];
@@ -138,8 +138,8 @@ void VSP::save(FILE *f)
 	// Version
 	int version = VSP_VERSION;
 	fwrite(&version, 1, 4, f);
-	// Tilesize - always 16x16
-	int tilesize = 16;
+	// Tilesize
+	int tilesize = G_TILESIZE;
 	fwrite(&tilesize, 1, 4, f);
 	// Format??? always 0, I assume.
 	int format = 0;
@@ -153,7 +153,7 @@ void VSP::save(FILE *f)
 
 	// Write our tiledata.
 	byte *tiledatabuf = ImageTo24bpp(vspdata);
-	cfwrite(tiledatabuf, 1, 16*16*3*numtiles, f);
+	cfwrite(tiledatabuf, 1, G_TILESIZE*G_TILESIZE*3*numtiles, f);
 	// Animation!
 	fwrite(&numanims, 1, 4, f);
 	for(int i = 0; i < numanims; i++)
@@ -166,7 +166,7 @@ void VSP::save(FILE *f)
 	}
 	// Obstruction tiles
 	fwrite(&numobs, 1, 4, f);
-	cfwrite(obs, 1, numobs*256, f);
+	cfwrite(obs, 1, numobs*G_TILESIZE*G_TILESIZE, f);
 }
 
 void VSP::UpdateAnimations()
@@ -209,11 +209,11 @@ void VSP::TBlit(int x, int y, int index, image *dest)
 void VSP::BlitObs(int x, int y, int index, image *dest)
 {
 	if (index >= numobs) return;
-	char *c = (char *) obs + (index * 256);
+	char *c = (char *) obs + (index * G_TILESIZE*G_TILESIZE);
 	int white = MakeColor(255,255,255);
-	for (int yy=0; yy<16; yy++)
-		for (int xx=0; xx<16; xx++)
-			if (c[(yy*16)+xx]) PutPixel(x+xx, y+yy, white, dest);
+	for (int yy=0; yy<G_TILESIZE; yy++)
+		for (int xx=0; xx<G_TILESIZE; xx++)
+			if (c[(yy*G_TILESIZE)+xx]) PutPixel(x+xx, y+yy, white, dest);
 }
 
 void VSP::AnimateTile(int i, int l)
