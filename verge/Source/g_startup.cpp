@@ -286,100 +286,119 @@ bool CompileMaps(const char *ext, MapScriptCompiler *compiler, char *directory =
 }
 #endif
 
+void _main(int argc, char** argv)
+{
+  vc_initBuiltins();
+  vc_initLibrary();
+
+  InitGarlick();
+  Handle::init();
+
+  strcpy(mapname,"");
+
+
+  LoadConfig();
+  if (argc == 2)
+  {
+    if (strlen(argv[1]) > 254)
+      err("Mapname argument too long!");
+    strcpy(mapname, argv[1]);
+  }
+
+  InitVideo();
+
+  mouse_Init();
+  InitKeyboard();
+  joy_Init();
+  InitScriptEngine();
+
+  //---cross-platform plugins initialization
+  //	extern void p_datastructs();
+  //p_datastructs();
+  //---------
+
+  gameWindow->setTitle(APPNAME);
+
+  if (sound) snd_Init(soundengine);
+
+  win_movie_init();
+  ResetSprites();
+  timer_Init(gamerate);
+
+#ifdef ALLOW_SCRIPT_COMPILATION
+  if(!releasemode)
+    vcc = new VCCompiler();
+#endif
+
+#ifdef ALLOW_SCRIPT_COMPILATION
+  if(editcode) {
+    if(releasemode) {
+      err("Cannot edit code in release mode.");
+    }
+    if(!windowmode) {
+      err("Cannot edit code in full-screen mode.");
+    }
+    InitEditCode();
+  }
+#endif
+
+#ifdef ENABLE_LUA
+  LUA *lua;
+
+  if(use_lua)
+    se = lua = new LUA();
+#endif
+	
+#ifdef ALLOW_SCRIPT_COMPILATION
+  if (!releasemode)
+  {
+    DisplayCompileImage();
+#ifdef ENABLE_LUA
+    if(use_lua) {
+      lua->compileSystem();
+      CompileMaps("lua",lua);
+    } else 
+#endif
+    {
+      bool result = vcc->CompileAll();
+      if (!result) err(vcc->errmsg);
+      vcc->ExportSystemXVC();
+      result = CompileMaps("vc",vcc);
+      if (!result) err(vcc->errmsg);
+    }
+  }
+#endif
+
+  if(!use_lua) {
+    se = vc = new VCCore();
+    if (decompile)
+      vc->Decompile();
+  }
+	
+  se->ExecAutoexec();
+}
 
 //---
 void xmain(int argc, char *argv[])
 {
-	vc_initBuiltins();
-	vc_initLibrary();
-
-	InitGarlick();
-	Handle::init();
-
-	strcpy(mapname,"");
-
-
-	LoadConfig();
-	if (argc == 2)
+	_main(argc, argv);
+	while (true && strlen(mapname)) // main game loop
 	{
-		if (strlen(argv[1]) > 254)
-			err("Mapname argument too long!");
-		strcpy(mapname, argv[1]);
+	  Engine_Start(mapname);
 	}
+	err(""); // exit!
+}
 
-	InitVideo();
+void xtestmain(int argc, char* argv[])
+{
+  // hMainInst = hCurrentInst;
+  DesktopBPP = GetDeviceCaps(GetDC(nullptr), BITSPIXEL);
+  v3_bpp = DesktopBPP;
+  //dd_init();
+  setWindowTitle("Test Verge3");
 
-	mouse_Init();
-	InitKeyboard();
-	joy_Init();
-	InitScriptEngine();
+  srand(timeGetTime());
+  log_Init(true);
 
-	//---cross-platform plugins initialization
-//	extern void p_datastructs();
-	//p_datastructs();
-	//---------
-
-	gameWindow->setTitle(APPNAME);
-
-	if (sound) snd_Init(soundengine);
-
-	win_movie_init();
-	ResetSprites();
-	timer_Init(gamerate);
-
-	#ifdef ALLOW_SCRIPT_COMPILATION
-	if(!releasemode)
-		vcc = new VCCompiler();
-	#endif
-
-	#ifdef ALLOW_SCRIPT_COMPILATION
-	if(editcode) {
-		if(releasemode) {
-			err("Cannot edit code in release mode.");
-		}
-		if(!windowmode) {
-			err("Cannot edit code in full-screen mode.");
-		}
-		InitEditCode();
-	}
-	#endif
-
-	#ifdef ENABLE_LUA
-	LUA *lua;
-
-	if(use_lua)
-		se = lua = new LUA();
-	#endif
-	
-	#ifdef ALLOW_SCRIPT_COMPILATION
-	if (!releasemode)
-	{
-		DisplayCompileImage();
-		#ifdef ENABLE_LUA
-		if(use_lua) {
-			lua->compileSystem();
-			CompileMaps("lua",lua);
-		} else 
-		#endif
-		{
-			bool result = vcc->CompileAll();
-			if (!result) err(vcc->errmsg);
-			vcc->ExportSystemXVC();
-			result = CompileMaps("vc",vcc);
-			if (!result) err(vcc->errmsg);
-		}
-	}
-	#endif
-
-	if(!use_lua) {
-		se = vc = new VCCore();
-		if (decompile)
-			vc->Decompile();
-	}
-	
-	se->ExecAutoexec();
-
-	while (true && strlen(mapname))
-		Engine_Start(mapname);
-	err("");
+  _main(argc, argv);
 }

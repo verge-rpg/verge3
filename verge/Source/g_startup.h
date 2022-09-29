@@ -31,6 +31,9 @@ extern int gamerate;
 extern bool vc_oldstring;
 void ShowPage();
 
+void xtestmain(int argc, char* argv[]); // for doctest init
+void xmain(int argc, char* argv[]);
+
 #ifdef ALLOW_SCRIPT_COMPILATION
 extern VCCompiler *vcc;
 #endif

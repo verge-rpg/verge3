@@ -41,7 +41,10 @@ Log::EnsureOpen()
 void
 Log::Close()
 {
-  fclose(handle);
+  if (handle != nullptr)
+  {
+    fclose(handle);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
