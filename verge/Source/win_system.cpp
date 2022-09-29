@@ -46,7 +46,7 @@ void platform_ProcessConfig()
 {
 }
 
-int APIENTRY WinMain(HINSTANCE hCurrentInst, HINSTANCE zwhocares, LPSTR szCommandline, int nCmdShow)
+int APIENTRY _WinMain(HINSTANCE hCurrentInst, HINSTANCE zwhocares, LPSTR szCommandline, int nCmdShow)
 {
 	hMainInst = hCurrentInst;
 	DesktopBPP = GetDeviceCaps(GetDC(NULL), BITSPIXEL);
