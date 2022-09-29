@@ -16,6 +16,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "audiere", "audiere\vc7\audi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vergemain", "vergemain\vergemain.vcxproj", "{AE3BA2B7-02A7-4D12-9B88-1BA1CF15FDA5}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vergetest", "vergetest\vergetest.vcxproj", "{C8B24152-25AD-4593-BDE9-2F0783ABD61E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -80,6 +82,14 @@ Global
 		{AE3BA2B7-02A7-4D12-9B88-1BA1CF15FDA5}.Release|Win32.Build.0 = Release|Win32
 		{AE3BA2B7-02A7-4D12-9B88-1BA1CF15FDA5}.Release|x64.ActiveCfg = Release|x64
 		{AE3BA2B7-02A7-4D12-9B88-1BA1CF15FDA5}.Release|x64.Build.0 = Release|x64
+		{C8B24152-25AD-4593-BDE9-2F0783ABD61E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C8B24152-25AD-4593-BDE9-2F0783ABD61E}.Debug|Win32.Build.0 = Debug|Win32
+		{C8B24152-25AD-4593-BDE9-2F0783ABD61E}.Debug|x64.ActiveCfg = Debug|x64
+		{C8B24152-25AD-4593-BDE9-2F0783ABD61E}.Debug|x64.Build.0 = Debug|x64
+		{C8B24152-25AD-4593-BDE9-2F0783ABD61E}.Release|Win32.ActiveCfg = Release|Win32
+		{C8B24152-25AD-4593-BDE9-2F0783ABD61E}.Release|Win32.Build.0 = Release|Win32
+		{C8B24152-25AD-4593-BDE9-2F0783ABD61E}.Release|x64.ActiveCfg = Release|x64
+		{C8B24152-25AD-4593-BDE9-2F0783ABD61E}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

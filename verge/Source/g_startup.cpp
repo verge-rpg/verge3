@@ -298,6 +298,7 @@ void xmain(int argc, char *argv[])
 
 	strcpy(mapname,"");
 
+
 	LoadConfig();
 	if (argc == 2)
 	{
