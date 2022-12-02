@@ -51,7 +51,7 @@ bool LUA::CompileMap(const char *f) {
 	VFILE *si = vopen(va("%s.lua", f));
 	if (!si) ::err("unable to open %s.lua", f);
 	int scriptlen = filesize(si);
-	std::auto_ptr<char> temp(new char[scriptlen+1]);
+	std::unique_ptr<char> temp(new char[scriptlen+1]);
 	vread(temp.get(),scriptlen,si);
 	vclose(si);
 
@@ -91,7 +91,7 @@ void LUA::compileSystem() {
 void LUA::LoadMapScript(VFILE *f, CStringRef filename) {
 	int scriptsize;
 	vread(&scriptsize,4,f);
-	std::auto_ptr<char> temp(new char[scriptsize+1]);
+	std::unique_ptr<char[]> temp(new char[scriptsize+1]);
 	vread(temp.get(),scriptsize,f);
 	temp.get()[scriptsize] = 0;
 
@@ -103,7 +103,7 @@ void LUA::LoadMapScript(VFILE *f, CStringRef filename) {
 
 void LUA::loadFile(const char *fname) {
 
-	boost::shared_array<byte> buf = vreadfile(fname);
+	auto buf = vreadfile(fname);
 	if(!buf.get())
 		err("Error loading " + std::string(fname));
 

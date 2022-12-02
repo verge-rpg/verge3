@@ -103,7 +103,7 @@ public:
 	virtual StringRef ResolveString() = 0;
 	virtual VergeCallback ResolveCallback() = 0; // Get callback from argument list (Lua allocates a reference).
 	virtual void ReleaseCallback(VergeCallback& cb) = 0; // Free callback (or else, memory bloat in Lua.).
-	virtual void ExecuteCallback(VergeCallback& cb, bool calling_from_library) = 0; // Invoke callback.
+	virtual void ExecuteCallback(const VergeCallback& cb, bool calling_from_library) = 0; // Invoke callback.
 	virtual bool CheckForVarargs() = 0;
 	virtual void ReadVararg(std::vector<argument_t>& vararg) = 0;
 	void vcerr(char *str, ...) {

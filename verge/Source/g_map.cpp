@@ -492,8 +492,8 @@ void MAP::BlitObs(int tx, int ty, int xwin, int ywin, image *dest)
 
 	oxw = xwin;
 	oyw = ywin;
-	xofs =- (oxw % G_TILESIZE);
-	yofs =- (oyw % G_TILESIZE);
+	xofs = -(oxw % G_TILESIZE);
+	yofs = -(oyw % G_TILESIZE);
 	xtc = oxw / G_TILESIZE;
 	ytc = oyw / G_TILESIZE;
 

@@ -25,3 +25,8 @@ flac-1.1.4/obj/
 flac-1.1.4/src/libFLAC/Debug_static
 flac-1.1.4/src/libFLAC/Release_static
 Debug/
+*.d
+*.o
+*.a
+*.wasm
+.sconsign.dblite

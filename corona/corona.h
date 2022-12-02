@@ -223,7 +223,6 @@ namespace corona {
    */
   class File : public DLLInterface {
   public:
-
     /**
      * The different ways you can seek within a file.
      */

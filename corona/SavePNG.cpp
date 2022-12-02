@@ -34,7 +34,7 @@ namespace corona {
 	break;
       default: {
 	COR_LOG("Unsupported pixel format... cloning");
-	std::auto_ptr<Image> cloned(CloneImage(image, PF_R8G8B8A8));
+	std::unique_ptr<Image> cloned(CloneImage(image, PF_R8G8B8A8));
 	return SavePNG(file, cloned.get());
       }
     }

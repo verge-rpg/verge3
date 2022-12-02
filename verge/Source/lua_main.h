@@ -186,7 +186,7 @@ class LUA : public ScriptEngine, public MapScriptCompiler
 		}
 
 		// Invoke callback.
-		virtual void ExecuteCallback(VergeCallback& cb, bool calling_from_library)
+		virtual void ExecuteCallback(const VergeCallback& cb, bool calling_from_library)
 		{
 			//the gettop/settop is to recover the stack from the user having returned a value from the callback function (we dont want one)
 			int temp = lua_gettop(L);

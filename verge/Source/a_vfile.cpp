@@ -15,7 +15,6 @@
  ****************************************************************/
 
 #include "xerxes.h"
-#include <boost/shared_array.hpp>
 
 // ***************************** Data *****************************
 
@@ -148,7 +147,7 @@ VFILE *vopen(const char *fname)
 	// swap backslashes in path for forward slashes
 	// (windows -> unix/max)
 	string converted = fname;
-	boost::algorithm::replace_all(converted, "\\", "/");
+	replace_all(converted, '\\', '/');
 	fname = converted.c_str();
 #endif
 	// All files using V* are read-only. To write a file, use regular i/o.
@@ -539,11 +538,11 @@ int veof(VFILE *f)
 	return vtell(f) >= filesize(f);
 }
 
-boost::shared_array<byte> vreadfile(const char *fname) {
+std::unique_ptr<byte[]> vreadfile(const char *fname) {
 	VFILE *f = vopen(fname);
-	if(!f) return boost::shared_array<byte>(0);
+	if(!f) return nullptr;
 	int len = filesize(f);
-	boost::shared_array<byte> buf(new byte[len+4]);
+	std::unique_ptr<byte[]> buf(new byte[len+4]);
 	*((int*)buf.get()) = len;
 	vread(buf.get()+4,len,f);
 	vclose(f);

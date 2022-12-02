@@ -8,10 +8,11 @@ LUASRC = ../lua/lua-5.1.2/
 
 OBJS = \
 	$(V3SRC)a_common.o $(V3SRC)a_dict.o $(V3SRC)a_vfile.o $(V3SRC)a_codec.o $(V3SRC)a_config.o $(V3SRC)a_handle.o $(V3SRC)a_image.o $(V3SRC)a_string.o \
-	$(V3SRC)g_script.o $(V3SRC)g_startup.o $(V3SRC)g_chr.o $(V3SRC)g_font.o $(V3SRC)g_controls.o $(V3SRC)g_engine.o $(V3SRC)g_editcode.o $(V3SRC)g_sound.o $(V3SRC)snd_fmod.o $(V3SRC)g_entity.o $(V3SRC)g_sprites.o $(V3SRC)g_map.o $(V3SRC)g_vsp.o $(V3SRC)garlick.o $(V3SRC)lua_main.o \
+	$(V3SRC)g_script.o $(V3SRC)g_startup.o $(V3SRC)g_chr.o $(V3SRC)g_font.o $(V3SRC)g_controls.o $(V3SRC)g_engine.o $(V3SRC)g_editcode.o $(V3SRC)g_sound.o $(V3SRC)snd_fmod.o $(V3SRC)g_entity.o $(V3SRC)g_sprites.o $(V3SRC)g_map.o $(V3SRC)g_vsp.o $(V3SRC)garlick.o $(V3SRC)lua_main.o $(V3SRC)lua_vector.o $(V3SRC)algebra3.o \
 	$(V3SRC)vc_builtins.o $(V3SRC)vc_core.o $(V3SRC)vc_compiler.o $(V3SRC)vc_library.o $(V3SRC)vc_debug.o \
 	$(V3SRC)vid_manager.o $(V3SRC)vid_sysfont.o $(V3SRC)vid_ddblit.o $(V3SRC)vid_timeless.o $(V3SRC)vid_fbfx.o \
-	$(V3SRC)vid_macbase.o $(V3SRC)mac_joystick.o $(V3SRC)mac_network.o $(V3SRC)mac_keyboard.o $(V3SRC)mac_mouse.o $(V3SRC)mac_system.o $(V3SRC)mac_timer.o $(V3SRC)mac_movie.o  \
+	$(V3SRC)vid_macbase.o $(V3SRC)mac_joystick.o $(V3SRC)mac_network.o $(V3SRC)mac_keyboard.o $(V3SRC)mac_mouse.o $(V3SRC)mac_system.o $(V3SRC)mac_timer.o $(V3SRC)mac_movie.o \
+	$(V3SRC)xerxes.o
 
 LUAOBJS = $(LUASRC)lapi.o \
 	$(LUASRC)lauxlib.o \
@@ -144,7 +145,8 @@ liblua.a: $(LUAOBJS)
 clean:
 	rm libzlib.a libcorona.a liblua.a verge3 $(OBJS) $(COROBJS) $(LIBJPEGOBJS) $(LIBPNGOBJS) $(LIBUNGIFOBJS)
 
-INCDIR = $(ZLIBSRC) $(V3SRC) $(CORSRC)jpeg-6b $(CORSRC)libungif-4.1.0 $(CORSRC)libpng-1.2.1 $(CORSRC)SDL_CFLAGS = $(shell sdl-config --cflags)
+INCDIR = $(ZLIBSRC) $(V3SRC) $(CORSRC)jpeg-6b $(CORSRC)libungif-4.1.0 $(CORSRC)libpng-1.2.1 $(CORSRC)
+SDL_CFLAGS = $(shell sdl-config --cflags)
 SDL_LDFLAGS = $(shell sdl-config --libs)
 GTK_CFLAGS = $(shell pkg-config --cflags gtk+-2.0)
 GTK_LDFLAGS = $(shell pkg-config --libs gtk+-2.0)

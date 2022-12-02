@@ -17,7 +17,7 @@ extern quad systemtime, timer, vctimer, hooktimer;
 class xTimer
 {
 public:
-	xTimer(int hz, SDL_NewTimerCallback TimeProc);
+	xTimer(int hz, SDL_TimerCallback TimeProc);
 	~xTimer();
 	int hz;
 private:

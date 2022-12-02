@@ -125,7 +125,7 @@ int AllocateEntity(int x, int y, const char *chr)
 	return entities++;
 }
 
-static int CDECL cmpent(const void* a, const void* b)
+static int cmpent(const void* a, const void* b)
 {
 	return entity[*(byte*)a]->gety() - entity[*(byte*)b]->gety();
 }

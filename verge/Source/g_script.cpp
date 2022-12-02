@@ -1377,7 +1377,7 @@ int ScriptEngine::FileOpen(CStringRef fname, int filemode) {
 	// swap backslashes in path for forward slashes
 	// (windows -> unix/max)
 	string converted = fname.str();
-	boost::algorithm::replace_all(converted, "\\", "/");
+	replace_all(converted, '\\', '/');
 	cpfname = converted.c_str();
 	#endif
 

@@ -36,8 +36,8 @@ int getHour();
 int getMinute();
 int getSecond();
 
-void strupr(char *c);
-void strlwr(char *c);
+char* strupr(char *c);
+char* strlwr(char *c);
 
 void listFilePattern(std::vector<std::string> &res, CStringRef pattern);
 

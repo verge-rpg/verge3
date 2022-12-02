@@ -344,7 +344,7 @@ StringRef VCCore::PopString()
 	return str_stack[--str_stack_ptr];
 }
 
-void VCCore::PushCallback(VergeCallback cb)
+void VCCore::PushCallback(const VergeCallback& cb)
 {
 	if (cb_stack_ptr < 0 || cb_stack_ptr > 1024)
 		err("VCCore::PushCallback() Stack overflow!");
@@ -1114,14 +1114,14 @@ bool VCCore::CheckForVarargs()
 	return false;
 }
 
-bool VCCore::CallbackFunctionExists(VergeCallback& cb)
+bool VCCore::CallbackFunctionExists(const VergeCallback& cb)
 {
 	// Return whether or not this is the null function.
 	// Otherwise, it must exist (und)
 	return cb.functionIndex != -1;
 }
 
-void VCCore::ExecuteCallback(VergeCallback& cb, bool calling_from_library)
+void VCCore::ExecuteCallback(const VergeCallback& cb, bool calling_from_library)
 {
 	// Set return values to empty values, in case of failure.
 	vcreturn = 0;

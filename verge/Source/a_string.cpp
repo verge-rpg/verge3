@@ -1,12 +1,7 @@
 #include "xerxes.h"
 #include <stdio.h>
+#include <string.h>
 
-//the order of these matters: StringRefs cant be constructed until the pool is created
-boost::object_pool<_StringRef> &StringRef::get_StringRef_allocator()
-{
-	static boost::object_pool<_StringRef> _StringRef_allocator;
-	return _StringRef_allocator;
-}
 CStringRef empty_string = StringRef::empty_string();
 
 const StringRef& StringRef::empty_string() {
@@ -31,6 +26,37 @@ void operator delete(void* mem) throw() {
 
 #endif
 
+std::string to_upper_copy(const std::string& s) {
+	auto result = s;
+	to_upper(result);
+	return result;
+}
+
+void to_upper(std::string& s) {
+	for (std::size_t i = 0; i != s.size(); ++i) {
+		s[i] = toupper(s[i]);
+	}
+}
+
+std::string to_lower_copy(const std::string& s) {
+	auto result = s;
+	to_upper(result);
+	return result;
+}
+
+void to_lower(std::string& s) {
+	for (std::size_t i = 0; i != s.size(); ++i) {
+		s[i] = tolower(s[i]);
+	}
+}
+
+void replace_all(std::string& s, char match, char replacement) {
+	for (std::size_t i = 0; i != s.size(); ++i) {
+		if (s[i] == match) {
+			s[i] = replacement;
+		}
+	}
+}
 
 int strcasecmp(CStringRef s1, CStringRef s2) {
 	return strcasecmp(s1.c_str(),s2.c_str());

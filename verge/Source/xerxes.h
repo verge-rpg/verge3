@@ -38,12 +38,15 @@ extern int G_TILESIZE;
 #define DEF_OS "psp"
 #elif defined(__WII__)
 #define DEF_OS "wii"
+#elif defined(__EMSCRIPTEN__)
+#define DEF_OS "linux"
 #else
 #define DEF_OS "win"
 #endif
 
 #include <math.h>
 #include <vector>
+#include <assert.h>
 
 #ifdef WIN32
 #define __WIN32__ 1
@@ -146,7 +149,7 @@ typedef unsigned char  byte;
 	#endif
 
 #include "../corona/corona.h"
-#elif __LINUX__
+#elif defined(__LINUX__) || defined(__EMSCRIPTEN__)
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -154,9 +157,16 @@ typedef unsigned char  byte;
 #include <strings.h>
 #include <unistd.h>
 #include <SDL.h>
-#include <fmod.h>
+
 #include <corona.h>
-#include <gtk/gtk.h>
+    #ifdef __LINUX__
+    #include <fmod.h>
+    #include <gtk/gtk.h>
+    #endif
+
+    #ifdef __EMSCRIPTEN__
+    #include <emscripten.h>
+    #endif
 
 //mbg 9/5/05 adding psp support
 #elif __PSP__
@@ -206,17 +216,7 @@ typedef unsigned char  byte;
 #include "vid_ddbase.h"
 #include "iphone_platform.h"
 
-#elif __APPLE__
-#include "vid_macbase.h"
-#include "mac_joystick.h"
-#include "mac_network.h"
-#include "mac_keyboard.h"
-#include "mac_mouse.h"
-#include "mac_system.h"
-#include "mac_timer.h"
-#include "mac_movie.h"
-
-#elif __LINUX__
+#elif defined(__APPLE__) || defined(__LINUX__) || defined(__EMSCRIPTEN__)
 #include "vid_macbase.h"
 #include "mac_joystick.h"
 #include "mac_network.h"

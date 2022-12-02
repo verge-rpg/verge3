@@ -5,8 +5,6 @@
 
 #include "lua_main.h"
 
-struct lua_State;
-
 class vec3;
 
 //pushes a vec3 onto the lua stack as userdata

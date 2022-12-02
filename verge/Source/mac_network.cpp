@@ -23,15 +23,15 @@
 #include <netdb.h>
 #include "xerxes.h"
 
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__EMSCRIPTEN__)
 std::string getUrlText(CStringRef)
 {
-	err("getUrlText is TODO in Linux");
+	err("getUrlText is not currently supported");
 }
 
 int getUrlImage(CStringRef)
 {
-	err("getUrlImage is TODO in Linux");
+	err("getUrlImage is not currently supported");
 }
 #endif
 

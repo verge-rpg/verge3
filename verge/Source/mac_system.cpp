@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <glob.h>
+#include <time.h>
 
 #include "xerxes.h"
 
@@ -33,17 +34,25 @@ bool IgnoreEvents = false;
 /***************************** code *****************************/
 
 
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__EMSCRIPTEN__)
 void InitEditCode()
 {
-	err("Edit code mode is TODO in Linux");
+	err("Edit code mode is not currently supported");
 }
 
 void AddSourceFile(std::string s)
 {
-	//log("AddSourceFile() is TODO in Linux");
+	//log("AddSourceFile() is not currently supported");
 }
 
+StringRef GetSystemSaveDirectory(CStringRef name)
+{
+	static const StringRef dotSlash = "./";
+	return dotSlash;
+}
+#endif
+
+#ifdef __LINUX__
 void doMessageBox(std::string msg)
 {
 	GtkWidget* w = GTK_WIDGET(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", msg.c_str()));
@@ -54,11 +63,10 @@ void doMessageBox(std::string msg)
 
 	gtk_widget_destroy(w);
 }
-
-StringRef GetSystemSaveDirectory(CStringRef name)
+#elif defined(__EMSCRIPTEN__)
+void doMessageBox(std::string msg)
 {
-	static const StringRef dotSlash = "./";
-	return dotSlash;
+	EM_ASM({ alert(UTF8ToString($0)); }, msg.c_str());
 }
 #endif
 
@@ -199,7 +207,7 @@ void HandleMessages(void)
 			continue;
 		}
 		switch (event.type) {
-			case SDL_VIDEORESIZE:
+			case SDL_WINDOWEVENT_RESIZED:
 				if(!vid_window)
 					break; // not in windowed mode; what's a resize?
 				handleResize(event.resize);
@@ -297,21 +305,26 @@ void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
 }
 
 // replacement for windows string functions
-void strupr(char *c)
+char* strupr(char *s)
 {
-	while(*c)
+	char *p = s;
+	while(*p)
 	{
-		*c = toupper(*c);
-		c++;
+		*p = toupper(*p);
+		p++;
 	}
+	return s;
 }
-void strlwr(char *c)
+
+char* strlwr(char *s)
 {
-	while(*c)
+	char *p = s;
+	while(*p)
 	{
-		*c = tolower(*c);
-		c++;
+		*p = tolower(*p);
+		p++;
 	}
+	return s;
 }
 
 // set main window title, if we have one

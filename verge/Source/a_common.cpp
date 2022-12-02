@@ -213,8 +213,8 @@ void a_srand()
 {
     namespace_a_rand::currSeed++;
 
-    register unsigned int x = (namespace_a_rand::currSeed | 1U) & 0xFFFFFFFFU, *s = namespace_a_rand::state;
-    register int    j;
+    unsigned int x = (namespace_a_rand::currSeed | 1U) & 0xFFFFFFFFU, *s = namespace_a_rand::state;
+    int j;
 
 	for(namespace_a_rand::left=0, *s++=x, j=N; --j;
 		*s++ = (x*=69069U) & 0xFFFFFFFFU) {}
@@ -223,8 +223,8 @@ void a_srand()
 
 unsigned int a_rand_reloadMT(void)
 {
-    register unsigned int *p0=namespace_a_rand::state, *p2=namespace_a_rand::state+2, *pM=namespace_a_rand::state+M, s0, s1;
-    register int    j;
+    unsigned int *p0=namespace_a_rand::state, *p2=namespace_a_rand::state+2, *pM=namespace_a_rand::state+M, s0, s1;
+    int j;
 
     if(namespace_a_rand::left < -1)
         a_srand();

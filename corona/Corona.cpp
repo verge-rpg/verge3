@@ -206,7 +206,7 @@ namespace corona {
         return 0;
       }
 
-      std::auto_ptr<File> file(OpenFile(filename, false));
+      std::unique_ptr<File> file(OpenFile(filename, false));
       return CorOpenImageFromFile(file.get(), file_format);
     }
 
@@ -296,7 +296,7 @@ namespace corona {
         }
       }
 
-      std::auto_ptr<File> file(OpenFile(filename, true));
+      std::unique_ptr<File> file(OpenFile(filename, true));
       return CorSaveImageToFile(file.get(), file_format, image);
     }
 

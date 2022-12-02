@@ -13,79 +13,43 @@
 #define A_STRING
 
 #include <string>
-#include <boost/intrusive_ptr.hpp>
-#include <boost/pool/object_pool.hpp>
+#include <memory>
 
-//std::string utility methods
-
-class _StringRef {
+class StringRef {
 public:
-	_StringRef()
-		: mRefcount(0)
-	{}
-
-	_StringRef(const std::string &stdstr)
-		: str(stdstr)
-		, mRefcount(0)
-	{
-	}
-
-	_StringRef(const char* cstr)
-		: str(cstr)
-		, mRefcount(0)
-	{}
-
-	_StringRef(const char* cstr, const char* cstrend)
-		: str(cstr,cstrend)
-		, mRefcount(0)
-	{}
-
-	const char* c_str() { return str.c_str(); }
-
-	std::string str;
-
-	int mRefcount;
-};
-
-
-typedef boost::intrusive_ptr<_StringRef> X_StringRef;
-class StringRef : public X_StringRef {
-public:
-	
 	static const StringRef& empty_string();
-	static boost::object_pool<_StringRef> & get_StringRef_allocator();
 
 	StringRef()
-		: X_StringRef(empty_string().get())
-	{
-		//just adds a reference to the empty string
-	}
+	: ptr(empty_string().ptr) {}
+
+	StringRef(const StringRef&) = default;
+	StringRef(StringRef&&) = default;
 
 	StringRef(const std::string &stdstr)
-		: X_StringRef(get_StringRef_allocator().construct(stdstr))
-	{}
+	: ptr(std::make_shared<std::string>(stdstr)) {}
 
 	StringRef(const char* cstr)
-		: X_StringRef(get_StringRef_allocator().construct(cstr))
-	{}
+	: ptr(std::make_shared<std::string>(cstr)) {}
 
 	StringRef(const char* cstr, const char* cstrend)
-		: X_StringRef(get_StringRef_allocator().construct(cstr,cstrend))
-	{}
+	: ptr(std::make_shared<std::string>(cstr, cstrend)) {}
 
-	std::string const & str() const { return get()->str; }
-	//operator std::string const &() const { return str(); }
-	const char* c_str() const { return str().c_str(); }
-	unsigned int length() const { return str().length(); }
-	unsigned int size() const { return str().size(); }
-	const char& operator[](int index) const { return str()[index]; }
-	bool operator==(const StringRef& rhs) const { return str() == rhs.str(); }
-	bool operator==(const char* rhs) const { return str() == rhs; }
-	bool empty() const { return size()==0; }
+	const std::string* get() const { return ptr.get(); }
+	const std::string& str() const { return *ptr; }
+	const char* c_str() const { return ptr->c_str(); }
+	unsigned int length() const { return ptr->length(); }
+	unsigned int size() const { return ptr->size(); }
+	bool empty() const { return size() == 0; }
 
-	bool operator < (StringRef const & rhs) const {
-		return str() < rhs.str();
-	}
+	StringRef& operator =(const StringRef&) = default;
+	StringRef& operator =(StringRef&&) = default;
+	const char& operator [](int index) const { return str()[index]; }
+	bool operator ==(const StringRef& rhs) const { return str() == rhs.str(); }
+	bool operator ==(const char* rhs) const { return str() == rhs; }
+	bool operator <(StringRef const & rhs) const { return str() < rhs.str(); }
+	bool operator >(StringRef const & rhs) const { return str() > rhs.str(); }
+	bool operator <=(StringRef const & rhs) const { return str() <= rhs.str(); }	
+	bool operator >=(StringRef const & rhs) const { return str() >= rhs.str(); }
 
 	//same as std::string, but saves a string allocation
 	StringRef substr(int pos, int len) const {
@@ -96,35 +60,23 @@ public:
 	}
 
 	//peeks at the underlying string. use with caution, you will be changing it for all associated StringRefs
-	std::string & dangerous_peek() { return get()->str; }
+	std::string& dangerous_peek() { return *ptr; }
+
+private:
+	std::shared_ptr<std::string> ptr;
 };
-
-
-namespace boost
-{
-	inline void intrusive_ptr_add_ref(_StringRef * ptr) { 
-		++ptr->mRefcount; 
-	}
-
-	inline void intrusive_ptr_release(_StringRef * ptr) { 
-		if(--ptr->mRefcount == 0)
-			StringRef::get_StringRef_allocator().destroy(ptr);
-	}
-};
-
 
 typedef const StringRef& CStringRef;
 
 extern CStringRef empty_string;
 
-#include <boost/algorithm/string.hpp>
-using boost::algorithm::to_upper_copy;
-using boost::algorithm::to_upper;
-using boost::algorithm::to_lower_copy;
-using boost::algorithm::to_lower;
-using boost::algorithm::equals;
+std::string to_upper_copy(const std::string& s);
+void to_upper(std::string& s);
+std::string to_lower_copy(const std::string& s);
+void to_lower(std::string& s);
+void replace_all(std::string& s, char match, char replacement);
+
 using std::string;
-//ex: std::string x = to_lower_copy(std::string("HI"));
 
 int strcasecmp(CStringRef s1, CStringRef s2);
 StringRef vc_strsub(CStringRef str, int pos, int len);

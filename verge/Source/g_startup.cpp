@@ -200,11 +200,7 @@ void ShowPage()
 #ifndef NOSPLASHSCREEN
 #ifdef __APPLE__
 #include "macsplash.h"
-#endif
-#ifdef __LINUX__
-#include "vcsplash.h"
-#endif
-#ifdef __WIN32__
+#else
 #include "vcsplash.h"
 #endif
 #endif
@@ -391,6 +387,7 @@ void xmain(int argc, char *argv[])
 
 void xtestmain(int argc, char* argv[])
 {
+#ifdef __WIN32__
   // hMainInst = hCurrentInst;
   DesktopBPP = GetDeviceCaps(GetDC(nullptr), BITSPIXEL);
   v3_bpp = DesktopBPP;
@@ -401,4 +398,5 @@ void xtestmain(int argc, char* argv[])
   log_Init(true);
 
   _main(argc, argv);
+#endif
 }

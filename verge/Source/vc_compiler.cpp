@@ -746,17 +746,20 @@ bool VCCompiler::CompileAll()
 		ScanPass(SCAN_ALL);
 		CompilePass();
 	}
-    catch (LexerNotInitializedException lni) {
+	catch (LexerNotInitializedException lni)
+	{
 		(void)lni;
         sprintf(errmsg, "Lexer not initialized");
         result = false;
-    } catch (CircularIncludeException cie) {
-        sprintf(errmsg, cie.message.c_str());
+    }
+    catch (CircularIncludeException cie)
+    {
+        sprintf(errmsg, "%s", cie.message.c_str());
         result = false;
     }
-	catch (const char *str)
-	{
-		sprintf(errmsg, str);
+    catch (const char *str)
+    {
+		sprintf(errmsg, "%s", str);
 		result = false;
 	}
 
@@ -861,7 +864,7 @@ bool VCCompiler::CompileMap(const char *f)
 	}
 	catch (const char* str)
 	{
-		sprintf(errmsg, str);
+		sprintf(errmsg, "%s", str);
 		result = false;
 	}
 
@@ -953,7 +956,7 @@ bool VCCompiler::CompileOther(char *f, int cimage, bool append, bool dups, std::
 	}
 	catch (const char* str)
 	{
-		sprintf(errmsg, str);
+		sprintf(errmsg, "%s", str);
 		result = false;
 	}
 
@@ -4383,7 +4386,7 @@ void VCCompiler::CompileCallback(callback_definition* def)
 		// No library function returns a callback.
 		if(NextIs("("))
 		{
-			throw va("%s(%d): Function %s's return value does not match the callback signature expected", sourcefile, linenum, libfuncs[id_index].name);
+			throw va("%s(%d): Function %s's return value does not match the callback signature expected", sourcefile, linenum, libfuncs[id_index].name.c_str());
 		}
 
 		output.EmitC(opLIBFUNC);

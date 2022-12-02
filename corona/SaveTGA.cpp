@@ -10,7 +10,7 @@ namespace corona {
   bool SaveTGA(File* file, Image* source) {
     COR_GUARD("SaveTGA");
 
-    std::auto_ptr<Image> image(CloneImage(source, PF_B8G8R8A8));
+    std::unique_ptr<Image> image(CloneImage(source, PF_B8G8R8A8));
     if (!image.get()) {
       return false;
     }

@@ -15,10 +15,6 @@
 #include <string>
 #include <vector>
 
-#ifdef __LINUX__
-#define _ASSERTE assert
-#endif
-
 void cfg_Init(char *fn);
 bool cfg_KeyPresent(char *key);
 void cfg_SetKeyValue(char *key, char *value);

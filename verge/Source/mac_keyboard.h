@@ -16,7 +16,7 @@ void InitKeyboard();
 void UpdateKeyboard();
 void ParseKeyEvent(SDL_KeyboardEvent keyEvent);
 
-bool isSDLKeyPressed(SDLKey key);
+bool isSDLKeyPressed(SDL_Keycode key);
 
 extern char keys[256];
 extern byte lastpressed;

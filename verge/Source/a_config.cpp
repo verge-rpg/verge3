@@ -43,13 +43,7 @@ void cfg_Init(char *fn)
 	char line[1024];
 
 	config_key *cf;
-#ifdef __IPHONE__
-	getcwd(cfgfn,255);
-	strcat(cfgfn, va("/%s", fn));
-#elif __APPLE__
-	getcwd(cfgfn,255);
-	strcat(cfgfn, va("/%s", fn));
-#elif __LINUX__
+#if defined(__APPLE__) || defined(__IPHONE__) || defined(__LINUX__) || defined(__EMSCRIPTEN__)
 	getcwd(cfgfn,255);
 	strcat(cfgfn, va("/%s", fn));
 #elif __PSP__
@@ -108,7 +102,7 @@ void cfg_Init(char *fn)
 
 bool cfg_KeyPresent(char *key)
 {
-	_ASSERTE(strlen(key)<KEYSIZE);
+	assert(strlen(key)<KEYSIZE);
 	config_key *cf = cf_top;
 	while (cf)
 	{
@@ -122,7 +116,7 @@ bool cfg_KeyPresent(char *key)
 
 int cfg_GetIntKeyValue(char *key)
 {
-	_ASSERTE(strlen(key)<KEYSIZE);
+	assert(strlen(key)<KEYSIZE);
 	config_key *cf = cf_top;
 	while (cf)
 	{
@@ -136,7 +130,7 @@ int cfg_GetIntKeyValue(char *key)
 
 char *cfg_GetKeyValue(char *key)
 {
-	_ASSERTE(strlen(key)<KEYSIZE);
+	assert(strlen(key)<KEYSIZE);
 	config_key *cf = cf_top;
 	while (cf)
 	{
@@ -161,8 +155,8 @@ std::vector<std::string> cfg_Tokenize(char *key, char delim) {
 
 void cfg_SetKeyValue(char *key, char *value)
 {
-	_ASSERTE(strlen(key)<KEYSIZE);
-	_ASSERTE(strlen(value)<VALUESIZE);
+	assert(strlen(key)<KEYSIZE);
+	assert(strlen(value)<VALUESIZE);
 
 	if (!cf_top)
 	{
@@ -201,7 +195,7 @@ void cfg_SetDefaultKeyValue(char *key, char *value)
 
 void cfg_DeleteKey(char *key)
 {
-	_ASSERTE(strlen(key)<KEYSIZE);
+	assert(strlen(key)<KEYSIZE);
 	config_key *store, *last = 0, *cf = cf_top;
 	while (cf)
 	{

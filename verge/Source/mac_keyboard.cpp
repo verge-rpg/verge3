@@ -47,9 +47,9 @@ byte key_shift_tbl[128] =
    0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   '/', 0,   0,   0,   0,   0
 };
 
-byte SdlKeyToScan(SDLKey key)
+byte SdlKeyToScan(SDL_Keycode key)
 {
-	// Converts from SDLkeys to keyboard scan codes
+	// Converts from SDL keycodes to keyboard scan codes
 	// some keys have no mapping, the return 0
 	/* TODO Keypad might be arrows instead of numbers */
 	switch (key)
@@ -386,7 +386,7 @@ void InitKeyboard()
 
 // check to see if a raw SDL key is pressed -
 // for keys not covered by normal keycodes
-bool isSDLKeyPressed(SDLKey key)
+bool isSDLKeyPressed(SDL_Keycode key)
 {
 	int numkeys;
 	Uint8 *keys = SDL_GetKeyboardState(&numkeys);

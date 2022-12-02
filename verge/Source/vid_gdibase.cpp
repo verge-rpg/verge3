@@ -793,7 +793,7 @@ int gdi_Window::set_win(int w, int h, int bpp)
 //must be the game window
 int gdi_Window::set_fullscreen(int w, int h, int bpp)
 {
-	_ASSERTE(bGameWindow);
+	assert(bGameWindow);
 
 	
 	/*

@@ -12,7 +12,7 @@
 #define VFILE_H
 #define vscanf _vscanf
 
-#include <boost/shared_array.hpp>
+#include <memory>
 
 struct VFILE
 {
@@ -79,7 +79,7 @@ word vgetw(VFILE *f);
 void vgets(char *str, int len, VFILE *f);
 int vtell(VFILE* f);
 int veof(VFILE *f);
-boost::shared_array<byte> vreadfile(const char *fname);
+std::unique_ptr<byte[]> vreadfile(const char *fname);
 
 inline void fread_le(int* dest, FILE *fp) { fread(dest,1,sizeof(int),fp); flip(dest,sizeof(int)); }
 
