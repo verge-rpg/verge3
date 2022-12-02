@@ -207,7 +207,7 @@ void HandleMessages(void)
 			continue;
 		}
 		switch (event.type) {
-			case SDL_WINDOWEVENT_RESIZED:
+			case SDL_VIDEORESIZE:
 				if(!vid_window)
 					break; // not in windowed mode; what's a resize?
 				handleResize(event.resize);
