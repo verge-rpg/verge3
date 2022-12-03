@@ -1,0 +1,25 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int lb_buff = NewImage(50,45);
+int lb_circle = LoadImage("sprites\circle.gif");
+
+/*************************** code ***************************/
+
+void InitializeBeneathLens()
+{
+	lens_effect = LE_BENEATH;	
+}
+
+void RenderBeneathLens()
+{
+	WrapBlit(lens_x, lens_y, bg, lb_buff);
+	transcolor = RGB(255,255,255);
+	TBlit(0, 0, lb_circle, lb_buff);
+	transcolor = RGB(255,0,255);		
+	TBlit(lens_x-25, ybase+lens_y-25, lb_buff,screen);
+}

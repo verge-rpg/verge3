@@ -39,7 +39,7 @@ extern int G_TILESIZE;
 #elif defined(__WII__)
 #define DEF_OS "wii"
 #elif defined(__EMSCRIPTEN__)
-#define DEF_OS "linux"
+#define DEF_OS "v3wasm"
 #else
 #define DEF_OS "win"
 #endif

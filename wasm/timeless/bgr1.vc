@@ -1,0 +1,57 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgr1tick, bgr1toggle;
+int bgr1img;
+
+/*************************** code ***************************/
+
+void InitializeBGR1()
+{
+	bgr1tick  = 0;
+	bgrproc = "RenderBGR1";
+	
+	int r = Random(0,9);
+	switch (r)
+	{
+		case 0: bgr1img = tiledbg0;
+		case 1: bgr1img = tiledbg1;
+		case 2: bgr1img = tiledbg2;
+		case 3: bgr1img = tiledbg3;
+		case 4: bgr1img = tiledbg4;
+		case 5: bgr1img = tiledbg5;
+		case 6: bgr1img = tiledbg6;
+		case 7: bgr1img = tiledbg7;
+		case 8: bgr1img = tiledbg8;
+		case 9: bgr1img = tiledbg9;
+		
+	}	
+}
+
+void RenderBGR1()
+{	
+	if (bgr1toggle < 4)
+	{
+		bgr1toggle++;
+		return;
+	}
+	bgr1toggle-=4;
+	
+	if (bgr1tick > 63)
+	{
+		bgr1tick++;
+		if (bgr1tick > 200)			
+			InitializeBGR2();
+		 return;
+	}
+	
+	int y = bgr1tick / 8;
+	int x = bgr1tick % 8;
+	Blit(x*32, y*32, bgr1img, bg);
+		
+	bgr1tick++;
+}

@@ -1,0 +1,83 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int dumb = NewImage(1,1);
+
+struct cnode 
+{
+	int angle;
+	int frame;
+	int nextframe;
+}
+
+cnode candles[4];
+int cx;
+int ctick;
+int clangle;
+
+/*************************** code ***************************/
+
+void InitializeCandle()
+{
+	spr_state = SPR_CANDLE;
+	spr_die = systemtime + 800;
+	
+	candles[0].angle = 0;
+	candles[0].frame = Random(0,9);	
+	candles[1].angle = 90;
+	candles[1].frame = Random(0,9);
+	candles[2].angle = 180;
+	candles[2].frame = Random(0,9);
+	candles[3].angle = 270;
+	candles[3].frame = Random(0,9);
+	candles[0].nextframe = systemtime + Random(8,12);
+	candles[1].nextframe = systemtime + Random(8,12); 
+	candles[2].nextframe = systemtime + Random(8,12);
+	candles[3].nextframe = systemtime + Random(8,12);
+	cx = 350;
+	ctick = 0;
+	clangle = 0;
+	spritetimer = 0;
+}
+
+void RenderCandle()
+{
+	if (systemtime >= spr_die)
+	{
+		spr_state = 0;
+		return;
+	}
+
+	while (spritetimer)
+	{
+		spritetimer--;
+		ctick++;
+	}	
+	cx = 350 - (ctick/2);
+	
+	clangle += 16;
+
+	int i, x, y, haloframe;
+	for (i=0; i<4; i++)
+	{
+		if (systemtime > candles[i].nextframe)
+		{
+			candles[i].nextframe = systemtime + Random(8,20);
+			candles[i].frame = Random(0,9);
+		}
+	
+		x = cx + (sin(candles[i].angle+(clangle/12))*30/65535);
+		y = ybase + 100 + (sin(systemtime)*30/65535) + (cos(candles[i].angle+(clangle/12))*30/65535);
+		BlitAt(x, y, candle, screen);
+		BlitFrameAt(x-1, y-14, flame, candles[i].frame, screen);
+		haloframe = candles[i].frame;
+		if (haloframe > 4)
+			haloframe -= 5;
+		BlitFrame(0, 0, halo, haloframe, dumb);
+		TAdditiveBlit(x-1-(144/2), y-14-(144/2), anims[halo].bufimage, screen);
+	}
+}

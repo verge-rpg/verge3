@@ -1,0 +1,37 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+/*************************** code ***************************/
+
+void InitializeVertMove()
+{
+	lens_die = systemtime + 1300;
+	int r = Random(0, 1);
+	switch (r)
+	{
+		case 0: lens_y=225; lens_dir = 0-1;
+		case 1: lens_y=0-25; lens_dir = 1;
+	}
+	lenstimer = 0;
+	lens_state = LM_VERT;
+}
+
+void VertMove()
+{
+	if (systemtime > lens_die)
+	{
+		lens_state = 0;
+		return;	
+	}
+	
+	while (lenstimer > 3)
+	{
+		lenstimer -= 4;
+		lens_y += lens_dir;
+		lens_x = 160 + (sin(systemtime)*80/65535);
+	}
+}

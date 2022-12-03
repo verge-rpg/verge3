@@ -1,0 +1,60 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgrctick;
+int bc_dw, bc_dh;
+int bc_x, bc_y;
+int bc_img;
+
+/*************************** code ***************************/
+
+void InitializeBGRC()
+{
+	int i, r, myimg, dw, dh;
+	bgrctick = 0;	
+	bgrproc = "RenderBGRC";	
+	int r = Random(0,4);
+	switch (r)
+	{
+		case 0: bc_img = flower;
+		case 1: bc_img = bigeye;
+		case 2: bc_img = bigeyeg;
+		case 3: bc_img = clock;
+		case 4: bc_img = sun;	
+	}
+}
+
+void BGRC_NewSprite()
+{
+	int r = Random(0,2);
+	switch (r)
+	{
+		case 0: bc_dw = ImageWidth(bc_img); bc_dh = ImageHeight(bc_img);
+		case 1: bc_dw = ImageWidth(bc_img)/2; bc_dh = ImageHeight(bc_img)/2;
+		case 2: bc_dw = ImageWidth(bc_img)/4; bc_dh = ImageHeight(bc_img)/4;
+	}
+	bc_x = Random(0,255);
+	bc_y = Random(0,255);
+}
+
+void RenderBGRC()
+{	
+	if (bgrctick >= 300)
+	{
+		if (bgrctick>500)
+			NewBaseLevelEffect();
+		bgrctick++;
+		return;
+	}
+	
+	int i = bgrctick % 10;
+	if (!i)
+		BGRC_NewSprite();
+		
+	ScaleWrapBlit(bc_x, bc_y, bc_img, i*bc_dw/9, i*bc_dh/9, bg);
+	bgrctick++;
+}

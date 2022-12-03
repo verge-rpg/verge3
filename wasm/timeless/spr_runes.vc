@@ -1,0 +1,49 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int rangle[4];
+int rimg[4];
+int runex;
+
+/*************************** code ***************************/
+
+void InitializeRunes()
+{
+	spr_state = SPR_RUNES;
+	spr_die = systemtime + 1200;
+
+	int i;
+	for (i=0; i<4; i++)
+	{
+		rangle[i] = i*50;
+		rimg[i] = rune[random(0,8)];	
+	}
+	runex = 370;
+	spritetimer = 0;
+}
+
+void RenderRunes()
+{
+	if (systemtime >= spr_die)
+	{
+		spr_state = 0;
+		return;
+	}
+
+	while (spritetimer>1)
+	{
+		spritetimer-=2;
+		runex--;
+	}	
+	
+	int i, my;
+	for (i=0; i<4; i++)
+	{
+		my = ybase+155;//cos(rangle[i]-systemtime) * 60 / 65535;
+		BlitAt(runex+rangle[i], ybase+my, rimg[i], screen);		
+	}
+}

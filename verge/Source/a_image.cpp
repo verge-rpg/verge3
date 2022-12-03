@@ -96,8 +96,6 @@ image* create_image_from_8bit_corona(corona::Image* img, int transparency_index,
 
 image* load_image(const char* fname, bool use_transparency_index, int tflag)
 {
-	log("load_image(%s, %d, %d) called", fname, use_transparency_index, tflag);
-
 	corona::Image* img = load_image_from_disk_or_packfile(fname);
 	if (img->getFormat() == corona::PF_I8)
 	{
@@ -134,7 +132,6 @@ image *xLoadImage_int(const char *fname,int tflag)
 
 image *xLoadImage(const char *fname)
 {
-	log("xLoadImage(%s)", fname);
 	return xLoadImage_int(fname, 0);
 }
 
@@ -192,14 +189,8 @@ void image::alloc_data()
 {
 	shell = false;
 
-	log("vid_bpp %d", vid_bpp);
-	log("width %d", width);
-	log("height %d,", height);
-	log("BytesPerPixel %d", BytesPerPixel(bpp));
-
 	data = new byte[width*height*BytesPerPixel(bpp)];
 	assert(data);
-	log("OK!!!");
 
 	//we are going to assume that pixels are 4byte aligned.
 	assert((((int)data) & 3) == 0);

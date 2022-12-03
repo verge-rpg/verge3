@@ -1,0 +1,45 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int flw_x, flw_y;
+int flxdir, flydir;
+
+/*************************** code ***************************/
+
+void InitializeFlower()
+{
+	int z = random(0,3);
+	switch (z)
+	{
+		case 0: flw_y = 21; flw_x = 0-42; flxdir = 1; flydir = 0;
+		case 1: flw_y = 179; flw_x = 362; flxdir = 0-1; flydir = 0;
+		case 2: flw_y = 0-42; flw_x = 299; flxdir = 0; flydir = 1;
+		case 3: flw_y = 240; flw_x = 21; flxdir = 0; flydir = 0-1;
+	}	
+	spr_state = SPR_FLOWER;
+	spr_die = systemtime + 900;
+	spritetimer = 0;
+}
+
+void RenderFlower()
+{
+	if (systemtime >= spr_die)
+	{
+		spr_state = 0;
+		return;
+	}
+	
+	int mx;
+	while (spritetimer>1)
+	{
+		spritetimer-=2;
+		flw_x += flxdir;
+		flw_y += flydir;
+	}
+
+	RotScale(flw_x, ybase+flw_y, systemtime*4/3, 1000, flower, screen);
+}

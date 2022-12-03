@@ -1,0 +1,40 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int mylx = 0;
+
+/*************************** code ***************************/
+
+void InitializeHorizMove()
+{
+	lens_die = systemtime + 1350;
+	int r = Random(0, 1);
+	switch (r)
+	{
+		case 0: mylx=355; lens_dir = 0-1;
+		case 1: mylx=0-35; lens_dir = 1;
+	}
+	lenstimer = 0;
+	lens_state = LM_HORIZ;
+}
+
+void HorizMove()
+{
+	if (systemtime > lens_die)
+	{
+		lens_state = 0;
+		return;	
+	}
+	
+	while (lenstimer > 2)
+	{
+		lenstimer -= 3;
+		mylx += lens_dir;
+		lens_x = mylx + (sin(systemtime)*40/65535);
+		lens_y = 100 + (cos(systemtime)*40/65535);
+	}
+}

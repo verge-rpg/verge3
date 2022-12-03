@@ -59,7 +59,7 @@ def EmscriptenEnvironment():
         '-s', 'NO_DISABLE_EXCEPTION_CATCHING',
     ]
 
-    cflags = ['-fcolor-diagnostics']
+    cflags = ['-fcolor-diagnostics', '-fexceptions']
 
     asmjs = ARGUMENTS.get('asmjs', 0)
     debug = int(ARGUMENTS.get('debug', 0))

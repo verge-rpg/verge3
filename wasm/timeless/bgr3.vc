@@ -1,0 +1,60 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgr3tick;
+int b3_dw, b3_dh;
+int b3_x, b3_y;
+int b3_img;
+
+/*************************** code ***************************/
+
+void InitializeBGR3()
+{
+	int i, r, myimg, dw, dh;
+	bgr3tick = 0;	
+	bgrproc = "RenderBGR3";	
+	int r = Random(0,4);
+	switch (r)
+	{
+		case 0: b3_img = sphereblue;
+		case 1: b3_img = spheregreen;
+		case 2: b3_img = spherepurple;
+		case 3: b3_img = sphereorange;
+		case 4: b3_img = spheregrey;
+	}
+}
+
+void BGR3_NewSprite()
+{
+	int r = Random(0,2);
+	switch (r)
+	{
+		case 0: b3_dw = ImageWidth(b3_img); bc_dh = ImageHeight(b3_img);
+		case 1: b3_dw = ImageWidth(b3_img)/2; bc_dh = ImageHeight(b3_img)/2;
+		case 2: b3_dw = ImageWidth(b3_img)/4; bc_dh = ImageHeight(b3_img)/4;
+	}
+	b3_x = Random(0,255);
+	b3_y = Random(0,255);
+}
+
+void RenderBGR3()
+{	
+	if (bgr3tick >= 500)
+	{
+		if (bgr3tick>600)
+			NewBaseLevelEffect();
+		bgr3tick++;
+		return;
+	}
+	
+	int i = bgr3tick % 10;
+	if (!i)
+		BGR3_NewSprite();
+		
+	ScaleWrapBlit(b3_x, b3_y, b3_img, i*b3_dw/9, i*b3_dh/9, bg);
+	bgr3tick++;
+}

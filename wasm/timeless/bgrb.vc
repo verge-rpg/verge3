@@ -1,0 +1,60 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgrbspr;
+int bgrbtick, bgrbtoggle;
+
+/*************************** code ***************************/
+
+void InitializeBGRB()
+{
+	bgrbtick  = 0;
+	bgrproc = "RenderBGRB";
+		
+	int r = Random(0,3);
+	switch (r)
+	{
+		case 0: bgrbspr = bobblue;
+		case 1: bgrbspr = bobred;
+		case 2: bgrbspr = bobgreen;
+		case 3: bgrbspr = bobcyan;
+	}
+}
+
+void RenderBGRB()
+{	
+	if (bgrbtoggle < 1)
+	{
+		bgrbtoggle++;
+		return;
+	}
+	bgrbtoggle-=2;
+	
+	if (bgrbtick > 256)
+	{
+		bgrbtick++;
+		if (bgrbtick > 400)
+			NewBaseLevelEffect();
+		 return;
+	}
+	int x, y;
+	if (bgrbtick<128)
+	{
+		x = 50+(sin(bgrbtick*1536/360)*30/65535);
+		y = bgrbtick*2;
+		if (y<248)
+			TAdditiveBlit(x, y, bgrbspr, bg);
+	}
+	else if (bgrbtick<256)
+	{
+		x = 178+(sin(bgrbtick*1536/360)*30/65535);
+		y = 256-(bgrbtick-128*2);
+		if (y<248)
+			TAdditiveBlit(x, y, bgrbspr, bg);
+	}
+	bgrbtick++;
+}

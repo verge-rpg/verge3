@@ -1,0 +1,37 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgr5tick;
+
+/*************************** code ***************************/
+
+void InitializeBGR5()
+{
+	bgr5tick  = 0;
+	bgrproc = "RenderBGR5";
+	int myimg, r;
+	r = Random(0,3);
+	switch (r)
+	{
+		case 0: myimg = evilgrad1;
+		case 1: myimg = evilgrad2;
+		case 2: myimg = evilgrad3;
+		case 3: myimg = evilgrad4;
+	}
+	WrapBlit(0, 0, evilgrad2, bg);
+}
+
+void RenderBGR5()
+{	
+	if (bgr5tick > 500)
+	{
+		//NewBaseLevelEffect();
+		InitializeBGR6();
+		return;
+	}
+	bgr5tick++;
+}

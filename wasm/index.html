@@ -205,11 +205,12 @@
             };
 
             const u = new URLSearchParams(window.location.search);
-            let game = u.get('game') || 'sully';
+            let game = u.get('game') || 'timeless';
+            console.log('game', game);
 
             window.Module = {arguments: [game + '/']};
             window.Module["canvas"] = canvas;
-            
+
             if (u.get("statCheat") > 0) {
                 window.Module.arguments.push('statCheat');
             }

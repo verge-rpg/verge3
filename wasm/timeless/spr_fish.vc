@@ -1,0 +1,54 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+#define NUM_FISHIES		10
+
+struct fishie
+{
+	int x, y;
+	int angleofs;
+}
+
+fishie fishies[NUM_FISHIES];
+int fishspr;
+
+/*************************** code ***************************/
+
+void InitializeFish()
+{	
+	int i;
+	for (i=0; i<NUM_FISHIES; i++)
+	{
+		fishies[i].x = Random(330,630);
+		fishies[i].y = Random(50,140);
+		fishies[i].angleofs = Random(0,359);
+	}
+
+	i = Random(0, 1);
+	switch (i)
+	{
+		case 0: fishspr = fish;
+		case 1: fishspr = fish2;
+	}
+
+	spr_state = SPR_FISH;
+	spr_die = systemtime + 1400;
+	spritetimer = 0;
+}
+
+void RenderFish()
+{
+	if (systemtime >= spr_die)
+	{
+		spr_state = 0;
+		return;
+	}
+
+	int i, xmod = 0-(spritetimer/2);
+	for (i=0; i<NUM_FISHIES; i++)
+		BlitFrameAt(fishies[i].x+xmod, ybase+fishies[i].y+(sin(fishies[i].angleofs+systemtime)*10/65535), fishspr, fishies[i].angleofs+systemtime%20/10, screen);
+}

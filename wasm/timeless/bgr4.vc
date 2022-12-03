@@ -1,0 +1,110 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgr4tick, bgr4toggle;
+
+/*************************** code ***************************/
+
+void InitializeBGR4()
+{
+	bgrproc = "RenderBGR4";
+	bgr4tick = 0;
+			
+	int r = Random(0,7);
+	int myimg;
+	switch (r)
+	{
+		case 0: myimg = grad1;
+		case 1: myimg = grad1;
+		case 2: myimg = grad2;
+		case 3: myimg = grad3;
+		case 4: myimg = grad4;
+		case 5: myimg = grad5;
+		case 6: myimg = grad6;
+		case 7: myimg = grad7;		
+	}
+	Blit(0, 0, myimg, bg3);	
+	Blit(0, 0, bg, bg2);
+}
+
+void RenderBGR4()
+{
+	if (bgr4toggle < 2)
+	{
+		bgr4toggle++;
+		return;
+	}
+	bgr4toggle-=2;
+	
+	if (bgr4tick > 255)
+	{
+		bgr4tick++;
+		if (bgr4tick = 400 && Random(0, 1) == 0)
+		{
+			InitializeBGR4a();
+			return;
+		}
+		if (bgr4tick > 500)
+			NewTopLevelEffect();
+		 return;
+	}
+		
+	Blit(0, 0, bg2, bg);
+	//SetClip(0,0,255,bgr4tick*255/100,bg);
+	SetClip(0,0,255,bgr4tick*255/100,bg);
+	Blit(0, 0, bg3, bg);
+	SetClip(0,0,255,255,bg);
+	SetLucent(0);		
+	bgr4tick++;
+}
+
+void InitializeBGR4a()
+{
+	bgrproc = "RenderBGR4a";
+	bgr4tick = 0;
+			
+	int r = Random(0,7);
+	int myimg;
+	switch (r)
+	{
+		case 0: myimg = grad1;
+		case 1: myimg = grad1;
+		case 2: myimg = grad2;
+		case 3: myimg = grad3;
+		case 4: myimg = grad4;
+		case 5: myimg = grad5;
+		case 6: myimg = grad6;
+		case 7: myimg = grad7;		
+	}
+	Blit(0, 0, myimg, bg3);	
+	Blit(0, 0, bg, bg2);
+}
+
+void RenderBGR4a()
+{
+	if (bgr4toggle < 2)
+	{
+		bgr4toggle++;
+		return;
+	}
+	bgr4toggle-=2;
+	
+	if (bgr4tick > 255)
+	{
+		bgr4tick++;
+		if (bgr4tick > 500)
+			NewBaseLevelEffect();
+		 return;
+	}
+		
+	Blit(0, 0, bg2, bg);
+	SetLucent(100-bgr4tick);
+	Blit(0, 0, bg3, bg);
+	SetLucent(0);		
+	bgr4tick++;
+}
+

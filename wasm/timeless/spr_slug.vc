@@ -1,0 +1,39 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int slug_x;
+int slug_y;
+int slug_spr;
+
+/*************************** code ***************************/
+
+void InitializeSlug()
+{
+	slug_x = random(10,310);
+	slug_y = 220;
+	spr_state = SPR_SLUG;
+	spr_die = systemtime + 600;
+	spritetimer = 0;
+	int r = Random(0, 1);
+	switch (r)
+	{
+		case 0: slug_spr = sluggy;
+		case 1: slug_spr = sluggy2;
+	}
+}
+
+void RenderSlug()
+{
+	if (systemtime >= spr_die)
+	{
+		spr_state = 0;
+		return;
+	}
+
+	slug_y = 220 - (spritetimer/2);
+	BlitFrameAt(slug_x, ybase+slug_y, slug_spr, pingpong4[systemtime % 42 / 7], screen);
+}

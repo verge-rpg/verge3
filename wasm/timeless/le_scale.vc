@@ -1,0 +1,31 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int ls_buff = NewImage(50,45);
+int ls_screen; 
+int ls_screen_initd = 0;
+
+/*************************** code ***************************/
+
+void InitializeScaleLens()
+{
+	if (!ls_screen_initd)
+	{
+		ls_screen = ImageShell(0, ybase, 320, 200, screen);
+		ls_screen_initd = 1;
+	}
+	lens_effect = LE_SCALE;	
+}
+
+void RenderScaleLens()
+{
+	ScaleBlit(0, 0, 49, 44, ls_screen, ls_buff);
+	transcolor = RGB(255,255,255);
+	TBlit(0, 0, lb_circle, ls_buff);
+	transcolor = RGB(255,0,255);		
+	TBlit(lens_x-25, ybase+lens_y-25, ls_buff, screen);
+}

@@ -1,0 +1,27 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int lg_buff = NewImage(50,45);
+int lg_filter;
+
+/*************************** code ***************************/
+
+void InitializeGreyLens()
+{
+	lens_effect = LE_GREY;
+	lg_filter = Random(1,3);
+}
+
+void RenderGreyLens()
+{
+	WrapBlit(lens_x-25, ybase+lens_y-25, screen, lg_buff);
+	ColorFilter(lg_filter, lg_buff);
+	transcolor = RGB(255,255,255);	
+	TBlit(0, 0, lb_circle, lg_buff);
+	transcolor = RGB(255,0,255);
+	TBlit(lens_x-25, ybase+lens_y-25, lg_buff, screen);
+}

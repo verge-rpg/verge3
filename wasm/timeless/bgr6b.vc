@@ -1,0 +1,54 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+/*************************** code ***************************/
+
+void InitializeBGR6b()
+{
+	int i, r, myimg, dw, dh;
+	bgr6tick = 0;	
+	bgrproc = "RenderBGR6b";
+	r = Random(0,2);
+	RectFill(0, 0, 255, 255, 0, bg2);
+	switch (r)
+	{
+		case 0: myimg = sphereblue;
+		case 1: myimg = spheregreen;
+		case 2: myimg = spheregrey;	
+		case 3: myimg = spherepurple;	
+	}
+	
+	for (i=0; i<30; i++)
+	{
+		r = Random(0,3);
+		switch (r)
+		{
+			case 0: dw = 48; dh = 48;
+			case 1: dw = 32; dh = 32;
+			case 2: dw = 16; dh = 16;
+			case 3: dw = 128; dh = 128;
+		}
+		ScaleWrapBlit(Random(0,255), Random(0,255), myimg, dw, dh, bg2);
+	}	
+}
+
+void RenderBGR6b()
+{	
+	if (bgr6tick > 200)
+	{
+		if (bgr6tick > 450)
+			NewSpriteSplatter();
+		bgr6tick++;
+		return;		
+	}
+	
+	Blit(0, 0, bg2, bg);
+	SetLucent(bgr6tick/2);
+	RectFill(0, 0, 255, 255, 0, bg);
+	SetLucent(0);
+	bgr6tick++;
+}

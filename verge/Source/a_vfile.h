@@ -14,32 +14,34 @@
 
 #include <memory>
 
-struct VFILE
-{
-  FILE *fp;                         // real file pointer.
-  quad i;                           // which file index in vfile is it?
-  char s;                           // 0=real file 1=vfile;
-  int v;                            // if vfile, which vfile index
-  int cachedSize;                   // The size of the file being read. Starts as -1.
+// ovk(2022-12-03):
+// - TODO: make vopen take an open mode, and use it in place of fopen everywhere. add support for writing/append to VFILEs
+// - TODO: make Emscripten build use its own VFILE struct that replaces the FILE* with a pointer to in-memory file blob. (but still keep the other stuff, so we keep packfile support)
+// - TODO: glob-style directory scanning for ListFilePattern that works with Emscripten.
+
+struct VFILE {
+    FILE *fp;                         // real file pointer.
+    quad i;                           // which file index in vfile is it?
+    char s;                           // 0=real file 1=vfile;
+    int v;                            // if vfile, which vfile index
+    int cachedSize;                   // The size of the file being read. Starts as -1.
 };
 
-struct filestruct
-{
-  unsigned char fname[256];           // pathname thingo
-  int size;                           // size of the file
-  int packofs;                        // where the file can be found in PACK
-  int curofs;                         // current file offset.
-  char extractable;                   // irrelevant to runtime, but...
-  char override;                      // should we override?
+struct filestruct {
+    unsigned char fname[256];           // pathname thingo
+    int size;                           // size of the file
+    int packofs;                        // where the file can be found in PACK
+    int curofs;                         // current file offset.
+    char extractable;                   // irrelevant to runtime, but...
+    char override;                      // should we override?
 };
 
-struct mountstruct
-{
-  char mountname[80];                 // name of VRG packfile.
-  FILE *vhandle;                      // Real file-handle of packfile.
-  struct filestruct *files;           // File record array.
-  int numfiles;                       // number of files in pack.
-  int curofs;                         // Current filepointer.
+struct mountstruct {
+    char mountname[80];                 // name of VRG packfile.
+    FILE *vhandle;                      // Real file-handle of packfile.
+    struct filestruct *files;           // File record array.
+    int numfiles;                       // number of files in pack.
+    int curofs;                         // Current filepointer.
 };
 
 extern mountstruct pack[10];
@@ -51,7 +53,6 @@ VFILE *vopen(const char *fname);
 void MountVFile(char *fname);
 
 void flip(void *d, int size);
-
 
 template<typename T>
 inline void flip(T *d) { flip(d,sizeof(T)); }
@@ -81,7 +82,10 @@ int vtell(VFILE* f);
 int veof(VFILE *f);
 std::unique_ptr<byte[]> vreadfile(const char *fname);
 
-inline void fread_le(int* dest, FILE *fp) { fread(dest,1,sizeof(int),fp); flip(dest,sizeof(int)); }
+inline void fread_le(int* dest, VFILE *f) {
+    fread(dest, 1, sizeof(int), f);
+    flip(dest,sizeof(int));
+}
 
 int wildcmp(const char *wild, const char *string); // wildcmp - Written by Jack Handy - jakkhandy@hotmail.com
 void listPackFilePattern(std::vector<std::string> &res, CStringRef pattern);

@@ -1,0 +1,62 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+#define NUM_SMILIES		35
+
+struct smilie
+{
+	int x, y;
+}
+smilie smilies[NUM_SMILIES];
+int xmin, smilespr;
+
+/*************************** code ***************************/
+
+void InitializeSmilies()
+{	
+	int i;
+	for (i=0; i<NUM_SMILIES; i++)
+	{
+		smilies[i].x = Random(0-200,0);
+		smilies[i].y = Random(10,190);		
+	}
+	
+	i = Random(0, 1);
+	switch (i)
+	{
+		case 0: smilespr = smile;
+		case 1: smilespr = smile2;
+	}
+	
+	xmin = 0-200;
+	spr_state = SPR_SMILIES;
+	spr_die = systemtime + 500;
+	spritetimer = 0;
+}
+
+void RenderSmilies()
+{
+	if (systemtime >= spr_die)
+	{
+		spr_state = 0;
+		return;
+	}
+
+	while (spritetimer)
+	{
+		spritetimer--;
+		xmin+=2;
+	}
+
+	int i;
+	for (i=0; i<NUM_SMILIES; i++)
+	{
+		if (smilies[i].x < xmin)
+			smilies[i].x += 200;
+		BlitAt(smilies[i].x, ybase+smilies[i].y, smilespr, screen);
+	}
+}

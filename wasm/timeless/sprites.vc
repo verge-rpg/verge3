@@ -1,0 +1,75 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+#define SPR_NONE		0
+#define SPR_SLUG		1
+#define SPR_FLY			2
+#define SPR_FLOWER		3
+#define SPR_CELESTIAL	4
+#define SPR_CIRCULAR    5
+#define SPR_FISH		6
+#define SPR_SMILIES		7
+#define SPR_LEAVES		8
+#define SPR_WEATHER		9
+#define SPR_CANDLE		10
+#define SPR_RUNES		11
+
+#include "spr_slug.vc"
+#include "spr_flyer.vc"
+#include "spr_flower.vc"
+#include "spr_celestial.vc"
+#include "spr_circular.vc"
+#include "spr_fish.vc"
+#include "spr_smilies.vc"
+#include "spr_leaves.vc"
+#include "spr_weather.vc"
+#include "spr_candle.vc"
+#include "spr_runes.vc"
+
+/*************************** data ***************************/
+
+int spr_state = 0;
+int spr_die;
+
+/*************************** code ***************************/
+
+void RenderSprites()
+{
+	int s;
+	
+	if (spr_state = 0)
+	{
+		s = Random(1,10);
+		switch (s)
+		{
+			case SPR_SLUG: InitializeSlug();
+			case SPR_FLY: InitializeFlyer();
+			case SPR_FLOWER: InitializeFlower();
+			case SPR_CELESTIAL: InitializeCelestial();
+			case SPR_CIRCULAR: InitializeCircular();
+			case SPR_FISH: InitializeFish();
+			case SPR_SMILIES: InitializeSmilies();
+			case SPR_LEAVES: InitializeLeaves();
+			case SPR_WEATHER: InitializeWeather();
+			case SPR_CANDLE: InitializeCandle();
+			case SPR_RUNES: InitializeRunes();
+		}	
+	}
+	
+	switch (spr_state)
+	{
+		case SPR_SLUG: RenderSlug();
+		case SPR_FLY: RenderFlyer();
+		case SPR_FLOWER: RenderFlower();
+		case SPR_CELESTIAL: RenderCelestial();
+		case SPR_CIRCULAR: RenderCircular();
+		case SPR_FISH: RenderFish();
+		case SPR_SMILIES: RenderSmilies();
+		case SPR_LEAVES: RenderLeaves();
+		case SPR_WEATHER: RenderWeather();
+		case SPR_CANDLE: RenderCandle();
+		case SPR_RUNES: RenderRunes();
+	}
+}

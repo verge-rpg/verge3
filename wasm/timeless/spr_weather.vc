@@ -1,0 +1,76 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+#define NUM_NODES		65
+
+struct wnode
+{
+	int x, y;
+	int layer;	
+	int starttime, endtime;
+}
+wnode wnodes[NUM_NODES];
+
+int wspr;
+
+/*************************** code ***************************/
+
+void InitializeWeather()
+{	
+	int i;
+	
+	i = Random(0, 1);
+	switch (i)
+	{
+		case 0: wspr = rain;
+		case 1: wspr = snow;
+	}
+	
+	for (i=0; i<NUM_NODES; i++)
+	{
+		wnodes[i].x = Random(0,320);
+		wnodes[i].y = Random(0,200);
+		wnodes[i].layer = Random(0,2);
+		wnodes[i].starttime = systemtime + Random(0, 100);
+		wnodes[i].endtime = systemtime + Random(700,800);
+	}
+		
+	spr_state = SPR_WEATHER;
+	spr_die = systemtime + 800;
+	spritetimer = 0;
+}
+
+void RenderWeather()
+{
+	if (systemtime >= spr_die)
+	{
+		spr_state = 0;
+		return;
+	}
+
+	int i, j;
+	while (spritetimer>1)
+	{
+		spritetimer-=2;
+		for (i=0; i<NUM_NODES; i++)
+		{
+			for (j=0; j<=wnodes[i].layer; j++)
+			{
+				wnodes[i].x--;
+				wnodes[i].y++;
+			}
+			if (wnodes[i].x<0-14) wnodes[i].x = 334;
+			if (wnodes[i].y>214) wnodes[i].y = 0-14;
+		}
+	}
+	
+	for (i=0; i<NUM_NODES; i++)
+	{	
+		if (systemtime > wnodes[i].starttime && systemtime < wnodes[i].endtime)
+			BlitFrameAt(wnodes[i].x, ybase+wnodes[i].y, wspr, wnodes[i].layer, screen);
+	}
+}

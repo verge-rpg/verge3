@@ -1,0 +1,40 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgra_col;
+int bgratick, bgratoggle;
+
+/*************************** code ***************************/
+
+void InitializeBGRA(int color)
+{
+	bgratick  = 0;
+	bgrproc = "RenderBGRA";
+	bgra_col = color;
+}
+
+void RenderBGRA()
+{	
+	if (bgratoggle < 2)
+	{
+		bgratoggle++;
+		return;
+	}
+	bgratoggle-=3;
+	
+	if (bgratick > 128)
+	{
+		bgratick++;
+		if (bgratick > 500)
+			InitializeBGR2();
+		 return;
+	}
+	
+	if (bgratick<=128)	
+		Line(bgratick*2, 0, bgratick*2, 255, bgra_col, bg);
+	bgratick++;
+}

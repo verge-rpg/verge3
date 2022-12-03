@@ -1,0 +1,33 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int tint_color;
+int tcolors[4];
+
+/*************************** code ***************************/
+
+void InitializeTintTable()
+{
+	tcolors[0] = RGB(119, 243, 131);
+	tcolors[1] = RGB(154,   0, 242);
+	tcolors[2] = RGB(128, 112, 243);
+	tcolors[3] = RGB(255, 120,   0);	
+}
+
+void InitializeTintLens()
+{
+	lens_effect = LE_TINT;
+	tint_color = tcolors[Random(0,3)];
+}
+
+void RenderTintLens()
+{
+	SetLucent(50);
+	CircleFill(lens_x, ybase+lens_y, 24, 20, tint_color, screen);
+	SetLucent(0);
+	Circle(lens_x, ybase+lens_y, 24, 20, 0, screen);
+}

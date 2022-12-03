@@ -1,0 +1,51 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int fp_y;
+int fp_gravity=2048;
+int fp_speed;
+int _timer;
+
+/*************************** code ***************************/
+
+void InitializeBounceMove()
+{
+	lens_die = systemtime + 800;
+	lenstimer = 0;
+	lens_state = LM_BOUNCE;
+	lens_x = 0-25;
+	lens_y = 50;
+	fp_y = 50*65535;
+	fp_speed = 0;
+	_timer = 0;
+}
+
+void BounceMove()
+{
+	if (systemtime > lens_die)
+	{
+		lens_state = 0;
+		return;	
+	}
+	
+	while (lenstimer)
+	{
+		lenstimer--;
+		_timer++;
+		fp_y += fp_speed;
+		fp_speed += fp_gravity;
+		
+		if (fp_y>=(185*65535))
+			fp_speed = fp_speed * (0-99) / 100;
+	}
+	while (_timer>1)
+	{
+		_timer -= 2;
+		lens_x++;
+	}
+	lens_y = fp_y/65535;
+}

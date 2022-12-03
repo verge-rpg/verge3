@@ -1,0 +1,64 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgr0_col1, bgr0_col2, bgr0_col3;
+int bgr0tick, bgr0toggle;
+
+/*************************** code ***************************/
+
+void InitializeBGR0()
+{
+	bgr0tick  = 0;
+	bgrproc = "RenderBGR0";
+	
+	bgr0_col1 = RGB(255,255,255);
+	bgr0_col3 = RGB(0,0,0);	
+	int r = Random(0,4);
+	switch (r)
+	{
+		case 0: bgr0_col2 = RGB(0, 255, 0);
+		case 1: bgr0_col2 = RGB(182,0,182);
+		case 2: bgr0_col2 = RGB(0, 0, 255);
+		case 3: bgr0_col2 = RGB(255, 0, 0); 
+		case 4: bgr0_col2 = RGB(255, 192, 0);
+	}	
+}
+
+void RenderBGR0()
+{	
+	if (bgr0toggle < 2)
+	{
+		bgr0toggle++;
+		return;
+	}
+	bgr0toggle-=2;
+	
+	if (bgr0tick > 128)
+	{
+		bgr0tick++;
+		if (bgr0tick > 200)
+		{
+			if (random(0,1) == 0)
+				NewTopLevelEffect();
+			else 
+				NewBaseLevelEffect();
+		}
+		return;
+	}
+	
+	if (bgr0tick < 64)
+	{
+		Line(0,128-bgr0tick, 255, 128-bgr0tick, ColorMorph(bgr0_col1, bgr0_col2, bgr0tick, 64), bg);
+		Line(0,128+bgr0tick, 255, 128+bgr0tick, ColorMorph(bgr0_col1, bgr0_col2, bgr0tick, 64), bg);
+	}
+	else
+	{
+		Line(0, 128-bgr0tick, 255, 128-bgr0tick, ColorMorph(bgr0_col2, bgr0_col3, bgr0tick - 64, 64), bg);
+		Line(0, 128+bgr0tick, 255, 128+bgr0tick, ColorMorph(bgr0_col2, bgr0_col3, bgr0tick - 64, 64), bg);
+	}
+	bgr0tick++;
+}

@@ -1,0 +1,40 @@
+While the spr_*.vcs are pretty self explanitory, as are the lenses (well, le_* means
+lens effect, while lm_* means lens movement), the bgr*.vc naming convention is not
+immediately obvious.
+
+Firstly, bgr<number>.vc denotes a Base Level Effect. This means that whatever the 
+background image consisted of before, after the Base Level Effect executes, it will
+be completely different, every pixel will be changed. This would be something like
+a tiled background that covers everything, or a gradient pattern, or even a simple
+fade-to-black.
+
+bgr<letter>.vc denotes a Top Level Effect, or a modifier. This will leave portions
+of the base level effect visible, and for example might be the shadebob things, or
+some crazy eyeballs plastered on the background.
+
+There are some files named bgr<number><letter>.vc. For instance, there might be
+bgr4.vc and bgr4a.vc. This implies that bgr4a MIGHT be executed immediatley after 
+bgr4 (there's a higher chance of going directly to bgr4a than of going to a new
+random base level effect). In otherwords its basically a top level effect, but one
+specifically paired with that base effect.
+
+Here's a rundown of the actual effects so far.
+
+bgr.vc		- master background effects file
+
+Base Level Effects
+
+bgr0.vc		- Looping gradient drawn out from the center
+bgr1.vc		- Tiled 32x32 patterns blitted individually to the background
+bgr2.vc		- Crossfade to a 32x32 tiled pattern
+bgr3.vc		- Colored spheres expand and eventually fill entire screen
+bgr4.vc		- Cross-hatched looping gradients
+bgr5.vc		- Evilgradient!
+bgr6.vc		- Fade to black for certain effects
+bgr6a.vc	- Creepy Faces
+bgr6b.vc	- Spheres
+
+Top Level Effects
+
+bgrb.vc		- Shadebobs
+bgrc.vc		- Flowers

@@ -1,0 +1,69 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+#define LM_NONE			0
+#define LM_VERT			1
+#define LM_HORIZ		2
+#define LM_BOUNCE		3
+
+#define LE_TINT			1
+#define LE_GREY			2
+#define LE_BENEATH		3
+#define LE_SCALE		4
+
+#include "lm_vert.vc"
+#include "lm_horiz.vc"
+#include "lm_bounce.vc"
+#include "le_tint.vc"
+#include "le_beneath.vc"
+#include "le_scale.vc"
+#include "le_grey.vc"
+
+/*************************** data ***************************/
+
+int lens_state, lens_effect;
+int lens_die, lens_dir;
+int lens_x, lens_y;
+
+/*************************** code ***************************/
+
+void RenderLens()
+{
+	int s;
+	
+	if (lens_state = 0)
+	{
+		s = Random(0, 2);
+		switch (s)
+		{
+			case 0: InitializeVertMove();
+			case 1: InitializeHorizMove();
+			case 2: InitializeBounceMove();
+		}
+		s = Random(0, 4);
+		switch (s)
+		{
+			case 0: InitializeTintLens();
+			case 1: InitializeBeneathLens();
+			case 2: InitializeScaleLens();
+			case 3: InitializeGreyLens();
+			case 4: InitializeGreyLens();
+		}
+	}
+	
+	switch (lens_state)
+	{
+		case LM_VERT: VertMove();
+		case LM_HORIZ: HorizMove();
+		case LM_BOUNCE: BounceMove();	
+	}
+	switch (lens_effect)
+	{
+		case LE_TINT: RenderTintLens();
+		case LE_BENEATH: RenderBeneathLens();
+		case LE_SCALE: RenderScaleLens();
+		case LE_GREY: RenderGreyLens();
+	}
+}

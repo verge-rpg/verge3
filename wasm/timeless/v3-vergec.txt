@@ -1,0 +1,344 @@
+General utility functions
+=========================
+
+void 	Exit(string msg)
+void 	Log(string txt)
+void    MessageBox(string txt)
+void 	UpdateControls()
+void 	Unpress(int blah)
+int  	Random(int min, int max)
+void 	CallFunction(string funcname)
+void	SetAppName(string appname)
+void	SetResolution(int xres, int yres)
+void	DebugBreakpoint()
+
+MAP functions
+=============
+void	Map(string mapname)
+void	SetTilesetSeparation(int n)
+int	GetTile(int x, int y, int layer)
+void	SetTile(int x, int y, int layer, int t)
+int	GetZone(int x, int y)
+void	SetZone(int x, int y,  int z)
+// obs? how are we gonna do this?
+
+String utilities
+================
+int  	len(string s)
+int  	val(string s)
+int	strcmp(string s1, string s2)
+string  strdup(string str, int times)
+string  left(string str, int ofs)
+string  right(string str, int ofs);
+string  mid(string str, int o1, int o2);
+
+Engine Hooks
+============
+NI void	HookTimer(string func) ?
+NI void	HookRetrace(string func) ?
+COMMENTED void	HookEntityRender(int entity, string func)
+NI void HookKey(int key, string func)
+NI void HookButton(int button, string func)
+
+Sound/Music API functions
+=========================
+
+void 	MusicStartCache()
+void 	MusicStopCache()
+void 	CacheMusic(string modulename)
+void 	PlayMusic(string modulename)
+void 	StopMusic()
+void 	SuspendMusic()
+void 	ResumeMusic()
+int  	LoadSound(string wavname)
+void 	PlaySound(int handle, int volume, int pan)
+void 	FreeSound(int handle)
+
+Fonts / text display functions
+==============================
+int  	LoadFont(string sourceimage, int width, int height)
+void 	FreeFont(int font)
+void 	EnableVariableWidth(int fonthandle)
+void 	PrintString(int x, int y, int destimage, int font, string text)
+void 	PrintRight(int x, int y, int destimage, int font, string text)
+void 	PrintCenter(int x, int y, int destimage, int font, string text)
+int  	TextWidth(int font, string text)
+
+File I/O functions
+==================
+int  	FileOpen(string fname, int mode) // 1 = FILE_READ 2 = FILE_WRITE
+void 	FileClose(int file)
+void 	FileWrite(int file, string s)
+void 	FileWriteln(int file, string s)
+string 	FileReadln(int file)
+string 	FileReadToken(int file)
+void 	FileSeekLine(int file, int line)
+void 	FileSeekPos(int file, int pos, int mode) // 0=SEEK_SET 1=SEEK_CUR 2=SEEK_END
+int  	FileCurrentPos(int file)
+void 	FileWriteByte(int file, int byte)
+void 	FileWriteWord(int file, int word)
+void 	FileWriteQuad(int file, int quad)
+void 	FileWriteString(int file, string s)
+int  	FileReadByte(int file)
+int  	FileReadWord(int file)
+int  	FileReadQuad(int file)
+string 	FileReadString(int file)
+
+Network I/O functions (all NI)
+=====================
+int  	connect(string host, int port)
+void 	disconnect(int socket)
+void 	sendbyte(int socket, int byte)
+void 	sendword(int socket, int word)
+void 	sendquad(int socket, int quad)
+void 	sendstring(int socket, string s)
+
+Math functions
+==============
+
+int	sin(int angle)
+int	cos(int angle)
+int	tan(int angle)
+int	sqrt(int angle)
+int	pow(int base, int exp)
+
+Direct Memory Access
+====================
+
+DMA IS BAD MMKAY. Malloc/MemFree are NOT used for ANYTHING other than to be accessed via the direct memory functions.
+Free is renamed to MemFree to prevent people from trying to use Free() by default like in v2 to free things, and failing, as they should be using FreeImage/FreeSound etc.
+
+Graphics API functions
+======================
+
+int  	NewImage(int xres, int yres)
+void 	FreeImage(int image)
+int  	ImageWidth(int image)
+int  	ImageHeight(int image)
+int  	DuplicateImage(int image)
+int     ImageShell(int xofs, int yofs, int width, int height, int image)
+int  	RGB(int r, int g, int b)
+void	SetLucent(int percent)
+void 	SetClip(int x1, int y1, int x2, int y2, int image)
+int  	LoadImage(string fn)
+int  	LoadImage0(string fn)
+void 	Blit(int x, int y, int sourceimage, int destimage)
+void 	TBlit(int x, int y, int sourceimage, int destimage)
+void	BlitLucent(int x, int y, int lucent, int source, int dest)
+void	TBlitLucent(int x, int y, int lucent, int source, int dest)
+void 	AdditiveBlit(int x, int y, int sourceimage, int destimage)
+void 	TAdditiveBlit(int x, int y, int sourceimage, int destimage)
+void 	SubtractiveBlit(int x, int y, int sourceimage, int destimage)
+void 	TSubtractiveBlit(int x, int y, int sourceimage, int destimage)
+void 	WrapBlit(int x, int y, int sourceimage, int destimage)
+void 	TWrapBlit(int x, int y, int sourceimage, int destimage)
+void 	ScaleBlit(int x, int y, int dw, int dh, int sourceimage, int destimage)
+void 	TScaleBlit(int x, int y, int dw, int dh, int sourceimage, int destimage)
+void 	BlitEntity(int entity);
+void	BlitEntityFrame(int x, int y, int entity, int frame, int destimage)
+void 	SetPixel(int x, int y, int color, int destimage)
+int  	GetPixel(int x, int y, int sourceimage)
+int  	GetR(int color)
+int  	GetG(int color)
+int  	GetB(int color)
+void 	Line(int x1, int y1, int x2, int y2, int color, int destimage)
+void 	Rect(int x1, int y1, int x2, int y2, int color, int destimage)
+void 	RectFill(int x1, int y1, int x2, int y2, int color, int destimage)
+void 	Circle(int x1, int y1, int rx, int ry, int color, int destimage)
+void 	CircleFill(int x1, int y1, int rx, int ry, int color, int destimage)
+void 	RotScale(int x1, int y1, int angle, int scalefactor, int sourceimage, int destimage)
+void 	GrabRegion(int sx1, int sy1, int sx2, int sy2, int dx, int dy, int sourceimage, int destimage)
+void 	TGrabRegion(int sx1, int sy1, int sx2, int sy2, int dx, int dy, int sourceimage, int destimage)
+void 	Silhouette(int x, int y, int color, int sourceimage, int destimage)
+void 	Mosaic(int xgran, int ygran, int destimage)
+void    BlitWrap(int x, int y, int sourceimage, int destimage)
+void    ColorFilter(int filter, int image)
+void 	ShowPage()
+
+NI void Mask(int sourcecolor, int destcolor, int destimage)
+NI Triangle
+NI T/BlitTile??? how?
+NI HorizFlip/VertFlip
+
+Ideas/Notes
+===========
+
+netcode functions!
+WRAPBLIT bug
+last_ascii
+ability to set window size
+trigonometric functions - especially atan2 apparently ;)
+fix soundfx crap   ||||  vec: anyway, the Voice_* API shit wants a VOICE (which is returned from mdsfx_play() -- which should be called from PlaySample or whatever in wsound.cpp) .. and it needs the pitch/panning/whatever info proper for whichever Voice_ function you use.
+VC debugger
+put total funcs/lines/vars compiled thingy
+Put Corona in - problem is VFILEs
+music volume! Music position
+turn fonts into handles - test sfx handle-ness too
+alpha channel blit crap
+cell height font thing
+obstructions
+GetMapPixel
+SetLayerLucency(2,50)
+
+xerxes:~$ telnet vecna.verge-rpg.com 80
+Trying 208.42.21.20...
+Connected to vecna.verge-rpg.com.
+Escape character is '^]'.
+GET /index.html HTTP/1.1
+Host: vecna.verge-rpg.com
+
+Variables
+=========
+
+int screen; 		// this is a hardcoded image handle for the screen
+int systemtime; 	// read-only timer variable constantly increasing
+int timer;              // read/write timer variable
+int key[scancode]; 	// read/write key-state array
+int lastpressed; 	// scancode of last pressed key
+int xwin;		// x camera offset thingy 
+int ywin;		// y camera offset thingy
+int cameratracking;	// 
+
+int mouse.x; 		// current mouse x-coordinate
+int mouse.y;		// current mouse y-coordinate
+int mouse.l;		// read/write left-button status
+int mouse.r;		// read/write right-button status
+int mouse.m;		// read/write middle-button status
+int mouse.w;		// read/write mousewheel thingy
+
+int joystick;		// read/write anchor, current joystick # for joy.* struct (sticks 0-3 valid)
+int joy.active;		// 0/1 whether or not this joystick is connected and active
+int joy.up;		// 0/1 for joystick 'up' position
+int joy.down;		// 0/1 for joystick 'down' position
+int joy.left;		// 0/1 for joystick 'left' position
+int joy.right; 		// 0/1 for joystick 'right' position
+int joy.analogx;	// analog position of joystick x-axis (0 center, -1000 max left, +1000 max right)
+int joy.analogy;	// analog position of joystick y-axis (0 center, -1000 max up, +1000 max down)
+int joy.button[button]; // 0/1 for joystick button # depressed (buttons 0-31 valid)
+
+int sysdate.year;	// the system clock year
+int sysdate.month;	// current month
+int sysdate.day;	// current day-of-month
+int sysdate.dayofweek; 	// current day of week (0=sunday, 6=saturday)
+
+int systime.hour;	// system clock hour (24hour format)
+int systime.minute;	// current clock minute
+int systime.second;	// current clock second
+
+int entities;		// number of allocated entities
+int entity.x[entity];	// entity x (in pixels) (upper-left coordinate of entity hotspot)
+int entity.y[entity];	// entity y (in pixels) (upper-left coordinate of entity hotspot)
+int entity.specframe[entity];
+int entity.frame[entity];
+int entity.hotx[entity];
+int entity.hoty[entity];
+int entity.hotw[entity];
+int entity.hoth[entity];
+
+int event.tx;		// triggering tile x coord of this event, if applicable
+int event.ty;		// triggering tile y coord of this event, if applicable
+int event.zone;		// triggering zone of this event, if applicable
+int event.entity;	// triggering entity of this event, if applicable
+int event.param;	// parameter passed on event string
+
+Builtin #defines
+================
+
+	{"_version",	"\"Verge 3.0b1\"" }
+	{"FILE_READ",	"1" }
+	{"FILE_WRITE",	"2" }
+	{"SEEK_SET",    "0" }
+	{"SEEK_CUR",    "1" }
+	{"SEEK_END",    "2" }
+	{"SCAN_ESC",	"01" }
+	{"SCAN_1",	"02" }
+	{"SCAN_2",	"03" }
+	{"SCAN_3",	"04" }
+	{"SCAN_4",	"05" }
+	{"SCAN_5",	"06" }
+	{"SCAN_6",	"07" }
+	{"SCAN_7",	"08" }
+	{"SCAN_8",	"09" }
+	{"SCAN_9",	"10" }
+	{"SCAN_0",	"11" }
+	{"SCAN_MINUS",	"12" }
+	{"SCAN_EQUALS", "13" }
+	{"SCAN_BACKSP", "14" }
+	{"SCAN_TAB",	"15" }
+	{"SCAN_Q",	"16" }
+	{"SCAN_W",	"17" }
+	{"SCAN_E",	"18" }
+	{"SCAN_R",	"19" }
+	{"SCAN_T",	"20" }
+	{"SCAN_Y",	"21" }
+	{"SCAN_U",	"22" }
+	{"SCAN_I",	"23" }
+	{"SCAN_O",	"24" }
+	{"SCAN_P",	"25" }
+	{"SCAN_LANGLE",	"26" }
+	{"SCAN_RANGLE",	"27" }
+	{"SCAN_ENTER",	"28" }
+	{"SCAN_CTRL",	"29" }
+	{"SCAN_A",	"30" }
+	{"SCAN_S",	"31" }
+	{"SCAN_D",	"32" }
+	{"SCAN_F",	"33" }
+	{"SCAN_G",	"34" }
+	{"SCAN_H",	"35" }
+	{"SCAN_J",	"36" }
+	{"SCAN_K",	"37" }
+	{"SCAN_L",	"38" }
+	{"SCAN_SCOLON", "39" }
+	{"SCAN_QUOTA",  "40" }
+	{"SCAN_RQUOTA", "41" }
+	{"SCAN_LSHIFT",	"42" }
+	{"SCAN_BSLASH", "43" }
+	{"SCAN_Z",	"44" }
+	{"SCAN_X",	"45" }
+	{"SCAN_C",	"46" }
+	{"SCAN_V",	"47" }
+	{"SCAN_B",	"48" }
+	{"SCAN_N",	"49" }
+	{"SCAN_M",	"50" }
+	{"SCAN_COMMA",	"51" }
+	{"SCAN_DOT",	"52" }
+	{"SCAN_SLASH",	"53" }
+	{"SCAN_RSHIFT",	"54" }
+	{"SCAN_STAR",	"55" }
+	{"SCAN_ALT",	"56" }
+	{"SCAN_SPACE",	"57" }
+	{"SCAN_CAPS",	"58" }
+	{"SCAN_F1",	"59" }
+	{"SCAN_F2",	"60" }
+	{"SCAN_F3",	"61" }
+	{"SCAN_F4",	"62" }
+	{"SCAN_F5",	"63" }
+	{"SCAN_F6",	"64" }
+	{"SCAN_F7",	"65" }
+	{"SCAN_F8",	"66" }
+	{"SCAN_F9",	"67" }
+	{"SCAN_F10",	"68" }
+	{"SCAN_NUMLOCK","69" }
+	{"SCAN_SCRLOCK","70" }
+	{"SCAN_HOME",	"71" }
+	{"SCAN_UP",	"72" }
+	{"SCAN_PGUP",	"73" }
+	{"SCAN_GMINUS",	"74" }
+	{"SCAN_LEFT",	"75" }
+	{"SCAN_PAD_5",	"76" }
+	{"SCAN_RIGHT",	"77" }
+	{"SCAN_GPLUS",	"79" }
+	{"SCAN_END",	"79" }
+	{"SCAN_DOWN",	"80" }
+	{"SCAN_PGDN",	"81" }
+	{"SCAN_INSERT",	"82" }
+	{"SCAN_DEL",	"83" }
+	{"SCAN_F11",	"87" }
+	{"SCAN_F12",	"88" }
+	{"CF_NONE",	"0"  }
+        {"CF_GREY",     "1"  }
+        {"CF_GREYINV",  "2"  }
+        {"CF_INV",      "3"  }
+        {"CF_RED",      "4"  }
+        {"CF_BLUE",     "5"  }
+        {"CF_GREEN",    "6"  }

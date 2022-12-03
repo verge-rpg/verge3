@@ -1,0 +1,39 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgr6tick;
+
+/*************************** code ***************************/
+
+void InitializeBGR6()
+{
+	bgr6tick  = 0;
+	bgrproc = "RenderBGR6";
+	Blit(0, 0, bg, bg2);
+}
+
+void RenderBGR6()
+{	
+	int r;
+	
+	if (bgr6tick > 200)
+	{
+		r = Random(0, 1);
+		switch (r)
+		{
+			case 0:	InitializeBGR6a();
+			case 1:	InitializeBGR6b();
+		}
+		return;
+	}
+	
+	Blit(0, 0, bg2, bg);
+	SetLucent(100-(bgr6tick/2));
+	RectFill(0, 0, 255, 255, 0, bg);
+	SetLucent(0);
+	bgr6tick++;
+}

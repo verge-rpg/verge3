@@ -1,0 +1,79 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int crc_xc, crc_yc;
+int crc_xr, crc_yr;
+int crc_sprite, crc_dir;
+int cangle[8];
+
+/*************************** code ***************************/
+
+void InitializeCircular()
+{
+	int r = Random(0, 5);
+	switch (r)
+	{
+		case 0: crc_sprite = bigheart;
+		case 1: crc_sprite = bigsmile;
+		case 2: crc_sprite = evilmask;
+		case 3: crc_sprite = hourglass;
+		case 4: crc_sprite = skull;
+		case 5: crc_sprite = tinyeye;
+	}
+	
+	r = Random(0,1);
+	switch (r)
+	{
+		case 0: crc_dir = 1; crc_xc = 0-60;
+		case 1: crc_dir = 0-1; crc_xc = 380;
+	}	
+	
+	crc_yc = random(80,120);
+	crc_xr = 40;
+	crc_yr = 35;
+
+	cangle[0] = 0;
+	cangle[1] = 45;
+	cangle[2] = 90;
+	cangle[3] = 135;
+	cangle[4] = 180;
+	cangle[5] = 225;
+	cangle[6] = 270;
+	cangle[7] = 315;
+
+	spr_state = SPR_CIRCULAR;
+	spr_die = systemtime + 900;
+	spritetimer = 0;
+}
+
+void RenderCircular()
+{
+	if (systemtime >= spr_die)
+	{
+		spr_state = 0;
+		return;
+	}
+
+	while (spritetimer>1)
+	{
+		spritetimer -= 2;
+		crc_xc += crc_dir;
+	}
+	
+	int i, mx, my;
+	int rx, ry;
+	
+	rx = crc_xr + (sin(systemtime)*10/65535);
+	ry = crc_yr + (cos(systemtime)*15/65535);
+	
+	for (i=0; i<8; i++)
+	{
+		mx = sin(cangle[i]+systemtime)*rx/65535;
+		my = cos(cangle[i]+systemtime)*ry/65535;
+		BlitAt(crc_xc+mx, ybase+crc_yc+my, crc_sprite, screen);
+	}
+}

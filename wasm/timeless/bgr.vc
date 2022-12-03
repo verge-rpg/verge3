@@ -1,0 +1,77 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+#include "bgr0.vc"
+#include "bgr1.vc"
+#include "bgr2.vc"
+#include "bgr3.vc"
+#include "bgr4.vc"
+#include "bgr5.vc"
+#include "bgr6.vc"
+#include "bgr6a.vc"
+#include "bgr6b.vc"
+
+#include "bgra.vc"
+#include "bgrb.vc"
+#include "bgrc.vc"
+#include "bgrd.vc"
+
+/*************************** data ***************************/
+
+string bgrproc;
+int bgrstart;
+
+int colormixer = NewImage(1,1);
+
+/*************************** code ***************************/
+
+int ColorMorph(int col1, int col2, int step, int totalsteps)
+{
+	SetPixel(0, 0, col1, colormixer);
+	SetLucent(100-(step*100/totalsteps));
+	SetPixel(0, 0, col2, colormixer);
+	SetLucent(0);
+	return GetPixel(0, 0, colormixer);
+}
+
+void NewBaseLevelEffect()
+{
+	int r = Random(0,5);
+	switch (r)
+	{
+		case 0: InitializeBGR0();
+		case 1: InitializeBGR1();
+		case 2: InitializeBGR2();
+		case 3: InitializeBGR3();
+		case 4: InitializeBGR4();
+		case 5: InitializeBGR6();
+	}
+}
+
+void NewTopLevelEffect()
+{
+	int r = Random(0,6);
+	switch (r)
+	{
+		case 0: InitializeBGRB();
+		case 1: InitializeBGRB();
+		case 2: InitializeBGRC();
+		case 3: InitializeBGRC();
+		case 4: InitializeBGRC();
+		case 5: InitializeBGRD();
+		case 6: InitializeBGRD();
+	}
+}
+
+void NewSpriteSplatter()
+{
+	int r = Random(0,2);
+	switch (r)
+	{
+		case 0: InitializeBGRC();
+		case 1: InitializeBGRD();
+		case 2: InitializeBGRC();		
+	}
+}

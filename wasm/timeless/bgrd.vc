@@ -1,0 +1,50 @@
+/************************************************************
+ *                          timeless                        *
+ *             for verge³ copyright (c)2003 vecna           * 
+ ************************************************************/
+
+/*************************** data ***************************/
+
+int bgrdtick;
+int bd_dw, bd_dh;
+int bd_x, bd_y;
+
+/*************************** code ***************************/
+
+void InitializeBGRD()
+{
+	int i, r, myimg, dw, dh;
+	bgrdtick = 0;	
+	bgrproc = "RenderBGRD";
+}
+
+void BGRD_NewSprite()
+{
+	int r = Random(0,2);
+	switch (r)
+	{
+		case 0: bd_dw = 64; bd_dh = 64;
+		case 1: bd_dw = 32; bd_dh = 32;
+		case 2: bd_dw = 16; bd_dh = 16;
+	}
+	bd_x = Random(0,255);
+	bd_y = Random(0,255);
+	ScaleWrapBlit(bd_x, bd_y, lightning, bd_dw, bd_dh, bg);
+}
+
+void RenderBGRD()
+{	
+	if (bgrdtick >= 300)
+	{
+		if (bgrdtick>500)
+			NewBaseLevelEffect();
+		bgrdtick++;
+		return;
+	}
+	
+	int i = bgrdtick % 10;
+	if (!i)
+		BGRD_NewSprite();
+
+	bgrdtick++;
+}
