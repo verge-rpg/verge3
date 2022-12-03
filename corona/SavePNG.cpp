@@ -145,7 +145,6 @@ namespace corona {
       pixels += width * color_format_bpp;      
     }
     png_set_rows(png_ptr, info_ptr, (png_bytepp)rows);
-    info_ptr->valid |= PNG_INFO_IDAT;
 
     // actually write the image
     png_write_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);

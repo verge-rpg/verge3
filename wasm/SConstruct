@@ -24,7 +24,7 @@ def EmscriptenEnvironment():
             'path': os.environ['PATH']
         }
 
-        for key in ['HOME', 'USERPROFILE', 'EM_CONFIG']:
+        for key in ['HOME', 'USERPROFILE', 'EM_CONFIG', 'EMSDK_PYTHON', 'EMSDK_NODE']:
             value = os.environ.get(key)
             if value is not None:
                 env_dict[key] = value
@@ -41,17 +41,25 @@ def EmscriptenEnvironment():
     env['CC'] = emcc
     env['CXX'] = emcc
 
-    emscriptenOpts = [
+    emscriptenCommonOpts = [
+        '-s', 'USE_ZLIB=1',
+        '-s', 'USE_SDL=1',
+        '-s', 'USE_GIFLIB=1',
+        '-s', 'USE_LIBPNG=1',
+        '-s', 'USE_LIBJPEG=1',
+    ]    
+    emscriptenCompilerOpts = []
+    emscriptenLinkerOpts = [
         '-s', 'ASYNCIFY',
         '-s', 'ASYNCIFY_IMPORTS=["fetchSync","downloadAll","wasm_nextFrame","emscripten_sleep"]',
         '-s', 'FETCH=1',
         '-s', 'FORCE_FILESYSTEM=1',
         '-s', 'ALLOW_MEMORY_GROWTH=1',
-        '-s', 'USE_SDL=1',
-        '-s', 'LLD_REPORT_UNDEFINED'
+        '-s', 'LLD_REPORT_UNDEFINED',
+        '-s', 'NO_DISABLE_EXCEPTION_CATCHING',
     ]
 
-    cflags = ['-fcolor-diagnostics'] #'-fno-rtti', '-fno-exceptions']
+    cflags = ['-fcolor-diagnostics']
 
     asmjs = ARGUMENTS.get('asmjs', 0)
     debug = int(ARGUMENTS.get('debug', 0))
@@ -75,26 +83,27 @@ def EmscriptenEnvironment():
 
     if debug:
         if not asan:
-            emscriptenOpts += [
+            emscriptenLinkerOpts += [
                 '-s', 'SAFE_HEAP=1',
             ]
 
-        emscriptenOpts += [
+        emscriptenLinkerOpts += [
             '-s', 'ASYNCIFY_STACK_SIZE=327680',
-            '-s', 'ASSERTIONS=1',
+            '-s', 'ASSERTIONS=2',
             '-s', 'STACK_OVERFLOW_CHECK=1',
             '-s', 'DEMANGLE_SUPPORT=1',
         ]
 
         cflags.append('-g')
+        cflags.append('-DVERGE_EMSCRIPTEN_DEBUG')
 
         env.Append(LINKFLAGS=[
-            '-g4',
-            '--source-map-base', 'http://localhost:8000/',
+            '-gsource-map',
+            '--source-map-base', 'http://localhost:8000/wasm/',
         ])
 
     else:
-        emscriptenOpts += [
+        emscriptenLinkerOpts += [
             '-s', 'ASYNCIFY_STACK_SIZE=32768',
         ]
         cflags.append('-O3')
@@ -126,18 +135,18 @@ def EmscriptenEnvironment():
         '-Wno-writable-strings',
     ])
 
-    cflags.extend(emscriptenOpts)
+    cflags.extend(emscriptenCommonOpts + emscriptenCompilerOpts)
 
     env.Append(CFLAGS=cflags)
     env.Append(CXXFLAGS=cflags)
 
     env.Append(LINKFLAGS=[
         '-lidbfs.js',
-    ] + emscriptenOpts)
+    ] + emscriptenCommonOpts + emscriptenLinkerOpts)
 
     return env
 
-verge_dir = 'verge/Source'
+verge_dir = '../verge/Source'
 verge_sources = [verge_dir + '/' + s for s in [
     'algebra3.cpp',
     'a_common.cpp',
@@ -186,7 +195,7 @@ verge_sources = [verge_dir + '/' + s for s in [
 ]]
 
 # TODO: make this optional and have separate Lua and non-Lua builds? (for VC games that don't need it)
-lua_dir = 'lua/lua-5.1.2'
+lua_dir = '../lua/lua-5.1.2'
 lua_sources = [lua_dir + '/' + s for s in [
     'lapi.c',
     'lauxlib.c',
@@ -221,7 +230,7 @@ lua_sources = [lua_dir + '/' + s for s in [
 ]]
 
 # TODO: could this be replaced with SDL_Image?
-corona_dir = 'corona'
+corona_dir = '../corona'
 corona_sources = [corona_dir + '/' + s for s in [
     'Corona.cpp',
     'Convert.cpp',
@@ -237,120 +246,14 @@ corona_sources = [corona_dir + '/' + s for s in [
     'SaveTGA.cpp',
 ]]
 
-# TODO: -s USE_ZLIB=1
-zlib_dir = 'zlib'
-zlib_sources = [zlib_dir + '/' + s for s in [
-    'adler32.c',
-    'compress.c',
-    'crc32.c',
-    'gzio.c',
-    'uncompr.c',
-    'deflate.c',
-    'trees.c',
-    'zutil.c',
-    'inflate.c',
-    'infblock.c',
-    'inftrees.c',
-    'infcodes.c',
-    'infutil.c',
-    'inffast.c',
-]]
-
-# TODO: -s USE_GIFLIB=1
-libungif_dir = corona_dir + '/libungif-4.1.0'
-libungif_sources = [libungif_dir + '/' +  s for s in [
-    'dgif_lib.c',
-    'gif_err.c',
-    'gifalloc.c',
-]]
-
-# TODO: -s USE_LIBPNG=1
-libpng_dir = corona_dir + '/libpng-1.2.1'
-libpng_sources = [libpng_dir + '/' + s for s in [
-    'png.c',
-    'pngerror.c',
-    'pnggccrd.c',
-    'pngget.c',
-    'pngmem.c',
-    'pngpread.c',
-    'pngread.c',
-    'pngrio.c',
-    'pngrtran.c',
-    'pngrutil.c',
-    'pngset.c',
-    'pngtest.c',
-    'pngtrans.c',
-    'pngvcrd.c',
-    'pngwio.c',
-    'pngwrite.c',
-    'pngwtran.c',
-    'pngwutil.c',
-]]
-
-# TODO: -s USE_LIBJPEG=1
-libjpeg_dir = corona_dir + '/jpeg-6b'
-libjpeg_sources = [libjpeg_dir + '/' + s for s in [
-    'jcapimin.c',
-    'jcapistd.c',
-    'jccoefct.c',
-    'jccolor.c',
-    'jcdctmgr.c',
-    'jchuff.c',
-    'jcinit.c',
-    'jcmainct.c',
-    'jcmarker.c',
-    'jcmaster.c',
-    'jcomapi.c',
-    'jcparam.c',
-    'jcphuff.c',
-    'jcprepct.c',
-    'jcsample.c',
-    'jctrans.c',
-    'jdapimin.c',
-    'jdapistd.c',
-    'jdatadst.c',
-    'jdatasrc.c',
-    'jdcoefct.c',
-    'jdcolor.c',
-    'jddctmgr.c',
-    'jdhuff.c',
-    'jdinput.c',
-    'jdmainct.c',
-    'jdmarker.c',
-    'jdmaster.c',
-    'jdmerge.c',
-    'jdphuff.c',
-    'jdpostct.c',
-    'jdsample.c',
-    'jdtrans.c',
-    'jerror.c',
-    'jfdctflt.c',
-    'jfdctfst.c',
-    'jfdctint.c',
-    'jidctflt.c',
-    'jidctfst.c',
-    'jidctint.c',
-    'jidctred.c',
-    'jmemmgr.c',
-    'jmemnobs.c',
-    'jquant1.c',
-    'jquant2.c',
-    'jutils.c',
-]]
-
-corona_combined_sources = corona_sources + libungif_sources + libpng_sources + libjpeg_sources
-
-boost_dir = 'boost-1.37.0'
-
 verge_cpppath = [
     verge_dir,
     lua_dir,
     corona_dir,
-    zlib_dir,
-    libungif_dir,
-    libpng_dir,
-    libjpeg_dir,
-    boost_dir
+    #zlib_dir,
+    #libungif_dir,
+    #libpng_dir,
+    #libjpeg_dir
 ]
 
 # TODO: audio engine. could it use libmodopenmpt + another library for wav/ogg/mp3 instead of Audiere?
@@ -358,7 +261,6 @@ verge_cpppath = [
 verge_libs = [
     'lua',
     'corona',
-    'zlib',
 ]
 
 env = EmscriptenEnvironment()
@@ -372,6 +274,5 @@ env.Append(
 )
 
 lua = env.Library('lua', lua_sources)
-corona = env.Library('corona', corona_combined_sources)
-zlib = env.Library('zlib', zlib_sources)
+corona = env.Library('corona', corona_sources)
 verge = env.Program('verge3.out.js', verge_sources, LIBS=verge_libs, LIBPATH='.', PROGSUFFIX='.js')

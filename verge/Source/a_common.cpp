@@ -83,6 +83,15 @@ void log(const char *text, ...)
 
 	if (logconsole)
 		printf("%s\n",msg);
+
+#ifdef __EMSCRIPTEN__
+    EM_ASM({
+        console.log(UTF8ToString($0));
+#ifdef VERGE_EMSCRIPTEN_DEBUG     
+        console.log(stackTrace());
+#endif
+    }, msg);
+#endif    
 }
 
 

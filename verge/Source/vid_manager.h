@@ -211,8 +211,10 @@ inline int ReadPixel(int x, int y, image *source)
 	return ptr[(y * source->pitch) + x];
 }
 
+#include "a_common.h"
 
 FORCEINLINE int BytesPerPixel(int bpp) {
+	log("BytesPerPixel(%d) called", bpp);
 	switch(bpp) {
 		case 15: return 2;
 		case 16: return 2;

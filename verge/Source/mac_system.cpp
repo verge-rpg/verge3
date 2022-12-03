@@ -114,8 +114,18 @@ int main(int argc, char **argv)
     ChangeToRootDirectory();
 #endif
     
+#ifdef __EMSCRIPTEN__
+    try {
+#endif
 	xmain(argc,argv);
     err("");
+#ifdef __EMSCRIPTEN__
+	} catch (const std::exception& e) {
+		log("unhandled exception: %s", e.what());
+	} catch (...) {
+		log("unknown unhandled exception");
+    }
+#endif
     
 	return 0;
 }
@@ -130,8 +140,12 @@ unsigned int timeGetTime()
 /* Get the bits per pixel of the screen currently */
 int getCurrentBpp()
 {
+#if __EMSCRIPTEN__
+	return 32;
+#else	
 	const SDL_VideoInfo *info = SDL_GetVideoInfo();
 	return info->vfmt->BitsPerPixel;
+#endif	
 }
 
 // clipboard stuff unimplemented
@@ -139,7 +153,6 @@ char *clipboard_getText()
 {
 	return "";
 }
-
 void clipboard_setText(const char *text)
 {
 }

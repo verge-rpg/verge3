@@ -20,7 +20,7 @@ namespace corona {
     COR_GUARD("OpenGIF");
 
     // open GIF file
-    GifFileType* gif = DGifOpen(file, InputFunc);
+    GifFileType* gif = DGifOpen(file, InputFunc, NULL);
     if (!gif) {
       COR_LOG("DGifOpen failed");
       return 0;
@@ -29,7 +29,7 @@ namespace corona {
     // read GIF image
     if (DGifSlurp(gif) != GIF_OK) {
       COR_LOG("DGifSlurp failed");
-      DGifCloseFile(gif);
+      DGifCloseFile(gif, NULL);
       return 0;
     }
     ColorMapObject* cmap = gif->SColorMap;
@@ -50,7 +50,7 @@ namespace corona {
         COR_LOG(str);
       }
       
-      DGifCloseFile(gif);
+      DGifCloseFile(gif, NULL);
       return 0;
     }
 
@@ -117,7 +117,7 @@ namespace corona {
       memcpy(out, in, width * height);
     }
 
-    DGifCloseFile(gif);
+    DGifCloseFile(gif, NULL);
     return new SimpleImage(width, height, PF_I8, image.release(),
                            (byte*)palette.release(), 256, PF_R8G8B8A8);
   }

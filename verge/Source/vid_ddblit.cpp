@@ -483,6 +483,8 @@ image *Image32bppFrom8bpp(byte *src, int width, int height, byte *pal)
 	image *b;
 	int i;
 
+	log("Image32bppFrom8bpp called");
+
 	b = new image(width, height);
 	p = (quad *) b->data;
 	for (i=0; i<256; i++)

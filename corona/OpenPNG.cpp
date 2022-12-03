@@ -37,10 +37,7 @@ namespace corona {
   //////////////////////////////////////////////////////////////////////////////
 
   void PNG_error_function(png_structp png_ptr, png_const_charp warning) {
-    // copied from libpng's pngerror.cpp, but without the fprintf
-    jmp_buf jmpbuf;
-    memcpy(jmpbuf, png_ptr->jmpbuf, sizeof(jmp_buf));
-    longjmp(jmpbuf, 1);
+    png_longjmp(png_ptr, 1);
   }
 
   //////////////////////////////////////////////////////////////////////////////
