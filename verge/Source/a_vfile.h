@@ -82,7 +82,7 @@ int vtell(VFILE* f);
 int veof(VFILE *f);
 std::unique_ptr<byte[]> vreadfile(const char *fname);
 
-inline void fread_le(int* dest, VFILE *f) {
+inline void fread_le(int* dest, FILE *f) {
     fread(dest, 1, sizeof(int), f);
     flip(dest,sizeof(int));
 }
