@@ -169,10 +169,10 @@ word Chunk::GrabW()
 	//	return 0;
 
 #ifdef CRIPPLED
-	char buf[2];
-	buf[0] = readc();
-	buf[1] = readc();
-	return *(word *)buf;
+	word result = 0;
+	result = static_cast<byte>(refc());
+	result |= static_cast<byte>(refc()) << 8;
+	return result;
 #else
 	word x = *(word *)(&chunk[ptr]);
 	flip(&x);
@@ -188,12 +188,12 @@ quad Chunk::GrabD()
 	//	return 0;
 
 #ifdef CRIPPLED
-	char buf[4];
-	buf[0] = refc();
-	buf[1] = refc();
-	buf[2] = refc();
-	buf[3] = refc();
-	return *(quad *)buf;
+	quad result = 0;
+	result = static_cast<byte>(refc());
+	result |= static_cast<byte>(refc()) << 8;
+	result |= static_cast<byte>(refc()) << 16;
+	result |= static_cast<byte>(refc()) << 24;
+	return result;
 #else
 	quad x = *(quad *)(&chunk[ptr]);
 	flip(&x);

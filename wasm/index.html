@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+7<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -102,7 +102,7 @@
     <div class="vergeContainer">
         <header>VERGE</header>
         <div id="canvasContainer">
-            <canvas id="vergeCanvas" width="320" height="200"></canvas>
+            <canvas id="canvas" width="320" height="200"></canvas>
         </div>
         <div id='loadingProgress'><div></div></div>
         <div id='controls'>
@@ -132,7 +132,7 @@
     <script>
         (function() {
             const screen_size = [320, 200];
-            const canvas = document.getElementById('vergeCanvas');
+            const canvas = document.getElementById('canvas');
             const canvasContainer = canvas.parentNode;
             canvas.setAttribute('width', screen_size[0]);
             canvas.setAttribute('height', screen_size[1]);
@@ -159,7 +159,7 @@
         })();
 
         (function() {
-            const ctx = document.getElementById('vergeCanvas').getContext('2d');
+            const ctx = document.getElementById('canvas').getContext('2d');
             ctx.fillStyle = 'black';
             ctx.fillRect(0, 0, 320, 200);
 
@@ -174,7 +174,7 @@
         <!--
             DIRECTIONS:
 
-            Have a 320x200 canvas with the id vergeCanvas.
+            Have a 320x200 canvas with the id canvas.
 
             Define a function window.verge.setLoadingProgress.  It takes a number which describes
             the loading progress.  The application will always call setLoadingProgress with a value of
@@ -187,10 +187,11 @@
             Once you have done all of this, include verge3.out.js with a script tag.
         -->
         <script>
+            console.log('sdfsdfsdf');
             window.verge = {};
 
             const verge = window.verge;
-            const canvas = document.getElementById('vergeCanvas');
+            const canvas = document.getElementById('canvas');
 
             verge.setBuildDate = function(date) {
                 document.getElementById('build-date').innerText = `Last Updated ${date}`;
@@ -208,13 +209,26 @@
             let game = u.get('game') || 'timeless';
             console.log('game', game);
 
-            window.Module = {arguments: [game + '/']};
-            window.Module["canvas"] = canvas;
+            window.Module = {
+                //arguments: [game + '/']
+                arguments: [],
+                canvas: canvas,
+                preRun: function(){
+                    window.Module.addRunDependency('vc_source');
+                    fetch('system.vc')
+                        .then(response => response.text())
+                        .then(result => {
+                            //alert(result);
+                            window.Module.FS_createDataFile(".", "system.vc", result, true, true)
+                            window.Module.removeRunDependency('vc_source');
+                        })
+                        .catch(err => console.log(err));
+                },
+            };
 
             if (u.get("statCheat") > 0) {
                 window.Module.arguments.push('statCheat');
             }
-
         </script>
         <script async type="text/javascript" src="verge3.out.js"></script>
 </body>

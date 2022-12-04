@@ -441,7 +441,6 @@ int sdl_Window::set_win(int w, int h, int bpp)
 
 	back_surface = SDL_CreateRGBSurfaceFrom(back_buffer, w, h, 32, w * 4, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
 
-	log("okay got here bpp = %d", bpp);
 	vid_bpp = bpp;
 	vid_bytesperpixel = bpp / 8;
 

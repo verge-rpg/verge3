@@ -1,0 +1,9 @@
+void AutoExec()
+{
+    /*while (1)
+    {
+        RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255, 0, 0), screen);
+        ShowPage();
+    }*/
+    Exit("Hello world!");
+}

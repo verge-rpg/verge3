@@ -90,6 +90,11 @@ extern int G_TILESIZE;
 #define BLITTER_16BPP
 #define BLITTER_15BPP
 #define ENABLE_2XSAI
+#elif __EMSCRIPTEN__
+#define CRIPPLED
+#define CDECL
+#define BLITTER_32BPP
+#define ENABLE_2XSAI
 #elif __PSP__
 #define CDECL
 #define NOSPLASHSCREEN
