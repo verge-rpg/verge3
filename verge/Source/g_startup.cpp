@@ -183,6 +183,12 @@ void InitVideo()
 	}
 }
 
+#ifdef __EMSCRIPTEN__
+EM_JS(void, wasm_nextFrame, (), {
+    return Asyncify.handleSleep(requestAnimationFrame);
+});
+#endif
+
 void ShowPage()
 {
 	HookTimer();
@@ -190,10 +196,15 @@ void ShowPage()
 	RenderSprites();
 	Flip();
 
+#ifdef __EMSCRIPTEN__
+    wasm_nextFrame();
+#else
     if (systemtime - last_showpage <= 0 && showpage_auto_sleep)
     {
         Sleep(1);
     }
+#endif
+
     last_showpage = systemtime;
 }
 

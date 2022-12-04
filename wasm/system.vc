@@ -1,9 +1,20 @@
 void AutoExec()
 {
-    /*while (1)
+    int img = NewImage(ImageWidth(screen), ImageHeight(screen));
+    Blit(0, 0, screen, img);
+
+    Unpress(0);    
+
+    while (!b1)
     {
-        RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255, 0, 0), screen);
+        Blit(0, 0, img, screen);
+        SetLucent(50);
+        RectFill(0, ImageHeight(screen) / 2 - 8, ImageWidth(screen), ImageHeight(screen) / 2 + 8, RGB(0, 0, 255), screen);
+        SetLucent(0);
+        PrintString(8, ImageHeight(screen) / 2 - 8, screen, 0, "Hello world!");
+
         ShowPage();
-    }*/
+    }
+
     Exit("Hello world!");
 }

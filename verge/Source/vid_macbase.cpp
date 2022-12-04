@@ -363,15 +363,28 @@ void sdl_Window::flip_win()
 	const int src_w = xres;
 	const int src_h = yres;
 	
-	if(0) {
-		// fill it with black
-		SDL_FillRect(screen_surface,NULL,SDL_MapRGB(screen_surface->format, 0, 0, 0));
-		shouldclear = false;
-	}
-	
-	if(dst_w == src_w && dst_h == src_h) {
+	if (dst_w == src_w && dst_h == src_h) {
+#ifdef __EMSCRIPTEN__
+        SDL_LockSurface(screen_surface);
+
+        int size = dst_w * dst_h;
+        quad* s = (quad*) back_buffer;
+        quad* d = (quad*) screen_surface->pixels;
+
+        // same size - no scaling needed
+        for (int i = 0; i != size; i++) {		
+            quad p = *s++;
+            byte r = p & 0xFF;
+            byte g = (p & 0xFF00) >> 8;
+            byte b = (p & 0xFF0000) >> 16;
+            *d++ = (r << 16) | (g << 8) | b | 0xFF000000;
+        }
+
+        SDL_UnlockSurface(screen_surface);
+#else		
 		// same size - no scaling needed
 		SDL_BlitSurface(back_surface, NULL, screen_surface, NULL);
+#endif		
 	} else {
 		
 		int out_h, out_w; // the eventual size of the image
@@ -390,18 +403,26 @@ void sdl_Window::flip_win()
 		// these pitches are in pixels, instead of bytes as SDL
 		int src_pitch = back_surface->pitch / 4;
 		int dst_pitch = screen_surface->pitch / 4;
-		quad *d, *s;
 		
 		SDL_LockSurface(screen_surface);
 		SDL_LockSurface(back_surface);
 		
-		s = (quad *) back_surface->pixels;
-		d = ((quad *) screen_surface->pixels) + (off_h * dst_pitch) + off_w;
+		quad* s = (quad*) back_surface->pixels;
+		quad* d = ((quad*) screen_surface->pixels) + (off_h * dst_pitch) + off_w;
 		
-		for(int i = 0; i < out_h; i++) {
+		for (int i = 0; i < out_h; i++) {
 			xerr = 0;
-			for(int j = 0; j < out_w; j++) {
+			for (int j = 0; j < out_w; j++) {
+#ifdef __EMSCRIPTEN__
+	            quad p = s[(xerr >> 16)];
+	            byte r = p & 0xFF;
+	            byte g = (p & 0xFF00) >> 8;
+	            byte b = (p & 0xFF0000) >> 16;
+				d[j] = (r << 16) | (g << 8) | b | 0xFF000000;
+#else
+
 				d[j] = s[(xerr >> 16)];
+#endif				
 				xerr += xadj;
 			}
 			d    += dst_pitch;
@@ -517,13 +538,15 @@ sdl_Window::~sdl_Window()
 // Sets actual window dimensions & attrs
 void sdl_Window::adjust(int w, int h)
 {
-	// we're never going to get a 320x240 window back from SDL,
-	// so just ask for a 640x480 one and we'll scale it up when we flip
-	if(!vid_window && w == 320 && h == 240 )
-	{
-		w = 640;
-		h = 480;
-	}
+#ifndef __EMSCRIPTEN__  
+    // we're never going to get a 320x240 window back from SDL,
+    // so just ask for a 640x480 one and we'll scale it up when we flip
+    if(!vid_window && w == 320 && h == 240 )
+    {
+        w = 640;
+        h = 480;
+    }
+#endif
 	
 	screen_surface = SDL_SetVideoMode(w, h, vid_bpp, (vid_window ? SDL_RESIZABLE : SDL_FULLSCREEN) | SDL_SWSURFACE); // SWSURFACE because we may need to scale into it in flip_win
 	shouldclear = true;

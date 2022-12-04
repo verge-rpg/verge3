@@ -56,7 +56,7 @@ StringRef GetSystemSaveDirectory(CStringRef name)
 void doMessageBox(std::string msg)
 {
 	GtkWidget* w = GTK_WIDGET(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", msg.c_str()));
-	gtk_window_set_title(GTK_WINDOW(w), "v3wasm3");
+	gtk_window_set_title(GTK_WINDOW(w), "verge3");
 	gtk_dialog_set_default_response(GTK_DIALOG(w), GTK_RESPONSE_CLOSE);
 
 	gtk_dialog_run(GTK_DIALOG(w));

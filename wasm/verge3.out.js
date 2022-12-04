@@ -917,6 +917,10 @@ var ASM_CONSTS = {
  }
 };
 
+function wasm_nextFrame() {
+ return Asyncify.handleSleep(requestAnimationFrame);
+}
+
 function ExitStatus(status) {
  this.name = "ExitStatus";
  this.message = "Program terminated with exit(" + status + ")";
@@ -6212,10 +6216,6 @@ function _SDL_UnlockSurface(surf) {
  surfData.ctx.putImageData(surfData.image, 0, 0);
 }
 
-function _SDL_UpperBlit(src, srcrect, dst, dstrect) {
- return SDL.blitSurface(src, srcrect, dst, dstrect, false);
-}
-
 function _SDL_WM_IconifyWindow() {
  throw "SDL_WM_IconifyWindow TODO";
 }
@@ -8854,7 +8854,6 @@ var asmLibraryArg = {
  "SDL_SetVideoMode": _SDL_SetVideoMode,
  "SDL_ShowCursor": _SDL_ShowCursor,
  "SDL_UnlockSurface": _SDL_UnlockSurface,
- "SDL_UpperBlit": _SDL_UpperBlit,
  "SDL_WM_IconifyWindow": _SDL_WM_IconifyWindow,
  "SDL_WM_SetCaption": _SDL_WM_SetCaption,
  "SDL_WarpMouse": _SDL_WarpMouse,
@@ -8943,7 +8942,8 @@ var asmLibraryArg = {
  "segfault": segfault,
  "strftime": _strftime,
  "strftime_l": _strftime_l,
- "system": _system
+ "system": _system,
+ "wasm_nextFrame": wasm_nextFrame
 };
 
 Asyncify.instrumentWasmImports(asmLibraryArg);
@@ -9097,6 +9097,10 @@ var _asyncify_stop_unwind = Module["_asyncify_stop_unwind"] = createExportWrappe
 var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = createExportWrapper("asyncify_start_rewind");
 
 var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = createExportWrapper("asyncify_stop_rewind");
+
+var ___start_em_js = Module["___start_em_js"] = 284043;
+
+var ___stop_em_js = Module["___stop_em_js"] = 284105;
 
 function invoke_ii(index, a1) {
  var sp = stackSave();
