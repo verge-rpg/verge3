@@ -1,0 +1,6 @@
+int img_snow;
+
+void BlitSnow()
+{
+
+}

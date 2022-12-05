@@ -1,0 +1,7 @@
+// The following code is recommended for people using Lua.
+// After all, it's slightly better than compiler errors
+// for people who screw with verge.cfg.
+void AutoExec()
+{
+	Exit("This game requires that Lua be enabled to run.");
+}

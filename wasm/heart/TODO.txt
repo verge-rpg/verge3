@@ -1,0 +1,10 @@
+TODO
+
+- Make one boss map
+- Make 1 boss
+
+If we can get to it
+
+- More generic maps
+- More enemies
+- Interior town

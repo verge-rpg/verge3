@@ -1,0 +1,289 @@
+#define SPIKE_DAMAGE 3
+
+struct point_type
+{
+	int x, y;
+	int swim_flag;
+};
+
+point_type check_point;
+point_type active_zone;
+
+int last_zone;
+
+void ZoneInteract (int x, int y)
+{
+	int z = GetZone(x, y);
+	active_zone.x = x;
+	active_zone.y = y;
+	if (z)
+	{
+		//Log (str(z) + " - " + GetZoneScript(z));
+		CallFunction(zone.event[z]);
+	}
+	//last_zone = z;
+}
+
+void Submerge()
+{
+	if (!player.swim_flag)
+	{
+		player.swim_flag = 1;
+		if (active_zone.y == entity.y[player.ent] + entity.hoth[player.ent] / 16)
+		{
+			PlaySound(sfx_water, 100);
+		}
+	}
+}
+
+void Emerge()
+{
+	player.swim_flag = 0;
+}
+
+void DisableCameraFollow()
+{
+	cameratracking = 0;
+}
+
+void EnableCameraFollow()
+{
+	cameratracking = 1;
+}
+
+void CheckPoint(int x, int y, int swim)
+{
+	check_point.x = x;
+	check_point.y = y;
+	check_point.swim_flag = swim;
+}
+
+#define YELLOW_SNOW_DAMAGE 4
+void YellowSnow()
+{
+	PlayerHurt(YELLOW_SNOW_DAMAGE);
+}
+
+//void PlayerDeath()
+//{
+//	platform_outcome = 1;
+//	PlayerDeath();
+//}
+
+void LevelExit()
+{
+	if(up)
+	{
+		entity.specframe[player.ent] = 34;
+		platform_outcome = 2;
+		FinishLevel();
+	}
+}
+
+void FinishLevel()
+{
+	FadeOut(100);
+	int delay = 200;
+	int finish_time = systemtime;
+	int banner_x, banner_y;
+	int banner_start_x = -ImageWidth(img_finish_banner);
+	int banner_dest_x = ImageWidth(screen) - ImageWidth(img_finish_banner) / 2;
+	int banner_start_y = ImageHeight(screen) - ImageHeight(img_finish_banner) / 2;
+	int banner_dest_y = banner_start_y;
+	PlayMusic("sbwin.it");
+	while ((systemtime - finish_time) < delay)
+	{
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		TBlit(banner_x, banner_y, img_finish_banner, screen);
+		ShowPage();
+		if (systemtime - finish_time < 50)
+		{
+			// Sets the coords to point along line over time
+			banner_x = (banner_start_x + ((systemtime - finish_time) * (banner_dest_x - banner_start_x) / 50));
+			banner_y = (banner_start_y + ((systemtime - finish_time) * (banner_dest_y - banner_start_y) / 50));
+		}
+		else
+		{
+			banner_x = banner_dest_x;
+			banner_y = banner_dest_y;
+		}
+		//Log(str(banner_x) + " " + str(banner_y));
+	}
+	
+	finish_time = systemtime;
+	banner_start_x = banner_x;
+	banner_start_y = banner_y;
+	banner_dest_y = banner_y - 40;
+	delay = 700;
+	int unlock_sound_flag = 0;
+	while ((systemtime - finish_time) < delay)
+	{
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		TBlit(banner_x, banner_y, img_finish_banner, screen);
+		if (systemtime - finish_time < 100)
+		{
+			SetLucent(100 - (systemtime - finish_time));
+		}
+		else
+		{
+			SetLucent(0);
+		}
+		PrintString(30,
+				ImageHeight(screen) / 2,
+				screen, defaultfont,
+				"Time: "
+				+ AppendDigits(platform_time / 100 / 60 % 100, 2) + ":"
+				+ AppendDigits(platform_time / 100 % 60, 2) + "."
+				+ AppendDigits(platform_time % 100, 2)
+				);
+		if (systemtime - finish_time < 250 && systemtime - finish_time >= 150)
+		{
+			SetLucent(100 - (systemtime - finish_time - 150));
+		}
+		else if (systemtime - finish_time < 150)
+		{
+			SetLucent(100);
+		}
+		else
+		{
+			SetLucent(0);
+		}
+		DrawSnowballGauge(30, ImageHeight(screen) / 2 + (FontHeight(defaultfont) * 2));
+		SetLucent(0);
+		
+		if (systemtime - finish_time < 400 && systemtime - finish_time >= 300)
+		{
+			SetLucent(100 - (systemtime - finish_time - 300));
+		}
+		else if (systemtime - finish_time < 300)
+		{
+			SetLucent(100);
+		}
+		else
+		{
+			SetLucent(0);
+		}
+		PrintString(30,
+				ImageHeight(screen) / 2+ (FontHeight(defaultfont) * 4),
+				screen, defaultfont,
+				"Enemies defeated: "
+				+ AppendDigits(platform_kill_count, 6)
+				);
+		SetLucent(0);
+		
+		if (systemtime - finish_time < 550 && systemtime - finish_time >= 450)
+		{
+			SetLucent(100 - (systemtime - finish_time - 450));
+			if (SelectedLevel + 1 <= MAX_LEVEL)
+			{
+				if (!Level[SelectedLevel + 1].unlocked
+					&& !unlock_sound_flag)
+				{
+					unlock_sound_flag = 1;
+					PlaySound(sfx_unlock, 100);
+				}
+			}
+		}
+		else if (systemtime - finish_time < 450)
+		{
+			SetLucent(100);
+		}
+		else
+		{
+			SetLucent(0);
+		}
+		
+		if (SelectedLevel + 1 <= MAX_LEVEL)
+		{
+			if (!Level[SelectedLevel + 1].unlocked)
+			{
+				PrintCenter(ImageWidth(screen) / 2,
+						ImageHeight(screen) / 2+ (FontHeight(defaultfont) * 8),
+						screen, defaultfont,
+						"**  New Level Unlocked!  **");
+			}
+		}
+		SetLucent(0);
+		
+		ShowPage();
+		if (systemtime - finish_time < 50)
+		{
+			// Sets the coords to point along line over time
+			banner_x = (banner_start_x + ((systemtime - finish_time) * (banner_dest_x - banner_start_x) / 50));
+			banner_y = (banner_start_y + ((systemtime - finish_time) * (banner_dest_y - banner_start_y) / 50));
+		}
+		else
+		{
+			banner_x = banner_dest_x;
+			banner_y = banner_dest_y;
+		}
+	}
+	int temp_image = DuplicateImage(screen);
+	FadeOutImage(100, temp_image);
+	if (SelectedLevel + 1 <= MAX_LEVEL)
+	{
+		if (!Level[SelectedLevel + 1].unlocked)
+		{
+			Level[SelectedLevel + 1].unlocked = 1;
+		}
+	}
+	else
+	{
+		Credits();
+	}
+	SaveGamesave();
+}
+
+void Credits()
+{
+	int y = 25;	
+	addIntroLine(y, "CREDITS");			y+=50;
+	addIntroLine(y, "DEVELOPMENT TEAM");			y+=50;
+	addIntroLine(y, "Overkill - Project Lead, Everything, Credits");		y+=15;
+	addIntroLine(y, "ustor - Programmer");		y+=15;
+	addIntroLine(y, "Ragecage - Programmer");	y+=15;
+	addIntroLine(y, "Darien - Artist");		y+=15;
+	addIntroLine(y, "Troupe - Musician");		y+=50;
+	addIntroLine(y, "TESTERS");			y+=50;
+	addIntroLine(y, "SDHawk");			y+=15;
+	addIntroLine(y, "Nyskall");			y+=15;
+	addIntroLine(y, "Troupe");			y+=15;
+	addIntroLine(y, "uncleBen");			y+=15;
+	addIntroLine(y, "Zaratustra");			y+=15;
+	addIntroLine(y, "Darien");			y+=15;
+	addIntroLine(y, "ustor");			y+=50;
+	addIntroLine(y, "SOURCE OF RIPPED SOUNDS");			y+=50;
+	addIntroLine(y, "themushroomkingdom.net");			y+=15;
+	addIntroLine(y, "FindSounds.com");			y+=15;
+	addIntroLine(y, "The Quest for Colour");			y+=50;
+	addIntroLine(y, "SPECIAL THANKS");			y+=50;
+	addIntroLine(y, "Troupe - agreed to make music on last day.");			y+=50;
+	addIntroLine(y, "SPECIAL NO THANKS");			y+=50;
+	addIntroLine(y, "TomT64 - for not giving us ANOTHER extension");			y+=50;
+	addIntroLine(y, "You have beaten the game,");	y+=15;
+	addIntroLine(y, "Be proud!");			y+=15;
+	addIntroLine(y, "...Also, disappointed if you want to be.");			y+=50;
+	addIntroLine(y, "But if you're disappointed, remember that");			y+=15;
+	addIntroLine(y, "I wasted my entire holiday season");			y+=15;
+	addIntroLine(y, "for you to be play this game.");			y+=15;
+	addIntroLine(y, "So don't hate me.");			y+=50;
+	addIntroLine(y, "Why didn't I do more during this time?");			y+=15;
+	addIntroLine(y, "I had other things to do too.");			y+=50;
+	addIntroLine(y, "OTHER THINGS I HAD TO DO");			y+=50;
+	addIntroLine(y, "School work");			y+=15;
+	addIntroLine(y, "School work (again)");			y+=15;
+	addIntroLine(y, "Enjoying gifts");			y+=15;
+	addIntroLine(y, "Celebrating with family");			y+=15;
+	addIntroLine(y, "Sleeping");			y+=15;
+	addIntroLine(y, "Eating");			y+=15;
+	addIntroLine(y, "Feasting on Turkey");			y+=15;
+	addIntroLine(y, "Working on other things");			y+=15;
+	addIntroLine(y, "Waiting for other people");			y+=15;
+	addIntroLine(y, "Having my Internet crap out yesterday.");			y+=15;
+	addIntroLine(y, "...and more!");			y+=50;
+	addIntroLine(y, "Hope you enjoyed what little");			y+=15;
+	addIntroLine(y, "game you got to play.");			y+=50;
+	addIntroLine(y, "Goodbye!");			y+=240;
+	addIntroLine(y, "");			y+=15;
+	doSimpleCredits(defaultfont);
+}

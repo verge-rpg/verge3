@@ -1,0 +1,51 @@
+// 2 588
+void Start()
+{	
+	SpawnPlayer();
+	ProcessPlatform();
+	Exit("You are winner!");
+}
+
+void OmegaJump()
+{
+	if (b4)
+	{
+		// player.jet_packing_flag = 1
+		player.jump_flag = pow(2, 24);
+	}
+}
+
+void SpawnItUp()
+{
+	AddEnemy(29 * 16, 568 * 16, "girl.chr",	AI_TYPE_LEMMING, 1, 200);
+	AddEnemy(41 * 16, 559 * 16, "boy.chr",	AI_TYPE_LEMMING, 10, 120);
+	AddEnemy(46 * 16, 559 * 16, "girl.chr",	AI_TYPE_CLING, 30, 143);
+	AddEnemy(89 * 16, 550 * 16, "girl.chr",	AI_TYPE_HOMING, 7, 90);
+	AddEnemy(76 * 16, 557 * 16, "boy.chr",	AI_TYPE_HOMING, 24, 140);
+	AddEnemy(64 * 16, 568 * 16, "girl.chr",	AI_TYPE_LEMMING, 13, 106);
+	AddEnemy(86 * 16, 536 * 16, "boy.chr",	AI_TYPE_HOMING_CLING, 20, 150);
+	AddEnemy(48 * 16, 533 * 16, "girl.chr",	AI_TYPE_HOMING_CLING, 13, 134);
+	AddEnemy(10 * 16, 478 * 16, "boy.chr",	AI_TYPE_HOMING, 34, 100);
+	AddEnemy(12 * 16, 478 * 16, "boy.chr",	AI_TYPE_LEMMING, 1, 250);
+	AddEnemy(22 * 16, 457 * 16, "girl.chr",	AI_TYPE_CLING, 3, 97);
+	AddEnemy(87 * 16, 395 * 16, "boy.chr",	AI_TYPE_HOMING_CLING, 12, 121);
+	AddEnemy(81 * 16, 395 * 16, "girl.chr",	AI_TYPE_HOMING, 2, 59);
+	AddEnemy(63 * 16, 423 * 16, "boy.chr",	AI_TYPE_HOMING, 9, 187);
+	AddEnemy(52 * 16, 395 * 16, "girl.chr",	AI_TYPE_HOMING, 16, 99);
+	AddEnemy(68 * 16, 395 * 16, "boy.chr",	AI_TYPE_HOMING, 4, 58);
+	AddEnemy(48 * 16, 342 * 16, "boy.chr",	AI_TYPE_HOMING, 10, 150);
+	AddEnemy(55 * 16, 217 * 16, "girl.chr",	AI_TYPE_HOMING, 3, 79);
+	AddEnemy(27 * 16, 132 * 16, "girl.chr",	AI_TYPE_HOMING, 3, 79);
+	AddEnemy(29 * 16, 132 * 16, "boy.chr",	AI_TYPE_HOMING, 3, 79);
+	AddEnemy(10 * 16, 149 * 16, "girl.chr",	AI_TYPE_HOMING, 10, 10);
+	AddEnemy(10 * 16, 149 * 16, "boy.chr",	AI_TYPE_HOMING, 35, 99);
+	AddEnemy(47 * 16, 136 * 16, "girl.chr",	AI_TYPE_HOMING, 35, 99);
+	AddEnemy(44 * 16, 136 * 16, "boy.chr",	AI_TYPE_HOMING, 12, 89);
+	AddEnemy(89 * 16, 87 * 16, "girl.chr",	AI_TYPE_LEMMING, 10, 185);
+	AddEnemy(82 * 16, 94 * 16, "girl.chr",	AI_TYPE_LEMMING, 24, 220);
+	AddEnemy(10 * 16, 66 * 16, "boy.chr",	AI_TYPE_LEMMING, 5, 74);
+	AddEnemy(23 * 16, 46 * 16, "boy.chr",	AI_TYPE_HOMING_CLING, 35, 99);
+	AddEnemy(9 * 16, 53 * 16, "boy.chr",	AI_TYPE_CLING, 35, 99);
+	AddEnemy(61 * 16, 14 * 16, "girl.chr",	AI_TYPE_HOMING_CLING, 1, 400);
+	
+}

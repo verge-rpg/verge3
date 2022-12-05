@@ -1,0 +1,119 @@
+/* 
+
+	-- Naming system --
+	NOTE: Needs fixed width font to look right.
+
+*/
+
+
+string NamingMenu(int f, string default_name, int max_length)
+{
+ 	log("start naming");
+	key[enter_scancode]=0;
+	int posX, posY, done;
+	string s=default_name;
+	int waituntil=0;
+	int fw=8;
+	int bg=MakeGradient(blue,blue,black,black,ImageWidth(screen)-10,(FontHeight(f)*8));
+ 	while(!done)
+ 	{
+		Render();
+
+		SetLucent(50);
+		Blit(5,5,bg,screen);
+		SetLucent(0);
+		Rect(4,4,ImageWidth(screen)-4,(FontHeight(f)*8)+1,RGB(255,255,255),screen);
+		
+		if(!timer%4) PrintString(5,5,screen,f,s+"|");
+		else PrintString(5,5,screen,f,s);
+		PrintString(5,5+(FontHeight(f)*2),screen,f, "A B C D E F G H I J K L M");
+		PrintString(5,5+(FontHeight(f)*3),screen,f, "N O P Q R S T U V W X Y Z");
+		PrintString(5,5+(FontHeight(f)*4),screen,f, "a b c d e f g h i j k l m");
+		PrintString(5,5+(FontHeight(f)*5),screen,f, "n o p q r s t u v w x y z");
+		PrintString(5,5+(FontHeight(f)*6),screen,f, "1 2 3 4 5 6 7 8 9 0 - < OK");
+		
+		PrintRight(ImageWidth(screen)-5,5,screen,f,"Shift jumps to OK.");
+		
+		SetLucent(cos(systemtime * 4) * 20 / 65536 + 60);
+		if(posY==4 && posX==12) RectFill(5+(posX*(fw*2)),5+(FontHeight(f)*(posY+2)),5+(posX*(fw*2))+(fw*2),5+(FontHeight(f)*(posY+3)),RGB($FF,$FF,$FF),screen);
+		else RectFill(5+(posX*(fw*2)),5+(FontHeight(f)*(posY+2)),5+(posX*(fw*2))+fw,5+(FontHeight(f)*(posY+3)),RGB($FF,$FF,$FF),screen);
+		SetLucent(0);
+
+ 		ShowPage();
+ 		if(up && waituntil<=systemtime)
+ 		{
+ 			posY--;
+ 			if(posY<0) posY=4;
+ 			waituntil=systemtime+20;
+ 		}
+ 		if(down && waituntil<=systemtime)
+ 		{
+ 			posY++;
+ 			if(posY>4) posY=0;
+ 			waituntil=systemtime+20;
+ 		}
+ 		if(key[SCAN_LEFT] && waituntil<=systemtime)
+ 		{
+ 			posX--;
+ 			if(posX<0) posX=12;
+ 			waituntil=systemtime+20;
+ 		}
+ 		if(key[SCAN_RIGHT] && waituntil<=systemtime)
+ 		{
+ 			posX++;
+ 			if(posX>12) posX=0;
+ 			waituntil=systemtime+20;
+ 		}
+ 		if(key[SCAN_RSHIFT] || key[SCAN_LSHIFT])
+ 		{
+ 			posX=12;
+ 			posY=4;
+ 		}
+ 		if(key[enter_scancode] && waituntil<=systemtime)
+ 		{
+ 			switch(posY)
+ 			{
+ 				case 0:
+ 					s=s+chr(65+posX);
+ 				case 1:
+ 					s=s+chr(78+posX);
+ 				case 2:
+ 					s=s+chr(97+posX);
+ 				case 3:
+ 					s=s+chr(110+posX);
+ 				case 4:
+					if (posX<=9)
+					{
+						s=s+right(str(posX+1),1);
+					}
+					else if(posX==10)
+					{
+						s=s+"-";
+					}
+					else if(posX==11 && len(s))
+					{
+						//Delete!
+						s=left(s, (len(s)-1));
+					}
+					else if(posX==12 && len(s))
+					{
+						//Done!
+						done=1;
+					}
+					else
+					{
+						//Bad!
+					}
+ 			}
+ 			if(len(s)>max_length)
+ 			{
+ 				s=left(s, max_length);
+ 			}
+ 			//Give more wait on letter entering than on movement.
+ 			waituntil=systemtime+40;
+ 		}
+ 	}
+ 	log("done naming");
+ 	FreeImage(bg);
+ 	return s;
+}

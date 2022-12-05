@@ -1,0 +1,401 @@
+struct Menubox
+{
+	int x;
+	int y;
+	int w;
+	int h;
+	int gradientbg;
+};
+
+string nameinfile[10];
+Menubox mainmenu;
+Menubox equipmenu;
+Menubox statusmenu;
+Menubox configmenu;
+Menubox presskeybox;
+Menubox savemenu;
+
+void MakeMenuBoxes()
+{
+	mainmenu.x=4;
+	mainmenu.y=4;
+	mainmenu.w=160;
+	mainmenu.h=70;
+	mainmenu.gradientbg=MakeGradient(blue,blue,black,black,mainmenu.w,mainmenu.h);
+
+	equipmenu.x=4;
+	equipmenu.y=4;
+	equipmenu.w=120;
+	equipmenu.h=30;
+	equipmenu.gradientbg=MakeGradient(blue,blue,black,black,equipmenu.w,equipmenu.h);
+
+	statusmenu.x=4;
+	statusmenu.y=4;
+	statusmenu.w=140;
+	statusmenu.h=150;
+	statusmenu.gradientbg=MakeGradient(blue,blue,black,black,statusmenu.w,statusmenu.h);
+
+	configmenu.x=4;
+	configmenu.y=4;
+	configmenu.w=190;
+	configmenu.h=110;
+	configmenu.gradientbg=MakeGradient(blue,blue,black,black,configmenu.w,configmenu.h);
+
+	presskeybox.x=(ImageWidth(screen)/2)-110;
+	presskeybox.y=(ImageHeight(screen)/2)-30;
+	presskeybox.w=220;
+	presskeybox.h=60;
+	presskeybox.gradientbg=MakeGradient(blue,blue,black,black,presskeybox.w,presskeybox.h);
+
+	savemenu.x=40;
+	savemenu.y=52;
+	savemenu.w=ImageWidth(screen)-80;
+	savemenu.h=ImageHeight(screen)-104;
+	savemenu.gradientbg=MakeGradient(blue,blue,black,black,savemenu.w,savemenu.h);
+}
+
+void BlitMainMenuBox()
+{
+	Blit(mainmenu.x,mainmenu.y,mainmenu.gradientbg,screen);
+	Rect(mainmenu.x,mainmenu.y,mainmenu.x+mainmenu.w,mainmenu.y+mainmenu.h,RGB(255,255,255),screen);
+	Printstring(mainmenu.x+20,mainmenu.y+4,screen,mainfont,"Equip");
+	Printstring(mainmenu.x+20,mainmenu.y+4+((FontHeight(mainfont)+4)*1),screen,mainfont,"Status");
+	Printstring(mainmenu.x+20,mainmenu.y+4+((FontHeight(mainfont)+4)*2),screen,mainfont,"Config");
+	Printstring(mainmenu.x+20,mainmenu.y+4+((FontHeight(mainfont)+4)*3),screen,mainfont,"Save");
+	Printstring(mainmenu.x+20,mainmenu.y+4+((FontHeight(mainfont)+4)*4),screen,mainfont,"Exit to Main Menu");
+}
+
+void BlitEquipMenuBox()
+{
+	Blit(equipmenu.x,equipmenu.y,equipmenu.gradientbg,screen);
+	Rect(equipmenu.x,equipmenu.y,equipmenu.x+equipmenu.w,equipmenu.y+equipmenu.h,RGB(255,255,255),screen);
+	int i;
+	for(i=0; i<nextequip; i++)
+	{
+		Printstring(equipmenu.x+20,equipmenu.y+4+((FontHeight(mainfont)+4)*i),screen,mainfont,equipitems[i].sname);
+	}
+}
+
+void BlitStatusMenuBox()
+{
+	Blit(statusmenu.x,statusmenu.y,statusmenu.gradientbg,screen);
+	Rect(statusmenu.x,statusmenu.y,statusmenu.x+statusmenu.w,statusmenu.y+statusmenu.h,RGB(255,255,255),screen);
+
+	printstring(statusmenu.x+6,statusmenu.y+4,screen,mainfont,"Name:");
+	printright(statusmenu.x+136,statusmenu.y+4,screen,mainfont,MainPlayer.name);
+
+	printstring(statusmenu.x+6,statusmenu.y+8+((FontHeight(mainfont)+4)*1),screen,mainfont,"Level:");
+	printright(statusmenu.x+136,statusmenu.y+8+((FontHeight(mainfont)+4)*1),screen,mainfont,str(MainPlayer.level));
+
+	printstring(statusmenu.x+6,statusmenu.y+8+((FontHeight(mainfont)+4)*2),screen,mainfont,"HP:");
+	printright(statusmenu.x+136,statusmenu.y+8+((FontHeight(mainfont)+4)*2),screen,mainfont,str(MainPlayer.hp)+"/"+str(MainPlayer.maxhp));
+
+	printstring(statusmenu.x+6,statusmenu.y+8+((FontHeight(mainfont)+4)*3),screen,mainfont,"Magic:");
+	printright(statusmenu.x+136,statusmenu.y+8+((FontHeight(mainfont)+4)*3),screen,mainfont,str(MainPlayer.mp)+"/"+str(MainPlayer.maxmp));
+
+	printstring(statusmenu.x+6,statusmenu.y+12+((FontHeight(mainfont)+4)*4),screen,mainfont,"Exp:");
+	printright(statusmenu.x+136,statusmenu.y+12+((FontHeight(mainfont)+4)*4),screen,mainfont,str(MainPlayer.exp));
+
+	printstring(statusmenu.x+6,statusmenu.y+12+((FontHeight(mainfont)+4)*5),screen,mainfont,"Next Level:");
+	printright(statusmenu.x+136,statusmenu.y+12+((FontHeight(mainfont)+4)*5),screen,mainfont,str(MainPlayer.nextlevelexp));
+
+	printstring(statusmenu.x+6,statusmenu.y+16+((FontHeight(mainfont)+4)*6),screen,mainfont,"ATK:");
+	printright(statusmenu.x+136,statusmenu.y+16+((FontHeight(mainfont)+4)*6),screen,mainfont,str(MainPlayer.atk));
+
+	printstring(statusmenu.x+6,statusmenu.y+16+((FontHeight(mainfont)+4)*7),screen,mainfont,"DEF:");
+	printright(statusmenu.x+136,statusmenu.y+16+((FontHeight(mainfont)+4)*7),screen,mainfont,str(MainPlayer.def));
+}
+
+void BlitConfigMenuBox()
+{
+	Blit(configmenu.x,configmenu.y,configmenu.gradientbg,screen);
+	Rect(configmenu.x,configmenu.y,configmenu.x+configmenu.w,configmenu.y+configmenu.h,RGB(255,255,255),screen);
+	Printstring(configmenu.x+20,configmenu.y+4,screen,mainfont,"Confirm:");
+	Printright(configmenu.x+186,configmenu.y+4,screen,mainfont,GetNameFromCode(enter_scancode));
+	Printstring(configmenu.x+20,configmenu.y+4+((FontHeight(mainfont)+4)*1),screen,mainfont,"Cancel:");
+	Printright(configmenu.x+186,configmenu.y+4+((FontHeight(mainfont)+4)*1),screen,mainfont,GetNameFromCode(cancel_scancode));
+	Printstring(configmenu.x+20,configmenu.y+4+((FontHeight(mainfont)+4)*2),screen,mainfont,"Attack:");
+	Printright(configmenu.x+186,configmenu.y+4+((FontHeight(mainfont)+4)*2),screen,mainfont,GetNameFromCode(attack_scancode));
+	Printstring(configmenu.x+20,configmenu.y+4+((FontHeight(mainfont)+4)*3),screen,mainfont,"Heal Spell:");
+	Printright(configmenu.x+186,configmenu.y+4+((FontHeight(mainfont)+4)*3),screen,mainfont,GetNameFromCode(heal_scancode));
+	Printstring(configmenu.x+20,configmenu.y+4+((FontHeight(mainfont)+4)*4),screen,mainfont,"Nova Spell:");
+	Printright(configmenu.x+186,configmenu.y+4+((FontHeight(mainfont)+4)*4),screen,mainfont,GetNameFromCode(nova_scancode));
+	Printstring(configmenu.x+20,configmenu.y+4+((FontHeight(mainfont)+4)*5),screen,mainfont,"Fire Spell:");
+	Printright(configmenu.x+186,configmenu.y+4+((FontHeight(mainfont)+4)*5),screen,mainfont,GetNameFromCode(fire_scancode));
+	Printstring(configmenu.x+20,configmenu.y+4+((FontHeight(mainfont)+4)*6),screen,mainfont,"Ice Spell:");
+	Printright(configmenu.x+186,configmenu.y+4+((FontHeight(mainfont)+4)*6),screen,mainfont,GetNameFromCode(ice_scancode));
+	Printstring(configmenu.x+20,configmenu.y+4+((FontHeight(mainfont)+4)*7),screen,mainfont,"Restore Defaults");
+}
+
+void BlitPressKeyBox(int text)
+{
+	Blit(presskeybox.x,presskeybox.y,presskeybox.gradientbg,screen);
+	Rect(presskeybox.x,presskeybox.y,presskeybox.x+presskeybox.w,presskeybox.y+presskeybox.h,RGB(255,255,255),screen);
+	if (text==0) Printcenter(ImageWidth(screen)/2,ImageHeight(screen)/2,screen,mainfont,"Press the new key");
+	if (text==1) Printcenter(ImageWidth(screen)/2,ImageHeight(screen)/2,screen,mainfont,"That key is in use, or invalid");
+}
+
+void BlitSavedBox()
+{
+	Blit(presskeybox.x,presskeybox.y,presskeybox.gradientbg,screen);
+	Rect(presskeybox.x,presskeybox.y,presskeybox.x+presskeybox.w,presskeybox.y+presskeybox.h,RGB(255,255,255),screen);
+	Printcenter(ImageWidth(screen)/2,ImageHeight(screen)/2,screen,mainfont,"Game Saved!");
+}
+
+void CheckSaveFiles()
+{
+	int i;
+	int success;
+	for (i=0; i<10; i++)
+	{
+		success=FileOpen("save0"+str(i)+".sav", FILE_READ);
+		if (success==0) nameinfile[i]="Empty";
+		else nameinfile[i]=FileReadln(success);
+		FileClose(success);
+	}
+}
+
+void BlitSaveMenuBox()
+{
+	Blit(savemenu.x,savemenu.y,savemenu.gradientbg,screen);
+	Rect(savemenu.x,savemenu.y,savemenu.x+savemenu.w,savemenu.y+savemenu.h,RGB(255,255,255),screen);
+	int i;
+	for (i=0; i<10; i++)
+	{
+		Printstring(savemenu.x+20,savemenu.y+4+((FontHeight(mainfont)+4)*i),screen,mainfont,"Save "+str(i+1));
+		Printright(savemenu.x+savemenu.w-10,savemenu.y+4+((FontHeight(mainfont)+4)*i),screen,mainfont,nameinfile[i]);
+	}
+}
+
+void ActEquipMenu()
+{
+	int cursel=MainPlayer.equip;
+	int numoptions=nextequip;
+	int waituntil=0;
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+	while (!key[cancel_scancode] && !key[enter_scancode])
+	{
+		Render();
+		DisplayHUD();
+		BlitEquipMenuBox();
+		printstring(equipmenu.x+8,equipmenu.y+4+(cursel*(FontHeight(mainfont)+4)),screen,mainfont,"+");
+		if (key[SCAN_DOWN] && waituntil<=systemtime)
+		{
+			cursel++;
+			if (cursel>numoptions-1) cursel=0;
+			waituntil=systemtime+20;
+		}
+		if (key[SCAN_UP] && waituntil<=systemtime)
+		{
+			cursel--;
+			if (cursel<0) cursel=numoptions-1;
+			waituntil=systemtime+20;
+		}
+		ShowPage();
+	}
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+	Equip(equipitems[cursel].sname);
+}
+
+void ActStatusMenu()
+{
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+	while (!key[cancel_scancode] && !key[enter_scancode])
+	{
+		Render();
+		DisplayHUD();
+		BlitStatusMenuBox();
+		ShowPage();
+	}
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+}
+
+void ActConfigMenu()
+{
+	int cursel=0;
+	int numoptions=8;
+	int waituntil=0;
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+	while (!key[cancel_scancode])
+	{
+		Render();
+		DisplayHUD();
+		BlitConfigMenuBox();
+		printstring(configmenu.x+8,configmenu.y+4+(cursel*(FontHeight(mainfont)+4)),screen,mainfont,"+");
+		if (key[SCAN_DOWN] && waituntil<=systemtime)
+		{
+			cursel++;
+			if (cursel>numoptions-1) cursel=0;
+			waituntil=systemtime+20;
+		}
+		if (key[SCAN_UP] && waituntil<=systemtime)
+		{
+			cursel--;
+			if (cursel<0) cursel=numoptions-1;
+			waituntil=systemtime+20;
+		}
+		if (key[enter_scancode] && waituntil<=systemtime)
+		{
+			key[enter_scancode]=0;
+			if (cursel==7)
+			{
+				attack_scancode=SCAN_SPACE;
+				enter_scancode=SCAN_ENTER;
+				cancel_scancode=SCAN_ESC;
+				heal_scancode=SCAN_S;
+				nova_scancode=SCAN_D;
+				fire_scancode=SCAN_F;
+				ice_scancode=SCAN_A;
+			}
+			else
+			{
+				lastpressed=0;
+				while (lastpressed==0)
+				{
+					Render();
+					DisplayHUD();
+					BlitConfigMenuBox();
+					BlitPressKeyBox(0);
+					ShowPage();
+				}
+				if (ScancodeIsAllowed(lastpressed)!=0)
+				{
+					switch (cursel)
+					{
+						case 0: enter_scancode=lastpressed;
+						case 1: cancel_scancode=lastpressed;
+						case 2: attack_scancode=lastpressed;
+						case 3: heal_scancode=lastpressed;
+						case 4: nova_scancode=lastpressed;
+						case 5: fire_scancode=lastpressed;
+						case 6: ice_scancode=lastpressed;
+					}
+				}
+				else
+				{
+					timer=0;
+					while (timer<150)
+					{
+						Render();
+						DisplayHUD();
+						BlitConfigMenuBox();
+						BlitPressKeyBox(1);
+						ShowPage();
+					}
+				}
+			}
+		}
+		ShowPage();
+	}
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+}
+
+void ActSaveMenu()
+{
+	CheckSaveFiles();
+	int cursel=0;
+	int numoptions=10;
+	int waituntil=0;
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+	while (!key[cancel_scancode] && !key[enter_scancode])
+	{
+		Render();
+		DisplayHUD();
+		BlitSaveMenuBox();
+		printstring(savemenu.x+8,savemenu.y+4+(cursel*(FontHeight(mainfont)+4)),screen,mainfont,"+");
+		if (key[SCAN_DOWN] && waituntil<=systemtime)
+		{
+			cursel++;
+			if (cursel>numoptions-1) cursel=0;
+			waituntil=systemtime+20;
+		}
+		if (key[SCAN_UP] && waituntil<=systemtime)
+		{
+			cursel--;
+			if (cursel<0) cursel=numoptions-1;
+			waituntil=systemtime+20;
+		}
+		ShowPage();
+	}
+	//save based on cursel here
+	if (lastpressed==enter_scancode)
+	{
+		SaveGame("save0"+str(cursel)+".sav");
+		timer=0;
+		while (timer<150 && !key[cancel_scancode])
+		{
+			Render();
+			DisplayHUD();
+			BlitMainMenuBox();
+			BlitSavedBox();
+			ShowPage();
+		}
+	}
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+}
+
+void MainMenuHook()
+{
+	int cursel=0;
+	int numoptions=5;
+	int waituntil=0;
+	if (key[cancel_scancode] && begin==0)
+	{
+		menuon=1;
+		SetEntitiesPaused(1);
+		key[cancel_scancode]=0;
+		HookKey(attack_scancode, "");
+		while (!key[cancel_scancode])
+		{
+			Render();
+			DisplayHUD();
+			BlitMainMenuBox();
+			printstring(mainmenu.x+8,mainmenu.y+4+(cursel*(FontHeight(mainfont)+4)),screen,mainfont,"+");
+			if (key[SCAN_DOWN] && waituntil<=systemtime)
+			{
+				cursel++;
+				if (cursel>numoptions-1) cursel=0;
+				waituntil=systemtime+20;
+			}
+			if (key[SCAN_UP] && waituntil<=systemtime)
+			{
+				cursel--;
+				if (cursel<0) cursel=numoptions-1;
+				waituntil=systemtime+20;
+			}
+			if (key[enter_scancode] && waituntil<=systemtime)
+			{
+				key[enter_scancode]=0;
+				switch (cursel)
+				{
+					case 0: //Equip
+						ActEquipMenu();
+					case 1: //Status
+						ActStatusMenu();
+					case 2: //Config
+						ActConfigMenu();
+					case 3: //Save
+						ActSaveMenu();
+					case 4: //Exit
+						FadeOut(50);
+						deinit();
+						IntroMenu();
+				}
+			}
+			ShowPage();
+		}
+		SetEntitiesPaused(0);
+		key[cancel_scancode]=0;
+		HookKey(attack_scancode, "AnimateAttack");
+		menuon=0;
+	}
+}
+

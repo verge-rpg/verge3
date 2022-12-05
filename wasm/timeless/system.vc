@@ -73,12 +73,12 @@ void Autoexec()
 	int r = Random(0,5);
 	switch (r)
 	{
-		case 0:	PlayMusic("music\rain.s3m");
-		case 1: PlayMusic("music\zcs-02-intro.xm");
-		case 2: PlayMusic("music\zk-jdood.it");
-		case 3:	PlayMusic("music\verge6.it");
-		case 4: PlayMusic("music\lib-grey.xm");
-		case 5: PlayMusic("music\sully-columns.it");
+		case 0:	PlayMusic("music/rain.s3m");
+		case 1: PlayMusic("music/zcs-02-intro.xm");
+		case 2: PlayMusic("music/zk-jdood.it");
+		case 3:	PlayMusic("music/verge6.it");
+		case 4: PlayMusic("music/lib-grey.xm");
+		case 5: PlayMusic("music/sully-columns.it");
 	}
 
 	InitTables();

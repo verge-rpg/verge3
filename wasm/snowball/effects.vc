@@ -1,0 +1,70 @@
+// Fades the screen from black to normal over the specified duration.
+// This renders over everything.
+void FadeIn(int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		BlitSnowballs();
+		if (demo_mode != DEMOMODE_PLAYBACK)
+		{
+			DrawHUDInterface();
+		}
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+// Fades the screen from normal to black over the specified time.
+//
+// This renders over everything.
+void FadeOut(int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		BlitSnowballs();
+		if (demo_mode != DEMOMODE_PLAYBACK)
+		{
+			DrawHUDInterface();
+		}
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+}
+
+// Fades the screen from black to normal over the specified duration.
+// This renders over everything.
+void FadeInImage(int _dur, int img)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Blit(0, 0, img, screen);
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+// Fades the screen from black to normal over the specified duration.
+// This renders over everything.
+void FadeOutImage(int _dur, int img)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Blit(0, 0, img, screen);
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}

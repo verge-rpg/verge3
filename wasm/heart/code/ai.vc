@@ -1,0 +1,279 @@
+
+void AIStep(int enemyindex)
+{
+	//do stuff according to ai
+	int wait;
+	int rand;
+	if (entity.movecode[Enemies[enemyindex].ent]==0 && systemtime>=Enemies[enemyindex].cooldown)
+	{
+		if (Enemies[enemyindex].ai==AI_LEVEL1)
+		{
+			wait=100;
+			rand=Random(0,10);
+			if (rand<=Random(4,6) && Enemies[enemyindex].state!=STATE_ATK && NearPlayer(enemyindex, 1))
+			{
+				FacePlayer(enemyindex);
+				AnimateEnemyAttack(enemyindex, wait);
+			}
+			else if (NearPlayer(enemyindex, 2) && Enemies[enemyindex].hp>Enemies[enemyindex].maxhp/2) MoveTowardsPlayer(enemyindex,wait);
+			else if (NearPlayer(enemyindex, 2) && Enemies[enemyindex].hp<=Enemies[enemyindex].maxhp/2) MoveAwayFromPlayer(enemyindex,wait);
+			else EnemyWander(enemyindex, wait);
+			Enemies[enemyindex].nextmovetime=systemtime+200;
+			
+		}
+		if (Enemies[enemyindex].ai==AI_LEVEL2)
+		{
+			wait=80;
+			rand=Random(0,10);
+			if (rand<=Random(5,7) && Enemies[enemyindex].state!=STATE_ATK && NearPlayer(enemyindex, 1))
+			{
+				FacePlayer(enemyindex);
+				AnimateEnemyAttack(enemyindex, wait);
+			}
+			/*else if (rand<=Random(2,4) && Enemies[enemyindex].state!=STATE_ATK && InlineWithPlayer(enemyindex))
+			{
+				FacePlayer(enemyindex);
+				AnimateEnemyIce(enemyindex, wait);
+			}*/
+			else if (NearPlayer(enemyindex, 4) && Enemies[enemyindex].hp>Enemies[enemyindex].maxhp/2) MoveTowardsPlayer(enemyindex,wait);
+			else if (NearPlayer(enemyindex, 4) && Enemies[enemyindex].hp<=Enemies[enemyindex].maxhp/2) MoveAwayFromPlayer(enemyindex,wait);
+			else EnemyWander(enemyindex, wait);
+			Enemies[enemyindex].nextmovetime=systemtime+200;
+		}
+		if (Enemies[enemyindex].ai==AI_LEVEL3)
+		{
+			wait=60;
+			rand=Random(0,10);
+			if (rand<=Random(6,8) && Enemies[enemyindex].state!=STATE_ATK && NearPlayer(enemyindex, 1))
+			{
+				FacePlayer(enemyindex);
+				AnimateEnemyAttack(enemyindex, wait);
+			}
+			else if (NearPlayer(enemyindex, 5) && Enemies[enemyindex].hp>Enemies[enemyindex].maxhp/2) MoveTowardsPlayer(enemyindex,wait);
+			else if (NearPlayer(enemyindex, 5) && Enemies[enemyindex].hp<=Enemies[enemyindex].maxhp/2) MoveAwayFromPlayer(enemyindex,wait);
+			else EnemyWander(enemyindex, wait);
+			Enemies[enemyindex].nextmovetime=systemtime+200;
+		}
+		if (Enemies[enemyindex].ai==AI_LEVEL4)
+		{
+			wait=35;
+			rand=Random(0,10);
+			if (rand<=Random(7,9) && Enemies[enemyindex].state!=STATE_ATK && NearPlayer(enemyindex, 1))
+			{
+				FacePlayer(enemyindex);
+				AnimateEnemyAttack(enemyindex, wait);
+			}
+			else if (rand<=Random(4,6) && Enemies[enemyindex].state!=STATE_ATK && Enemies[enemyindex].mp>=FIRE_MP && InlineWithPlayer(enemyindex) && systemtime>=Enemies[enemyindex].magiccooldown)
+			{
+				FacePlayer(enemyindex);
+				AnimateEnemyFireball(enemyindex, wait);
+			}
+			else if (NearPlayer(enemyindex, 5) && Enemies[enemyindex].hp>Enemies[enemyindex].maxhp/2) MoveTowardsPlayer(enemyindex,wait);
+			else if (NearPlayer(enemyindex, 5) && Enemies[enemyindex].hp<=Enemies[enemyindex].maxhp/2) MoveAwayFromPlayer(enemyindex,wait);
+			else EnemyWander(enemyindex, wait);
+			Enemies[enemyindex].nextmovetime=systemtime+200;
+		}
+	}
+}
+
+int NearPlayer(int enemyindex, int tiledistance)
+{
+	int x=entity.x[MainPlayer.ent];
+	int y=entity.y[MainPlayer.ent];
+	int sx=entity.x[Enemies[enemyindex].ent];
+	int sy=entity.y[Enemies[enemyindex].ent];
+	//int angle=atan2((sy-y),(sx-x));
+	int actualdistance=sqrt(((sx-x)*(sx-x))+((sy-y)*(sy-y)));
+	if (actualdistance/16>tiledistance) return 0;
+	else return 1;
+}
+
+int InlineWithPlayer(int enemyindex)
+{
+	int x=entity.x[MainPlayer.ent];
+	int y=entity.y[MainPlayer.ent];
+	int sx=entity.x[Enemies[enemyindex].ent];
+	int sy=entity.y[Enemies[enemyindex].ent];
+	if (y<sy && x>=sx-8 && x<=sx+8) return 1;
+	else if (y>=sy && x>=sx-8 && x<=sx+8) return 1;
+	else if (x<sx && y>=sy-8 && y<=sy+8) return 1;
+	else if (x>=sx && y>=sy-8 && y<=sy+8) return 1;
+	else return 0;
+}
+
+void FacePlayer(int enemyindex)
+{
+	int x=entity.x[MainPlayer.ent];
+	int y=entity.y[MainPlayer.ent];
+	int sx=entity.x[Enemies[enemyindex].ent];
+	int sy=entity.y[Enemies[enemyindex].ent];
+	if (y<sy && x>=sx-8 && x<=sx+8) entity.face[Enemies[enemyindex].ent]=1;
+	if (y>=sy && x>=sx-8 && x<=sx+8) entity.face[Enemies[enemyindex].ent]=2;
+	if (x<sx && y>=sy-8 && y<=sy+8) entity.face[Enemies[enemyindex].ent]=3;
+	if (x>=sx && y>=sy-8 && y<=sy+8) entity.face[Enemies[enemyindex].ent]=4;
+}
+
+void MoveTowardsPlayer(int enemyindex, int wait)
+{
+	int player_x=entity.x[MainPlayer.ent];
+	int player_y=entity.y[MainPlayer.ent];
+	int ent_x=entity.x[Enemies[enemyindex].ent];
+	int ent_y=entity.y[Enemies[enemyindex].ent];
+	if (player_x>=ent_x && player_y>=ent_y)
+	{
+		if (player_x-ent_x>player_y-ent_y) EntityMove(Enemies[enemyindex].ent, "r1w"+str(wait));
+		else if (player_x-ent_x<player_y-ent_y) EntityMove(Enemies[enemyindex].ent, "d1w"+str(wait));
+	}
+	if (player_x>=ent_x && player_y<ent_y)
+	{
+		if (player_x-ent_x>ent_y-player_y) EntityMove(Enemies[enemyindex].ent, "r1w"+str(wait));
+		else if (player_x-ent_x<ent_y-player_y) EntityMove(Enemies[enemyindex].ent, "u1w"+str(wait));
+	}
+	if (player_x<ent_x && player_y>=ent_y)
+	{
+		if (ent_x-player_x>player_y-ent_y) EntityMove(Enemies[enemyindex].ent, "l1w"+str(wait));
+		else if (ent_x-player_x<player_y-ent_y) EntityMove(Enemies[enemyindex].ent, "d1w"+str(wait));
+	}
+	if (player_x<ent_x && player_y<ent_y)
+	{
+		if (ent_x-player_x>ent_y-player_y) EntityMove(Enemies[enemyindex].ent, "l1w"+str(wait));
+		else if (ent_x-player_x<ent_y-player_y) EntityMove(Enemies[enemyindex].ent, "u1w"+str(wait));
+	}
+}
+
+void MoveAwayFromPlayer(int enemyindex, int wait)
+{
+	int player_x=entity.x[MainPlayer.ent];
+	int player_y=entity.y[MainPlayer.ent];
+	int ent_x=entity.x[Enemies[enemyindex].ent];
+	int ent_y=entity.y[Enemies[enemyindex].ent];
+	if (player_x>=ent_x && player_y>=ent_y)
+	{
+		if (player_x-ent_x>player_y-ent_y) EntityMove(Enemies[enemyindex].ent, "l1w"+str(wait));
+		else if (player_x-ent_x<player_y-ent_y) EntityMove(Enemies[enemyindex].ent, "u1w"+str(wait));
+	}
+	if (player_x>=ent_x && player_y<ent_y)
+	{
+		if (player_x-ent_x>ent_y-player_y) EntityMove(Enemies[enemyindex].ent, "l1w"+str(wait));
+		else if (player_x-ent_x<ent_y-player_y) EntityMove(Enemies[enemyindex].ent, "d1w"+str(wait));
+	}
+	if (player_x<ent_x && player_y>=ent_y)
+	{
+		if (ent_x-player_x>player_y-ent_y) EntityMove(Enemies[enemyindex].ent, "r1w"+str(wait));
+		else if (ent_x-player_x<player_y-ent_y) EntityMove(Enemies[enemyindex].ent, "u1w"+str(wait));
+	}
+	if (player_x<ent_x && player_y<ent_y)
+	{
+		if (ent_x-player_x>ent_y-player_y) EntityMove(Enemies[enemyindex].ent, "r1w"+str(wait));
+		else if (ent_x-player_x<ent_y-player_y) EntityMove(Enemies[enemyindex].ent, "d1w"+str(wait));
+	}
+}
+
+void EnemyWander(int enemyindex, int wait)
+{
+	int rand;
+	if (entity.movecode[Enemies[enemyindex].ent]==0 && systemtime>=Enemies[enemyindex].cooldown)
+	{
+		rand=Random(0,3);
+		switch (rand)
+		{
+			case 0: EntityMove(Enemies[enemyindex].ent, "u1w"+str(wait));
+			case 1: EntityMove(Enemies[enemyindex].ent, "d1w"+str(wait));
+			case 2: EntityMove(Enemies[enemyindex].ent, "l1w"+str(wait));
+			case 3: EntityMove(Enemies[enemyindex].ent, "r1w"+str(wait));
+		}
+		Enemies[enemyindex].nextmovetime=systemtime+200;
+	}
+}
+
+void EnemyFireball(int enemyindex)
+{
+	if(Enemies[enemyindex].mp>=FIRE_MP)
+	{
+		switch(entity.face[Enemies[enemyindex].ent])
+		{
+			case 2: //down
+				PlaySound(firesound, 80);
+				addEffect(	entity.x[Enemies[enemyindex].ent]+(entity.hotw[Enemies[enemyindex].ent]/2), 
+						entity.y[Enemies[enemyindex].ent], 
+						entity.x[Enemies[enemyindex].ent]+(entity.hotw[Enemies[enemyindex].ent]/2), 
+						entity.y[Enemies[enemyindex].ent] +100, 
+						0, 
+						AFFECT_PLAYER,
+						"EFFECT_fireball");
+			case 1: //up
+				PlaySound(firesound, 80);
+				addEffect(	entity.x[Enemies[enemyindex].ent]+(entity.hotw[Enemies[enemyindex].ent]/2), 
+						entity.y[Enemies[enemyindex].ent], 
+						entity.x[Enemies[enemyindex].ent]+(entity.hotw[Enemies[enemyindex].ent]/2), 
+						entity.y[Enemies[enemyindex].ent] -100, 
+						0, 
+						AFFECT_PLAYER,
+						"EFFECT_fireball");
+			case 3: //left
+				PlaySound(firesound, 80);
+				addEffect(	entity.x[Enemies[enemyindex].ent]+(entity.hotw[Enemies[enemyindex].ent]/2), 
+						entity.y[Enemies[enemyindex].ent], 
+						entity.x[Enemies[enemyindex].ent]+(entity.hotw[Enemies[enemyindex].ent]/2) -100, 
+						entity.y[Enemies[enemyindex].ent], 
+						0,
+						AFFECT_PLAYER,
+						"EFFECT_fireball");
+			case 4: //right
+				PlaySound(firesound, 80);
+				addEffect(	entity.x[Enemies[enemyindex].ent]+(entity.hotw[Enemies[enemyindex].ent]/2), 
+						entity.y[Enemies[enemyindex].ent], 
+						entity.x[Enemies[enemyindex].ent]+(entity.hotw[Enemies[enemyindex].ent]/2) +100, 
+						entity.y[Enemies[enemyindex].ent], 
+						0,
+						AFFECT_PLAYER,
+						"EFFECT_fireball");
+		}
+		Enemies[enemyindex].mp-=FIRE_MP;
+		Enemies[enemyindex].magiccooldown=systemtime+1000;
+	}
+}
+
+void EnemyIce(int enemyindex)
+{
+	/*switch(entity.face[mainPlayer.ent])
+	{
+		case 2: //down
+			PlaySound(icesound, 80);
+			addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+					entity.y[mainPlayer.ent], 
+					entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+					entity.y[mainPlayer.ent] +200, 
+					0, 
+					AFFECT_PLAYER,
+					"EFFECT_ice");
+		case 1: //up
+			PlaySound(icesound, 80);
+			addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+					entity.y[mainPlayer.ent], 
+					entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+					entity.y[mainPlayer.ent] -200, 
+					0,
+					AFFECT_PLAYER,
+					"EFFECT_ice");
+		case 3: //left
+			PlaySound(icesound, 80);
+			addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+					entity.y[mainPlayer.ent], 
+					entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2) -200, 
+					entity.y[mainPlayer.ent], 
+					0,
+					AFFECT_PLAYER,
+					"EFFECT_ice");
+		case 4: //right
+			PlaySound(icesound, 80);
+			addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+					entity.y[mainPlayer.ent], 
+					entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2) +200, 
+					entity.y[mainPlayer.ent], 
+					0,
+					AFFECT_PLAYER,
+					"EFFECT_ice");
+	}*/
+	Enemies[enemyindex].cooldown=systemtime+1000;
+}

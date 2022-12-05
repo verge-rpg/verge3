@@ -1,0 +1,116 @@
+int heartfill=LoadImage("images/heartfill.gif");
+int heartvial=LoadImage("images/heartvial.gif");
+int magicfill=LoadImage("images/manafill.gif");
+int magicvial=LoadImage("images/manavial.gif");
+int lastheartpercent=100;
+int lastmagicpercent=100;
+
+int GetMagicVial(int percentage)
+{
+	lastmagicpercent=percentage;
+	int inc=256;
+	int percent=percentage*100;
+	int lastline=(percent/inc)+1;
+	if (lastline<2 && percentage>0) lastline=2;
+	if (percentage==0) lastline=0;
+	int magicvialimg=NewImage(48,8);
+	RectFill(0,0,48,48,RGB(255,0,255),magicvialimg);
+	TGrabRegion(0,0,lastline,8,0,0,magicfill,magicvialimg);
+	TBlit(0,0,magicvial,magicvialimg);
+	return magicvialimg;
+}
+
+int GetHeartVial(int percentage)
+{
+	lastheartpercent=percentage;
+	int inc=344;
+	int percent=percentage*100;
+	int lines=percent/inc;
+	int topline=46-lines;
+	if (topline>=46 && percentage>0) topline=45;
+	if (percentage==0) topline=46;
+	int heartvialimg=NewImage(48,48);
+	RectFill(0,0,48,48,RGB(255,0,255),heartvialimg);
+	TGrabRegion(0,topline,48,48,0,topline,heartfill,heartvialimg);
+	TBlit(0,0,heartvial,heartvialimg);
+	return heartvialimg;
+}
+
+int heartimg=GetHeartVial(100);
+int magicimg=GetMagicVial(100);
+
+void BlitMagicImage(int x, int y)
+{
+	int percentage=(MainPlayer.mp*100)/(MainPlayer.maxmp);
+	if (percentage!=lastmagicpercent) magicimg=GetMagicVial(percentage);
+	TBlit(x,y,magicimg,screen);
+}
+
+void BlitHeartImage(int x, int y)
+{
+	int percentage=(MainPlayer.hp*100)/(MainPlayer.maxhp);
+	if (percentage!=lastheartpercent) heartimg=GetHeartVial(percentage);
+	TBlit(x,y,heartimg,screen);
+}
+
+void DisplayHUD()
+{
+	BlitMagicImage(216,10);
+	BlitHeartImage(270,2);
+}
+
+void Splash(int r,int g,int b)
+{
+	rectfill(0,0,ImageWidth(screen),ImageHeight(screen),rgb(r,g,b),screen);
+}
+
+int MakeGradient(int c1, int c2, int c3, int c4, int w, int h)
+{
+	int xstart;
+	int xend;
+	int img=NewImage(w, h);
+	int x=0;
+
+	int y=0;
+	int color;
+
+	for (y=0; y<h; y++)
+	{
+		xstart = Mixcolor(c1, c3, 256 * y / h);
+		xend = Mixcolor(c2, c4, 256 * y / h);
+
+		for (x = 0; x < w; x++)
+		{
+			color=Mixcolor(xstart, xend, 256 * x / w);
+			SetPixel(x, y, color, img);
+		}
+	}
+	return img;
+}
+
+void FadeIn(int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+void FadeOut(int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+}
+

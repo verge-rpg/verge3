@@ -1,0 +1,374 @@
+
+#define MAX_ENTITIES 100
+
+struct animation_type
+{
+	string script;
+	string strand;
+	int direction;
+	int frame, wait, offset;
+};
+
+animation_type animations[MAX_ENTITIES];
+int animation_strand;
+
+void InitAnimations()
+{
+	int i, j;
+	
+	animation_strand = DictNew();
+	// animation_strand["protag.chr"]
+	DictSetInt(animation_strand, "protag.chr", DictNew());
+	
+	// animation_strand["protag.chr"]["walk"]
+	DictSetInt(DictGetInt(animation_strand, "protag.chr"), "walk", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "walk"),
+			"left",
+			"F12W10F13W10F14W10F14W10F15W10F16W10B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "walk"),
+			"right",
+			"F6W10F7W10F8W10F9W10F10W10F11W10B");
+			
+	// animation_strand["protag.chr"]["run"]
+	DictSetInt(DictGetInt(animation_strand, "protag.chr"), "run", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "run"),
+			"left",
+			"F12W5F13W5F14W5F14W5F15W5F16W5B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "run"),
+			"right",
+			"F6W5F7W5F8W5F9W5F10W5F11W5B");
+
+	// animation_strand["protag.chr"]["push"]
+	DictSetInt(DictGetInt(animation_strand, "protag.chr"), "push", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "push"),
+			"left",
+			"F24W10F25W10F26W10F27W10F28W10F29W10B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "push"),
+			"right",
+			"F18W10F19W10F20W10F21W10F22W10F23W10B");
+
+	// animation_strand["protag.chr"]["idle"]
+	DictSetInt(DictGetInt(animation_strand, "protag.chr"), "idle", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "idle"),
+			"left",
+			"F1W10B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "idle"),
+			"right",
+			"F0W10B");
+			
+	// animation_strand["protag.chr"]["jump"]
+	DictSetInt(DictGetInt(animation_strand, "protag.chr"), "jump", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "jump"),
+			"left",
+			"F5W10");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "jump"),
+			"right",
+			"F4W10");
+			
+			
+	// animation_strand["protag.chr"]["fall"]
+	DictSetInt(DictGetInt(animation_strand, "protag.chr"), "fall", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "fall"),
+			"left",
+			"F5W10");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "fall"),
+			"right",
+			"F4W10");
+			
+	// animation_strand["protag.chr"]["land"]
+	DictSetInt(DictGetInt(animation_strand, "protag.chr"), "land", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "land"),
+			"left",
+			"F1W10");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "land"),
+			"right",
+			"F0W10");
+
+	// animation_strand["protag.chr"]["attack"]
+	DictSetInt(DictGetInt(animation_strand, "protag.chr"), "attack", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "attack"),
+			"left",
+			"F32W5F33W10");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "protag.chr"), "attack"),
+			"right",
+			"F30W5F31W10");
+	
+	// animation_strand["boy.chr"]
+	DictSetInt(animation_strand, "boy.chr", DictNew());
+
+	// animation_strand["boy.chr"]["walk"]
+	DictSetInt(DictGetInt(animation_strand, "boy.chr"), "walk", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "boy.chr"), "walk"),
+			"left",
+			"F12W10F13W10F14W10F15W10B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "boy.chr"), "walk"),
+			"right",
+			"F6W10F7W10F8W10F9W10B");
+	
+	// animation_strand["boy.chr"]["fall"]
+	DictSetInt(DictGetInt(animation_strand, "boy.chr"), "fall", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "boy.chr"), "fall"),
+			"left",
+			"F1W10");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "boy.chr"), "fall"),
+			"right",
+			"F0W10");	
+	ResetAnimations();
+	
+	// animation_strand["boy.chr"]["hurt"]
+	DictSetInt(DictGetInt(animation_strand, "boy.chr"), "hurt", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "boy.chr"), "hurt"),
+			"left",
+			"F4W30B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "boy.chr"), "hurt"),
+			"right",
+			"F2W30B");
+
+	// animation_strand["boy.chr"]["idle"]
+	DictSetInt(DictGetInt(animation_strand, "boy.chr"), "idle", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "boy.chr"), "idle"),
+			"left",
+			"F1W10B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "boy.chr"), "idle"),
+			"right",
+			"F0W10B");
+			
+	// animation_strand["girl.chr"]
+	DictSetInt(animation_strand, "girl.chr", DictNew());
+
+	// animation_strand["girl.chr"]["walk"]
+	DictSetInt(DictGetInt(animation_strand, "girl.chr"), "walk", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "girl.chr"), "walk"),
+			"left",
+			"F12W10F13W10F14W10F15W10B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "girl.chr"), "walk"),
+			"right",
+			"F6W10F7W10F8W10F9W10B");
+	
+	// animation_strand["girl.chr"]["fall"]
+	DictSetInt(DictGetInt(animation_strand, "girl.chr"), "fall", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "girl.chr"), "fall"),
+			"left",
+			"F1W10");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "girl.chr"), "fall"),
+			"right",
+			"F0W10");	
+	ResetAnimations();
+	
+	// animation_strand["girl.chr"]["hurt"]
+	DictSetInt(DictGetInt(animation_strand, "girl.chr"), "hurt", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "girl.chr"), "hurt"),
+			"left",
+			"F4W30B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "girl.chr"), "hurt"),
+			"right",
+			"F2W30B");
+	ResetAnimations();
+	
+	// animation_strand["girl.chr"]["idle"]
+	DictSetInt(DictGetInt(animation_strand, "girl.chr"), "idle", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "girl.chr"), "idle"),
+			"left",
+			"F1W10B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "girl.chr"), "idle"),
+			"right",
+			"F0W10B");
+			
+	// animation_strand["bat.chr"]
+	DictSetInt(animation_strand, "bat.chr", DictNew());
+	
+	// animation_strand["bat.chr"]["idle"]
+	DictSetInt(DictGetInt(animation_strand, "bat.chr"), "idle", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "bat.chr"), "idle"),
+			"left",
+			"F0W10B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "bat.chr"), "idle"),
+			"right",
+			"F0W10B");
+			
+	DictSetInt(DictGetInt(animation_strand, "bat.chr"), "fall", DictNew());
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "bat.chr"), "fall"),
+			"left",
+			"F0W10B");
+	DictSetString(DictGetInt(DictGetInt(animation_strand, "bat.chr"), "fall"),
+			"right",
+			"F0W10B");
+}
+
+void ResetAnimations()
+{
+	int i;
+	for (i = 0; i < MAX_ENTITIES; i++)
+	{
+		animations[i].script = "";
+		animations[i].direction = 0;
+		animations[i].strand = "";
+		animations[i].wait = 0;
+		animations[i].frame = 0;
+		animations[i].offset = 0;
+	}
+}
+
+void FileWriteAnimations(int f)
+{
+	int i;
+	for (i = 0; i < MAX_ENTITIES; i++)
+	{
+		FileWriteString(f, animations[i].script);
+		FileWriteByte(f, animations[i].direction);
+		FileWriteString(f, animations[i].strand);
+		FileWriteQuad(f, animations[i].wait);
+		FileWriteQuad(f, animations[i].frame);
+		FileWriteQuad(f, animations[i].offset);
+	}	
+}
+
+void FileReadAnimations(int f)
+{
+	int i;
+	for (i = 0; i < MAX_ENTITIES; i++)
+	{
+		animations[i].script = FileReadString(f);
+		animations[i].direction = FileReadByte(f);
+		animations[i].strand = FileReadString(f);
+		animations[i].wait = FileReadQuad(f);
+		animations[i].frame = FileReadQuad(f);
+		animations[i].offset = FileReadQuad(f);
+	}
+}
+
+//int animation_frame, animation_wait, animation_offset;
+//string animation_string;
+void ParseAnimationString(int i)
+{
+	string value_string;
+	int s;
+	if (animations[i].wait)
+	{
+		animations[i].wait--;
+	}
+	else if (len(animations[i].script))
+	{
+		s = asc(mid(animations[i].script, animations[i].offset, 1));
+		if (s == 'F')
+		{
+			animations[i].offset++;
+			s = asc(mid(animations[i].script, animations[i].offset, 1));
+			while (s >= '0'
+				&& s <= '9'
+				&& animations[i].offset < len(animations[i].script))
+				{	
+					value_string = value_string + chr(s);
+					animations[i].offset++;
+					s = asc(mid(animations[i].script, animations[i].offset, 1));
+				}
+			animations[i].frame = val(value_string);
+		}
+		else if (s == 'W')
+		{
+			animations[i].offset++;
+			s = asc(mid(animations[i].script, animations[i].offset, 1));
+			while (s >= '0'
+				&& s <= '9'
+				&& animations[i].offset < len(animations[i].script))
+				{	
+					value_string = value_string + chr(s);
+					animations[i].offset++;
+					s = asc(mid(animations[i].script, animations[i].offset, 1));
+			}
+			animations[i].wait = val(value_string);
+		}
+		else if (s == 'B')
+		{
+			animations[i].offset = 0;
+		}
+		if (animations[i].offset >= len(animations[i].script))
+		{
+			animations[i].script = "";
+		}
+	}
+	entity.specframe[i] = animations[i].frame;
+}
+
+
+string ResolveAnimationString(int i, string frame, int dir)
+{
+	frame = ToLower(frame);
+	string direction;
+	if (!len(entity.chr[i])) return "";
+	if (!len(frame)) return "";
+	if (dir == PLAYER_DIRECTION_LEFT)
+	{
+		direction = "left";
+	}
+	else
+	{
+		direction = "right";
+	}
+	//Log(entity.chr[i] + "::" + frame + "_" + direction);
+	return DictGetString(DictGetInt(DictGetInt(animation_strand, entity.chr[i]), frame), direction);
+}
+
+void PlayerSetAnimation(string frame)
+{
+	player.frame = frame;
+	SetAnimation(player.ent, player.direction, player.frame);
+}
+
+void SetAnimation(int i, int dir, string frame)
+{
+	string value_string;
+	int char;
+	
+	
+	
+	if (strcmp(frame, animations[i].strand))
+	{
+		//animation_string = GetString(s);
+		animations[i].strand = frame;
+		animations[i].script = ResolveAnimationString(i, frame, dir);
+		animations[i].wait = 0;
+		animations[i].offset = 0;
+	}
+	if (dir != animations[i].direction)
+	{
+		//animation_string = GetString(s);
+		animations[i].script = ResolveAnimationString(i, frame, dir);
+		char = asc(mid(animations[i].script, animations[i].offset, 1));
+
+		// While the character isn't an F or a B, scroll back.
+
+		while (char != 'F'
+			&& char != 'B'
+			&& animations[i].offset > 0)
+		{
+			animations[i].offset--;
+			char = asc(mid(animations[i].script, animations[i].offset, 1));
+
+		}
+		// It's an F, use this to assign a frame that 
+		// matches the current direction.
+		if (char == 'F')
+		{
+			animations[i].offset++;
+			char = asc(mid(animations[i].script, animations[i].offset, 1));
+			while (char >= '0'
+				&& char <= '9'
+				&& animations[i].offset < len(animations[i].script))
+				{	
+					value_string = value_string + chr(char);
+					animations[i].offset++;
+					char = asc(mid(animations[i].script, animations[i].offset, 1));
+				}
+			animations[i].frame = val(value_string);
+		}
+		// It's a B, it means go back to the beginning.
+		else
+		{
+			animations[i].wait = 0;
+			animations[i].offset = 0;
+		}
+		animations[i].direction = dir;
+	}
+	
+}

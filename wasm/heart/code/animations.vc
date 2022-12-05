@@ -1,0 +1,195 @@
+struct HPAnimate
+{
+	int ent;
+	int hp;
+	int timestarted;
+	int color;
+};
+struct StringAnimate
+{
+	int x;
+	int y;
+	string msg;
+	int timestarted;
+	int color;
+};
+HPAnimate hpanimates[30];
+StringAnimate stranimates[10];
+int nexthpanimate=0;
+int nextstranimate=0;
+
+void AnimateAttack()
+{
+	int curface;
+	int oldstate;
+	if (systemtime>=MainPlayer.cooldown)
+	{
+		oldstate=MainPlayer.state;
+		if (oldstate==STATE_HURT) MainPlayer.state=STATE_ATKHURT;
+		else MainPlayer.state=STATE_ATK;
+		curface=entity.face[MainPlayer.ent];
+		switch(curface)
+		{
+			case 1: PlayerMove("z21w10");
+				PlayerAttack();
+				PlayerMove("z22w10z23w10z0");
+			case 2: PlayerMove("z18w10");
+				PlayerAttack();
+				PlayerMove("z19w10z20w10z0");
+			case 3: PlayerMove("z24w10");
+				PlayerAttack();
+				PlayerMove("z25w10z26w10z0");
+			case 4: PlayerMove("z27w10");
+				PlayerAttack();
+				PlayerMove("z28w10z29w10z0");
+		}
+		entity.face[MainPlayer.ent]=curface;
+		MainPlayer.cooldown=systemtime+50;
+		MainPlayer.state=oldstate;
+	}
+}
+
+void AnimateEnemyAttack(int enemyindex, int wait)
+{
+	Enemies[enemyindex].state=STATE_ATK;
+	int curface=entity.face[Enemies[enemyindex].ent];
+	switch(curface)
+	{
+		case 1: EntityMove(Enemies[enemyindex].ent, "z21w10");
+			EnemyAttack(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z22w10z23w10z0u0w"+str(wait));
+		case 2: EntityMove(Enemies[enemyindex].ent, "z18w10");
+			EnemyAttack(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z19w10z20w10z0d0w"+str(wait));
+		case 3: EntityMove(Enemies[enemyindex].ent, "z24w10");
+			EnemyAttack(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z25w10z26w10z0l0w"+str(wait));
+		case 4: EntityMove(Enemies[enemyindex].ent, "z27w10");
+			EnemyAttack(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z28w10z29w10z0r0w"+str(wait));
+	}
+	entity.face[Enemies[enemyindex].ent]=curface;
+	Enemies[enemyindex].state=STATE_NORMAL;
+}
+
+void AnimateEnemyFireball(int enemyindex, int wait)
+{
+	Enemies[enemyindex].state=STATE_ATK;
+	int curface=entity.face[Enemies[enemyindex].ent];
+	switch(curface)
+	{
+		case 1: EntityMove(Enemies[enemyindex].ent, "z21w10");
+			EnemyFireball(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z22w10z23w10z0u0w"+str(wait));
+		case 2: EntityMove(Enemies[enemyindex].ent, "z18w10");
+			EnemyFireball(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z19w10z20w10z0d0w"+str(wait));
+		case 3: EntityMove(Enemies[enemyindex].ent, "z24w10");
+			EnemyFireball(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z25w10z26w10z0l0w"+str(wait));
+		case 4: EntityMove(Enemies[enemyindex].ent, "z27w10");
+			EnemyFireball(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z28w10z29w10z0r0w"+str(wait));
+	}
+	entity.face[Enemies[enemyindex].ent]=curface;
+	Enemies[enemyindex].state=STATE_NORMAL;
+}
+
+void AnimateEnemyIce(int enemyindex, int wait)
+{
+	Enemies[enemyindex].state=STATE_ATK;
+	int curface=entity.face[Enemies[enemyindex].ent];
+	switch(curface)
+	{
+		case 1: EntityMove(Enemies[enemyindex].ent, "z21w10");
+			EnemyIce(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z22w10z23w10z0u0w"+str(wait));
+		case 2: EntityMove(Enemies[enemyindex].ent, "z18w10");
+			EnemyIce(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z19w10z20w10z0d0w"+str(wait));
+		case 3: EntityMove(Enemies[enemyindex].ent, "z24w10");
+			EnemyIce(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z25w10z26w10z0l0w"+str(wait));
+		case 4: EntityMove(Enemies[enemyindex].ent, "z27w10");
+			EnemyIce(enemyindex);
+			EntityMove(Enemies[enemyindex].ent, "z28w10z29w10z0r0w"+str(wait));
+	}
+	entity.face[Enemies[enemyindex].ent]=curface;
+	Enemies[enemyindex].state=STATE_NORMAL;
+}
+
+void QueueHPAnimate(int ent, int hp, int color)
+{
+	if (nexthpanimate<30)
+	{
+		hpanimates[nexthpanimate].ent=ent;
+		hpanimates[nexthpanimate].hp=hp;
+		hpanimates[nexthpanimate].color=color;
+		hpanimates[nexthpanimate].timestarted=systemtime;
+		nexthpanimate+=1;
+	}
+}
+void QueueStringAnimate(int x, int y, string msg, int color)
+{
+	if (nextstranimate<10)
+	{
+		stranimates[nextstranimate].x=x;
+		stranimates[nextstranimate].y=y;
+		stranimates[nextstranimate].msg=msg;
+		stranimates[nextstranimate].color=color;
+		stranimates[nextstranimate].timestarted=systemtime;
+		nextstranimate+=1;
+	}
+}
+
+void DisplayAnimates()
+{
+	int i;
+	int x;
+	int y;
+	int timest;
+	if (nexthpanimate>0)
+	{
+		for(i=0; i<nexthpanimate; i++)
+		{
+			x=entity.x[hpanimates[i].ent];
+			y=entity.y[hpanimates[i].ent];
+			timest=hpanimates[i].timestarted;
+			printstring(x-xwin, y-ywin-((systemtime-timest)/5), screen, mainfont, str(hpanimates[i].hp));
+		}
+		if (systemtime-200>=hpanimates[0].timestarted)
+		{
+			for(i=0; i<nexthpanimate-1; i++)
+			{
+				hpanimates[i].ent=hpanimates[i+1].ent;
+				hpanimates[i].hp=hpanimates[i+1].hp;
+				hpanimates[i].color=hpanimates[i+1].color;
+				hpanimates[i].timestarted=hpanimates[i+1].timestarted;
+			}
+			nexthpanimate-=1;
+		}
+	}
+	if (nextstranimate>0)
+	{
+		for(i=0; i<nextstranimate; i++)
+		{
+			x=stranimates[i].x;
+			y=stranimates[i].y;
+			timest=stranimates[i].timestarted;
+			printcenter(x, y, screen, mainfont, stranimates[i].msg);
+		}
+		if (systemtime-200>=stranimates[0].timestarted)
+		{
+			for(i=0; i<nextstranimate-1; i++)
+			{
+				stranimates[i].x=stranimates[i+1].x;
+				stranimates[i].y=stranimates[i+1].y;
+				stranimates[i].msg=stranimates[i+1].msg;
+				stranimates[i].color=stranimates[i+1].color;
+				stranimates[i].timestarted=stranimates[i+1].timestarted;
+			}
+			nextstranimate-=1;
+		}
+	}
+}
+

@@ -1,0 +1,53 @@
+int ovk_atan2 (int y, int x)
+{
+	//int x, y;
+	int r, a;
+
+	if (x != 0)
+	{
+		r = y * 65536 / x;
+	}
+	else
+	{
+		// Same as dividing by 0.0000001, instead of 0 which gives an infinite number.
+		r = y * 65536 * 1000000;
+	}
+	a = atan(abs(r));
+	if(x < 0 && y > 0)
+	{
+		a = 180 - a;
+	}
+	if(x < 0 && y < 0)
+	{
+		a = 180 + a;
+	}
+	if(x > 0 && y < 0)
+	{
+		a = 0 - a;
+	}
+	
+	a = a % 360;
+	if(x > -2 && x < 2)
+	{
+		if (y > 0)
+		{
+			a = 90;
+		}
+		else if(y <= 0)
+		{
+			a = 270;
+		}
+	}
+	if(y > -2 && y < 2)
+	{
+		if (x > 0)
+		{
+			a=0;
+		}
+		else if (x <= 0)
+		{
+			a = 180;
+		}
+	}
+	return a;
+}

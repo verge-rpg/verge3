@@ -1,0 +1,57 @@
+#define MAX_FRAME_GAP 10
+
+struct frame_type
+{
+	int last, gap; // Used to modify the updates
+	int disp, num, rate, sec, speed, sum, total;
+};
+
+frame_type tframe;
+
+void ResetThrottler()
+{
+	tframe.last = systemtime;
+	tframe.gap = 0;
+	tframe.disp = 0;
+	tframe.num = 0;
+	tframe.rate = 0;
+	tframe.sec = 0;
+	tframe.speed = 0;
+	tframe.sum = 0;
+	tframe.total = 0;
+}
+
+void FrameThrottle()
+{
+	tframe.speed++;
+	if (systemtime - tframe.sec > 99) // If a second has passed
+	{
+		// Update frame variables and reset counters
+		tframe.sec = systemtime;
+		tframe.disp = tframe.num;
+		tframe.num = 0;
+		tframe.rate = tframe.speed;
+		tframe.speed = 0;
+		tframe.total = tframe.sum;
+		tframe.sum = 0;
+
+	}
+	if (systemtime - tframe.last > 0)
+	{
+		tframe.gap = min (MAX_FRAME_GAP, systemtime  - tframe.last);
+		tframe.last = systemtime;
+		// Updates the time modifiers
+		tframe.num++; // Counts number of updates per second
+		tframe.sum += tframe.gap; // Counts movement updates per second
+	}
+	else
+	{
+		tframe.gap=0;
+	}
+	if (key[SCAN_Z])
+	{
+		PrintString(2,2,screen,0,"Framerate: "+str(tframe.rate));
+		PrintString(2,12,screen,0,"Framein: "+str(tframe.disp));
+		PrintString(2,22,screen,0,"Timer: "+str(tframe.sec));
+	}
+}

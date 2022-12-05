@@ -1,0 +1,54 @@
+struct Equipment
+{
+	int atk;
+	int def;
+	string sname;
+};
+
+Equipment equipitems[10];
+int nextequip=0;
+
+void SetupEquipItems()
+{
+	equipitems[0].atk=0;
+	equipitems[0].def=0;
+	equipitems[0].sname="Bare Hands";
+
+	equipitems[1].atk=3;
+	equipitems[1].def=0;
+	equipitems[1].sname="Short Sword";
+	nextequip=2;
+}
+
+void Unequip()
+{
+	int index=MainPlayer.equip;
+	MainPlayer.atk-=equipitems[index].atk;
+	MainPlayer.def-=equipitems[index].def;
+	MainPlayer.equip=0;
+}
+
+void Equip(string sname)
+{
+	Unequip();
+	int i;
+	for(i=0; i<nextequip; i++)
+	{
+		if (strcmp(equipitems[i].sname,sname)==0)
+		{
+			MainPlayer.equip=i;
+			MainPlayer.atk+=equipitems[i].atk;
+			MainPlayer.def+=equipitems[i].def;
+			if(i==0)
+			{
+				ChangeCHR(MainPlayer.ent, "sprites/braize.chr");
+				MainPlayer.chrfn="sprites/braize.chr";
+			}
+			if(i==1)
+			{
+				ChangeCHR(MainPlayer.ent, "sprites/braizesword.chr");
+				MainPlayer.chrfn="sprites/braizesword.chr";
+			}
+		}
+	}
+}

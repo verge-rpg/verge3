@@ -1,0 +1,20 @@
+[ The hero sprite sheet ]
++ image: "hermit.png"
++ frame_width: 24
++ frame_height: 45
++ frame_columns: 1
++ frame_padding: 0
++ hotspots
+    * main
+        - x: 0
+        - y: 0
+        - width: 24
+        - height: 44
+[
+        Animation Strands
+        Fxx = Frame
+        Wxx = Wait
+        B = Back to beginning (looping animation)
+]
++ animations
+        * idle: f0w20b

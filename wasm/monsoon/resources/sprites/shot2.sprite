@@ -1,0 +1,18 @@
+[ A projectile sprite sheet ]
+~ image: "shot2.png"
+~ death_sound: "sound_boom2"
+~ frame_width: 28
+~ frame_height: 14
+~ frame_columns: 2
+~ hotspot_x: 9
+~ hotspot_y: 3
+~ hotspot_width: 18
+~ hotspot_height: 8
+[
+        Animation Strands
+        Fxx = Frame
+        Wxx = Wait
+        B = Back to beginning (looping animation)
+]
+~ animations
+        * move: f0w3b

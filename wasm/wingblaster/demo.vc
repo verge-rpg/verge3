@@ -1,0 +1,85 @@
+
+
+#define DEMOMODE_OFF		0
+#define DEMOMODE_RECORD		1
+#define DEMOMODE_PLAYBACK	2
+
+int demo_mode, demo_file;
+
+void DemoRecord()
+{
+	int j;
+	if (!demo_mode)
+	{
+		demo_mode = DEMOMODE_RECORD;
+		demo_file = FileOpen("demo.dat", FILE_WRITE);
+		j = systemtime;
+		FileWriteWord(demo_file, stage_current);
+		SetRandSeed(j);
+		FileWriteQuad(demo_file, j);
+		MessageBox(str(j));
+	}
+}
+
+void DemoPlay()
+{
+	int j;
+	if (!demo_mode)
+	{
+		demo_mode = DEMOMODE_PLAYBACK;
+		demo_file = FileOpen("demo.dat", FILE_READ);
+		if (!demo_file)
+		{
+			demo_mode = 0;
+			FileClose(demo_file);
+			return;
+		}
+		stage_current = FileReadWord(demo_file);
+		j = FileReadQuad(demo_file);
+		SetRandSeed(j);
+		MessageBox(str(j));
+		
+
+	}
+}
+
+void DemoStop()
+{
+	if (demo_mode)
+	{
+		demo_mode = 0;
+		FileClose(demo_file);
+	}
+}
+
+void DemoReadFrame()
+{
+	int j;
+	if (demo_mode == DEMOMODE_PLAYBACK)
+	{
+		if (!FileEOF(demo_file))
+		{
+			j = FileReadByte(demo_file);
+			b1 = j & 1;
+			b2 = j & 2;
+			b3 = j & 4;
+			b4 = j & 8;
+			up = j & 16;
+			down = j & 32;
+			left = j & 64;
+			right = j & 128;
+		}
+		else
+		{
+			DemoStop();
+		}
+	}
+}
+
+void DemoWriteFrame()
+{
+	if (demo_mode == DEMOMODE_RECORD)
+	{
+		FileWriteByte(demo_file, b1 + (b2 << 1) + (b3 << 2) + (b4 << 3) + (up << 4) + (down << 5) + (left << 6) + (right << 7));
+	}
+}

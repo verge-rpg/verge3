@@ -1,0 +1,45 @@
+// Practice map!
+
+void Start()
+{	
+	//SetMusicVolume(100);
+	SpawnPlayer();
+	ProcessPlatform();
+	Exit("You are winner!");
+}
+
+void Zone1()
+{
+	PlaySound(sfx_shing, 100);
+	PlayerDeath();
+}
+
+void Zone2()
+{
+	cameratracking = 0;
+}
+
+void Zone3()
+{
+	cameratracking = 1;
+}
+
+void Zone4()
+{
+	PlayerDeath();
+}
+
+void Zone5()
+{
+	Exit("You are winner!");
+}
+
+void Zone6()
+{
+	Submerge();
+}
+
+void Zone7()
+{
+	Emerge();
+}

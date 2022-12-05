@@ -1,0 +1,5 @@
+* pea_shot
+        - filename: "resources/sprites/shot.sprite"
+        - move: Simple
+        - speed: 2.5
+        - damage: 1

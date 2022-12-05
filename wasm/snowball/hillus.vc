@@ -1,0 +1,37 @@
+// Practice map!
+
+void Start()
+{
+	SpawnPlayer();
+	//int e = EntitySpawn(10, 10, chr_player);
+	//SetAnimation(e, 1, "walk");
+	//AddEnemy(160, 160, chr_player);
+	ProcessPlatform();
+
+	Exit("You are winner!");
+}
+
+void Zone2()
+{
+	cameratracking = 0;
+}
+
+void Zone3()
+{
+	cameratracking = 1;
+}
+
+void Zone4()
+{
+	PlayerDeath();
+}
+
+void Zone6()
+{
+	Submerge();
+}
+
+void Zone7()
+{
+	Emerge();
+}

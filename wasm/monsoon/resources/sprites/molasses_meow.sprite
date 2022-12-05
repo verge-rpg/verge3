@@ -1,0 +1,34 @@
+[ The hero sprite sheet ]
++ image: "molasses_meow.png"
++ frame_width: 24
++ frame_height: 24
++ frame_columns: 5
++ frame_padding: 1
++ hotspots
+    * main
+        - x: 4
+        - y: 10
+        - width: 14
+        - height: 13
+    * head
+        - x: 10
+        - y: 2
+        - width: 14
+        - height: 16
+[
+        Animation Strands
+        Fxx = Frame
+        Wxx = Wait
+        B = Back to beginning (looping animation)
+]
++ animations
+        * idle: f5w20b 
+        * walk: f5w30f6w30b
+        * run: f5w10f6w10b
+        * jump: f6w20b
+        * fall: f6w20b
+        * land: f5w20b
+        * death: f5w20b
+        * attack0: f5w20b
+        * attack1: f5w20b
+        * attack2: f5w20b

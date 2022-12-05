@@ -1,0 +1,91 @@
+~ map
+        * name: "Map Module"
+        * type: map
+        * description: "Shows the map of the current region."
+~ pea_shooter
+        * name: "Neon Buster"
+        * description: "Fires a small shot made of powerful neon energy."
+        * sprite_filename: "gun.sprite"
+        * type: attack
+        * action
+            - animation: shoot
+        [- cooldown_animation: "jump"]
+        - cooldown: 20
+        - sound: 'shot'
+        - projectile
+            # 1
+                + bullet: pea_shot
+                + wait: 5
+       [ * level
+                # 1
+                        - animation: "jump"
+                        - cooldown: 10
+                        - sound: sound_shot
+                        - projectile
+                                = 1
+                                        + bullet: pea_shot1
+                                        + wait: 5
+                # 3
+                        - animation: "jump"
+                        - cooldown: 35
+                        - sound: sound_shot2
+                        - projectile
+                                = 1
+                                        + bullet: pea_shot2
+                                        + wait: 5
+                                = 2
+                                        + bullet: pea_shot2
+                                        + wait: 10
+                                        + y_offset: 4
+                                = 3
+                                        + bullet: pea_shot2
+                                        + wait: 15
+                                        + y_offset: '-2'
+                                = 4
+                                        + bullet: pea_shot2
+                                        + wait: 20
+                                        + y_offset: 3
+                                = 5
+                                        + bullet: pea_shot2
+                                        + wait: 25
+                                        + y_offset: '-1'
+                                = 6
+                                        + bullet: pea_shot2
+                                        + wait: 30
+                                        + y_offset: 2
+                # 4
+                        - animation: "jump"
+                        - cooldown: 35
+                        - sound: sound_shot2
+                        - projectile
+                                = 1
+                                        + bullet: pea_shot2
+                                        + wait: 3
+                                = 2
+                                        + bullet: pea_shot2
+                                        + wait: 10
+                                        + y_offset: '-2'
+                                = 3
+                                        + bullet: pea_shot2
+                                        + wait: 15
+                                        + y_offset: 4
+                                = 4
+                                        + bullet: pea_shot2
+                                        + wait: 20
+                                        + y_offset: '-1'
+                                = 5
+                                        + bullet: pea_shot2
+                                        + wait: 25
+                                        + y_offset: 1
+                                = 6
+                                        + bullet: pea_shot2
+                                        + wait: 30
+                                        + y_offset: 2
+                                = 7
+                                        + bullet: pea_shot3
+                                        + wait: 7
+                                        + y_offset: '-4'
+                                = 8
+                                        + bullet: pea_shot3
+                                        + wait: 21
+                                        + y_offset: 3]

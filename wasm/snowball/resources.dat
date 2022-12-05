@@ -1,0 +1,16 @@
+chr_player protag.chr
+sfx_ceiling ceiling.ogg
+sfx_land land.ogg
+sfx_water splash.ogg
+sfx_walk walkloop.ogg
+sfx_scratch scratch.wav
+sfx_run_over pop.wav
+sfx_unlock unlock.wav
+img_snowball snowball-tiny.png
+img_snow snow.png
+img_gauge_green gauge-green.png
+img_gauge_grey gauge-grey.png
+img_title_screen snowball-logo.png
+img_snowball_tiny snowball-tiny.png
+img_finish_banner finish.png
+img_poof poof.png

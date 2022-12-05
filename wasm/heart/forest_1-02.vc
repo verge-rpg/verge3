@@ -1,0 +1,36 @@
+void start()
+{
+	MainPlayer.ent=EntitySpawn(mapswitchx,mapswitchy,MainPlayer.chrfn);
+	SetPlayer(MainPlayer.ent);
+	SetupEnemy(42,14,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(43,8,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(39,13,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(26,8,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(25,12,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(20,18,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(24,20,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(23,19,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	
+	SetupEnemy(21,27,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(24,30,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(22,28,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(22,37,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(21,27,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+
+	SetupEnemy(4,35,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+	SetupEnemy(4,36,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+	SetupEnemy(40,40,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+	SetupEnemy(37,43,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+	SetupEnemy(41,43,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+	FadeMusic("music/yfforest.it");
+	FadeIn(50);
+}
+void forest_1_01()
+{
+	MapSwitch("forest_1-01.map",1,11);
+}
+void forest_1_03()
+{
+	MapSwitch("forest_1-03.map",48,38);
+}
+

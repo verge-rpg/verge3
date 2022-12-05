@@ -1,0 +1,230 @@
+#define _TT64_MAXBOXES 20
+#define _TT64_MAXLINES 50
+#define _TT64_TEXTBOXDELAY 50
+#define _TT64_TEXTBOX_VERSION "0.96"
+
+struct _tt64_textbox
+{
+	int gradientbg;
+	int x;
+	int y;
+	int w;
+	int h;
+	int scankey;
+	int topline;
+	int linesthatfit;
+	int font;
+	int fheight;
+	int lucency;
+	int wait;
+	int closed;
+	string texts[_TT64_MAXLINES];
+	int textfill;
+	int curchar;
+	int curline;
+	int ticks;
+};
+
+_tt64_textbox _tt64_boxes[_TT64_MAXBOXES];
+int _tt64_boxfill=0;
+
+int TT64_TextBox(int font, int fheight, int x, int y, int w, int c1, int c2, int c3, int c4, int lucency, int scankey, int maxheight, string text)
+{
+	int i=0;
+	int j=0;
+	int k=0;
+	int h=0;
+	int words=TokenCount(text," ");
+	string temptext="";
+	string ttext="";
+	string lasttext="";
+	int lastWord=0;
+	int textlen=0;
+	int end=len(text);
+	int pos=0;
+	int lastpos=0;
+	int startpos=0;
+	if (_tt64_boxfill<_TT64_MAXBOXES)
+	{
+		_tt64_boxes[_tt64_boxfill].textfill=0;
+		
+		if (words>1)
+		{
+			for (i=0; i<words; i++)
+			{
+				ttext=temptext+GetToken(text," ",i);
+				if (TextWidth(font,ttext)<w-4)
+				{
+					temptext=ttext+" ";
+					pos+=len(GetToken(text," ",i))+1;
+					lastpos+=len(GetToken(text," ",i))+1;
+				}
+				else if (strcmp(temptext,""))
+				{
+					startpos=lastpos;
+					_tt64_boxes[_tt64_boxfill].texts[_tt64_boxes[_tt64_boxfill].textfill]=temptext;
+					_tt64_boxes[_tt64_boxfill].textfill++;
+					temptext=GetToken(text," ",i)+" ";
+					lastpos+=len(GetToken(text," ",i))+1;
+					pos=len(GetToken(text," ",i))+1;
+				}
+				//If there are spaces after this,
+				//fix GetToken's dismissal of them
+				while (!strcmp(temptext+" ",mid(text,startpos,pos+1)))
+				{
+					temptext=temptext+" ";
+					pos+=1;
+					lastpos+=1;
+				}
+			}
+			_tt64_boxes[_tt64_boxfill].texts[_tt64_boxes[_tt64_boxfill].textfill]=temptext;
+			_tt64_boxes[_tt64_boxfill].textfill++;
+		}
+		else
+		{
+			temptext=text;
+			for (k=0; k<_TT64_MAXLINES; k++)
+			{
+				if (strcmp(lasttext, temptext))
+				{
+					while (TextWidth(font,temptext)>=w-4)
+					{
+						end--;
+						temptext=left(temptext,end);
+					}
+				}
+				if (len(temptext) && strcmp(lasttext, temptext))
+				{					
+					if (TextWidth(font,temptext)<w-4)
+					{
+						_tt64_boxes[_tt64_boxfill].texts[_tt64_boxes[_tt64_boxfill].textfill]=temptext;
+						_tt64_boxes[_tt64_boxfill].textfill++;
+						lasttext=temptext;
+						for (j=0; j<_tt64_boxes[_tt64_boxfill].textfill; j++)
+						{
+							textlen+=len(_tt64_boxes[_tt64_boxfill].texts[j]);
+						}
+						if (textlen<len(text))
+						{
+							temptext=mid(text,textlen,len(text));
+						}
+						textlen=0;
+						end=len(text);
+					}
+				}
+			}
+		}
+
+		h=(_tt64_boxes[_tt64_boxfill].textfill*(fheight+4))+3;
+		if (h>maxheight) h=maxheight;
+		
+		j=0;
+		for (i=0; i<_tt64_boxes[_tt64_boxfill].textfill; i++)
+		{
+			if (y+4+(fheight*(i-1))+(4*i)<=h) j++;
+		}
+		if (j==0) _tt64_boxes[_tt64_boxfill].linesthatfit=_tt64_boxes[_tt64_boxfill].textfill;
+		else _tt64_boxes[_tt64_boxfill].linesthatfit=j;
+		
+		_tt64_boxes[_tt64_boxfill].x=x;
+		_tt64_boxes[_tt64_boxfill].y=y;
+		_tt64_boxes[_tt64_boxfill].w=w;
+		_tt64_boxes[_tt64_boxfill].h=h;
+		_tt64_boxes[_tt64_boxfill].scankey=scankey;
+		_tt64_boxes[_tt64_boxfill].topline=0;
+		_tt64_boxes[_tt64_boxfill].lucency=lucency;
+		_tt64_boxes[_tt64_boxfill].font=font;
+		_tt64_boxes[_tt64_boxfill].wait=0;
+		_tt64_boxes[_tt64_boxfill].closed=0;
+		_tt64_boxes[_tt64_boxfill].fheight=fheight;
+		_tt64_boxes[_tt64_boxfill].curline=1;
+		_tt64_boxes[_tt64_boxfill].curchar=0;
+		_tt64_boxes[_tt64_boxfill].ticks=systemtime;
+
+		_tt64_boxes[_tt64_boxfill].gradientbg=MakeGradient(c1,c2,c3,c4,w,h);
+
+		_tt64_boxfill++;
+		return _tt64_boxfill-1;
+	}
+	else return _TT64_MAXBOXES;
+}
+
+int IsSpace(string s)
+{
+	if (!strcmp(s, " "))
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+void TT64_OpenTextBox(int boxindex)
+{
+	_tt64_boxes[boxindex].closed=0;
+	_tt64_boxes[boxindex].topline=0;
+	_tt64_boxes[boxindex].curline=1;
+	_tt64_boxes[boxindex].curchar=0;
+	_tt64_boxes[boxindex].ticks=systemtime;
+}
+
+int TT64_TextBoxIsClosed(int boxindex)
+{
+	return _tt64_boxes[boxindex].closed;
+}
+
+void TT64_RenderTextBox(int boxindex)
+{
+	int i=0;
+	if (!_tt64_boxes[boxindex].closed)
+	{		
+		BlitLucent(_tt64_boxes[boxindex].x,_tt64_boxes[boxindex].y,_tt64_boxes[boxindex].lucency,_tt64_boxes[boxindex].gradientbg,screen);
+		rect(_tt64_boxes[boxindex].x,_tt64_boxes[boxindex].y,_tt64_boxes[boxindex].x+_tt64_boxes[boxindex].w-1,_tt64_boxes[boxindex].y+_tt64_boxes[boxindex].h-1,rgb(255,255,255),screen);
+		for (i=_tt64_boxes[boxindex].topline; i<min(_tt64_boxes[boxindex].topline+_tt64_boxes[boxindex].linesthatfit,_tt64_boxes[boxindex].curline); i++)
+		{
+			if (systemtime>=_tt64_boxes[boxindex].ticks+10 && _tt64_boxes[boxindex].curline<_tt64_boxes[boxindex].topline+_tt64_boxes[boxindex].linesthatfit+1)
+			{
+				_tt64_boxes[boxindex].ticks=systemtime;
+				_tt64_boxes[boxindex].curchar+=1;
+			}
+			while (IsSpace(mid(_tt64_boxes[boxindex].texts[i],_tt64_boxes[boxindex].curchar,1)))
+			{
+				_tt64_boxes[boxindex].curchar+=1;
+			}
+			if (_tt64_boxes[boxindex].curline==i+1 && _tt64_boxes[boxindex].curline<_tt64_boxes[boxindex].topline+_tt64_boxes[boxindex].linesthatfit+1) printstring(_tt64_boxes[boxindex].x+4,_tt64_boxes[boxindex].y+4+(_tt64_boxes[boxindex].fheight*(i-_tt64_boxes[boxindex].topline))+(4*(i-_tt64_boxes[boxindex].topline)),screen,_tt64_boxes[boxindex].font,left(_tt64_boxes[boxindex].texts[i],_tt64_boxes[boxindex].curchar));
+			if (_tt64_boxes[boxindex].curline==i+1 && _tt64_boxes[boxindex].curchar>=len(_tt64_boxes[boxindex].texts[_tt64_boxes[boxindex].curline-1]))
+			{
+				_tt64_boxes[boxindex].curline+=1;
+				_tt64_boxes[boxindex].curchar=0;
+			}
+			if (_tt64_boxes[boxindex].curline>i+1) printstring(_tt64_boxes[boxindex].x+4,_tt64_boxes[boxindex].y+4+(_tt64_boxes[boxindex].fheight*(i-_tt64_boxes[boxindex].topline))+(4*(i-_tt64_boxes[boxindex].topline)),screen,_tt64_boxes[boxindex].font,_tt64_boxes[boxindex].texts[i]);
+		}
+		if (key[_tt64_boxes[boxindex].scankey] && systemtime>=_tt64_boxes[boxindex].wait+_TT64_TEXTBOXDELAY && _tt64_boxes[boxindex].curline>_tt64_boxes[boxindex].topline+1)
+		{
+			if (_tt64_boxes[boxindex].topline+1<=_tt64_boxes[boxindex].textfill-_tt64_boxes[boxindex].linesthatfit && _tt64_boxes[boxindex].linesthatfit+_tt64_boxes[boxindex].topline<_tt64_boxes[boxindex].curline) _tt64_boxes[boxindex].topline++;
+			else if (_tt64_boxes[boxindex].curline>_tt64_boxes[boxindex].topline+_tt64_boxes[boxindex].linesthatfit) _tt64_boxes[boxindex].closed=1;
+			_tt64_boxes[boxindex].wait=systemtime;
+		}
+		if (key[_tt64_boxes[boxindex].scankey] && _tt64_boxes[boxindex].curline<=_tt64_boxes[boxindex].topline+_tt64_boxes[boxindex].linesthatfit)
+		{
+			_tt64_boxes[boxindex].curchar+=1;
+			_tt64_boxes[boxindex].wait=systemtime;
+		}
+		if (_tt64_boxes[boxindex].topline+_tt64_boxes[boxindex].linesthatfit<_tt64_boxes[boxindex].textfill)
+		{
+			if (systemtime%50<=25)
+			{
+				Triangle(_tt64_boxes[boxindex].x+_tt64_boxes[boxindex].w-14,_tt64_boxes[boxindex].y+_tt64_boxes[boxindex].h-6, _tt64_boxes[boxindex].x+_tt64_boxes[boxindex].w,_tt64_boxes[boxindex].y+_tt64_boxes[boxindex].h-6, _tt64_boxes[boxindex].x+_tt64_boxes[boxindex].w-7,_tt64_boxes[boxindex].y+_tt64_boxes[boxindex].h+2, RGB(0,0,0), screen);
+				Triangle(_tt64_boxes[boxindex].x+_tt64_boxes[boxindex].w-13,_tt64_boxes[boxindex].y+_tt64_boxes[boxindex].h-5, _tt64_boxes[boxindex].x+_tt64_boxes[boxindex].w-2,_tt64_boxes[boxindex].y+_tt64_boxes[boxindex].h-5, _tt64_boxes[boxindex].x+_tt64_boxes[boxindex].w-7,_tt64_boxes[boxindex].y+_tt64_boxes[boxindex].h, RGB(200,200,200), screen);
+			}
+		}
+	}
+}
+
+/*int min(int a, int b)
+{
+	if (a<b) return a;
+	else return b;
+}*/

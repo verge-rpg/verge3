@@ -1,0 +1,11 @@
+void Start()
+{	
+	SpawnPlayer();
+	ProcessPlatform();
+	Exit("You are winner!");
+}
+
+void SpawnItUp()
+{
+	
+}

@@ -296,7 +296,14 @@ void Chunk::EmitString(char *s)
 
 void Chunk::SetD(int ofs, quad d)
 {
+#ifdef CRIPPLED
+	chunk[ofs] = d & 0xFF;
+	chunk[ofs + 1] = (d >> 8) & 0xFF;
+	chunk[ofs + 2] = (d >> 16) & 0xFF;
+	chunk[ofs + 3] = (d >> 24) & 0xFF;
+#else
 	*((int *)&(chunk[ofs])) = d;
+#endif	
 }
 
 void Chunk::Expand(int amount)

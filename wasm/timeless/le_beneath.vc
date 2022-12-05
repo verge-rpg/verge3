@@ -6,7 +6,7 @@
 /*************************** data ***************************/
 
 int lb_buff = NewImage(50,45);
-int lb_circle = LoadImage("sprites\circle.gif");
+int lb_circle = LoadImage("sprites/circle.gif");
 
 /*************************** code ***************************/
 

@@ -1,0 +1,141 @@
+// Player can only make limited snowballs at a time, but there is room for precreated/enemy ones.
+#define MAX_SNOWBALLS		10 //ustor - moved these here so as not to reorganize entire #include arrangement
+#define MAX_PLAYER_SNOWBALLS	4 
+#define PI 3
+
+void DrawHUDInterface()
+{
+	SetLucent(25);
+	RectFill(0, 0, ImageWidth(screen), 18, 0, screen);
+	Line(0, 17, ImageWidth(screen), 17, RGB(255, 255, 255), screen);
+	SetLucent(0);
+	
+	DrawHealthBar(10, 5);
+	DrawSnowballCounter(240, 0);
+	DrawSnowballGauge(150, 5);
+}
+
+void DrawHealthBar(int x, int y)
+{
+	int i = 0;
+	int x1 = x + TextWidth(defaultfont, "HP: ");
+	PrintString(x, y, screen, defaultfont, "HP:");
+	for(i = 0; i < player.max_health; i++)
+	{
+		if (player.health > i)
+		{
+			ScaleBlit(x1 + (i * 100 / player.max_health), y,
+				100 / player.max_health, 8, img_gauge_green, screen);
+		}
+		else
+		{
+			ScaleBlit(x1 + (i * 100 / player.max_health), y,
+				100 / player.max_health, 8, img_gauge_grey, screen);
+		}
+		Rect(x1 + (i * 100 / player.max_health), y,
+			x1 + (i + 1 * 100 / player.max_health), y + 8, 0, screen);
+	}
+	//x1 += (i + 1 * 100 / player.max_health);
+	//PrintString(x1, y, screen, defaultfont, str(player.health) + "/" + str(player.max_health));
+	
+	//if (systemtime - platform_kill_last < COMBO_CHAIN_TIMEOUT
+	//	&& platform_kill_consecutive > 1)
+	//{
+	//	PrintSTring(x, y + 30, screen, defaultfont, str(platform_kill_consecutive + 1) + " chain!");
+	//}
+}
+
+void DrawSnowballCounter(int x, int y)
+{
+	int i;
+	for(i = 0; i < MAX_PLAYER_SNOWBALLS; i++)
+	{			
+		if(player_snowballs < i+1)
+		{
+			//PrintString(MAX_PLAYER_SNOWBALLS-i*10+x-10,y, screen, defaultfont, "*");
+			TBlit(MAX_PLAYER_SNOWBALLS-i*16+x-10, y, img_snowball_tiny, screen);
+		}
+		else
+		{
+			if (snowball[GetPlayerSnowball(i)].melt_flag)
+			{
+				SetLucent(min(max(sin(systemtime * 4) * 50 >> 16 + 75 , 50), 75));
+			}
+			else
+			{
+				SetLucent(75);
+			}
+			//PrintString(MAX_PLAYER_SNOWBALLS-i*10+x-10,y, screen, defaultfont, "*");
+			TBlit(MAX_PLAYER_SNOWBALLS-i*16+x-10, y, img_snowball_tiny, screen);
+			SetLucent(0);
+		}		
+	}
+}
+
+void DigitError(string t)
+{
+	Log(t);
+}
+
+// Returns number in three digit string format. Hyper useful
+string AppendDigits(int number, int digits)
+// Pass: The number to convert
+// Return: A three character string
+// Needs: An ErrorHandler() function
+{
+	string s, n;
+	int i;
+	n = str(number);
+	if (number < pow(10, digits))
+	{	
+		for (i = 0; i < digits - len(n); i++)
+		{
+			s = s + "0";
+		}
+	}
+	return s + n;
+}
+
+void DrawSnowballGauge(int x, int y)
+{
+	int i; 
+	int TotalVolume;
+	
+	for(i = 0; i < snowballs; i++)
+	{
+		//if(snowball[i].belongs_player)
+		//{
+			//TotalVolume += PI * pow(snowball[i].r, 3) * 4/3;
+			TotalVolume += PI * pow(snowball[i].r, 3) * 4 / 3;
+			//v = 4/3 pi r^3
+		//}
+	}
+	
+	
+	if (TotalVolume >= 1000)
+	{
+	
+		// Tonnes
+		if (TotalVolume >= 1000000)
+		{
+			TotalVolume = TotalVolume / 1000;
+			PrintString(x,y, screen, defaultfont, str(TotalVolume / 1000)
+							+ "."
+							+ AppendDigits(TotalVolume / 10 % 100, 2)
+							+ " tonnes");
+		}
+		// Kilograms
+		else
+		{
+		PrintString(x,y, screen, defaultfont, str(TotalVolume / 1000)
+							+ "."
+							+ AppendDigits(TotalVolume / 10 % 100, 2)
+							+ " kg");
+		}
+	}
+	// Grams
+	else
+	{
+		PrintString(x,y, screen, defaultfont, str(TotalVolume) + " g");
+	}
+}

@@ -1,0 +1,165 @@
+#define COMBO_CHAIN_TIMEOUT	300
+
+#include "poof.vc"
+#include "credits.vc"
+#include "graphics.vc"
+#include "hudinterface.vc"
+#include "platform.vc"
+#include "levelselect.vc"
+#include "mainmenu.vc"
+#include "animation.vc"
+#include "ai.vc"
+#include "enemy.vc"
+#include "framethrottle.vc"
+#include "event.vc"
+#include "resourceLoad.vc"
+#include "snowball.vh"
+#include "effects.vc"
+#include "savegame.vc"
+
+int defaultfont;
+
+void AutoExec()
+{
+	defaultfont = LoadFont("font1.png");
+	EnableVariableWidth(defaultfont);
+	LoadResources();
+	InitializeLevelInfo(); //this is temporary, until the level info is integrated into the resource system?
+	LoadGamesave();
+	SetButtonKey(1, SCAN_Z);
+	SetButtonKey(2, SCAN_X);
+	SetButtonKey(3, SCAN_C);
+	SetButtonKey(4, SCAN_SPACE);
+	InitAnimations();
+	ClearSnowballs();
+	ClearEnemies();
+	ResetAnimations();
+	InitMainMenu();
+	SetMusicVolume(0);
+	Map("level2.map");
+}
+/*
+// Blit a vertical gradient effect within a defined rectangular area.
+void RectVGrad(int x, int y, int x2, int y2, int c, int c2, int dest)
+// Pass: Rectangle area (x, y) to (x2, y2), colors c and c2, and destination image.
+// Credit: Overkill
+// Updated on 2005-03-31: Now does gradients properly regardless of one color 
+//			being greater, and maybe might even be faster!
+{
+	int r, g, b;
+	int i;
+	
+	// Make *sure* that the greater y value is set to y2.
+	if(y > y2)
+	{
+		i = y2;
+		y2 = y;
+		y = i;
+	}
+	
+	for(i=0; i < y2 - y; i++)
+	{
+		r = ((i * (GetR(c2) - GetR(c)) / (y2 - y)) + GetR(c));
+		g = ((i * (GetG(c2) - GetG(c)) / (y2 - y)) + GetG(c));
+		b = ((i * (GetB(c2) - GetB(c)) / (y2 - y)) + GetB(c));
+				
+		Line(x, y + i, x2, y + i, RGB(r, g, b), dest);
+	}
+	SetLucent(0);
+}*/
+
+
+int textbox_x = 20;
+int textbox_y = 20;
+int textbox_width = ImageWidth(screen) - 40;
+int textbox_maxlines = 2;
+int textbox_active = 0;
+
+void TextBox(string tb_text)
+{
+	/*int tb_font = defaultfont;
+	
+	string tb_cur_text;
+	
+	//tb_text = chr(10) + tb_text;
+	tb_cur_text = tb_text;
+	
+	// Find the width and subract some. Because there is padding on all sides.
+	tb_text = WrapText(tb_font, tb_text, textbox_width - 16);
+	while (TokenCount(tb_text, chr(10)) > 0)
+	{
+		if (TokenCount(tb_text, chr(10)) + 1 > textbox_maxlines)
+		{
+			tb_cur_text = TokenLeft(tb_text, chr(10), textbox_maxlines + 1);
+			Log("CURRENT" + tb_cur_text);
+			tb_text = TokenRight(tb_text, chr(10), textbox_maxlines + 1);
+			Log("REMAINING" + tb_text);
+		}
+		else
+		{
+			tb_cur_text = tb_text;
+			tb_text = "";
+		}
+		TextBoxHandler(tb_font, textbox_x, textbox_y, textbox_width, tb_cur_text, 1);
+	}*/
+}
+
+
+void TextBoxHandler(int tb_font, int tb_x1, int tb_y1, int tb_width, string tb_text, int tb_more)
+// Pass: The font to use, the rectangular coordinates of the textbox, the wrapped string to display.
+// Return: void
+// Assumes: The font is valid, and tb_x1 > tb_x2.
+{
+/*	int done;
+	int box_time;
+	int mid_offset, line_offset, line_count;
+	string mid_text, line_text;
+	
+	textbox_active = 1;
+	
+	Unpress(1);
+	box_time = systemtime + (len(tb_text) * 5);
+	line_count = TokenCount(tb_text, chr(10)) + 1;
+	while (!done)
+	{
+		Render();
+		// Draw our textbox window.
+		DrawWindow(tb_x1, tb_y1, tb_x1 + tb_width, tb_y1 + 24 + (line_count  * FontHeight(tb_font)), screen);
+		
+		// Draw the "More text" arrow.
+		if (tb_more)
+		{
+		//	TBlit(tb_x1 + tb_width - 16, tb_y1 + (sin(systemtime * 2) * 4 >> 16) + 6 + (line_count  * FontHeight(tb_font)), img_arrow_down, screen);
+		}
+		
+		// Blit the lines of text.
+		// Draw the text, with 2px padding.
+		PrintString(tb_x1 + 8, tb_y1 + 8, screen, tb_font, mid_text);
+
+		
+		ShowPage();
+		
+		// Increment the length our text midsection.
+		// TODO: timerize the incrementation.
+		if (mid_offset < len(tb_text))
+		{
+			mid_offset = len(tb_text) - ((box_time - systemtime) / 5);
+			if (mid_offset > len(tb_text)) mid_offset = len(tb_text);
+		}
+		mid_text = left(tb_text, mid_offset);
+		// Hitting B1 causes all text to appear.
+		if (b1 && mid_offset < len(tb_text))
+		{
+			Unpress(1);
+			mid_offset = len(tb_text);
+		}
+		// Hitting B1 can also cause us to exit this textbox loop.
+		else if (b1 && mid_offset == len(tb_text))
+		{
+			Unpress(1);
+			done = 1;
+		}
+	}
+	
+	textbox_active = 0;*/
+}

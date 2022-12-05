@@ -14,7 +14,7 @@ int bc_img;
 
 void InitializeBGRC()
 {
-	int i, r, myimg, dw, dh;
+	int i, myimg, dw, dh;
 	bgrctick = 0;	
 	bgrproc = "RenderBGRC";	
 	int r = Random(0,4);

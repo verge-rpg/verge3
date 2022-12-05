@@ -1,0 +1,29 @@
+// 2 588
+
+void Start()
+{	
+	SpawnPlayer();
+	ProcessPlatform();
+	Exit("You are winner!");
+}
+
+void SpawnItUp()
+{
+	AddEnemy(12 * 16, 04 * 16, "boy.chr",	AI_TYPE_LEMMING, 10, 50);
+	AddEnemy(10 * 16, 08 * 16, "boy.chr",	AI_TYPE_CLING, 10, 200);
+	
+	AddEnemy(11 * 16, 13 * 16, "girl.chr",	AI_TYPE_CLING, 10, 70);
+	
+	AddEnemy(60 * 16, 14 * 16, "boy.chr",	AI_TYPE_CLING, 5, 100);
+	AddEnemy(66 * 16, 13 * 16, "girl.chr",	AI_TYPE_LEMMING, 12, 87);
+	AddEnemy(57 * 16, 14 * 16, "boy.chr",	AI_TYPE_HOMING, 7, 70);
+	AddEnemy(63 * 16, 14 * 16, "boy.chr",	AI_TYPE_LEMMING, 10, 90);
+	
+	AddEnemy(180 * 16, 58 * 16, "boy.chr",	AI_TYPE_HOMING, 10, 132);
+	AddEnemy(172 * 16, 68 * 16, "girl.chr",	AI_TYPE_HOMING, 1, 200);
+	AddEnemy(246 * 16, 45 * 16, "girl.chr",	AI_TYPE_HOMING, 7, 90);
+	AddEnemy(211 * 16, 59 * 16, "boy.chr",	AI_TYPE_LEMMING, 12, 87);
+	AddEnemy(255 * 16, 92 * 16, "boy.chr",	AI_TYPE_CLING, 5, 143);
+	
+	AddEnemy(155 * 16, 79 * 16, "boy.chr",	AI_TYPE_HOMING, 32, 134);
+}

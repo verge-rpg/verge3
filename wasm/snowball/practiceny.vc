@@ -1,0 +1,20 @@
+// Practice map!
+
+void Start()
+{	
+	//SetMusicVolume(0);
+	SpawnPlayer();
+	ProcessPlatform();
+	Exit("You are winner!");
+}
+
+void Damage()
+{
+	PlaySound(sfx_shing, 100);
+	PlayerDeath();
+}
+
+void DetachCamera()
+{
+	cameratracking = 0;
+}

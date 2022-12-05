@@ -1,0 +1,110 @@
+void SaveGame(string filename)
+{
+	int f=FileOpen(filename,FILE_WRITE);
+	FileWriteLn(f, MainPlayer.name);
+	FileWriteQuad(f, 3); //save version
+	FileWriteString(f, MainPlayer.chrfn);
+	FileWriteQuad(f, MainPlayer.hp);
+	FileWriteQuad(f, MainPlayer.maxhp);
+	FileWriteQuad(f, MainPlayer.mp);
+	FileWriteQuad(f, MainPlayer.maxmp);
+	FileWriteQuad(f, MainPlayer.atk);
+	FileWriteQuad(f, MainPlayer.def);
+	FileWriteQuad(f, MainPlayer.exp);
+	FileWriteQuad(f, MainPlayer.level);
+	FileWriteQuad(f, MainPlayer.nextlevelexp);
+	FileWriteQuad(f, MainPlayer.equip);
+	FileWriteQuad(f, STATE_NORMAL); //state
+	FileWriteQuad(f, 0); //cooldown
+	FileWriteQuad(f, 0); //magiccooldown
+	FileWriteQuad(f, 0); //nextmovetime
+	FileWriteString(f, currentmap);
+	FileWriteQuad(f, entity.x[MainPlayer.ent]/16);
+	FileWriteQuad(f, entity.y[MainPlayer.ent]/16);
+	FileWriteQuad(f, attack_scancode);
+	FileWriteQuad(f, enter_scancode);
+	FileWriteQuad(f, cancel_scancode);
+	FileWriteQuad(f, heal_scancode);
+	FileWriteQuad(f, nova_scancode);
+	FileWriteQuad(f, fire_scancode);
+	FileWriteQuad(f, ice_scancode);
+	FileClose(f);
+}
+
+void LoadGame(string filename)
+{
+	begin=0;
+	int f=FileOpen(filename,FILE_READ);
+	MainPlayer.name=FileReadLn(f);
+	int version=FileReadQuad(f);
+
+	switch (version)
+	{
+		case 1:
+			MainPlayer.chrfn="sprites/"+FileReadString(f);
+			MainPlayer.hp=FileReadQuad(f);
+			MainPlayer.maxhp=FileReadQuad(f);
+			MainPlayer.mp=FileReadQuad(f);
+			MainPlayer.maxmp=FileReadQuad(f);
+			MainPlayer.atk=FileReadQuad(f);
+			MainPlayer.def=FileReadQuad(f);
+			MainPlayer.exp=FileReadQuad(f);
+			MainPlayer.level=FileReadQuad(f);
+			MainPlayer.nextlevelexp=FileReadQuad(f);
+			MainPlayer.equip=FileReadQuad(f);
+			MainPlayer.state=FileReadQuad(f);
+			MainPlayer.cooldown=FileReadQuad(f);
+			MainPlayer.magiccooldown=FileReadQuad(f);
+			MainPlayer.nextmovetime=FileReadQuad(f);
+			currentmap=FileReadString(f);
+			mapswitchx=FileReadQuad(f);
+			mapswitchy=FileReadQuad(f);
+		case 2:
+			MainPlayer.chrfn=FileReadString(f);
+			MainPlayer.hp=FileReadQuad(f);
+			MainPlayer.maxhp=FileReadQuad(f);
+			MainPlayer.mp=FileReadQuad(f);
+			MainPlayer.maxmp=FileReadQuad(f);
+			MainPlayer.atk=FileReadQuad(f);
+			MainPlayer.def=FileReadQuad(f);
+			MainPlayer.exp=FileReadQuad(f);
+			MainPlayer.level=FileReadQuad(f);
+			MainPlayer.nextlevelexp=FileReadQuad(f);
+			MainPlayer.equip=FileReadQuad(f);
+			MainPlayer.state=FileReadQuad(f);
+			MainPlayer.cooldown=FileReadQuad(f);
+			MainPlayer.magiccooldown=FileReadQuad(f);
+			MainPlayer.nextmovetime=FileReadQuad(f);
+			currentmap=FileReadString(f);
+			mapswitchx=FileReadQuad(f);
+			mapswitchy=FileReadQuad(f);
+		case 3:
+			MainPlayer.chrfn=FileReadString(f);
+			MainPlayer.hp=FileReadQuad(f);
+			MainPlayer.maxhp=FileReadQuad(f);
+			MainPlayer.mp=FileReadQuad(f);
+			MainPlayer.maxmp=FileReadQuad(f);
+			MainPlayer.atk=FileReadQuad(f);
+			MainPlayer.def=FileReadQuad(f);
+			MainPlayer.exp=FileReadQuad(f);
+			MainPlayer.level=FileReadQuad(f);
+			MainPlayer.nextlevelexp=FileReadQuad(f);
+			MainPlayer.equip=FileReadQuad(f);
+			MainPlayer.state=FileReadQuad(f);
+			MainPlayer.cooldown=FileReadQuad(f);
+			MainPlayer.magiccooldown=FileReadQuad(f);
+			MainPlayer.nextmovetime=FileReadQuad(f);
+			currentmap=FileReadString(f);
+			mapswitchx=FileReadQuad(f);
+			mapswitchy=FileReadQuad(f);
+			attack_scancode=FileReadQuad(f);
+			enter_scancode=FileReadQuad(f);
+			cancel_scancode=FileReadQuad(f);
+			heal_scancode=FileReadQuad(f);
+			nova_scancode=FileReadQuad(f);
+			fire_scancode=FileReadQuad(f);
+			ice_scancode=FileReadQuad(f);
+	}
+	FileClose(f);
+	//map(currentmap);
+}

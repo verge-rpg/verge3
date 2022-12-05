@@ -1,0 +1,148 @@
+
+int mm_inactive_timestamp;
+int mm_menu_index;
+int mm_cursor_pos;
+int mm_cursor_delay;
+int mm_take_time;
+int mm_init;
+void InitMainMenu()
+{
+	platform_render_func = "MainMenuRender";
+	platform_input_func = "MainMenuControls";
+	mm_init = 1;
+	mm_inactive_timestamp = systemtime + 1000;
+	DemoPlay();
+}
+
+void MainMenuControls()
+{
+	if(flgLevelSelect)
+	{
+		HandleLevelSelect();
+	}
+	else
+	{
+		if (mm_inactive_timestamp < systemtime && !mm_take_time)
+		{
+			mm_menu_index = 0;
+		}
+		if (up && mm_cursor_delay < systemtime)
+		{
+			switch (mm_menu_index)
+			{
+				case 1:
+					mm_cursor_delay = systemtime + 20;
+					mm_inactive_timestamp = systemtime + 1000;
+					mm_cursor_pos--;
+					mm_cursor_pos = mm_cursor_pos + 2 % 2;
+			}
+		}
+		if (down && mm_cursor_delay < systemtime)
+		{
+			switch (mm_menu_index)
+			{
+				case 1:
+					mm_cursor_delay = systemtime + 20;
+					mm_inactive_timestamp = systemtime + 1000;
+					mm_cursor_pos++;
+					mm_cursor_pos = mm_cursor_pos + 2 % 2;
+			}
+		}
+		if (b1)
+		{
+			Unpress(1);
+			mm_inactive_timestamp = systemtime + 1000;
+			switch (mm_menu_index)
+			{
+				case 0:
+					mm_menu_index++;
+				case 1:
+					switch (mm_cursor_pos)
+					{
+						case 0:
+							//DemoStop();
+							//platform_render_func = "";
+							//platform_input_func = "";
+							//Map("level1.map");
+							flgLevelSelect = 1;
+						case 1:
+							Exit("");
+					}
+			}
+			mm_cursor_pos = 0;
+		}
+	}
+	if (!demo_mode)
+	{
+		DemoPlay();
+		//Map(curmap.path);
+		/*b1 = 0;
+		b2 = 0;
+		b3 = 0;
+		b4 = 0;
+		up = 0;
+		down = 0;
+		left = 0;
+		right = 0;
+		*/
+	}
+}
+
+void MainMenuRender()
+{
+	if(flgLevelSelect)
+	{
+		DrawLevelSelect();
+	}
+	else
+	{
+		if (mm_inactive_timestamp > systemtime && !mm_take_time)
+		{
+			if (mm_inactive_timestamp - systemtime <= 200)
+			{
+				SetLucent(100 - (mm_inactive_timestamp - systemtime / 2));
+			}
+			//PrintCenter(ImageWidth(screen) / 2,
+			//	ImageHeight(screen) / 2 - 30,
+			//	screen, defaultfont,
+			//	"SNOWBALL");
+			TBlit (ImageWidth(screen) - ImageWidth(img_title_screen) / 2,
+				ImageHeight(screen) / 2 - ImageHeight(img_title_screen),
+				img_title_screen, screen);
+
+		}
+		switch (mm_menu_index)
+		{
+			case 0:
+				SetLucent(sin(mm_inactive_timestamp - systemtime * 2) * 50 >> 16 + 50);
+				PrintCenter(ImageWidth(screen) / 2,
+					ImageHeight(screen) / 2 + 30,
+					screen, defaultfont,
+					"Press Z / Button 1!");
+				SetLucent(0);
+			case 1:
+				switch (mm_cursor_pos)
+				{
+					case 0:
+						PrintString(ImageWidth(screen) - TextWidth(defaultfont, "Level Select") / 2 - 16,
+							ImageHeight(screen) / 2 + 30,
+							screen, defaultfont,
+							">");
+					case 1:
+						PrintString(ImageWidth(screen) - TextWidth(defaultfont, "Exit this cruel world...") / 2 - 16,
+							ImageHeight(screen) / 2 + 30 + (FontHeight(defaultfont) * 1),
+							screen, defaultfont,
+							">");
+				}
+				PrintCenter(ImageWidth(screen) / 2,
+					ImageHeight(screen) / 2 + 30,
+					screen, defaultfont,
+					"Level Select");
+				PrintCenter(ImageWidth(screen) / 2,
+					ImageHeight(screen) / 2 + 30 + (FontHeight(defaultfont) * 1),
+					screen, defaultfont,
+					"Exit this cruel world...");
+				SetLucent(0);
+		}
+	}
+}

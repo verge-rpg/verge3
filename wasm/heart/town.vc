@@ -1,0 +1,173 @@
+void start()
+{
+	int tb;
+	if (begin>0)
+	{
+		tb=TT64_TextBox(mainfont,12,4,20,300,blue,blue,black,black, 35, enter_scancode, 240, "Please name your hero.                                Press Enter to Continue.");
+		while (!TT64_TextBoxIsClosed(tb))
+		{
+			Render();
+			TT64_RenderTextBox(tb);
+			ShowPage();
+		}
+		SetupPlayer(10, 13, NamingMenu(fixedfont,"You",16), "sprites/braize.chr", 50, 10, 5, 2);
+		ini();
+		FadeMusic("music/yftown.it");
+		FadeIn(50);
+	}
+	else
+	{
+		MainPlayer.ent=EntitySpawn(mapswitchx,mapswitchy,MainPlayer.chrfn);
+		SetPlayer(MainPlayer.ent);
+		FadeMusic("music/yftown.it");
+		FadeIn(50);
+	}
+}
+
+void forest_1_01()
+{
+	MapSwitch("forest_1-01.map",48,43);
+}
+
+void GirlFriend()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 54, "Your Girlfriend:    Hi Honey!  Are you going into the forest?  Give me a kiss goodbye!");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+	MainPlayer.hp=MainPlayer.maxhp;
+	MainPlayer.mp=MainPlayer.maxmp;
+}
+
+void Henry()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "Henry:    Hey!  Go to your equip menu and try out the sword!  Nothing like the feel of cold steel in your hands, eh?");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+void Henrietta()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "Henrietta:    Please don't hurt the animals!  Please use your fists, I can't bear to think of those poor creatures being cut up by your sword.");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+void Garfield()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "Garfield:    I'm going with you to defeat the evil wizard!  ...After a brief nap.");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+void Carlton()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "Carlton Penceworthy III:    A man of my distinguished lineage can't be seen galavanting off with the likes of you.");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+void X()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "X:    Each game needs a man of mystery.  The X only makes it more extreme.");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+void Zeromus()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "zeromus:    Hody22u!");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+void Margaret()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "Margaret:    This dialogue was supposed to be thrown out, but somehow it slipped into the game.  Oops.");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+void Deus()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "Deus:    Worship me, bitch.");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+void Troupe()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "Troupe:    My most profuse apologies.");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+void Sage()
+{
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "Sage:    You know, you already have the power within you to defeat the wizard.  You just need more magic power!  You can only get that from experience.");
+	int tb2=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "You can use a fire or heal spell with 5 magic power, and a nova or ice spell for 15 magic power!");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	while (!TT64_TextBoxIsClosed(tb2))
+	{
+		Render();
+		TT64_RenderTextBox(tb2);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+}
+
+

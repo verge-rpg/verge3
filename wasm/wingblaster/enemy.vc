@@ -1,0 +1,426 @@
+struct enemy_type
+{
+	int active;
+	int ai;
+	int x, y;
+	int w, h;
+	int x100, y100;
+	int dmg;
+	int angle, speed;
+	int image;
+	int a, b, c, d, e, f;
+	int hit_sound_flag;
+	int important;
+}
+
+int enemy_count;
+enemy_type enemy[ENEMY_MAX_COUNT];
+
+void SpawnEnemy(int x, int y, int ai, int image, int important)
+{
+	int i;
+	for (i = 0; i < ENEMY_MAX_COUNT; i++)
+	{
+		if (!enemy[i].active)
+		{
+			enemy [i].x = x;
+			enemy [i].y = y;
+			enemy [i].w = ImageWidth(image);
+			enemy [i].h = ImageHeight(image);
+			enemy [i].x100 = enemy [i].x * 100;
+			enemy [i].y100 = enemy [i].y * 100;
+			enemy [i].ai = ai;
+			enemy [i].angle = 0;
+			enemy [i].speed = 0;
+			enemy [i].image = image;
+			enemy [i].dmg = 0;
+			enemy [i].a = 0;
+			enemy [i].b = 0;
+			enemy [i].c = 0;
+			enemy [i].d = 0;
+			enemy [i].e = 0;
+			enemy [i].f = 0;
+			enemy [i].hit_sound_flag = 0;
+			enemy [i].active = 1;
+			enemy [i].important = important;
+			if (important)
+			{
+				enemy_count++;
+			}
+			return;
+		}
+	}
+	Exit("SpawnEnemy :: Could not add enemy! Maximum was exceeeded.");
+}
+
+void RemoveEnemy(int i)
+{
+	if (i < 0 || i >= ENEMY_MAX_COUNT)
+	{
+		Log("RemoveEnemy :: Enemy index out of bounds! ("
+			+ str (i) + " / " + str(ENEMY_MAX_COUNT) + ")");
+	}
+	if (!enemy[i].active)
+	{
+		Log("RemoveEnemy :: Could not remove enemy, because it was either already removed or was never active.");
+	}
+	if (enemy[i].important)
+	{
+		enemy_count--;
+	}
+	enemy [i].active = 0;
+}
+
+void ClearEnemies()
+{
+	int i;
+	for (i = 0; i < ENEMY_MAX_COUNT; i++)
+	{
+		if (enemy[i].active) RemoveEnemy(i);
+	}
+	enemy_count = 0;
+}
+
+int EnemyOnScreen(int i)
+{
+	if (xwin <= enemy [i].x + enemy [i].w
+		&& ywin <= enemy [i].y + enemy [i].h
+		&& xwin + ImageWidth(screen) >= enemy [i].x
+		&& ywin + ImageHeight(screen) >= enemy [i].y)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+int EnemyAngleToPlayer(int i)
+{
+	return myatan2(enemy[i].w / 2 + enemy[i].x,
+			enemy[i].h / 2 + enemy[i].y,
+			player.hitx + player.hitx / 2 + player.x,
+			player.hity + player.hity / 2 + player.y);
+}
+
+int myatan2(int x, int y, int x2, int y2)
+{
+	return fatan2(y2 - y, x2 - x);
+}
+
+void EnemyUpdateLocation(int i)
+{
+	enemy[i].x = enemy[i].x100 / 100;
+	enemy[i].y = enemy[i].y100 / 100;
+}
+
+void EnemyCollision (int i)
+{
+	if (player.x + player.hitx2 >= enemy [i].x &&
+		player.x + player.hitx <= enemy [i].x + enemy [i].w &&
+		player.y + player.hity2 >= enemy [i].y &&
+		player.y + player.hity <= enemy [i].y + enemy [i].h)
+		{
+			// HURT THE PLAYER.
+			player.death = 1;
+		}
+}
+
+void HurtEnemy (int i, int dmg)
+{
+	if (enemy[i].hit_sound_flag < systemtime)
+	{
+		PlaySound(hit_sound, 100);
+		enemy[i].hit_sound_flag = systemtime + 15;
+	}
+	enemy[i].dmg += dmg;
+}
+
+void ProcessEnemies()
+{
+	int i;
+	for (i = 0; i < ENEMY_MAX_COUNT; i++)
+	{
+		if (enemy[i].active)
+		{
+			switch(enemy[i].ai)
+			{
+				case 1:
+					EnemyCollision(i);
+					if (enemy [i].b == 0)
+					{
+						enemy [i].x100 += sin (enemy [i].a) * 52 >> 16 * (cos(enemy[i].a) * 3 >> 16);
+						enemy [i].y100 += cos (enemy [i].a) * 10 >> 16 * (sin(enemy[i].a) * 3 >> 16);
+						enemy [i].y100 += 10;
+						if (enemy [i].y100 > ywin * 100 + (ImageHeight(screen) / 2 * 100))
+						{
+							enemy [i].y100 = ywin * 100 + (ImageHeight(screen) / 2 * 100);
+							enemy [i].b = 1;
+							if (enemy [i].x100 > xwin + (ImageWidth(screen) / 2 * 100))
+							{
+								enemy[i].c = 1;
+							}
+							else
+							{
+								enemy[i].c = 0;
+							}
+							SpawnObject(enemy[i].x + (enemy[i].w / 2), enemy[i].y + (enemy[i].h / 2), OBJECT_HURTPLAYER + OBJECT_ADDITIVEBLIT, EnemyAngleToPlayer(i), 200, laser2_image, 1);
+						}
+					}
+					else
+					{
+						enemy [i].b ++;
+						enemy [i].y100 -= 110;
+						if (enemy[i].c)
+						{
+							enemy [i].x100 -= cos (enemy [i].b) * 240 >> 16;
+						}
+						else
+						{
+							enemy [i].x100 += cos (enemy [i].b) * 240 >> 16;
+						}
+						enemy [i].y100 -= sin (enemy [i].b / 4) * (ImageHeight(screen) / 2) >> 16;
+						if (!EnemyOnScreen(i))
+						{
+							RemoveEnemy (i);
+						}
+					}
+					EnemyUpdateLocation (i);
+
+					if (EnemyOnScreen(i))
+					{
+						enemy [i].a ++;
+					}
+					if (enemy[i].dmg && enemy [i].x100 > ImageWidth(screen) / 4 * 100 + xwin)
+					{
+						
+					}
+					if (enemy[i].dmg > 2)
+					{
+						PlaySound(ship_death_sound, 100);
+						RemoveEnemy (i);
+						score += 100;
+					}
+				case 2:
+					// Square Boss
+					if (enemy[i].y100 <= ywin * 100
+						&& enemy[i].dmg <= 2)
+					{
+						enemy[i].d = 1;
+					}
+					if (enemy[i].y100 >= ywin + ImageHeight(screen) * 100)
+					{
+						enemy[i].d = 0;
+					}
+					if (enemy[i].d)
+					{
+						enemy[i].y100 += 50;
+					}
+					else
+					{
+						enemy[i].y100 -= 200;
+					}
+					EnemyUpdateLocation (i);
+					EnemyCollision(i);
+
+					if (EnemyOnScreen(i))
+					{
+						enemy[i].x100 -= cos(enemy[i].a * 2) * 50 >> 16;
+						enemy[i].a ++;
+						enemy[i].b ++;
+						enemy[i].c ++;
+					}
+					if (enemy[i].b > 150)
+					{
+						SpawnObject(enemy[i].x + (enemy[i].w / 2), enemy[i].y + (enemy[i].h / 2), OBJECT_HURTPLAYER + OBJECT_ADDITIVEBLIT, EnemyAngleToPlayer(i), 50, laser2_image, 1);
+						enemy[i].b -= 150;
+					}
+					if (enemy[i].c > 500)
+					{
+						SpawnEnemy(xwin + Random(0, ImageWidth(screen) - ImageWidth(enemy_ship_image)),
+							ywin - Random(50, ImageHeight(screen)),
+							1, enemy_ship_image, 0);
+						enemy[i].c -= 500;
+					}
+
+					if (enemy[i].dmg > 2)
+					{
+						if (enemy[i].image != enemy_block_mad_image)
+						{
+							enemy[i].image = enemy_block_mad_image;
+						}
+						// Move up
+						enemy[i].d = 0;
+						// Move faster
+						enemy[i].y100 -= 150;
+						if (!EnemyOnScreen(i))
+						{
+							PlaySound(block_death_sound, 100);
+							RemoveEnemy (i);
+							score += 1675;
+						}
+					}
+				case 3:
+					if (enemy[i].y100 >= ImageHeight(screen) - ImageHeight(enemy[i].image) / 2 + ywin * 100)
+					{
+						enemy[i].y100 -= 100;
+					}
+					enemy[i].d ++;
+
+					if (enemy[i].d < 500)
+					{
+						enemy[i].a ++;
+
+						if (enemy[i].a > 20)
+						{
+							enemy[i].b++;
+							//SpawnObject(enemy[i].x + (enemy[i].w / 2), enemy[i].y + (enemy[i].h / 2), OBJECT_HURTPLAYER + OBJECT_ADDITIVEBLIT, EnemyAngleToPlayer(i) + (360 / 10 * enemy[i].b), 200, laser2_image, 1);
+							enemy[i].c--;
+							SpawnObject(enemy[i].x + (enemy[i].w / 2), enemy[i].y + (enemy[i].h / 2), OBJECT_HURTPLAYER + OBJECT_ADDITIVEBLIT, EnemyAngleToPlayer(i) + (360 / 10 * enemy[i].c), 200, laser2_image, 1);
+							enemy[i].a -= 20;
+						}
+					}
+					else
+					{
+						if (enemy[i].d < 1000)
+						{
+							if (enemy[i].x100 <= xwin * 100)
+							{
+								enemy[i].x100 = xwin * 100;
+								enemy[i].e = 1;
+							}
+							if (enemy[i].x100 >= xwin + ImageWidth(screen) - enemy[i].w * 100)
+							{
+								enemy[i].x100 = xwin + ImageWidth(screen) - enemy[i].w * 100;
+								enemy[i].e = 0;
+							}
+							if (enemy[i].e)
+							{
+								enemy[i].x100 += 350;
+							}
+							else
+							{
+								enemy[i].x100 -= 350;
+							}
+						}
+						else
+						{
+							enemy[i].d = 0;
+						}
+					}
+					if (enemy[i].dmg > 70)
+					{
+						RemoveEnemy (i);
+						ClearObjects();
+						score += 10000;
+					}
+					EnemyUpdateLocation (i);
+					EnemyCollision(i);
+				case 5:
+					EnemyUpdateLocation (i);
+					EnemyCollision(i);
+					if (enemy[i].c < 5)
+					{
+
+							if (enemy[i].y100 <= ywin * 100)
+							{
+								if (!enemy[i].d
+									&& EnemyOnScreen(i))
+								{
+									enemy[i].c++;
+								}
+								enemy[i].d = 1;
+								//enemy[i].e = Random(0, 1);
+							}
+							if (enemy[i].y100 >= ywin + ImageHeight(screen) - enemy[i].h * 100)
+							{
+								if (enemy[i].d
+									&& EnemyOnScreen(i))
+								{
+									enemy[i].c++;
+								}
+								enemy[i].d = 0;
+								//enemy[i].e = Random(0, 1);
+							}
+							if (enemy[i].x100 <= xwin * 100)
+							{
+								if (!enemy[i].e
+									&& EnemyOnScreen(i))
+								{
+									enemy[i].c++;
+								}
+								//enemy[i].d = Random(0, 1);
+								enemy[i].e = 1;
+							}
+							if (enemy[i].x100 >= xwin + ImageWidth(screen) - enemy[i].w * 100)
+							{
+								if (enemy[i].e
+									&& EnemyOnScreen(i))
+								{
+									enemy[i].c++;
+								}
+								//enemy[i].d = Random(0, 1);
+								enemy[i].e = 0;
+							}
+
+					}
+					else if (!EnemyOnScreen(i))
+					{
+						RemoveEnemy (i);
+					}
+					if (enemy[i].d)
+					{
+						enemy[i].y100 += 150;
+					}
+					else
+					{
+						enemy[i].y100 -= 50;
+					}
+					if (enemy[i].e)
+					{
+						enemy[i].x100 += 50;
+					}
+					else
+					{
+						enemy[i].x100 -= 50;
+					}
+					if (enemy[i].dmg > 3)
+					{
+						PlaySound(asteroid_death_sound, 100);
+						RemoveEnemy (i);
+						score += 200;
+					}
+				case 4:
+					EnemyUpdateLocation (i);
+					EnemyCollision(i);
+					if (enemy[i].dmg > 3)
+					{
+						PlaySound(asteroid_death_sound, 100);
+						RemoveEnemy (i);
+						score += 200;
+					}
+					if (EnemyOnScreen(i))
+					{
+						enemy[i].c = 1;
+					}
+					if (!EnemyOnScreen(i) && enemy[i].c)
+					{
+						RemoveEnemy (i);
+					}
+			}
+		}
+	}
+}
+
+void BlitEnemies()
+{
+	int i;
+	for (i = 0; i < ENEMY_MAX_COUNT; i++)
+	{
+		if (enemy[i].active)
+		{
+			TBlit(enemy[i].x - xwin,
+				enemy[i].y - ywin,
+				enemy[i].image,
+				screen);
+		}
+	}
+}

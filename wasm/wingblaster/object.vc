@@ -1,0 +1,166 @@
+#define PI 205887
+
+struct object_type
+{
+	int x, y, w, h, type;
+	int x100, y100, speed, angle;
+	int dmg;
+	int image;
+}
+
+int object_count;
+object_type object[OBJECT_MAX_COUNT];
+
+// Spawn an object.
+void SpawnObject (int x, int y, int type, int angle, int speed, int image, int dmg)
+{
+	if (object_count == OBJECT_MAX_COUNT) return;
+	object [object_count].x = x;
+	object [object_count].y = y;
+	object [object_count].w = ImageWidth(image);
+	object [object_count].h = ImageHeight(image);
+	object [object_count].x100 = object [object_count].x * 100;
+	object [object_count].y100 = object [object_count].y * 100;
+	object [object_count].type = type;
+	object [object_count].angle = angle;
+	object [object_count].speed = speed;
+	object [object_count].image = image;
+	object [object_count].dmg = dmg;
+	object_count++;
+}
+
+// Prepare an object for destruction
+void RemoveObject(int i)
+{
+	if (object_count == 0) return;
+	object_count--;
+	object[i].x = object[object_count].x;
+	object[i].y = object[object_count].y;
+	object[i].w = object[object_count].w;
+	object[i].h = object[object_count].h;
+	object[i].x100 = object[object_count].x100;
+	object[i].y100 = object[object_count].y100;
+	object[i].type = object[object_count].type;
+	object[i].angle = object[object_count].angle;
+	object[i].speed = object[object_count].speed;
+	object[i].image = object[object_count].image;
+	object[i].dmg = object[object_count].dmg;
+}
+
+// Prepare an object for destruction
+void ClearObjects()
+{
+	int i;
+	for (i = 0; i < object_count; i++)
+	{
+		object[i].x = 0;
+		object[i].y = 0;
+		object[i].w = 0;
+		object[i].h = 0;
+		object[i].x100 = 0;
+		object[i].y100 = 0;
+		object[i].type = 0;
+		object[i].angle = 0;
+		object[i].speed = 0;
+		object[i].image = 0;
+		object[i].dmg = 0;
+	}
+	object_count = 0;
+}
+
+int myfsin(int i)
+{
+	int v = fsin(i);
+	Log(str(v) + "= sin(" + str(i) + ")");
+	return v;
+}
+
+int myfcos(int i)
+{
+	int v = fcos(i);
+	Log(str(v) + "= cos(" + str(i) + ")");
+	return v;
+}
+
+void ProcessObjects()
+{
+	int i, j;
+	for (i = 0; i < object_count; i++)
+	{
+		object[i].x100 += fcos(object[i].angle) * object [i].speed >> 16;
+		object[i].y100 += fsin(object[i].angle) * object [i].speed >> 16;
+		
+		object[i].x = object[i].x100 / 100;
+		object[i].y = object[i].y100 / 100;
+		
+		if (xwin - 10 >= object [i].x + object [i].w
+			|| ywin - 10 >= object [i].y + object [i].h
+			|| xwin + ImageWidth(screen) + 10 <= object [i].x
+			|| ywin + ImageHeight(screen) + 10 <= object [i].y)
+			{
+				RemoveObject (i);
+			}
+		
+		if (object [i].type & OBJECT_HURTPLAYER)
+		{
+			if (player.x + player.hitx2 >= object [i].x &&
+				player.x + player.hitx <= object [i].x + object [i].w &&
+				player.y + player.hity2 >= object [i].y &&
+				player.y + player.hity <= object [i].y + object [i].h)
+				{
+					// Hurt the player!
+					player.death = 1;
+					RemoveObject (i);
+				}
+		}
+
+		if (object [i].type & OBJECT_HURTENEMY)
+		{
+		
+			for (j = 0; j < ENEMY_MAX_COUNT; j++)
+			{
+				if (!enemy[j].active) {}
+				else if (enemy [j].x + enemy [j].w >= object [i].x &&
+					enemy [j].x <= object [i].x + object [i].w &&
+					enemy [j].y + enemy [j].h >= object [i].y &&
+					enemy [j].y <= object [i].y + object [i].h)
+					{
+						// Hurt the enemy!
+						HurtEnemy (j, object [i].dmg);
+						RemoveObject(i);
+					}
+			}
+		}
+		object[i].y100 += CAMERA_SPEED;
+	}
+
+}
+
+void BlitObjects()
+{
+	int i;
+	for (i = 0; i < object_count; i++)
+	{
+		if (object [i].type & OBJECT_ADDITIVEBLIT)
+		{
+			TAdditiveBlit(object[i].x - xwin,
+				object[i].y - ywin,
+				object[i].image,
+				screen);		
+		}
+		else if (object [i].type & OBJECT_SUBTRACTIVEBLIT)
+		{
+			TSubtractiveBlit(object[i].x - xwin,
+				object[i].y - ywin,
+				object[i].image,
+				screen);		
+		}	
+		else
+		{
+			TBlit(object[i].x - xwin,
+				object[i].y - ywin,
+				object[i].image,
+				screen);
+		}
+	}
+}

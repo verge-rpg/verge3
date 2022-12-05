@@ -1,0 +1,19 @@
+[ A projectile sprite sheet ]
+~ image: "neon_heart.png"
+~ death_sound: 'hitwall'
+~ frame_width: 11
+~ frame_height: 11
+~ frame_columns: 1
+~ frame_padding: 0
+~ hotspot_x: 0
+~ hotspot_y: 0
+~ hotspot_width: 11
+~ hotspot_height: 11
+[
+        Animation Strands
+        Fxx = Frame
+        Wxx = Wait
+        B = Back to beginning (looping animation)
+]
+~ animations
+        * move: f0w10b

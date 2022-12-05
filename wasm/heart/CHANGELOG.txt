@@ -1,0 +1,25 @@
+<3
+
+v0.2
+- Added ability to exit to main menu when you die, or from
+  the in game menu
+- Added the keys you pick to the save file when you save
+- Added 2 more maps
+- Added Enemy AI
+- Fixed a bug where you could momentaarily reopen the menu
+  while it was open after you saved a game
+- Naming code updated to be more user-friendly, and have a
+  16 character maximum
+- Fixed a bug that crashes the game when attempting to open
+  an empty file
+- Gnome Wizards now shoot fireballs at you randomly
+
+v0.1
+- First version, entered into the verge-rpg.com Valentine's
+  Day Compo
+- Features:
+  - Real Time Battle System
+  - Good looking magic spells
+  - 6 maps
+  - Save/Load
+  - Configure keys

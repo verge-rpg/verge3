@@ -1,0 +1,53 @@
+loading image __temp__img$$$.gif
+VC System Compilation stats: 
+138 ints (1537 expanded), 11 strings (370 expanded), 128 functions, 4079 total lines
+
+DESTINATION POS: 7954
+CURRENT POS: 7954
+Compiled bw.map, (44 lines), 8 functions
+DESTINATION POS: 6927
+CURRENT POS: 6927
+Compiled hillus.map, (37 lines), 6 functions
+DESTINATION POS: 8594
+CURRENT POS: 8594
+Compiled level1.map, (28 lines), 2 functions
+DESTINATION POS: 15730
+CURRENT POS: 15730
+Compiled level2.map, (50 lines), 3 functions
+DESTINATION POS: 4822
+CURRENT POS: 4822
+Compiled level3.map, (10 lines), 2 functions
+DESTINATION POS: 15919
+CURRENT POS: 15919
+Compiled practiceny.map, (19 lines), 3 functions
+
+loading image font1.png
+>> Loading resources...
+Allocating sound ceiling.ogg to variable sfx_ceiling
+Allocating sound land.ogg to variable sfx_land
+Allocating sound splash.ogg to variable sfx_water
+Allocating sound walkloop.ogg to variable sfx_walk
+Allocating sound scratch.wav to variable sfx_scratch
+Allocating sound pop.wav to variable sfx_run_over
+Allocating sound unlock.wav to variable sfx_unlock
+Allocating image snowball-tiny.png to variable img_snowball
+loading image snowball-tiny.png
+Allocating image snow.png to variable img_snow
+loading image snow.png
+Allocating image gauge-green.png to variable img_gauge_green
+loading image gauge-green.png
+Allocating image gauge-grey.png to variable img_gauge_grey
+loading image gauge-grey.png
+Allocating image snowball-logo.png to variable img_title_screen
+loading image snowball-logo.png
+Allocating image snowball-tiny.png to variable img_snowball_tiny
+loading image snowball-tiny.png
+Allocating image finish.png to variable img_finish_banner
+loading image finish.png
+Allocating image poof.png to variable img_poof
+loading image poof.png
+>> Resources loaded successfully!
+loading image LevelThumbs\1.png
+loading image LevelThumbs\2.png
+2 chain!
+3 chain!

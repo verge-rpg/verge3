@@ -1,0 +1,118 @@
+/*
+
+	-- Introduction menu --
+
+*/
+
+void IntroMenu()
+{
+	int tb;
+	int done = 0;
+	int posY = 0;
+	int waituntil=0;
+	int bg=MakeGradient(blue,blue,black,black,ImageWidth(screen)-50,(FontHeight(mainfont)*5));
+	int numoptions=3;
+	Splash(0,0,0);
+	deinit();
+	StopSong(music);
+	musicfn="";
+	while(!done)
+	{
+		RectFill(0,0,ImageWidth(screen),ImageHeight(screen),0,screen);
+		printcenter(ImageWidth(screen)/2,40,screen,mainfont,"<3");
+		SetLucent(50);
+		Blit(25,(ImageHeight(screen)/2)-(ImageHeight(bg)/2),bg,screen);
+		SetLucent(0);
+		Rect(25,(ImageHeight(screen)/2)-(ImageHeight(bg)/2),ImageWidth(screen)-25,(ImageHeight(screen)/2)+(ImageHeight(bg)/2),RGB(255,255,255),screen);
+		printstring(25+8,(ImageHeight(screen)/2)-(ImageHeight(bg)/2)+4+(PosY*(FontHeight(mainfont)+4)),screen,mainfont,"+");
+		printcenter(ImageWidth(screen)/2,(ImageHeight(screen)/2)-(ImageHeight(bg)/2)+4+(0*(FontHeight(mainfont)+4)),screen,mainfont,"New Game");
+		printcenter(ImageWidth(screen)/2,(ImageHeight(screen)/2)-(ImageHeight(bg)/2)+4+(1*(FontHeight(mainfont)+4)),screen,mainfont,"Load Game");
+		printcenter(ImageWidth(screen)/2,(ImageHeight(screen)/2)-(ImageHeight(bg)/2)+4+(2*(FontHeight(mainfont)+4)),screen,mainfont,"Quit Game");
+		ShowPage();
+		if (key[SCAN_DOWN] && waituntil<=systemtime)
+		{
+			posY++;
+			if (posY>numoptions-1) posY=0;
+			waituntil=systemtime+20;
+		}
+		if (key[SCAN_UP] && waituntil<=systemtime)
+		{
+			posY--;
+			if (posY<0) posY=numoptions-1;
+			waituntil=systemtime+20;
+		}
+		if(key[enter_scancode])
+		{
+			key[enter_scancode]=0;
+			switch(posY)
+			{
+				case 0:
+					currentmap="town.map";
+					done=1;
+				case 1:
+					done=ActLoadMenu();
+				case 2:
+					CleanUp();
+					exit("...Leaving so soon?");
+			}
+		}
+	}
+	key[enter_scancode]=0;
+	if (posY==0)
+	{
+		tb=TT64_TextBox(mainfont,12,4,20,300,blue,blue,black,black, 35, enter_scancode, 240, "There is an evil wizard trying to destroy the forest with his evil magic!  You must go and save the forest!  Also, don't forget to get your girlfriend something for Valentine's Day!");
+		while (!TT64_TextBoxIsClosed(tb))
+		{
+			Splash(0,0,0);
+			TT64_RenderTextBox(tb);
+			ShowPage();
+		}
+	}
+	map(currentmap);
+}
+
+// Overkill's cheap knock-off of ActLoadMenu().
+int ActLoadMenu()
+{
+	CheckSaveFiles();
+	int cursel=0;
+	int numoptions=10;
+	int waituntil=0;
+	int r=0;
+	int f;
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+	while (!key[cancel_scancode] && !key[enter_scancode])
+	{
+		Splash(0,0,0);
+		BlitSaveMenuBox();
+		printstring(savemenu.x+8,savemenu.y+4+(cursel*(FontHeight(mainfont)+4)),screen,mainfont,"+");
+		if (key[SCAN_DOWN] && waituntil<=systemtime)
+		{
+			cursel++;
+			if (cursel>numoptions-1) cursel=0;
+			waituntil=systemtime+20;
+		}
+		if (key[SCAN_UP] && waituntil<=systemtime)
+		{
+			cursel--;
+			if (cursel<0) cursel=numoptions-1;
+			waituntil=systemtime+20;
+		}
+		ShowPage();
+	}
+	if(key[enter_scancode])
+	{
+		f=FileOpen("save0"+str(cursel)+".sav",FILE_READ);
+		if (f)
+		{
+			FileClose(f);
+			LoadGame("save0"+str(cursel)+".sav");
+			ini();
+			r=1;
+		}
+	}
+	key[cancel_scancode]=0;
+	key[enter_scancode]=0;
+	return r;
+}

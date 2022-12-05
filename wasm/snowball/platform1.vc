@@ -1,0 +1,584 @@
+// 2005-12-11, Overkill:
+//	* Added snowball collision detect in PlayerLocateGround().
+
+#define TIMER_INCREMENT		2
+
+// Max pixel climb.
+#define MAXIMUM_SLOPE		2
+
+// Quick note: Speeds and x100, y100 are typically are pixel/100 increments.
+// Friction is a percent thing.
+#define MAXIMUM_JUMP_HEIGHT	9600
+#define MAXIMUM_UPPERCUT_HEIGHT 4800
+#define JUMP_SPEED		250
+#define MAXIMUM_FALL_SPEED	600
+#define MAXIMUM_MOVE_SPEED	100
+
+#define MOVE_ACCELERATION	10
+#define MOVE_FRICTION		3
+#define AIR_ACCELERATION	3
+#define AIR_FRICTION		1
+#define GRAVITY_ACCELERATION	5
+
+/*#define MAXIMUM_JUMP_HEIGHT	6400
+#define JUMP_SPEED		400
+#define MAXIMUM_FALL_SPEED	500
+#define MAXIMUM_MOVE_SPEED	200
+
+#define MOVE_ACCELERATION	40
+#define MOVE_FRICTION		10
+#define AIR_ACCELERATION	30
+#define AIR_FRICTION		9
+#define GRAVITY_ACCELERATION	50*/
+
+#define PLAYER_DIRECTION_LEFT	0
+#define PLAYER_DIRECTION_RIGHT	1
+
+struct player_type
+{
+	int direction, lastdirection;
+	string lastframe, frame;
+	int x100, y100;
+	int hspeed, vspeed;
+	int idle_flag, move_flag;
+	int jump_flag, fall_flag;
+	int hurt_flag, pain_flag;
+	int land_flag, swim_flag;
+	int attack_flag, run_flag;
+	int doublejump_flag;
+	int walk_sound, walk_sound_flag;
+	int ent;
+};
+
+player_type player;
+
+int platform_outcome;
+
+void SpawnPlayer()
+{
+	player.ent = EntitySpawn(curmap.startx, curmap.starty, chr_player);
+	SetPlayer(player.ent);
+}
+
+void PreparePlayer()
+{
+	player.x100 = entity.x[player.ent] * 100;
+	player.y100 = entity.y[player.ent] * 100;
+	player.direction = 0;
+	player.lastdirection = 0;
+	player.frame = "";
+	player.lastframe = "";
+	player.hspeed = 0;
+	player.vspeed = 0;
+	player.idle_flag = 0;
+	player.move_flag = 0;
+	player.jump_flag = 0;
+	player.fall_flag = 0;
+	player.hurt_flag = 0;
+	player.pain_flag = 0;
+	player.land_flag = 1;
+	player.swim_flag = 0;
+	player.walk_sound = 0;
+	player.walk_sound_flag = 0;
+	player.attack_flag = 0;
+	player.doublejump_flag = 0;
+}
+
+void ProcessPlatform()
+{
+	int i;
+	cameratracking = 1;
+	platform_outcome = 0;
+	//animation_string = ANIMATION_WALK_RIGHT;
+	PreparePlayer();
+	ResetThrottler();
+	
+	while (!platform_outcome)
+	{
+		// Frame throttle!
+		FrameThrottle();
+		
+		// Draw some stuff when we're caught up.
+		Render();
+		blitSnowballs();
+		
+		rectfill(0,0,50,10,0,screen);
+		printstring(0, 0, screen, 0, "fps:"+str(tframe.rate));
+		circle(mouse.x, mouse.y, 5,5,RGB(128,0,0),screen);
+		ShowPage();
+		
+		// Go go go! For each frame we've missed.
+		for (i = 0; i < tframe.gap; i++)
+		{
+			// Stop processing this as soon as an outcome has been met.
+			if (!platform_outcome)
+			{
+				UpdateControls();
+				PlayerMoveHorizontal();
+				//AnimatePlayer();
+				ParseAnimationString();
+				// Interact with the zones the player is touching! :o
+				PlayerZones();
+				PlayerAttack();
+				if (player.walk_sound_flag < systemtime && !strcmp(player.frame, "WALK"))
+				{
+					player.walk_sound = PlaySound(sfx_walk, 100);
+					player.walk_sound_flag = systemtime + 50;
+				}
+				else if (player.walk_sound && strcmp(player.frame, "WALK"))
+				{
+					player.walk_sound_flag = 0;
+					StopSound(player.walk_sound);
+				}
+				PlayerSetAnimation(player.frame);
+				player.lastframe = player.frame;
+				player.lastdirection = player.direction;
+				processSnowballs();
+				
+				if(mouse.l){
+					mouse.l=0;
+					insertSnowball(mouse.x+xwin,mouse.y+ywin);
+				}
+			}
+		}
+	}
+	if (platform_outcome == 1)
+	{
+		Map(curmap.path);
+	}
+}
+
+void PlayerMoveHorizontal()
+{
+	player.frame = "IDLE";
+	player.move_flag = 0;
+
+	player.run_flag = b2 + 1;
+	
+	if (right && !left && !player.attack_flag && player.land_flag <= 1)
+	{
+		player.direction = PLAYER_DIRECTION_RIGHT;
+		player.move_flag = 1;
+		player.frame = "WALK";
+		if (!player.jump_flag && !player.fall_flag)
+		{
+			player.hspeed += MOVE_ACCELERATION;
+		}
+		else
+		{
+			player.hspeed += AIR_ACCELERATION;
+		}
+	}
+	else if (left && !right && !player.attack_flag && player.land_flag <= 1)
+	{
+		player.direction = PLAYER_DIRECTION_LEFT;
+		player.move_flag = 1;
+		player.frame = "WALK";
+		if (!player.jump_flag && !player.fall_flag)
+		{
+			player.hspeed -= MOVE_ACCELERATION;
+		}
+		else
+		{
+			player.hspeed -= AIR_ACCELERATION;
+		}	
+	}
+	else
+	{
+		if (!player.jump_flag && !player.fall_flag)
+		{
+			// Normal friction
+			player.hspeed = player.hspeed * (100 - MOVE_FRICTION) / 100;
+		}
+		else
+		{
+			// Midair friction
+			player.hspeed = player.hspeed * (100 - AIR_FRICTION) / 100;
+		}
+	}
+	
+	
+	if (b2) // Run!
+	{
+		player.hspeed = max (min(player.hspeed, MAXIMUM_MOVE_SPEED * 2), -MAXIMUM_MOVE_SPEED * 2);
+	}
+	else
+	{
+		player.hspeed = max (min(player.hspeed, MAXIMUM_MOVE_SPEED), -MAXIMUM_MOVE_SPEED);
+	}
+	
+	if (player.hspeed < 0)
+	{
+		// Move if the player isn't walled, can climb a slope, or isn't at the map's edge.
+		if (!GetObsPixel (player.x100 + player.hspeed / 100 - 1, player.y100 / 100)
+			&& !GetObsPixel (player.x100 + player.hspeed / 100 - 1, player.y100 / 100 + (entity.hoth[player.ent] / 2))
+			&& !GetObsPixel (player.x100 + player.hspeed / 100 - 1, player.y100 - (MAXIMUM_SLOPE * abs(player.hspeed)) / 100 - MAXIMUM_SLOPE + entity.hoth[player.ent])
+			&& player.x100 + player.hspeed > 0)
+			{
+				player.x100 += player.hspeed;
+				if (!player.fall_flag && !player.jump_flag)
+				{
+					if (!PlayerLocateGround())
+					{
+						player.y100 += max(abs(player.hspeed) * MAXIMUM_SLOPE, MAXIMUM_SLOPE * 100);
+					}
+				}
+			}
+		else
+		{
+			player.hspeed = 0;
+		}
+	
+	}
+	else if (player.hspeed > 0)
+	{
+		// Move if the player isn't walled, can climb a slope, or isn't at the map's edge.
+		if (!GetObsPixel (player.x100 + player.hspeed / 100 + entity.hotw[player.ent] + 1, player.y100 / 100)
+				&& !GetObsPixel (player.x100 + player.hspeed / 100 + entity.hotw[player.ent] + 1, player.y100 / 100 + (entity.hoth[player.ent] / 2))
+				&& !GetObsPixel (player.x100 + player.hspeed / 100 + entity.hotw[player.ent] + 1, player.y100 - (MAXIMUM_SLOPE * abs(player.hspeed)) / 100 - MAXIMUM_SLOPE + entity.hoth[player.ent])
+				&& player.x100 + player.hspeed < curmap.w * 1600)
+				{
+					player.x100 += player.hspeed;
+					if (!player.fall_flag && !player.jump_flag)
+					{
+						if (!PlayerLocateGround())
+						{
+							player.y100 += max(abs(player.hspeed) * MAXIMUM_SLOPE, MAXIMUM_SLOPE * 100);
+						}
+					}
+				}
+		else
+		{
+			player.hspeed = 0;
+		}
+	}
+	if (!player.hspeed)
+	{
+		if (!player.fall_flag && !player.jump_flag)
+		{
+			if (!PlayerLocateGround())
+			{
+				player.y100 += MAXIMUM_SLOPE * 100;
+			}
+		}
+	}
+	PlayerMoveVertical();
+
+	entity.x[player.ent] = player.x100 / 100;
+	entity.y[player.ent] = player.y100 / 100;
+}
+
+void PlayerMoveVertical()
+{
+	// Jump trigger.
+	if (b4 && !player.attack_flag)
+	{
+		if (!player.jump_flag)
+		{
+			if (!player.fall_flag)
+			{
+				player.jump_flag = MAXIMUM_JUMP_HEIGHT;
+				player.land_flag = 0;
+				player.frame = "JUMP";
+			}
+			else if (player.swim_flag && player.vspeed <= MAXIMUM_FALL_SPEED)
+			{
+				player.jump_flag = MAXIMUM_JUMP_HEIGHT;
+				player.fall_flag = 0;
+				player.vspeed = 0;
+				player.land_flag = 0;
+				player.frame = "JUMP";
+			}
+		}
+	}
+	if (b1 && up && !player.attack_flag && !player.doublejump_flag)
+	{
+		player.jump_flag = MAXIMUM_UPPERCUT_HEIGHT;
+		PlaySound(sfx_scratch, 100);
+		player.frame = "JUMP";
+		player.doublejump_flag = 1;
+	}
+	
+	// Sustain a jump.
+	if (player.jump_flag)
+	{
+		if (b4 || (b1 && up && player.doublejump_flag))
+		{
+			player.frame = "JUMP";
+			player.vspeed = -JUMP_SPEED;
+			if (!player.swim_flag)
+			{
+				player.jump_flag -= JUMP_SPEED;
+				if (player.jump_flag < 0)
+				{
+					player.vspeed -= player.jump_flag;
+					player.jump_flag = 0;
+				}
+			}
+		}
+		else
+		{
+			player.jump_flag = 0;
+		}
+	}
+	
+	if (player.fall_flag)
+	{
+		player.vspeed += GRAVITY_ACCELERATION;
+		player.frame = "FALL";
+	}
+	
+	// Detect a fall.
+	if (player.jump_flag <= 0)
+	{
+		Unpress(4);
+		player.jump_flag = 0;
+		if	(!PlayerLocateGround())
+			{
+				player.vspeed += GRAVITY_ACCELERATION;
+				player.land_flag = 0;
+				player.fall_flag++;
+			}
+		else
+		{
+			if (!player.land_flag)
+			{
+				if (player.fall_flag < 90)
+				{
+					player.land_flag = 1;
+				}
+				else
+				{
+					player.land_flag = 30;
+				}
+				PlaySound(sfx_land, 100);
+				Unpress(4);
+			}
+			if (player.fall_flag)
+			{
+				player.vspeed = 0;
+				player.doublejump_flag = 0;
+				player.fall_flag = 0;
+			}
+		}
+	}
+	
+	if (player.land_flag > 1)
+	{
+		player.land_flag--;
+		player.frame = "LAND";
+	}
+	
+	if (player.vspeed < 0)
+	{
+		player.frame = "JUMP";
+	}
+	
+	// Hit your head on a ceiling.
+	if (GetObsPixel (player.x100 / 100, player.y100 / 100 - 1)
+		|| GetObsPixel (player.x100 / 100 + (entity.hotw[player.ent] / 2), player.y100 / 100 - 1)
+		|| GetObsPixel (player.x100 / 100 + entity.hotw[player.ent], player.y100 / 100 - 1)
+		)
+		{
+			if (player.vspeed < 0)
+			{
+				Unpress(4);
+				player.vspeed = 0;
+				player.jump_flag = 0;
+				player.fall_flag = 1;
+				player.doublejump_flag = 1;
+				PlaySound(sfx_ceiling, 100);
+			}
+		}
+	
+		
+	// Floor clipping prevention.
+	while (GetObsPixel (player.x100 / 100, player.y100 / 100 + entity.hoth[player.ent])
+			|| GetObsPixel (player.x100 / 100 + (entity.hotw[player.ent] / 2), player.y100 / 100 + entity.hoth[player.ent])
+			|| GetObsPixel (player.x100 / 100 + entity.hotw[player.ent], player.y100 / 100 + entity.hoth[player.ent])
+			)
+			{
+				player.y100 -= 100;
+				UpdateControls();
+			}
+	player.vspeed = min(player.vspeed, MAXIMUM_FALL_SPEED);
+	player.y100 += player.vspeed;
+}
+
+int PlayerLocateGround()
+{
+	int i, j;
+	int x = player.x100 / 100;
+	int y = player.y100 / 100 + entity.hoth[player.ent] + 1;
+	int r;
+	for (i = 0; i < entity.hotw[player.ent]; i++)
+	{
+		if (GetObsPixel (x + i, y))
+		{
+			return 1;
+		}
+		// Overkill: Check if on top of snowball.
+		for (j = 0; j < snowballs; j++)
+		{
+			r = snowball[j].r;
+			if (x + i >= -r / 2 + snowball[j].x
+				&& x + i <= r / 2 + snowball[j].x
+				&& y + 1 >= snowball[j].y - r
+				&& y + 1 <= snowball[j].y - r + 2)
+				{
+					return 1;
+				}
+		}
+	}
+	return 0;
+}
+
+void PlayerZones()
+{
+	int x, y, i, j;
+	x = entity.x[player.ent];
+	y = entity.y[player.ent];
+	for (i = 0; i < entity.hotw[player.ent]; i += 16)
+	{
+		for (j = 0; j < entity.hoth[player.ent]; j += 16)
+		{
+			//Log(str(x + i / 16) + " " + str(y + j / 16));
+			ZoneInteract(x + i / 16, y + j / 16);
+		}
+	}
+}
+
+void PlayerAttack()
+{
+	if (b1 && !up && !player.attack_flag)
+	{
+		PlaySound(sfx_swing, 100);
+		Unpress(1);
+		player.attack_flag = 50;
+	}
+	
+	if (player.attack_flag)
+	{
+		player.attack_flag--;
+		player.frame = "ATTACK";
+		if (!player.attack_flag)
+		{
+			player.frame = "IDLE";
+		}
+	}
+}
+
+void ShowObs() // Zip: Fixed this section
+{
+	int i, j;
+	SetLucent(50);
+	for(i = -(xwin % 16); i < ImageWidth(screen); i += 16) // Zip: Changed
+	{
+		for(j= -(ywin % 16); j < ImageHeight(screen); j += 16) // Zip: Changed
+		{
+			if(GetObs(i + xwin / 16, j + ywin / 16))
+			{
+				RectFill(i, j, i + 15, j + 15, RGB(255, 255, 255), screen); // Zip: Changed
+				Line(i, j, i + 15, j + 15, RGB(255, 0, 0), screen);
+				Line(i + 15, j, i, j + 15, RGB(255, 0, 0), screen);
+			}
+		}
+	}
+	SetLucent(0);
+}
+
+void ShowZones() // Zip: Fixed this section
+{
+	int i, j;
+	SetLucent(50);
+	for(i = -(xwin % 16); i < ImageWidth(screen); i += 16) // Zip: Changed
+	{
+		for(j= -(ywin % 16); j < ImageHeight(screen); j += 16) // Zip: Changed
+		{
+			if(GetObs(i + xwin / 16, j + ywin / 16))
+			{
+				RectFill(i, j, i + 15, j + 15, RGB(255, 255, 255), screen); // Zip: Changed
+				Line(i, j, i + 15, j + 15, RGB(255, 0, 0), screen);
+				Line(i + 15, j, i, j + 15, RGB(255, 0, 0), screen);
+			}
+		}
+	}
+	SetLucent(0);
+}
+
+//Hotspottage
+void ShowHots()
+{
+	int i;
+	SetLucent(50);
+	for(i=0; i<entities; i++)
+	{
+		if (entity.x[i] > xwin && entity.y[i] > ywin
+			&& entity.x[i] < xwin + ImageWidth(screen)
+			&& entity.y[i] < ywin + ImageHeight(screen))
+		{
+			//Blue = OBSTRUCTS ONLY
+			//Red = OBSTRUCTABLE ONLY
+			//Purple = BOTH
+			//Green = NEITHER
+			if(entity.obstruct[i] && !entity.obstructable[i]) RectFill(entity.x[i]-xwin,entity.y[i]-ywin,entity.x[i]+entity.hotw[i]-xwin-1,entity.y[i]+entity.hoth[i]-ywin-1,RGB(0,0,255),screen);
+			else if(!entity.obstruct[i] && entity.obstructable[i]) RectFill(entity.x[i]-xwin,entity.y[i]-ywin,entity.x[i]+entity.hotw[i]-xwin-1,entity.y[i]+entity.hoth[i]-ywin-1,RGB(255,0,0),screen);
+			else if(entity.obstruct[i] && entity.obstructable[i]) RectFill(entity.x[i]-xwin,entity.y[i]-ywin,entity.x[i]+entity.hotw[i]-xwin-1,entity.y[i]+entity.hoth[i]-ywin-1,RGB(255,0,255),screen);
+			else RectFill(entity.x[i]-xwin,entity.y[i]-ywin,entity.x[i]+entity.hotw[i]-xwin-1,entity.y[i]+entity.hoth[i]-ywin-1,RGB(0,255,0),screen);
+			PrintString(entity.x[i]-xwin,entity.y[i]-ywin,screen,0,str(i));
+		}
+	}
+	SetLucent(0);
+}
+
+void PlayerDeath()
+{
+	int delay = 300;
+	int myent = NewImage(56, 48);
+	RectFill(0, 0, ImageWidth(myent), ImageHeight(myent), RGB(255, 0, 255), myent);
+	BlitEntityFrame(entity.hotx[player.ent], entity.hoty[player.ent], player.ent, entity.specframe[player.ent], myent);
+	
+	
+	// Sets old coords to current top left screen x,y
+	int cam_oldx = xwin;
+	int cam_oldy = ywin;
+
+	// Sets new coords to centered on the player.
+	int cam_newx = entity.x[player.ent] - (ImageWidth(screen) / 2) + 8;
+	int cam_newy = entity.y[player.ent] - (ImageHeight(screen) / 2) + 8;
+	cameratracking = 0; // Disconnects the camera from the player
+	int cam_time = systemtime; // Records current time
+	
+	SetMusicVolume(0);
+	PlaySound(sfx_scratch, 100);
+	while (((systemtime - cam_time) < delay))
+	{	
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255, 0, 0), screen);
+		
+		SetLucent((systemtime - cam_time) * 100 / delay);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		Silhouette(entity.x[player.ent] - xwin - entity.hotx[player.ent],
+			entity.y[player.ent] - ywin - entity.hoty[player.ent],
+			RGB(255, 255, 255), myent, screen);
+		SetLucent(0);
+		//TBlit(entity.x[player.ent] - xwin - entity.hotx[player.ent],
+		//	entity.y[player.ent] - ywin - entity.hoty[player.ent], 
+		//	myent, screen);
+		ShowPage();
+		
+		if (((systemtime - cam_time) < 50))
+		{
+			// Sets the coords to point along line over time
+			xwin = (cam_oldx + ((systemtime - cam_time) * (cam_newx - cam_oldx) / 50));
+			ywin = (cam_oldy + ((systemtime - cam_time) * (cam_newy - cam_oldy) / 50));
+		}
+		else
+		{
+			xwin = cam_newx;
+			ywin = cam_newy;
+		}
+	}
+	FreeImage(myent);
+	//FreeImage(sil);
+	platform_outcome = 1;
+}

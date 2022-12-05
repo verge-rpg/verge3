@@ -1,0 +1,12 @@
+// Enemy max count.
+#define ENEMY_MAX_COUNT 40
+
+// Object max count.
+#define OBJECT_MAX_COUNT		100
+
+// Object defines.
+#define OBJECT_HURTPLAYER		1
+#define OBJECT_HURTENEMY		2
+#define OBJECT_DONOTHING		4
+#define OBJECT_ADDITIVEBLIT		8
+#define OBJECT_SUBTRACTIVEBLIT		16

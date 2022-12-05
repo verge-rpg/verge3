@@ -1,0 +1,275 @@
+#define AI_TYPE_LEMMING		1
+#define AI_TYPE_CLING		2
+#define AI_TYPE_HOMING		3
+#define AI_TYPE_HOMING_CLING	4
+#define AI_TYPE_COWARD		5
+#define AI_TYPE_BAT		6
+
+void ExecuteAIBehaviour(int i)
+{
+	switch(enemy[i].ai)
+	{
+		case AI_TYPE_LEMMING:		AccelLandAI(i); AI_Lemming(i);		
+		case AI_TYPE_CLING:		AccelLandAI(i); AI_Cling(i);
+		case AI_TYPE_HOMING:		AccelLandAI(i); AI_Homing(i);
+		case AI_TYPE_HOMING_CLING:	AccelLandAI(i); AI_Homing_Cling(i);
+		case AI_TYPE_COWARD:		AccelLandAI(i); AI_Coward(i);
+		case AI_TYPE_BAT:		AI_Bat(i);
+	}
+}
+
+
+///////////TEMP MATH/////////
+int dist(int x1, int y1, int x2, int y2)
+{	return sqrt(sq(x2-x1) + sq(y2-y1)); }
+int sq(int value)
+{	return value*value; }
+//////////////////////////////
+
+void AI_Lemming(int i)
+{
+	WanderLeftOrRight(i);
+}
+
+void AI_Cling(int i)
+{
+	if(!CheckForCliff(i))
+		WanderLeftOrRight(i);
+	else// if (!enemy[i].fall_flag)
+		AI_ReverseMovementDirection(i);
+}
+
+void AI_Homing(int i)
+{
+	StalkPlayer(i); //handle turnaround
+	WanderLeftOrRight(i);
+}
+
+void AI_Homing_Cling(int i)
+{
+	if(StalkPlayer(i)) //if within range
+	{
+		if(!CheckForCliff(i)) //partial AI_Cling() here, else enemy freezes because it turns twice every iteration
+		{
+			enemy[i].frame = "WALK";
+			WanderLeftOrRight(i);
+		}
+		else enemy[i].frame = "IDLE";
+	}
+	else
+		AI_Cling(i);
+}
+
+void AI_Coward(int i)
+{
+	AvoidPlayer(i); //change direction accordingly
+	WanderLeftOrRight(i);
+}
+
+void AI_ReverseMovementDirection(int i)
+{
+	
+	if (!enemy[i].hurt_flag)
+	{
+		enemy[i].hspeed = 0;
+		enemy[i].direction = enemy[i].direction ^ 1;
+	}
+	else
+	{
+		enemy[i].hspeed = -enemy[i].hspeed / 2;
+	}
+}
+
+#define AI_AVOID_DISTANCE_THRESHOLD 11000 // == pixels * 100
+#define AI_AVOID_HEIGHT_THRESHOLD 2000 // == pixels * 100
+int AvoidPlayer(int i)
+{
+	if (enemy[i].hurt_flag) return 0;
+	if(dist(player.x100,player.y100, enemy[i].x100,enemy[i].y100) < AI_AVOID_DISTANCE_THRESHOLD && abs(player.y100-enemy[i].y100) < AI_AVOID_HEIGHT_THRESHOLD)
+	{
+		if(enemy[i].hspeed < 0)
+		{
+			if(player.x100 < enemy[i].x100)
+				AI_ReverseMovementDirection(i);
+		}
+		else if(enemy[i].hspeed > 0)
+		{
+			if(player.x100 > enemy[i].x100)
+				AI_ReverseMovementDirection(i);
+		}		
+		return 1;
+	}
+	return 0;
+}
+
+#define AI_HOMING_DISTANCE_THRESHOLD 11000 // == pixels * 100
+#define AI_HOMING_HEIGHT_THRESHOLD 2000 // == pixels * 100
+int StalkPlayer(int i)
+{
+	if (enemy[i].hurt_flag) return 0;
+	if(dist(player.x100,player.y100, enemy[i].x100,enemy[i].y100) < AI_HOMING_DISTANCE_THRESHOLD && abs(player.y100-enemy[i].y100) < AI_HOMING_HEIGHT_THRESHOLD)
+	{
+		if(enemy[i].hspeed < 0)
+		{
+			if(player.x100 > enemy[i].x100)
+				AI_ReverseMovementDirection(i);
+		}
+		else if(enemy[i].hspeed > 0)
+		{
+			if(player.x100 < enemy[i].x100)
+				AI_ReverseMovementDirection(i);
+		}
+		return 1; //player within "sight"
+	}
+	return 0;
+}
+
+#define AI_BAT_TURNSPEED 50
+
+
+void AI_Bat(int i)
+{
+	enemy[i].frame = "IDLE";
+	if (!enemy[i].hurt_flag && enemy[i].damage < 100)
+	{
+		FlyingHoming(i, enemy[i].maxspeed, AI_BAT_TURNSPEED);
+	}
+	else
+	{
+		FlyingAvoid(i, enemy[i].maxspeed * 4, AI_BAT_TURNSPEED * 2);
+	}
+}
+
+void FlyingHoming(int i, int maxspeed, int turnspeed)
+{
+	int dx = maxspeed * cos (enemy[i].move_flag / 100) >> 16;
+	int dy = maxspeed * sin (enemy[i].move_flag / 100) >> 16;
+
+	enemy[i].x100 += dx;
+	enemy[i].y100 += dy;
+
+	// Determine whether we should turn left or right
+	// using the dot product.
+	// move_flag = angle.
+	if ((dy * (player.x100 - enemy[i].x100)) + (-dx * (player.y100 - enemy[i].y100)) > 0)
+	{
+		enemy[i].move_flag = 36000 + (enemy[i].move_flag - turnspeed) % 36000;
+	}
+
+	else
+	{
+		enemy[i].move_flag = 36000 + (enemy[i].move_flag + turnspeed) % 36000;
+	}
+
+}
+
+void FlyingAvoid(int i, int maxspeed, int turnspeed)
+{	int dx = maxspeed * cos (enemy[i].move_flag / 100) >> 16;
+	int dy = maxspeed * sin (enemy[i].move_flag / 100) >> 16;
+
+	enemy[i].x100 += dx;
+	enemy[i].y100 += dy;
+
+	// Determine whether we should turn left or right
+	// using the dot product.
+	// move_flag = angle.
+	if ((dy * (player.x100 - enemy[i].x100)) + (-dx * (player.y100 - enemy[i].y100)) > 0)
+	{
+		enemy[i].move_flag = 36000 + (enemy[i].move_flag + turnspeed) % 36000;
+	}
+
+	else
+	{
+		enemy[i].move_flag = 36000 + (enemy[i].move_flag - turnspeed) % 36000;
+	}
+
+}
+
+
+
+int CheckForCliff(int i)
+{
+	int x1, y1,y2,y3,y4;
+	if (enemy[i].hurt_flag)	return 0;
+	//check left
+	if(enemy[i].hspeed < 0)
+	{
+		x1 = enemy[i].x100 + enemy[i].hspeed / 100 - 1;
+		
+		y1 = enemy[i].y100 / 100;
+		y2 = enemy[i].y100 / 100 + (entity.hoth[enemy[i].ent] / 2);
+		//y3 = enemy[i].y100 / 100 - (MAXIMUM_SLOPE * abs(enemy[i].hspeed)) / 100 - MAXIMUM_SLOPE + entity.hoth[enemy[i].ent];
+		y3 = enemy[i].y100 / 100 + entity.hoth[enemy[i].ent] + 16 +1;
+		//Log(str(x1) + " " + str(y1 + entity.hoth[enemy[i].ent]) + " " + str(y3) + " " + str(GetObsPixel(x1 + 1,y3)));
+		if(enemy[i].x100 + enemy[i].hspeed > 0 && !GetObsPixel(x1,y1) && !GetObsPixel(x1,y2) && GetObsPixel(x1 + 1,y3) )
+			return 0; //room to walk further
+	}
+	//check right
+	else
+	if(enemy[i].hspeed > 0)
+	{
+		x1 = enemy[i].x100 + enemy[i].hspeed / 100 + entity.hotw[enemy[i].ent] + 1;
+		
+		y1 = enemy[i].y100 / 100;
+		y2 = enemy[i].y100 / 100 + (entity.hoth[enemy[i].ent] / 2);
+		//y3 = enemy[i].y100 / 100 - (MAXIMUM_SLOPE * abs(enemy[i].hspeed)) / 100 - MAXIMUM_SLOPE + entity.hoth[enemy[i].ent];
+		y3 = enemy[i].y100 / 100 + entity.hoth[enemy[i].ent] + 16 +1;
+		//Log(str(x1) + " " + str(y1 + entity.hoth[enemy[i].ent]) + " " + str(y3) + " " + str(GetObsPixel(x1 - 1,y3)));
+		//first condition here should be different (i.e. "< MapWidth" and not "> 0")
+		if(enemy[i].x100 + enemy[i].hspeed < curmap.w * 1600 && !GetObsPixel(x1,y1) && !GetObsPixel(x1,y2) && GetObsPixel(x1 - 1,y3) )
+			return 0; //room to walk further
+	}
+		
+	return 1; //long way down!
+}
+
+void WanderLeftOrRight(int i)
+{
+	if (enemy[i].hspeed < 0)
+	{
+		// Move if the enemy[i] isn't walled, can climb a slope, or isn't at the map's edge.
+		if (!GetObsPixel (enemy[i].x100 + enemy[i].hspeed / 100 - 1, enemy[i].y100 / 100)
+			&& !GetObsPixel (enemy[i].x100 + enemy[i].hspeed / 100 - 1, enemy[i].y100 / 100 + (entity.hoth[enemy[i].ent] / 2))
+			&& !GetObsPixel (enemy[i].x100 + enemy[i].hspeed / 100 - 1, enemy[i].y100 - (MAXIMUM_SLOPE * abs(enemy[i].hspeed)) / 100 - MAXIMUM_SLOPE + entity.hoth[enemy[i].ent])
+			&& !EnemyNearSnowball(i)
+			&& enemy[i].x100 + enemy[i].hspeed > 0)
+			{
+				enemy[i].x100 += enemy[i].hspeed;
+				if (!enemy[i].fall_flag && !enemy[i].jump_flag)
+				{
+					if (!EnemyLocateGround(i))
+					{
+						enemy[i].y100 += max(abs(enemy[i].hspeed) * MAXIMUM_SLOPE, MAXIMUM_SLOPE * 100);
+					}
+				}
+			}
+		else
+		{
+			AI_ReverseMovementDirection(i);
+		}
+
+	}
+	else if (enemy[i].hspeed > 0)
+	{
+		// Move if the enemy[i] isn't walled, can climb a slope, or isn't at the map's edge.
+		if (!GetObsPixel (enemy[i].x100 + enemy[i].hspeed / 100 + entity.hotw[enemy[i].ent] + 1, enemy[i].y100 / 100)
+				&& !GetObsPixel (enemy[i].x100 + enemy[i].hspeed / 100 + entity.hotw[enemy[i].ent] + 1, enemy[i].y100 / 100 + (entity.hoth[enemy[i].ent] / 2))
+				&& !GetObsPixel (enemy[i].x100 + enemy[i].hspeed / 100 + entity.hotw[enemy[i].ent] + 1, enemy[i].y100 - (MAXIMUM_SLOPE * abs(enemy[i].hspeed)) / 100 - MAXIMUM_SLOPE + entity.hoth[enemy[i].ent])
+				&& !EnemyNearSnowball(i)
+				&& enemy[i].x100 + enemy[i].hspeed < curmap.w * 1600)
+				{
+					enemy[i].x100 += enemy[i].hspeed;
+					if (!enemy[i].fall_flag && !enemy[i].jump_flag)
+					{
+						if (!EnemyLocateGround(i))
+						{
+							enemy[i].y100 += max(abs(enemy[i].hspeed) * MAXIMUM_SLOPE, MAXIMUM_SLOPE * 100);
+						}
+					}
+				}
+		else
+		{
+			AI_ReverseMovementDirection(i);
+		}
+	}
+}

@@ -1,15 +1,14 @@
 void AutoExec()
 {
-    int img = NewImage(ImageWidth(screen), ImageHeight(screen));
-    Blit(0, 0, screen, img);
+    int img = LoadImage("test.png");
 
-    Unpress(0);    
+    Unpress(0);
 
     while (!b1)
-    {
+    {    
         Blit(0, 0, img, screen);
         SetLucent(50);
-        RectFill(0, ImageHeight(screen) / 2 - 8, ImageWidth(screen), ImageHeight(screen) / 2 + 8, RGB(0, 0, 255), screen);
+        RectFill(0, ImageHeight(screen) / 2 - 8, ImageWidth(screen), ImageHeight(screen) / 2 + 8, RGB(timer % 256, 0, 255), screen);
         SetLucent(0);
         PrintString(8, ImageHeight(screen) / 2 - 8, screen, 0, "Hello world!");
 

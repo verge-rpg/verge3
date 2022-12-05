@@ -1,0 +1,61 @@
+void SaveMap()
+{
+	int mapimg=NewImage(curmap.w*16,curmap.h*16);
+	RenderMap(0,0,mapimg);
+	FileWriteBitmap24(mapimg,currentmap);
+	FreeImage(mapimg);
+	MessageBox("Saved map as "+currentmap+".bmp");
+}
+
+// Writes an image to file as a 24 bit bitmap
+int FileWriteBitmap24(int out_image, string filename)
+// Pass: Image to save, filename (and path) to save as (without extension)
+// Returns: 0 on fail, and the size on image data written on success
+// Credit: Started life as code by geronimo
+{
+	int xi, yi, out_file, out_pixel, img_size, img_xtra;
+	int img_x = ImageWidth(out_image);
+	int img_y = ImageHeight(out_image);
+	if (img_x * img_y == 0) return 0; // Return on bad image
+	if (img_x * 3 % 4) img_xtra = 4 - (img_x * 3 % 4); // Padding needed
+	else img_xtra = 0; // No padding needed
+	img_size = ((3 * img_x) + img_xtra) * img_y; // Size of image data in bytes
+	out_file = FileOpen(filename + ".bmp", FILE_WRITE);
+	if (!out_file) return 0; // Return on bad path or unopenable file
+	FileWriteWord(out_file, 19778); // bfType - Header of 'BM'
+	FileWriteQuad(out_file, 54 + img_size); // bfSize - File size
+	FileWriteQuad(out_file, 0); // bfReserved1, bfReserved2  - Two reserved words
+	FileWriteQuad(out_file, 54); // bfOffBits - Offset to image data
+	FileWriteQuad(out_file, 40); // biSize - Size of (windows) bitmap info structure
+	FileWriteQuad(out_file, img_x); // biWidth - Image width
+	FileWriteQuad(out_file, img_y); // biHeight - Image height
+	FileWriteWord(out_file, 1); // biPlanes - Err... one
+	FileWriteWord(out_file, 24); // biBitCount - Bits per pixel
+	FileWriteQuad(out_file, 0); // biCompression - No compression
+	FileWriteQuad(out_file, img_size); // biSizeImage - Size of bitmap data
+	FileWriteQuad(out_file, 0); // biXPelsPerMeter
+	FileWriteQuad(out_file, 0); // biYPelsPerMeter
+	// X/YPelsPerMeter specifies the horizontal/vertical resolution,
+	// in pixels per meter, of the target device for the bitmap.
+	// An application can use this value to select a bitmap from a resource
+	// group that best matches the characteristics of the current device.
+	FileWriteQuad(out_file, 0); // biClrUsed - Not palletted data
+	FileWriteQuad(out_file, 0); // biClrImportant - All colours important
+
+	for(yi = img_y - 1; yi >= 0; yi--) // Move from bottom of image data up
+	{
+		for(xi = 0; xi < img_x; xi++) // Write row of pixels
+		{
+			out_pixel = GetPixel(xi, yi, out_image);
+			FileWriteByte(out_file, GetB(out_pixel));
+			FileWriteByte(out_file, GetG(out_pixel));
+			FileWriteByte(out_file, GetR(out_pixel));
+		}
+		for(xi = img_xtra; xi > 0; xi--) // Pad to quad width
+		{
+			FileWriteByte(out_file, 0);
+		}
+	}
+	FileClose(out_file);
+	return img_size;
+}

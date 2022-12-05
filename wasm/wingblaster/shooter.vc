@@ -1,0 +1,98 @@
+
+
+
+/*
+
+	Render the stars!
+
+*/
+
+struct star_type
+{
+	int multx, divx, ofx;
+	int multy, divy, ofy;
+};
+
+int star_background_gradient, star_background_alpha_gradient;
+int star_background_image;
+star_type stars[3];
+
+void InitStars()
+{
+	star_background_image = LoadImage("Copy of starfield.png");
+	star_background_gradient = NewImage(ImageWidth(screen), 50);
+	SetLucent(0);
+	RectVGrad(0, 0, ImageWidth(star_background_gradient), 50,
+		RGB(51, 102, 204), 0, star_background_gradient);
+	star_background_alpha_gradient = DuplicateImage(star_background_gradient);
+	//ColorFilter(CF_GREY, star_background_alpha_gradient);
+	RectVGrad(0, 0, ImageWidth(star_background_gradient), 50,
+		255, 0, star_background_alpha_gradient);
+
+	stars[0].multx=2;
+	stars[0].multy=2;
+	stars[0].divx=3;
+	stars[0].divy=3;
+	stars[0].ofx=0;
+	stars[0].ofy=0;
+	
+	stars[1].multx=1;
+	stars[1].multy=1;
+	stars[1].divx=2;
+	stars[1].divy=2;
+	stars[1].ofx=80;
+	stars[1].ofy=100;
+	
+	stars[2].multx=1;
+	stars[2].multy=1;
+	stars[2].divx=3;
+	stars[2].divy=3;
+	stars[2].ofx=160;
+	stars[2].ofy=80;
+}
+/*
+// Blit a vertical gradient effect within a defined rectangular area.
+void RectVGrad(int x, int y, int x2, int y2, int c, int c2, int dest)
+// Pass: Rectangle area (x, y) to (x2, y2), colors c and c2, and destination image.
+// Credit: Overkill
+// Updated on 2005-03-31: Now does gradients properly regardless of one color 
+//			being greater, and maybe might even be faster!
+{
+	int r, g, b;
+	int i;
+	
+	// Make *sure* that the greater y value is set to y2.
+	if(y > y2)
+	{
+		i = y2;
+		y2 = y;
+		y = i;
+	}
+	
+	for(i=0; i < y2 - y; i++)
+	{
+		r = ((i * (GetR(c2) - GetR(c)) / (y2 - y)) + GetR(c));
+		g = ((i * (GetG(c2) - GetG(c)) / (y2 - y)) + GetG(c));
+		b = ((i * (GetB(c2) - GetB(c)) / (y2 - y)) + GetB(c));
+				
+		Line(x, y + i, x2, y + i, RGB(r, g, b), dest);
+	}
+	SetLucent(0);
+}
+*/
+
+
+
+void RenderStars(int dest)
+{
+	int i, px, py;
+	//RectFill(0, 0, ImageWidth(dest), ImageHeight(dest), 0, dest);
+	for (i = 0; i < 3; i++)
+	{
+		px = xwin * stars[i].multx / stars[i].divx - stars[i].ofx;
+		py = ywin * stars[i].multy / stars[i].divy - stars[i].ofy;
+		TWrapBlit(px, py, star_background_image, dest);
+	}
+	//AlphaBlit(0, 0, star_background_gradient, star_background_alpha_gradient, dest);
+	//AdditiveBlit(0, 0, star_background_gradient, dest);
+}

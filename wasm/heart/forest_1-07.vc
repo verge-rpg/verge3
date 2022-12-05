@@ -1,0 +1,42 @@
+void start()
+{
+	MainPlayer.ent=EntitySpawn(mapswitchx,mapswitchy,MainPlayer.chrfn);
+	SetPlayer(MainPlayer.ent);
+	SetupEnemy(5,34,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+	SetupEnemy(10,23,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+	SetupEnemy(16,43,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+	SetupEnemy(8,20,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+
+	SetupEnemy(5,41,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(10,11,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(23,12,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(28,35,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(31,28,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(39,30,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(33,44,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(39,45,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(42,11,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(29,8,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(44,29,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	SetupEnemy(44,13,"Gnome Wizard","sprites/eff.chr",50,10,15,8,25,AI_LEVEL4);
+	FadeMusic("music/yfforest.it");
+	FadeIn(50);
+}
+void forest_1_06()
+{
+	MapSwitch("forest_1-06.map",48,15);
+}
+void forest_1_08()
+{
+	//MapSwitch("forest_1-08.map",48,38);
+	int tb=TT64_TextBox(mainfont,FontHeight(mainfont),4,ImageHeight(screen)-64,300,blue,blue,black,black, 35, enter_scancode, 60, "Wow you got through the whole 8 maps we have!  Congrats!  Now pretend you beat the boss and stuff!");
+	while (!TT64_TextBoxIsClosed(tb))
+	{
+		Render();
+		TT64_RenderTextBox(tb);
+		ShowPage();
+	}
+	key[enter_scancode]=0;
+	Exit("This is the obligatory anti-climactic quit message!");
+}
+

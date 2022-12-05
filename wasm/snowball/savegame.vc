@@ -1,0 +1,29 @@
+void SaveGamesave()
+{
+	int File = FileOPen("save.dat", FILE_WRITE);
+	int i, Levels;
+	
+	for(i = 1; i < MAX_LEVEL_ARRAY; i++)
+		if(Level[i].unlocked)
+			Levels++;
+		
+	FileWriteByte(File, Levels);
+	
+	FileClose(File);
+}
+
+void LoadGamesave()
+{
+	int File = FileOpen("save.dat", FILE_READ);
+	int i, Levels;
+	
+	if(File)
+	{
+		Levels = FileReadByte(File);
+		
+		for(i = 1; i <= Levels; i++)
+			Level[i].unlocked = 1;
+		
+		FileClose(File);
+	}
+}

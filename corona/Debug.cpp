@@ -1,5 +1,9 @@
 #include "Debug.h"
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
+
 #ifdef CORONA_DEBUG
 
 
@@ -18,6 +22,11 @@ Log::Write(const char* str)
     fputs(s.c_str(), handle);
     fflush(handle);
   }
+#ifdef __EMSCRIPTEN__
+  EM_ASM({
+    console.log(UTF8ToString($0));
+  }, str);
+#endif  
 }
 
 ////////////////////////////////////////////////////////////////////////////////

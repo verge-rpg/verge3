@@ -14,7 +14,7 @@ int b3_img;
 
 void InitializeBGR3()
 {
-	int i, r, myimg, dw, dh;
+	int i, myimg, dw, dh;
 	bgr3tick = 0;	
 	bgrproc = "RenderBGR3";	
 	int r = Random(0,4);

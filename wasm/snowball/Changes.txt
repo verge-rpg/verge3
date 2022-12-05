@@ -1,0 +1,65 @@
+
+Overkill - February 25, 2006
+============================
+- FIX: Player no longer has seizures that shake the screen when standing on a snowball.
+- ADD: Poof effect when enemies die, uses sprite system.
+- ADD: Enemy kill chaining, with bouncy digit notices.
+- ADD: The Down key now allows you to drop through any snowball you're standing on.
+- ADD: The C key lets you walk without pushing things.
+- CHANGE: The HUD has been modified.
+- CHANGE: The system now uses a different font that's less ugly.
+- CHANGE: New sound effect is made when enemies are steamrolled. POP DING.
+
+
+Overkill - Jan 5, 2006
+======================
+- REMOVE: Unused variables from structs are no more.
+- CHANGE: Save/load functions reflect the removal of unused variables.
+- REMOVE: Mouse based debug snowball creation has been removed.
+
+ustor - Jan. 5, 2006
+====================
+- NOTE: All this fussing over formatting, honestly.
+- FIX: Homing_Cling AI will no longer leap off of edges at the player and will instead stop at the offending edge and wait patiently until the player moves elsewhere.
+- ADD: boy.chr and girl.chr both have and IDLE animation state.
+- CHANGE: Relocated the core switch() statement to ai.vc. It makes more sense to have this part here, near all of the called functions.
+- ADD: A Coward AI type has been added. Rather than recycling StalkPlayer(), AvoidPlayer() was created new. It should lend more flexibility later.
+
+Overkill - Jan. 5, 2006
+=======================
+- NOTE: Thanks, ustor.
+- CHANGE: Various minor AI tweaks.
+- CHANGE: Enemies are now assigned acceleration and maxspeed.
+- ADD: New enemies have started to be added to level2.map
+- BUG: Homing cling AI jumps off a cliff just because the player's in homing range.
+- ADD: Pause button.
+- ADD: Flashing Message at top of the screen when recording.
+- ADD: Added spaces between hyphens and first word of list items in ustor's changes. Don't ask why. :D
+
+ustor - Jan. 5, 2006
+====================
+- CHANGE: Split up AI Homing stuff more appropriately. Now cleaner and more reusable with StalkPlayer().
+- CHANGE: Fixed the year to Overkill's change entry to 2006 just because.
+
+Overkill - Jan. 5, 2006
+=======================
+- FIX: FileWriteEnemies() and FileReadEnemies() weren't properly storing visibility information
+- CHANGE: Cling AI is *less* stupid now, so it can walk down the small slopes. The steep ones, however still pose a problem.
+- ADD: Added new AI type: Homing cling.
+- CHANGE: Commented out if(!EnemyOnScreen(i)) return; as it was causing funkiness to offscreen enemies.
+
+ustor - Jan. 4, 2006
+====================
+- CHANGE: AI system restructured.
+- ADD: Added two new AI types: Cling and Homing.
+
+ustor - Jan. 3, 2006
+====================
+- ADD: Added InitializeLevelInfo() to autoexec() in system.vc. This is a temporary solution to having level specific information.
+- CHANGE: Commented out previously existing level loading stuff in MainMenuControls() that occured on b1 press, and replaced with toggling on of level select flag.
+- ADD: levelselect.vc is created and stuff is added. See it for more, if necessary.
+- ADD: hudinterface.vc is created. Contains fucntions to render gameplay interface.
+- CHANGE: Moved two #defines (MAX_SNOWBALLS + MAX_PLAYER_SNOWBALLS) to hudinterface.vc to prevent issues with the #include ordering.
+- CHANGE: Extracted DrawHealthBar() from platform.vc and placed it in hudinterface.vc, called from the new DrawHUDInterface(), the master interface render function.
+- ADD: All HUD draw functions perform correctly, but still require some visual jazz.
+- FIX: Re-established Changes.txt. Lets try to keep it updated shall we!

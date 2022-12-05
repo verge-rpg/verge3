@@ -1,0 +1,33 @@
+void start()
+{
+	MainPlayer.ent=EntitySpawn(mapswitchx,mapswitchy,MainPlayer.chrfn);
+	SetPlayer(MainPlayer.ent);
+	SetupEnemy(38,38,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(35,40,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(41,45,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(24,41,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(19,43,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(21,40,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(21,25,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(22,25,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	SetupEnemy(28,31,"Dorg","sprites/dorg.chr",10,0,4,2,5,AI_LEVEL1);
+	
+	SetupEnemy(16,18,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(16,14,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(20,11,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(11,11,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(8,17,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+	SetupEnemy(10,17,"Shell","sprites/shell.chr",20,0,6,3,8,AI_LEVEL2);
+
+	SetupEnemy(41,5,"Bold Wolf","sprites/bold.chr",35,0,10,5,15,AI_LEVEL3);
+	FadeMusic("music/yfforest.it");
+	FadeIn(50);
+}
+void town()
+{
+	MapSwitch("town.map",1,43);
+}
+void forest_1_02()
+{
+	MapSwitch("forest_1-02.map",48,11);
+}

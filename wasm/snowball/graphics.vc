@@ -1,0 +1,99 @@
+
+int WINDOW_COLOR_FILL = RGB(170, 204, 255);
+int WINDOW_COLOR_OUTLINE = RGB(51, 102, 204);
+
+int CURSOR_CORNER_SIZE = 4;
+int CURSOR_COLOR_FILL = RGB(255, 204, 102);
+int CURSOR_COLOR_OUTLINE = 0;
+
+void DrawWindow(int x1, int y1, int x2, int y2, int dest)
+{
+	RectFill(x1 + 3, y1 + 3, x2 - 3, y2 - 3, WINDOW_COLOR_FILL, dest);
+	// Elliptical effect and outlines colored here.
+	
+	Line(x1, y1 + 3, x1, y2 - 3, WINDOW_COLOR_OUTLINE, dest);
+	Line(x1 + 1, y1 + 2, x1 + 1, y2 - 2, WINDOW_COLOR_FILL, dest);
+	Line(x1 + 2, y1 + 1, x1 + 2, y2 - 1, WINDOW_COLOR_FILL, dest);
+	
+	Line(x2, y1 + 3, x2, y2 - 3, WINDOW_COLOR_OUTLINE, dest);
+	Line(x2 - 1, y1 + 2, x2 - 1, y2 - 2, WINDOW_COLOR_FILL, dest);
+	Line(x2 - 2, y1 + 1, x2 - 2, y2 - 1, WINDOW_COLOR_FILL, dest);
+	
+	
+	Line(x1 + 3, y1, x2 - 3, y1, WINDOW_COLOR_OUTLINE, dest);
+	Line(x1 + 2, y1 + 1, x2 - 2, y1 + 1, WINDOW_COLOR_FILL, dest);
+	Line(x1 + 3, y1 + 2, x2 - 3, y1 + 2, WINDOW_COLOR_FILL, dest);
+	
+	Line(x1 + 3, y2, x2 - 3, y2, WINDOW_COLOR_OUTLINE, dest);
+	Line(x1 + 2, y2 - 1, x2 - 2, y2 - 1, WINDOW_COLOR_FILL, dest);
+	Line(x1 + 3, y2 - 2, x2 - 3, y2 - 2, WINDOW_COLOR_FILL, dest);
+	
+	SetPixel(x1 + 1, y1 + 2, WINDOW_COLOR_OUTLINE, dest);
+	SetPixel(x1 + 2, y1 + 1, WINDOW_COLOR_OUTLINE, dest);
+	SetPixel(x2 - 1, y1 + 2, WINDOW_COLOR_OUTLINE, dest);
+	SetPixel(x2 - 2, y1 + 1, WINDOW_COLOR_OUTLINE, dest);
+	
+	SetPixel(x1 + 1, y2 - 2, WINDOW_COLOR_OUTLINE, dest);
+	SetPixel(x1 + 2, y2 - 1, WINDOW_COLOR_OUTLINE, dest);
+	SetPixel(x2 - 1, y2 - 2, WINDOW_COLOR_OUTLINE, dest);
+	SetPixel(x2 - 2, y2 - 1, WINDOW_COLOR_OUTLINE, dest);
+}
+
+void DrawSquareCursor(int x1, int y1, int x2, int y2, int dest)
+{
+	// Upper-left corner
+		// Outer Outline.
+		Line(x1, y1, x1 + CURSOR_CORNER_SIZE, y1, CURSOR_COLOR_OUTLINE, dest);
+		Line(x1, y1, x1, y1  + CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		// Fill.
+		Line(x1 + 1, y1 + 1, x1 + CURSOR_CORNER_SIZE - 1, y1 + 1, CURSOR_COLOR_FILL, dest);
+		Line(x1 + 1, y1 + 1, x1 + 1, y1  + CURSOR_CORNER_SIZE - 1, CURSOR_COLOR_FILL, dest);
+		// Inner Outline.
+		Line(x1 + 2, y1 + 2, x1 + CURSOR_CORNER_SIZE, y1 + 2, CURSOR_COLOR_OUTLINE, dest);
+		Line(x1 + 2, y1 + 2, x1 + 2, y1  + CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		// Add the missing two outline pixels.
+		SetPixel(x1 + 1, y1 + CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		SetPixel(x1 + CURSOR_CORNER_SIZE, y1 + 1, CURSOR_COLOR_OUTLINE, dest);
+	
+	// Lower-left corner
+		// Outer Outline.
+		Line(x1, y2, x1 + CURSOR_CORNER_SIZE, y2, CURSOR_COLOR_OUTLINE, dest);
+		Line(x1, y2, x1, y2  - CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		// Fill.
+		Line(x1 + 1, y2 - 1, x1 + CURSOR_CORNER_SIZE - 1, y2 - 1, CURSOR_COLOR_FILL, dest);
+		Line(x1 + 1, y2 - 1, x1 + 1, y2 - CURSOR_CORNER_SIZE + 1, CURSOR_COLOR_FILL, dest);
+		// Inner Outline.
+		Line(x1 + 2, y2 - 2, x1 + CURSOR_CORNER_SIZE, y2 - 2, CURSOR_COLOR_OUTLINE, dest);
+		Line(x1 + 2, y2 - 2, x1 + 2, y2 - CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		// Add the missing two outline pixels.
+		SetPixel(x1 + 1, y2 - CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		SetPixel(x1 + CURSOR_CORNER_SIZE, y2 - 1, CURSOR_COLOR_OUTLINE, dest);
+	
+	// Upper-right corner
+		// Outer Outline.
+		Line(x2, y1, x2 - CURSOR_CORNER_SIZE, y1, CURSOR_COLOR_OUTLINE, dest);
+		Line(x2, y1, x2, y1 + CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		// Fill.
+		Line(x2 - 1, y1 + 1, x2 - CURSOR_CORNER_SIZE + 1, y1 + 1, CURSOR_COLOR_FILL, dest);
+		Line(x2 - 1, y1 + 1, x2 - 1, y1 + CURSOR_CORNER_SIZE - 1, CURSOR_COLOR_FILL, dest);
+		// Inner Outline.
+		Line(x2 - 2, y1 + 2, x2 - CURSOR_CORNER_SIZE, y1 + 2, CURSOR_COLOR_OUTLINE, dest);
+		Line(x2 - 2, y1 + 2, x2 - 2, y1 + CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		// Add the missing two outline pixels.
+		SetPixel(x2 - 1, y1 + CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		SetPixel(x2 - CURSOR_CORNER_SIZE, y1 + 1, CURSOR_COLOR_OUTLINE, dest);
+	
+	// Lower-right corner
+		// Outer Outline.
+		Line(x2, y2, x2 - CURSOR_CORNER_SIZE, y2, CURSOR_COLOR_OUTLINE, dest);
+		Line(x2, y2, x2, y2 - CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		// Fill.
+		Line(x2 - 1, y2 - 1, x2 - CURSOR_CORNER_SIZE + 1, y2 - 1, CURSOR_COLOR_FILL, dest);
+		Line(x2 - 1, y2 - 1, x2 - 1, y2 - CURSOR_CORNER_SIZE + 1, CURSOR_COLOR_FILL, dest);
+		// Inner Outline.
+		Line(x2 - 2, y2 - 2, x2 - CURSOR_CORNER_SIZE, y2 - 2, CURSOR_COLOR_OUTLINE, dest);
+		Line(x2 - 2, y2 - 2, x2 - 2, y2 - CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		// Add the missing two outline pixels.
+		SetPixel(x2 - 1, y2 - CURSOR_CORNER_SIZE, CURSOR_COLOR_OUTLINE, dest);
+		SetPixel(x2 - CURSOR_CORNER_SIZE, y2 - 1, CURSOR_COLOR_OUTLINE, dest);
+}

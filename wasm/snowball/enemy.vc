@@ -1,0 +1,420 @@
+
+#define MAX_ENEMIES 30
+
+#define ENEMY_AI_STUPID_MAXIMUM_MOVE_SPEED 50
+
+struct enemy_type
+{
+	string chrfile;
+	string frame;
+	
+	int active;
+	int direction;
+	int x100, y100;
+	int spawnx, spawny;
+	int visible;
+	int hspeed, vspeed;
+	int idle_flag, move_flag;
+	int jump_flag, fall_flag;
+	int hurt_flag, pain_flag;
+	int land_flag, swim_flag;
+	int attack_flag, run_flag;
+	int walk_sound, walk_sound_flag;
+	int snowball;
+	int maxspeed;
+	
+	int accel;
+	int ent;
+	int ai;
+	int damage;
+};
+
+int enemy_count;
+enemy_type enemy[MAX_ENEMIES];
+
+void AddEnemy(int x, int y, string chrfile, int ai, int accel, int maxspeed)
+{
+	int i;
+	for(i = 0; i < MAX_ENEMIES; i++)
+	{
+		if (!enemy[i].active)
+		{
+			enemy[i].active = 1;
+			enemy[i].ent = EntitySpawn(0, 0, chrfile);
+
+			entity.visible[enemy[i].ent] = 1;
+			entity.x[enemy[i].ent] = x;
+			entity.y[enemy[i].ent] = y;
+			enemy[i].chrfile = chrfile;
+			enemy[i].ai = ai;
+			enemy[i].spawnx = x;
+			enemy[i].spawny = y;
+			enemy[i].accel = accel;
+			enemy[i].maxspeed = maxspeed;
+			enemy[i].x100 = x * 100;
+			enemy[i].y100 = y * 100;
+			enemy[i].direction = Random(0, 1);
+			enemy[i].frame = "";
+			enemy[i].hspeed = 0;
+			enemy[i].vspeed = 0;
+			enemy[i].idle_flag = 0;
+			enemy[i].move_flag = 0;
+			enemy[i].jump_flag = 0;
+			enemy[i].fall_flag = 0;
+			enemy[i].hurt_flag = 0;
+			enemy[i].pain_flag = 0;
+			enemy[i].land_flag = 0;
+			enemy[i].swim_flag = 0;
+			enemy[i].attack_flag = 0;
+			enemy[i].run_flag = 0;
+			enemy[i].walk_sound = 0;
+			enemy[i].walk_sound_flag = 0;
+			enemy[i].damage = 0;
+			enemy_count++;
+			return;
+		}
+	}
+}
+
+void RemoveEnemy(int enemy_index)
+{
+	if (enemy[enemy_index].active)
+	{
+		enemy[enemy_index].active = 0;
+		entity.visible[enemy[enemy_index].ent] = 0;
+		if (enemy_count > 0)
+		{
+			enemy_count--;
+		}
+	}
+}
+
+void FileWriteEnemies(int f)
+{
+	int i;
+	FileWriteByte(f, enemy_count);
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		if (enemy[i].active)
+		{
+			FileWriteString(f, enemy[i].chrfile);
+			//Log (entity.chr[enemy[i].ent]);
+			FileWriteByte(f, enemy[i].ai);
+			FileWriteQuad(f, enemy[i].spawnx);
+			FileWriteQuad(f, enemy[i].spawny);		
+			FileWriteQuad(f, enemy[i].x100);
+			FileWriteQuad(f, enemy[i].y100);
+			FileWriteQuad(f, enemy[i].accel);
+			FileWriteQuad(f, enemy[i].maxspeed);
+			FileWriteByte(f, enemy[i].direction);
+			FileWriteString(f, enemy[i].frame);
+			FileWriteQuad(f, enemy[i].hspeed);
+			FileWriteQuad(f, enemy[i].vspeed);
+			FileWriteByte(f, enemy[i].idle_flag);
+			FileWriteByte(f, enemy[i].move_flag);
+			FileWriteByte(f, enemy[i].jump_flag);
+			FileWriteByte(f, enemy[i].hurt_flag);
+			FileWriteByte(f, enemy[i].pain_flag);
+			FileWriteByte(f, enemy[i].land_flag);
+			FileWriteByte(f, enemy[i].swim_flag);
+			FileWriteByte(f, enemy[i].attack_flag);
+			FileWriteByte(f, enemy[i].run_flag);
+			FileWriteQuad(f, enemy[i].damage);
+			FileWriteByte(f, entity.visible[enemy[i].ent]);
+		}
+	}
+}
+
+void FileReadEnemies(int f)
+{
+	int i;
+	string chrfile;
+	enemy_count = FileReadByte(f);
+	for (i = 0; i < enemy_count; i++)
+	{
+		enemy[i].active = 1;
+		enemy[i].chrfile = FileReadString(f);
+		enemy[i].ai = FileReadByte(f);
+		enemy[i].spawnx = FileReadQuad(f);
+		enemy[i].spawny = FileReadQuad(f);
+		enemy[i].x100 = FileReadQuad(f);
+		enemy[i].y100 = FileReadQuad(f);
+		enemy[i].accel = FileReadQuad(f);
+		enemy[i].maxspeed = FileReadQuad(f);
+		enemy[i].direction = FileReadByte(f);
+		enemy[i].frame = FileReadString(f);
+		enemy[i].hspeed = FileReadQuad(f);
+		enemy[i].vspeed = FileReadQuad(f);
+		enemy[i].idle_flag = FileReadByte(f);
+		enemy[i].move_flag = FileReadByte(f);
+		enemy[i].jump_flag = FileReadByte(f);
+		enemy[i].hurt_flag = FileReadByte(f);
+		enemy[i].pain_flag = FileReadByte(f);
+		enemy[i].land_flag = FileReadByte(f);
+		enemy[i].swim_flag = FileReadByte(f);
+		enemy[i].attack_flag = FileReadByte(f);
+		enemy[i].run_flag = FileReadByte(f);
+		enemy[i].damage = FileReadQuad(f);
+		enemy[i].visible = FileReadByte(f);
+	}
+}
+
+void ClearEnemies()
+{
+	int i;
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		enemy[i].active = 0;
+		enemy[i].ai = 0;
+		enemy[i].ent = 0;
+		enemy[i].spawnx = 0;
+		enemy[i].spawny = 0;
+		enemy[i].x100 = 0;
+		enemy[i].y100 = 0;
+		enemy[i].accel = 0;
+		enemy[i].maxspeed = 0;
+		enemy[i].direction = 0;
+		enemy[i].frame = "";
+		enemy[i].hspeed = 0;
+		enemy[i].vspeed = 0;
+		enemy[i].idle_flag = 0;
+		enemy[i].move_flag = 0;
+		enemy[i].jump_flag = 0;
+		enemy[i].hurt_flag = 0;
+		enemy[i].pain_flag = 0;
+		enemy[i].land_flag = 0;
+		enemy[i].swim_flag = 0;
+		enemy[i].attack_flag = 0;
+		enemy[i].run_flag = 0;
+		enemy[i].damage = 0;
+	}
+	enemy_count = 0;
+}
+
+void PrepareEnemies()
+{
+	int i;
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		if (enemy[i].active)
+		{
+			enemy[i].ent = EntitySpawn(0, 0, enemy[i].chrfile);
+			entity.x[enemy[i].ent] = enemy[i].x100 / 100;
+			entity.y[enemy[i].ent] = enemy[i].y100 / 100;
+			entity.visible[enemy[i].ent] = enemy[i].visible;
+		}
+	}
+}
+
+int EnemyOutOfDeathStayBounds(int i)
+{
+//	if(	   enemy[i].x100 <  -ImageWidth(screen) / 2 + xwin * 100 && enemy[i].x100 < ImageWidth(screen) / 2 + xwin + ImageWidth(screen) * 100
+//		&& enemy[i].x100 < -ImageHeight(screen) / 2 + ywin * 100 && enemy[i].x100 < -ImageHeight(screen) / 2 + ywin + ImageHeight(screen) * 100)
+	if(enemy[i].spawnx - xwin < -ImageWidth(screen) / 2
+		|| enemy[i].spawnx - xwin > ImageWidth(screen) / 2 + ImageWidth(screen)
+		|| enemy[i].spawny - ywin < -ImageHeight(screen) / 2
+		|| enemy[i].spawny - ywin > ImageHeight(screen) / 2 + ImageHeight(screen)
+		)
+		{
+			return 1;
+		}
+	return 0;
+}
+
+
+int EnemyOnScreen(int i)
+{
+	if(enemy[i].x100 / 100 - xwin >= -ImageWidth(screen) * 2
+		&& enemy[i].x100 / 100 - xwin <= ImageWidth(screen) * 2 + ImageWidth(screen)
+		&& enemy[i].y100 / 100 - ywin >= -ImageHeight(screen) * 2
+		&& enemy[i].y100 / 100 - ywin <= ImageHeight(screen) * 2 + ImageHeight(screen)
+		)
+	{
+		return 1;
+	}
+	return 0;
+}
+
+void ProcessEnemies()
+{
+	int i;
+	for (i = 0; i < MAX_ENEMIES; i++)
+	{
+		if (enemy[i].active)
+		{
+			if(entity.visible[enemy[i].ent]
+				&& EnemyOnScreen(i)
+				)
+			{
+				EnemyAIThink(i);
+			}
+			// If enemy offscreen or dead and spawn point also offscreen,
+			// make them move back to the spawn point.
+			else if (EnemyOutOfDeathStayBounds(i))
+			{
+				//Log(str(i) + " respawns");
+				enemy[i].damage = 0;
+				enemy[i].x100 = enemy[i].spawnx * 100;
+				enemy[i].y100 = enemy[i].spawny * 100;
+				enemy[i].hspeed = 0;
+				enemy[i].vspeed = 0;
+				entity.visible[enemy[i].ent] = 1;
+			}
+			//AccelEnemyVertical(i);
+
+
+			entity.x[enemy[i].ent] = enemy[i].x100 / 100;
+			entity.y[enemy[i].ent] = enemy[i].y100 / 100;
+			SetAnimation(enemy[i].ent, enemy[i].direction, enemy[i].frame);
+		}
+	}
+}
+
+void EnemyAIThink(int i)
+{
+	if(!EnemyOnScreen(i))
+	{
+		return;
+	}
+	if(EnemyCheckForDeath(i)) return;//check to see if the enemy has just died. if so, abandon all further calculation
+	//Log (str(i) + " " + str(enemy[i].hspeed));
+	
+	ExecuteAIBehaviour(i);
+	
+
+	EnemyDetectCollision(i, 1); //enemy[i].attackdamage
+}
+
+void AccelLandAI(int i)
+{
+	AccelEnemyHorizontal(i);
+	AccelEnemyVertical(i);
+	enemy[i].y100 += enemy[i].vspeed;
+	EnemyPreventFloorClip(i);
+}
+
+
+//////////////////////////////////
+//////GENERIC ENEMY ROUTINES//////
+//////////////////////////////////
+
+int EnemyCheckForDeath(int i)
+{
+	if (!entity.visible[enemy[i].ent]) return 1;
+	if (enemy[i].damage >= 250 && !enemy[i].hurt_flag)
+	{
+		AddPoof(enemy[i].ent);
+		entity.visible[enemy[i].ent] = 0;
+		platform_kill_count++;
+		if (systemtime - platform_kill_last < COMBO_CHAIN_TIMEOUT
+			&& platform_kill_count > 1)
+		{
+			platform_kill_consecutive++;
+			if (platform_kill_consecutive)
+			{
+				//SpawnBouncyDigits(player.ent, str(platform_kill_consecutive + 1) + " chain!");
+				//Exit("");
+				SpawnBouncyDigits(str(platform_kill_consecutive + 1) + " chain!", player.ent, defaultfont);
+				Log(str(platform_kill_consecutive + 1) + " chain!");
+			}
+			
+		}
+		else
+		{
+			platform_kill_consecutive = 0;
+		}
+		platform_kill_last = systemtime;
+		return 1;
+	}
+	return 0;
+}
+
+void AccelEnemyHorizontal(int i)
+{
+	if (!enemy[i].hurt_flag)
+	{
+		if (enemy[i].direction == PLAYER_DIRECTION_LEFT)
+		{
+			enemy[i].hspeed -= enemy[i].accel;
+			enemy[i].frame = "WALK";
+		}
+		else
+		{
+			enemy[i].hspeed += enemy[i].accel;
+			enemy[i].frame = "WALK";
+		}
+		//Log (str(enemy[i].maxspeed) + " " + str(enemy[i].hspeed));
+		enemy[i].hspeed = max (min(enemy[i].hspeed, enemy[i].maxspeed), -enemy[i].maxspeed);
+		//Log (str(enemy[i].hspeed));
+	}
+	else
+	{
+		enemy[i].frame = "HURT";
+		enemy[i].hurt_flag--;
+	}
+}
+
+void AccelEnemyVertical(int i)
+{
+	if (enemy[i].fall_flag)
+	{
+		enemy[i].vspeed += GRAVITY_ACCELERATION;
+		enemy[i].frame = "FALL";
+	}
+	if (!EnemyLocateGround(i))
+	{
+		enemy[i].land_flag = 0;
+		enemy[i].fall_flag++;
+	}
+	else
+	{
+		enemy[i].vspeed = 0;
+		enemy[i].fall_flag = 0;
+	}
+}
+
+int EnemyNearSnowball(int e)
+{
+	int i;
+	if (enemy[e].hurt_flag) return 0;
+	for (i = 0; i < snowballs; i++)
+	{
+		if (snowball[i].r100 + snowball[i].x100 >= enemy[e].x100 + enemy[e].hspeed
+			&& -snowball[i].r100 + snowball[i].x100 <= entity.hotw[enemy[e].ent] * 100 + enemy[e].x100 + enemy[e].hspeed
+			&& snowball[i].r100 + snowball[i].y100 >= enemy[e].y100
+			&& -snowball[i].r100 + snowball[i].y100 <= entity.hoth[enemy[e].ent] * 100 + enemy[e].y100)
+			{
+				return 1;
+			}
+	}
+	return 0;
+}
+
+int EnemyDetectCollision(int i, int dmg)
+{
+	if (enemy[i].hurt_flag) return 0;
+	if (EnemyNearSnowball(i)) return 0;
+	if (entity.hotw[enemy[i].ent] * 100 + player.x100 >= enemy[i].x100
+		&& player.x100 <= entity.hotw[enemy[i].ent] * 100 + enemy[i].x100
+		&& entity.hoth[enemy[i].ent] * 100 + player.y100 >= enemy[i].y100
+		&& player.y100 <= entity.hoth[enemy[i].ent] * 100 + enemy[i].y100
+		)
+	{
+		//Log(str(i) + " HIT PLAYER");
+		PlayerHurt(dmg);
+		return 1;
+	}
+	return 0;
+}
+
+void EnemyPreventFloorClip(int i)
+{
+	// Floor clipping prevention.
+	while (GetObsPixel (enemy[i].x100 / 100, enemy[i].y100 / 100 + entity.hoth[enemy[i].ent])
+			|| GetObsPixel (enemy[i].x100 / 100 + (entity.hotw[enemy[i].ent] / 2), enemy[i].y100 / 100 + entity.hoth[enemy[i].ent])
+			|| GetObsPixel (enemy[i].x100 / 100 + entity.hotw[enemy[i].ent], enemy[i].y100 / 100 + entity.hoth[enemy[i].ent])
+			)
+			{
+				enemy[i].y100 -= 100;
+			}
+}

@@ -96,6 +96,7 @@ def EmscriptenEnvironment():
 
         cflags.append('-g')
         cflags.append('-DVERGE_EMSCRIPTEN_DEBUG')
+        cflags.append('-DCORONA_DEBUG')
 
         env.Append(LINKFLAGS=[
             '-gsource-map',
@@ -189,7 +190,7 @@ verge_sources = [verge_dir + '/' + s for s in [
     'mac_keyboard.cpp',
     'mac_mouse.cpp',
     'mac_system.cpp',
-    'mac_timer.cpp',
+    'wasm_timer.cpp',
     'mac_movie.cpp',
     'xerxes.cpp',
 ]]
@@ -234,6 +235,7 @@ corona_dir = '../corona'
 corona_sources = [corona_dir + '/' + s for s in [
     'Corona.cpp',
     'Convert.cpp',
+    'Debug.cpp',
     'DefaultFileSystem.cpp',
     'MemoryFile.cpp',
     'OpenBMP.cpp',

@@ -1,0 +1,532 @@
+Constructing VCCompiler object... Builtins...
+HVARS...
+HDEFS...
+Done.
+int           img_poof: offset        0, size      1, initializer: 
+func AddPoof found with 1 args and shit.
+func PoofThink found with 0 args and shit.
+func GetBouncyFrame found with 2 args and shit.
+func AddChainNotice found with 2 args and shit.
+func ChainNoticeThink found with 0 args and shit.
+func SpawnBouncyDigits found with 3 args and shit.
+func BouncyDigitThink found with 0 args and shit.
+func SpriteFadeOut found with 0 args and shit.
+int       _creditCount: offset        1, size      1, initializer: 
+int        _creditOffs: offset        2, size      1, initializer: 
+int            _arCred: offset        3, size    100, initializer: 
+string      _arCredStr: offset        0, size    100, initializer:  
+func addIntroLine found with 2 args and shit.
+func doSimpleCredits found with 1 args and shit.
+func resetCredits found with 0 args and shit.
+int    WINDOW_COLOR_FILL: offset      103, size      1, initializer: =RGB(170,204,255)
+int    WINDOW_COLOR_OUTLINE: offset      104, size      1, initializer: =RGB(51,102,204)
+int    CURSOR_CORNER_SIZE: offset      105, size      1, initializer: =4
+int    CURSOR_COLOR_FILL: offset      106, size      1, initializer: =RGB(255,204,102)
+int    CURSOR_COLOR_OUTLINE: offset      107, size      1, initializer: =0
+func DrawWindow found with 5 args and shit.
+func DrawSquareCursor found with 5 args and shit.
+func DrawHUDInterface found with 0 args and shit.
+func DrawHealthBar found with 2 args and shit.
+func DrawSnowballCounter found with 2 args and shit.
+func DigitError found with 1 args and shit.
+func AppendDigits found with 2 args and shit.
+func DrawSnowballGauge found with 2 args and shit.
+struct type declare player_type: 24 elements 
+int    platform_outcome: offset      108, size      1, initializer: 
+func SpawnPlayer found with 0 args and shit.
+func PreparePlayer found with 0 args and shit.
+func FileWritePlayer found with 1 args and shit.
+func FileReadPlayer found with 1 args and shit.
+int          demo_mode: offset      109, size      1, initializer: 
+int          demo_file: offset      110, size      1, initializer: 
+string platform_render_func: offset      100, size      1, initializer:  
+string platform_input_func: offset      101, size      1, initializer:  
+func DemoRecord found with 0 args and shit.
+func DemoPlay found with 0 args and shit.
+func DemoStop found with 0 args and shit.
+func PauseGame found with 0 args and shit.
+int       fade_in_flag: offset      111, size      1, initializer: 
+int      platform_time: offset      112, size      1, initializer: 
+int    platform_kill_count: offset      113, size      1, initializer: 
+int    platform_kill_last: offset      114, size      1, initializer: 
+int    platform_kill_consecutive: offset      115, size      1, initializer: 
+func ProcessPlatform found with 0 args and shit.
+func PlayerMoveHorizontal found with 0 args and shit.
+func PlayerMoveVertical found with 0 args and shit.
+func PlayerLocateGround found with 0 args and shit.
+func EnemyLocateGround found with 1 args and shit.
+func GetObsPixelRect found with 4 args and shit.
+func PlayerZones found with 0 args and shit.
+func ShowObs found with 0 args and shit.
+func ShowZones found with 0 args and shit.
+func ShowHots found with 0 args and shit.
+func PlayerHurt found with 1 args and shit.
+func PlayerDeath found with 0 args and shit.
+int     flgLevelSelect: offset      116, size      1, initializer: 
+int    flgTransitioningLevelSelection: offset      117, size      1, initializer: 
+int      SelectedLevel: offset      118, size      1, initializer: =1
+int            ScreenX: offset      119, size      1, initializer: =ImageWidth(1)
+int            ScreenY: offset      120, size      1, initializer: =ImageHeight(1)
+struct type declare stcLevelInfo: 4 elements 
+func InitializeLevelInfo found with 0 args and shit.
+func HandleLevelSelect found with 0 args and shit.
+func DrawLevelSelect found with 0 args and shit.
+func DrawLevelPanel found with 4 args and shit.
+int    mm_inactive_timestamp: offset      121, size      1, initializer: 
+int      mm_menu_index: offset      122, size      1, initializer: 
+int      mm_cursor_pos: offset      123, size      1, initializer: 
+int    mm_cursor_delay: offset      124, size      1, initializer: 
+int       mm_take_time: offset      125, size      1, initializer: 
+int            mm_init: offset      126, size      1, initializer: 
+func InitMainMenu found with 0 args and shit.
+func MainMenuControls found with 0 args and shit.
+func MainMenuRender found with 0 args and shit.
+struct type declare animation_type: 6 elements 
+int    animation_strand: offset      127, size      1, initializer: 
+func InitAnimations found with 0 args and shit.
+func ResetAnimations found with 0 args and shit.
+func FileWriteAnimations found with 1 args and shit.
+func FileReadAnimations found with 1 args and shit.
+func ParseAnimationString found with 1 args and shit.
+func ResolveAnimationString found with 3 args and shit.
+func PlayerSetAnimation found with 1 args and shit.
+func SetAnimation found with 3 args and shit.
+func ExecuteAIBehaviour found with 1 args and shit.
+func dist found with 4 args and shit.
+func sq found with 1 args and shit.
+func AI_Lemming found with 1 args and shit.
+func AI_Cling found with 1 args and shit.
+func AI_Homing found with 1 args and shit.
+func AI_Homing_Cling found with 1 args and shit.
+func AI_Coward found with 1 args and shit.
+func AI_ReverseMovementDirection found with 1 args and shit.
+func AvoidPlayer found with 1 args and shit.
+func StalkPlayer found with 1 args and shit.
+func AI_Bat found with 1 args and shit.
+func FlyingHoming found with 3 args and shit.
+func FlyingAvoid found with 3 args and shit.
+func CheckForCliff found with 1 args and shit.
+func WanderLeftOrRight found with 1 args and shit.
+struct type declare enemy_type: 29 elements 
+int        enemy_count: offset      128, size      1, initializer: 
+func AddEnemy found with 6 args and shit.
+func RemoveEnemy found with 1 args and shit.
+func FileWriteEnemies found with 1 args and shit.
+func FileReadEnemies found with 1 args and shit.
+func ClearEnemies found with 0 args and shit.
+func PrepareEnemies found with 0 args and shit.
+func EnemyOutOfDeathStayBounds found with 1 args and shit.
+func EnemyOnScreen found with 1 args and shit.
+func ProcessEnemies found with 0 args and shit.
+func EnemyAIThink found with 1 args and shit.
+func AccelLandAI found with 1 args and shit.
+func EnemyCheckForDeath found with 1 args and shit.
+func AccelEnemyHorizontal found with 1 args and shit.
+func AccelEnemyVertical found with 1 args and shit.
+func EnemyNearSnowball found with 1 args and shit.
+func EnemyDetectCollision found with 2 args and shit.
+func EnemyPreventFloorClip found with 1 args and shit.
+struct type declare frame_type: 9 elements 
+func ResetThrottler found with 0 args and shit.
+func FrameThrottle found with 0 args and shit.
+struct type declare point_type: 3 elements 
+int          last_zone: offset      129, size      1, initializer: 
+func ZoneInteract found with 2 args and shit.
+func Submerge found with 0 args and shit.
+func Emerge found with 0 args and shit.
+func DisableCameraFollow found with 0 args and shit.
+func EnableCameraFollow found with 0 args and shit.
+func CheckPoint found with 3 args and shit.
+func YellowSnow found with 0 args and shit.
+func LevelExit found with 0 args and shit.
+func FinishLevel found with 0 args and shit.
+func Credits found with 0 args and shit.
+int    img_title_screen: offset      130, size      1, initializer: 
+int    img_gauge_green: offset      131, size      1, initializer: 
+int     img_gauge_grey: offset      132, size      1, initializer: 
+int    img_snowball_tiny: offset      133, size      1, initializer: 
+int    img_finish_banner: offset      134, size      1, initializer: 
+int        sfx_ceiling: offset      135, size      1, initializer: 
+int           sfx_land: offset      136, size      1, initializer: 
+int          sfx_water: offset      137, size      1, initializer: 
+int           sfx_walk: offset      138, size      1, initializer: 
+int          sfx_swing: offset      139, size      1, initializer: 
+int          sfx_shing: offset      140, size      1, initializer: 
+int        sfx_scratch: offset      141, size      1, initializer: 
+int       sfx_run_over: offset      142, size      1, initializer: 
+int         sfx_unlock: offset      143, size      1, initializer: 
+string      chr_player: offset      102, size      1, initializer:  
+func FileToString found with 1 args and shit.
+func LoadResources found with 0 args and shit.
+func ResourceLoadDisplay found with 2 args and shit.
+func FreeResources found with 0 args and shit.
+struct type declare snowball_type: 13 elements 
+int    player_snowballs: offset      144, size      1, initializer: 
+int          snowballs: offset      145, size      1, initializer: 
+int       img_snowball: offset      146, size      1, initializer: 
+func ProcessSnowballs found with 0 args and shit.
+func BlitSnowballs found with 0 args and shit.
+func GetPlayerSnowball found with 1 args and shit.
+func InsertSnowball found with 2 args and shit.
+func DeleteSnowball found with 1 args and shit.
+func ShrinkSnowBalls found with 0 args and shit.
+func ClearSnowballs found with 0 args and shit.
+func FileReadSnowballs found with 1 args and shit.
+func FileWriteSnowballs found with 1 args and shit.
+func CombineSnowballs found with 2 args and shit.
+func GetSnowGrowth found with 2 args and shit.
+func GetSnowDecay found with 2 args and shit.
+func ProcessSnowball found with 1 args and shit.
+func SnowballDamageEnemy found with 3 args and shit.
+func BlitSnowball found with 1 args and shit.
+func FadeIn found with 1 args and shit.
+func FadeOut found with 1 args and shit.
+func FadeInImage found with 2 args and shit.
+func FadeOutImage found with 2 args and shit.
+func SaveGamesave found with 0 args and shit.
+func LoadGamesave found with 0 args and shit.
+int        defaultfont: offset      147, size      1, initializer: 
+func AutoExec found with 0 args and shit.
+int          textbox_x: offset      148, size      1, initializer: =20
+int          textbox_y: offset      149, size      1, initializer: =20
+int      textbox_width: offset      150, size      1, initializer: =ImageWidth(1)-40
+int    textbox_maxlines: offset      151, size      1, initializer: =2
+int     textbox_active: offset      152, size      1, initializer: =0
+func TextBox found with 1 args and shit.
+func TextBoxHandler found with 6 args and shit.
+struct instance declared player of type player_type (0 dimensions) 
+struct instance declared Level of type stcLevelInfo (1 dimensions) 
+struct instance declared animations of type animation_type (1 dimensions) 
+struct instance declared enemy of type enemy_type (1 dimensions) 
+struct instance declared tframe of type frame_type (0 dimensions) 
+struct instance declared check_point of type point_type (0 dimensions) 
+struct instance declared active_zone of type point_type (0 dimensions) 
+struct instance declared snowball of type snowball_type (1 dimensions) 
+Compiling sysvc_global_initializers ->>>>
+finished compiling globalinitializers
+compiling function AddPoof ->>>>
+Finished compiling function AddPoof
+compiling function PoofThink ->>>>
+Finished compiling function PoofThink
+compiling function GetBouncyFrame ->>>>
+Finished compiling function GetBouncyFrame
+compiling function AddChainNotice ->>>>
+Finished compiling function AddChainNotice
+compiling function ChainNoticeThink ->>>>
+Finished compiling function ChainNoticeThink
+compiling function SpawnBouncyDigits ->>>>
+Finished compiling function SpawnBouncyDigits
+compiling function BouncyDigitThink ->>>>
+Finished compiling function BouncyDigitThink
+compiling function SpriteFadeOut ->>>>
+Finished compiling function SpriteFadeOut
+compiling function addIntroLine ->>>>
+Finished compiling function addIntroLine
+compiling function doSimpleCredits ->>>>
+Finished compiling function doSimpleCredits
+compiling function resetCredits ->>>>
+Finished compiling function resetCredits
+compiling function DrawWindow ->>>>
+Finished compiling function DrawWindow
+compiling function DrawSquareCursor ->>>>
+Finished compiling function DrawSquareCursor
+compiling function DrawHUDInterface ->>>>
+Finished compiling function DrawHUDInterface
+compiling function DrawHealthBar ->>>>
+Finished compiling function DrawHealthBar
+compiling function DrawSnowballCounter ->>>>
+Finished compiling function DrawSnowballCounter
+compiling function DigitError ->>>>
+Finished compiling function DigitError
+compiling function AppendDigits ->>>>
+Finished compiling function AppendDigits
+compiling function DrawSnowballGauge ->>>>
+Finished compiling function DrawSnowballGauge
+compiling function SpawnPlayer ->>>>
+Finished compiling function SpawnPlayer
+compiling function PreparePlayer ->>>>
+Finished compiling function PreparePlayer
+compiling function FileWritePlayer ->>>>
+Finished compiling function FileWritePlayer
+compiling function FileReadPlayer ->>>>
+Finished compiling function FileReadPlayer
+compiling function DemoRecord ->>>>
+Finished compiling function DemoRecord
+compiling function DemoPlay ->>>>
+Finished compiling function DemoPlay
+compiling function DemoStop ->>>>
+Finished compiling function DemoStop
+compiling function PauseGame ->>>>
+Finished compiling function PauseGame
+compiling function ProcessPlatform ->>>>
+Finished compiling function ProcessPlatform
+compiling function PlayerMoveHorizontal ->>>>
+Finished compiling function PlayerMoveHorizontal
+compiling function PlayerMoveVertical ->>>>
+Finished compiling function PlayerMoveVertical
+compiling function PlayerLocateGround ->>>>
+Finished compiling function PlayerLocateGround
+compiling function EnemyLocateGround ->>>>
+Finished compiling function EnemyLocateGround
+compiling function GetObsPixelRect ->>>>
+Finished compiling function GetObsPixelRect
+compiling function PlayerZones ->>>>
+Finished compiling function PlayerZones
+compiling function ShowObs ->>>>
+Finished compiling function ShowObs
+compiling function ShowZones ->>>>
+Finished compiling function ShowZones
+compiling function ShowHots ->>>>
+Finished compiling function ShowHots
+compiling function PlayerHurt ->>>>
+Finished compiling function PlayerHurt
+compiling function PlayerDeath ->>>>
+Finished compiling function PlayerDeath
+compiling function InitializeLevelInfo ->>>>
+Finished compiling function InitializeLevelInfo
+compiling function HandleLevelSelect ->>>>
+Finished compiling function HandleLevelSelect
+compiling function DrawLevelSelect ->>>>
+Finished compiling function DrawLevelSelect
+compiling function DrawLevelPanel ->>>>
+Finished compiling function DrawLevelPanel
+compiling function InitMainMenu ->>>>
+Finished compiling function InitMainMenu
+compiling function MainMenuControls ->>>>
+Finished compiling function MainMenuControls
+compiling function MainMenuRender ->>>>
+Finished compiling function MainMenuRender
+compiling function InitAnimations ->>>>
+Finished compiling function InitAnimations
+compiling function ResetAnimations ->>>>
+Finished compiling function ResetAnimations
+compiling function FileWriteAnimations ->>>>
+Finished compiling function FileWriteAnimations
+compiling function FileReadAnimations ->>>>
+Finished compiling function FileReadAnimations
+compiling function ParseAnimationString ->>>>
+Finished compiling function ParseAnimationString
+compiling function ResolveAnimationString ->>>>
+Finished compiling function ResolveAnimationString
+compiling function PlayerSetAnimation ->>>>
+Finished compiling function PlayerSetAnimation
+compiling function SetAnimation ->>>>
+Finished compiling function SetAnimation
+compiling function ExecuteAIBehaviour ->>>>
+Finished compiling function ExecuteAIBehaviour
+compiling function dist ->>>>
+Finished compiling function dist
+compiling function sq ->>>>
+Finished compiling function sq
+compiling function AI_Lemming ->>>>
+Finished compiling function AI_Lemming
+compiling function AI_Cling ->>>>
+Finished compiling function AI_Cling
+compiling function AI_Homing ->>>>
+Finished compiling function AI_Homing
+compiling function AI_Homing_Cling ->>>>
+Finished compiling function AI_Homing_Cling
+compiling function AI_Coward ->>>>
+Finished compiling function AI_Coward
+compiling function AI_ReverseMovementDirection ->>>>
+Finished compiling function AI_ReverseMovementDirection
+compiling function AvoidPlayer ->>>>
+Finished compiling function AvoidPlayer
+compiling function StalkPlayer ->>>>
+Finished compiling function StalkPlayer
+compiling function AI_Bat ->>>>
+Finished compiling function AI_Bat
+compiling function FlyingHoming ->>>>
+Finished compiling function FlyingHoming
+compiling function FlyingAvoid ->>>>
+Finished compiling function FlyingAvoid
+compiling function CheckForCliff ->>>>
+Finished compiling function CheckForCliff
+compiling function WanderLeftOrRight ->>>>
+Finished compiling function WanderLeftOrRight
+compiling function AddEnemy ->>>>
+Finished compiling function AddEnemy
+compiling function RemoveEnemy ->>>>
+Finished compiling function RemoveEnemy
+compiling function FileWriteEnemies ->>>>
+Finished compiling function FileWriteEnemies
+compiling function FileReadEnemies ->>>>
+Finished compiling function FileReadEnemies
+compiling function ClearEnemies ->>>>
+Finished compiling function ClearEnemies
+compiling function PrepareEnemies ->>>>
+Finished compiling function PrepareEnemies
+compiling function EnemyOutOfDeathStayBounds ->>>>
+Finished compiling function EnemyOutOfDeathStayBounds
+compiling function EnemyOnScreen ->>>>
+Finished compiling function EnemyOnScreen
+compiling function ProcessEnemies ->>>>
+Finished compiling function ProcessEnemies
+compiling function EnemyAIThink ->>>>
+Finished compiling function EnemyAIThink
+compiling function AccelLandAI ->>>>
+Finished compiling function AccelLandAI
+compiling function EnemyCheckForDeath ->>>>
+Finished compiling function EnemyCheckForDeath
+compiling function AccelEnemyHorizontal ->>>>
+Finished compiling function AccelEnemyHorizontal
+compiling function AccelEnemyVertical ->>>>
+Finished compiling function AccelEnemyVertical
+compiling function EnemyNearSnowball ->>>>
+Finished compiling function EnemyNearSnowball
+compiling function EnemyDetectCollision ->>>>
+Finished compiling function EnemyDetectCollision
+compiling function EnemyPreventFloorClip ->>>>
+Finished compiling function EnemyPreventFloorClip
+compiling function ResetThrottler ->>>>
+Finished compiling function ResetThrottler
+compiling function FrameThrottle ->>>>
+Finished compiling function FrameThrottle
+compiling function ZoneInteract ->>>>
+Finished compiling function ZoneInteract
+compiling function Submerge ->>>>
+Finished compiling function Submerge
+compiling function Emerge ->>>>
+Finished compiling function Emerge
+compiling function DisableCameraFollow ->>>>
+Finished compiling function DisableCameraFollow
+compiling function EnableCameraFollow ->>>>
+Finished compiling function EnableCameraFollow
+compiling function CheckPoint ->>>>
+Finished compiling function CheckPoint
+compiling function YellowSnow ->>>>
+Finished compiling function YellowSnow
+compiling function LevelExit ->>>>
+Finished compiling function LevelExit
+compiling function FinishLevel ->>>>
+Finished compiling function FinishLevel
+compiling function Credits ->>>>
+Finished compiling function Credits
+compiling function FileToString ->>>>
+Finished compiling function FileToString
+compiling function LoadResources ->>>>
+Finished compiling function LoadResources
+compiling function ResourceLoadDisplay ->>>>
+Finished compiling function ResourceLoadDisplay
+compiling function FreeResources ->>>>
+Finished compiling function FreeResources
+compiling function ProcessSnowballs ->>>>
+Finished compiling function ProcessSnowballs
+compiling function BlitSnowballs ->>>>
+Finished compiling function BlitSnowballs
+compiling function GetPlayerSnowball ->>>>
+Finished compiling function GetPlayerSnowball
+compiling function InsertSnowball ->>>>
+Finished compiling function InsertSnowball
+compiling function DeleteSnowball ->>>>
+Finished compiling function DeleteSnowball
+compiling function ShrinkSnowBalls ->>>>
+Finished compiling function ShrinkSnowBalls
+compiling function ClearSnowballs ->>>>
+Finished compiling function ClearSnowballs
+compiling function FileReadSnowballs ->>>>
+Finished compiling function FileReadSnowballs
+compiling function FileWriteSnowballs ->>>>
+Finished compiling function FileWriteSnowballs
+compiling function CombineSnowballs ->>>>
+Finished compiling function CombineSnowballs
+compiling function GetSnowGrowth ->>>>
+Finished compiling function GetSnowGrowth
+compiling function GetSnowDecay ->>>>
+Finished compiling function GetSnowDecay
+compiling function ProcessSnowball ->>>>
+Finished compiling function ProcessSnowball
+compiling function SnowballDamageEnemy ->>>>
+Finished compiling function SnowballDamageEnemy
+compiling function BlitSnowball ->>>>
+Finished compiling function BlitSnowball
+compiling function FadeIn ->>>>
+Finished compiling function FadeIn
+compiling function FadeOut ->>>>
+Finished compiling function FadeOut
+compiling function FadeInImage ->>>>
+Finished compiling function FadeInImage
+compiling function FadeOutImage ->>>>
+Finished compiling function FadeOutImage
+compiling function SaveGamesave ->>>>
+Finished compiling function SaveGamesave
+compiling function LoadGamesave ->>>>
+Finished compiling function LoadGamesave
+compiling function AutoExec ->>>>
+Finished compiling function AutoExec
+compiling function TextBox ->>>>
+Finished compiling function TextBox
+compiling function TextBoxHandler ->>>>
+Finished compiling function TextBoxHandler
+Compiling bw.mapfunc Start found with 0 args and shit.
+func Zone1 found with 0 args and shit.
+func Zone2 found with 0 args and shit.
+func Zone3 found with 0 args and shit.
+func Zone4 found with 0 args and shit.
+func Zone5 found with 0 args and shit.
+func Zone6 found with 0 args and shit.
+func Zone7 found with 0 args and shit.
+compiling function Start ->>>>
+Finished compiling function Start
+compiling function Zone1 ->>>>
+Finished compiling function Zone1
+compiling function Zone2 ->>>>
+Finished compiling function Zone2
+compiling function Zone3 ->>>>
+Finished compiling function Zone3
+compiling function Zone4 ->>>>
+Finished compiling function Zone4
+compiling function Zone5 ->>>>
+Finished compiling function Zone5
+compiling function Zone6 ->>>>
+Finished compiling function Zone6
+compiling function Zone7 ->>>>
+Finished compiling function Zone7
+Compiling hillus.mapfunc Start found with 0 args and shit.
+func Zone2 found with 0 args and shit.
+func Zone3 found with 0 args and shit.
+func Zone4 found with 0 args and shit.
+func Zone6 found with 0 args and shit.
+func Zone7 found with 0 args and shit.
+compiling function Start ->>>>
+Finished compiling function Start
+compiling function Zone2 ->>>>
+Finished compiling function Zone2
+compiling function Zone3 ->>>>
+Finished compiling function Zone3
+compiling function Zone4 ->>>>
+Finished compiling function Zone4
+compiling function Zone6 ->>>>
+Finished compiling function Zone6
+compiling function Zone7 ->>>>
+Finished compiling function Zone7
+Compiling level1.mapfunc Start found with 0 args and shit.
+func SpawnItUp found with 0 args and shit.
+compiling function Start ->>>>
+Finished compiling function Start
+compiling function SpawnItUp ->>>>
+Finished compiling function SpawnItUp
+Compiling level2.mapfunc Start found with 0 args and shit.
+func OmegaJump found with 0 args and shit.
+func SpawnItUp found with 0 args and shit.
+compiling function Start ->>>>
+Finished compiling function Start
+compiling function OmegaJump ->>>>
+Finished compiling function OmegaJump
+compiling function SpawnItUp ->>>>
+Finished compiling function SpawnItUp
+Compiling level3.mapfunc Start found with 0 args and shit.
+func SpawnItUp found with 0 args and shit.
+compiling function Start ->>>>
+Finished compiling function Start
+compiling function SpawnItUp ->>>>
+Finished compiling function SpawnItUp
+Compiling practiceny.mapfunc Start found with 0 args and shit.
+func Damage found with 0 args and shit.
+func DetachCamera found with 0 args and shit.
+compiling function Start ->>>>
+Finished compiling function Start
+compiling function Damage ->>>>
+Finished compiling function Damage
+compiling function DetachCamera ->>>>
+Finished compiling function DetachCamera

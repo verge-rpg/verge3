@@ -375,8 +375,8 @@ void sdl_Window::flip_win()
         for (int i = 0; i != size; i++) {		
             quad p = *s++;
             byte r = p & 0xFF;
-            byte g = (p & 0xFF00) >> 8;
-            byte b = (p & 0xFF0000) >> 16;
+            byte g = (p >> 8) & 0xFF;
+            byte b = (p >> 16) & 0xFF;
             *d++ = (r << 16) | (g << 8) | b | 0xFF000000;
         }
 
@@ -416,8 +416,8 @@ void sdl_Window::flip_win()
 #ifdef __EMSCRIPTEN__
 	            quad p = s[(xerr >> 16)];
 	            byte r = p & 0xFF;
-	            byte g = (p & 0xFF00) >> 8;
-	            byte b = (p & 0xFF0000) >> 16;
+	            byte g = (p >> 8) & 0xFF;
+	            byte b = (p >> 16) & 0xFF;
 				d[j] = (r << 16) | (g << 8) | b | 0xFF000000;
 #else
 

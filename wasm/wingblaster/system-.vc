@@ -1,0 +1,342 @@
+#include "framethrottle.vc"
+#include "shooter.vc"
+#include "object.vc"
+#include "enemy.vc"
+
+
+#define PLAYER_SPEED	200
+
+struct player_type
+{
+	int x, y;
+	int x100, y100;
+	int hitx, hity;
+	int hitx2, hity2;
+	int reloadtime;
+	int image;
+	int death;
+	int death_count;
+};
+
+player_type player;
+int score;
+
+int enemy_ship_image = LoadImage("shipbad.png");
+int enemy_asteroid_image = LoadImage("rock.png");
+int enemy_block_image = LoadImage("blocky.png");
+int enemy_block_mad_image = LoadImage("blockymad.png");
+int enemy_masher_image = LoadImage("masher2.png");
+int laser_image = LoadImage("lasr1.png");
+int laser2_image = LoadImage("lasr2.png");
+int main_font = LoadFont("thin.png");
+
+int shot_sound = LoadSound("shot.wav");
+int hit_sound = LoadSound("sword2.wav");
+
+int block_death_sound = LoadSound("jelly1.wav");
+int ship_death_sound = LoadSound("bosshit.wav");
+int asteroid_death_sound = LoadSound("explode.wav");
+
+int last_background_type;
+int background_type;
+int background_fade;
+
+void BlitBackground(int i)
+{
+	switch (i)
+	{
+		case 0:
+			RenderStars();
+		case 1:
+			RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255, 0, 0), screen);
+	}
+}
+
+void RenderBackground()
+{
+	int luc = (background_fade - systemtime) / 10;
+	if (background_type != last_background_type
+		&& luc > 0)
+	{
+		SetLucent(100 - luc);	
+		BlitBackground(last_background_type);
+		SetLucent(luc);
+	}	
+	BlitBackground(background_type);
+	SetLucent(0);
+}
+
+void SwitchBackground(int bg)
+{
+	last_background_type = background_type;
+	background_type = bg;
+	background_fade = systemtime + 1000;
+}
+
+void PlayerToStartPosition()
+{
+	player.x = ImageWidth(screen) - ImageWidth(player.image) / 2;
+	player.y = 10;
+	player.x100 = player.x * 100;
+	player.y100 = player.y * 100;
+}
+
+void AutoExec()
+{
+	int j;
+	InitStars();
+	player.image = LoadImage("ship.png");
+	EnableVariableWidth(main_font);
+	PlayerToStartPosition();
+	player.hitx = (ImageWidth(player.image) / 2 - 4);
+	player.hity = (ImageHeight(player.image) / 2 - 5);
+	player.hitx2 = (ImageWidth(player.image) / 2 + 4);
+	player.hity2 = (ImageHeight(player.image) / 2 + 5);
+	ResetThrottler();
+	while(1)
+	{
+		
+		RenderBackground();
+		TBlit(player.x, player.y, player.image, screen);
+		PrintString(10, ImageHeight(screen) - FontHeight(main_font), screen, main_font, "Score: "+ str(score));
+		BlitObjects();
+		BlitEnemies();
+		FrameThrottle();
+		ShowPage();
+		MovePlayer();
+		ProcessObjects();
+		ProcessEnemies();
+		if (player.death)
+		{
+			j = DuplicateImage(screen);
+			FadeOutImage(100, j);
+			FreeImage(j);
+			background_type = 0;
+			ClearObjects();
+			ClearEnemies();
+			stage_current--;
+			CreateStage();
+			PlayerToStartPosition();
+			player.death = 0;
+			player.death_count++;
+			score -= 2000;
+			if (score < 0) score = 0;
+		}
+		if (b4 && player.reloadtime < systemtime)
+		{
+			SpawnObject(ImageWidth(player.image) - ImageWidth(laser_image) / 2 + player.x + xwin,
+					ImageHeight(player.image) + player.y + ywin,
+					OBJECT_HURTENEMY + OBJECT_ADDITIVEBLIT, 90, 400, laser_image, 1);
+			PlaySound(shot_sound, 100);
+			player.reloadtime = systemtime + 10;
+		}
+		if (!enemy_count)
+		{
+			CreateStage();
+		}
+		ywin += tframe.gap;
+	}
+}
+
+void MovePlayer()
+{
+	if (left)
+	{
+		player.x100 -= tframe.gap * PLAYER_SPEED;
+		if (player.x100 < 0)
+		{
+			player.x100 = 0;
+		}
+	}
+	if (right)
+	{
+		player.x100 += tframe.gap * PLAYER_SPEED;
+		if (ImageWidth(player.image) * 100 + player.x100 > ImageWidth(screen) * 100)
+		{
+			player.x100 = (ImageWidth(screen) - ImageWidth(player.image)) * 100;
+		} 
+	}
+	if (up)
+	{
+		player.y100 -= tframe.gap * PLAYER_SPEED;
+		if (player.y100 < 0)
+		{
+			player.y100 = 0;
+		}
+	}
+	if (down)
+	{
+		player.y100 += tframe.gap * PLAYER_SPEED;
+		if (ImageHeight(player.image) * 100 + player.y100 > ImageHeight(screen) * 100)
+		{
+			player.y100 = (ImageHeight(screen) - ImageHeight(player.image)) * 100;
+		} 
+	}
+	player.x = player.x100 / 100;
+	player.y = player.y100 / 100;
+}
+
+int stage_current;
+void CreateStage()
+{
+	int i, j;
+	int y;
+	int tmp;
+	stage_current++;
+	if (stage_current == 70 || stage_current == 2 || stage_current == 3)
+	{
+		PlayMusic("troupe_-_hourlongxplosn.s3m");
+		for (i = 0; i < 2; i++)
+		{
+			y = ywin + (i + 1 * ImageHeight(screen));
+			tmp = tmp ^ 1;
+			for (j = 0; j < 5; j++)
+			{
+				SpawnEnemy(xwin + (ImageWidth(screen) - 160 * tmp) + 80, y + (j + 1 * 50), 1, enemy_ship_image);
+			}
+		}
+	}
+	else if (stage_current == 4)
+	{
+		PlayMusic("troupe_-_hourlongxplosn.s3m");
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2),
+			ywin + ImageHeight(screen) + 16,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) + 25,
+			ywin + ImageHeight(screen) + 50,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) - 25,
+			ywin + ImageHeight(screen) + 50,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) + 50,
+			ywin + ImageHeight(screen) + 100,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) - 50,
+			ywin + ImageHeight(screen) + 100,
+			2, enemy_block_image);
+	}
+	else if (stage_current == 6)
+	{
+		PlayMusic("troupe_-_hourlongxplosn.s3m");
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2),
+			ywin + ImageHeight(screen),
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) + 25,
+			ywin + ImageHeight(screen) + 50,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) - 25,
+			ywin + ImageHeight(screen) + 50,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) + 50,
+			ywin + ImageHeight(screen) + 100,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) - 50,
+			ywin + ImageHeight(screen) + 100,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2),
+			ywin + ImageHeight(screen) + 150,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) - 75,
+			ywin + ImageHeight(screen) + 200,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) + 75,
+			ywin + ImageHeight(screen) + 200,
+			2, enemy_block_image);
+	}
+	else if (stage_current == 5)
+	{
+		PlayMusic("troupe_-_hourlongxplosn.s3m");
+		for (i = 0; i < 2; i++)
+		{
+			y = ywin + (i + 1 * ImageHeight(screen));
+			tmp = tmp ^ 1;
+			for (j = 0; j < 2; j++)
+			{
+				SpawnEnemy(xwin + (ImageWidth(screen) - 160 * tmp) + 80, y + (j * 50), 2, enemy_block_image);
+			}
+		}
+	}
+	else if (stage_current == 7)
+	{
+		PlayMusic("troupe_-_hourlongxplosn.s3m");
+		for (i = 0; i < 2; i++)
+		{
+			y = ywin + (i + 1 * ImageHeight(screen));
+			tmp = tmp ^ 1;
+			for (j = 0; j < 4; j++)
+			{
+				SpawnEnemy(xwin + (ImageWidth(screen) - 160 * tmp) + 80, y + (j * 50), 2, enemy_block_image);
+			}
+		}
+	}
+	else if (stage_current == 8)
+	{
+		PlayMusic("troupe_-_hourlongxplosn.s3m");
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2),
+			ywin - (ImageHeight(screen) / 2),
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) + 25,
+			ywin - (ImageHeight(screen) / 2) - 50,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) - 25,
+			ywin - (ImageHeight(screen) / 2) - 50,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) + 50,
+			ywin - (ImageHeight(screen) / 2) - 100,
+			2, enemy_block_image);
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2) - 50,
+			ywin - (ImageHeight(screen) / 2) - 100,
+			2, enemy_block_image);
+	}
+	else if (stage_current == 9)
+	{
+		SwitchBackground(1);
+		PlayMusic("troupe_-_hourlongxplosn.s3m");
+		SpawnEnemy(xwin + (ImageWidth(screen) / 2),
+			ywin + ImageHeight(screen),
+			3, enemy_masher_image);
+	}
+	/*else if (stage_current == 265)
+	{
+		for (i = 0; i < 20; i++)
+		{
+			SpawnEnemy(xwin + Random(0, ImageWidth(screen)),
+				ywin + ImageHeight(screen) + Random(0, ImageHeight(screen)),
+				4, enemy_asteroid_image);
+		}
+	}*/
+	else if (stage_current == 1)
+	{
+		for (i = 0; i < 10; i++)
+		{
+			SpawnEnemy(xwin + Random(0, ImageWidth(screen)),
+				ywin + ImageHeight(screen) + Random(0, ImageHeight(screen)),
+				4, enemy_asteroid_image);
+		}
+		for (i = 0; i < 5; i++)
+		{
+			SpawnEnemy(xwin + (ImageWidth(screen) / 2), ywin + ImageHeight(screen) + (i + 1 * 50), 1, enemy_ship_image);
+		}
+	}
+	else
+	{
+		Exit("You win!" + chr(10) + chr(13)
+			+ "Score: "+str(score) + chr(10) + chr(13)
+			+ "Deaths: "+str(player.death_count));
+	}
+}
+
+// Fades the screen from black to normal over the specified duration.
+// This renders over everything.
+void FadeOutImage(int _dur, int img)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Blit(0, 0, img, screen);
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}

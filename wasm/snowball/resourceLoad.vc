@@ -1,0 +1,123 @@
+// Image resources.
+int img_title_screen;
+int img_gauge_green, img_gauge_grey;
+int img_snowball_tiny;
+int img_finish_banner;
+
+// Sound effects.
+int sfx_ceiling;
+int sfx_land;
+int sfx_water;
+int sfx_walk;
+int sfx_swing;
+int sfx_shing;
+int sfx_scratch;
+int sfx_run_over;
+int sfx_unlock;
+
+// Character file.
+string chr_player;
+
+string FileToString(string filename)
+{
+	string s;
+	int f = FileOpen(filename, FILE_READ);
+	if (!f) Exit("Couldn't open "+filename+" for reading.");
+	while (!FileEOF(f))
+	{
+		s = s + FileReadLn(f) + "\\";
+	}
+	return s;
+}
+
+void LoadResources()
+{
+	string toload = FileToString("resources.dat");
+	string chunk, var, rsc, type;
+	int idx, idx_max = TokenCount(toload, "\\");
+	
+	Log(">> Loading resources...");
+	
+	for(idx = 0; idx < idx_max; idx++)
+	{
+		chunk = GetToken(toload, "\\", idx);
+		var = GetToken(chunk, " ", 0);
+		rsc = GetToken(chunk, " ", 1);
+		type = GetToken(var, "_", 0);
+		ResourceLoadDisplay((idx * 100) / idx_max, rsc);
+		if(strcmp(rsc, ""))
+		{
+			if(!strcmp(type,"img"))
+			{
+				Log("Allocating image "+ rsc + " to variable "+ var);
+				SetInt(var, LoadImage(rsc));
+			}
+			else if(!strcmp(type,"msc"))
+			{
+				Log("Allocating song "+ rsc + " to variable "+ var);
+				SetInt(var, LoadSong(rsc));
+			}
+			else if(!strcmp(type,"sfx"))
+			{
+				Log("Allocating sound "+ rsc + " to variable "+ var);
+				SetInt(var, LoadSound(rsc));
+			}
+			else if(!strcmp(type,"chr"))
+			{
+				SetString(var, rsc);
+			}
+		}
+	}
+	ResourceLoadDisplay((idx * 100) / idx_max, "Done!");
+	Log(">> Resources loaded successfully!");
+}
+
+void ResourceLoadDisplay(int progress, string text)
+{
+	RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(170, 204, 255), screen);
+	RectVGrad(0, 0, ImageWidth(screen), 50, RGB(51, 102, 204), RGB(170, 204, 255), screen);
+	PrintCenter(ImageWidth(screen) / 2, ImageHeight(screen) / 2, screen, defaultfont, "Loading Resources...");
+	PrintCenter(ImageWidth(screen) / 2, ImageHeight(screen) / 2 + (FontHeight(defaultfont) * 2), screen, defaultfont, text);
+	RectFill(ImageWidth(screen) / 2 - 50, ImageHeight(screen) / 2 - 15, ImageWidth(screen) / 2 - 50 + progress, ImageHeight(screen) / 2 - 10, RGB(51, 102, 204), screen);
+	Rect(ImageWidth(screen) / 2 - 50, ImageHeight(screen) / 2 - 15, ImageWidth(screen) / 2 + 50, ImageHeight(screen) / 2 - 10, RGB(0, 0, 0), screen);
+	ShowPage();
+}
+
+void FreeResources()
+{
+	string toload = FileToString("resources.dat");
+	string chunk, var, rsc, type;
+	int idx, idx_max = TokenCount(toload, "\\");
+
+	Log(">> Freeing resources...");
+
+	for(idx = 0; idx < idx_max; idx++)
+	{
+		chunk = GetToken(toload, "\\", idx);
+		var = GetToken(chunk, " ", 0);
+		rsc = GetToken(chunk, " ", 1);
+		type = GetToken(var, "_", 0);
+		if(strcmp(rsc, ""))
+		{
+			if(!strcmp(type,"img"))
+			{
+				Log("Freeing image "+ rsc +" from variable "+ var);
+				if (ImageValid(GetInt(var)))
+				{
+					FreeImage(GetInt(var));
+				}
+			}
+			else if(!strcmp(type,"msc"))
+			{
+				Log("Freeing song "+ rsc +" from variable "+ var);
+				FreeSong(GetInt(var));
+			}
+			else if(!strcmp(type,"sfx"))
+			{
+				Log("Freeing sound "+ rsc +" from variable "+ var);
+				FreeSound(GetInt(var));
+			}
+		}
+	}
+	Log(">> Resources freed okay.");
+}

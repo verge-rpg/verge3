@@ -1,0 +1,142 @@
+#define MAX_LEVEL 2
+#define MAX_LEVEL_ARRAY 3 //set to 1 higher than MAX_LEVEL, skip the 0th element to keep things cleaner in operation
+#define SELECTION_TRANSITION_DELAY 33 //evenly divisible by 100 (roughly) to maintain smooth motion
+
+int flgLevelSelect;
+int flgTransitioningLevelSelection;
+int SelectedLevel=1;
+
+int ScreenX = ImageWidth(screen);
+int ScreenY = ImageHeight(screen);
+
+struct stcLevelInfo
+{
+	string name;
+	string file;
+	int img;
+	int unlocked;
+};
+
+stcLevelInfo Level[MAX_LEVEL_ARRAY];
+
+void InitializeLevelInfo()
+{
+	int i;
+	//int unlocked = Random(1, MAX_LEVEL-1);
+	int unlocked = 1;
+	
+	for(i = 1; i <= MAX_LEVEL; i++)
+	{
+		Level[i].name	= "Level " + str(i);
+		Level[i].file	= "level" + str(i) + ".map";
+		Level[i].img	= LoadImage("LevelThumbs/" + str(i) + ".png");
+		if(i <= unlocked) Level[i].unlocked = 1;
+	}
+}
+
+void HandleLevelSelect()
+{
+	if(!flgTransitioningLevelSelection)
+	{
+		if(left)
+		{
+			if(SelectedLevel > 1)
+				flgTransitioningLevelSelection = -timer;
+			//else PlaySound(sfxError, SFXVolume);
+		}
+		if(right)
+		{	
+			if(SelectedLevel < MAX_LEVEL)
+				flgTransitioningLevelSelection = timer;
+			//else PlaySound(sfxError, SFXVolume);
+		}
+		
+		if(b3)	flgLevelSelect = 0;
+		
+		if(b1)
+		{
+			Unpress(1);
+			if(Level[SelectedLevel].unlocked)
+			{
+				//stolen from main menu
+				DemoStop();
+				mm_init = 0;
+				platform_render_func = "";
+				platform_input_func = "";
+				//level select stuff
+				flgLevelSelect = 0;
+				Map(Level[SelectedLevel].file);
+			}
+			//else PlaySound(sfxError, SFXVolume);
+		}
+	}
+	else
+	{
+		if(timer - abs(flgTransitioningLevelSelection) > SELECTION_TRANSITION_DELAY)
+		{
+			if(flgTransitioningLevelSelection < 0) SelectedLevel--;
+			else SelectedLevel++;
+			
+			flgTransitioningLevelSelection = 0;
+		}
+	}
+}
+
+void DrawLevelSelect()
+{
+	int x = ScreenX/2;
+	int y = ScreenY/2;
+	
+	int XOffset = (timer - abs(flgTransitioningLevelSelection) * (100/SELECTION_TRANSITION_DELAY)) * ScreenX/2 / 100;
+	
+	if(flgTransitioningLevelSelection > 0) //negative movement
+		XOffset = -XOffset;
+	else if(flgTransitioningLevelSelection == 0) //static
+		XOffset = 0;
+	//else positive movement
+
+	
+	if(XOffset > 0 && SelectedLevel-1 > 1)
+		DrawLevelPanel(0-x+XOffset, y, SelectedLevel-2, screen);
+		
+	if(SelectedLevel > 1)
+		DrawLevelPanel(000+XOffset, y, SelectedLevel-1, screen);		
+	
+	////SELECTED//////////
+		DrawLevelPanel(x+0+XOffset, y, SelectedLevel, screen);
+		
+	if(SelectedLevel < MAX_LEVEL)
+		DrawLevelPanel(x*2+XOffset, y, SelectedLevel+1, screen);
+	
+	if(XOffset < 0 && SelectedLevel+1 < MAX_LEVEL)
+		DrawLevelPanel(x*3+XOffset, y, SelectedLevel+2, screen);
+}
+
+void DrawLevelPanel(int x, int y, int levelindex, int target) //x,y == centerpoint
+{
+	int Width = 60; // width and height == 1/2 actual panel size
+	int Height = 45;
+	
+	int imgBuffer = NewImage(Width*2, Height*2);
+	
+	SetLucent(50);
+	RectFill(x-Width,y-Height, x+Width,y+Height, RGB(0,0,0), target);
+	SetLucent(0);
+	
+	Blit(0,0, Level[levelindex].img, imgBuffer);
+	
+	if(!Level[levelindex].unlocked)
+	{
+		ColorFilter(CF_GREY, imgBuffer);
+		SetLucent(50);
+		RectFill(0,0, ImageWidth(imgBuffer)-1, ImageHeight(imgBuffer)-1, RGB(0,0,0), imgBuffer);
+		SetLucent(0);
+	}
+	
+	TBlit(x-Width,y-Height, imgBuffer, target);
+		
+	Rect(x-Width+1,y-Height+1, x+Width-1,y+Height-1, RGB(255,255,255), target);
+	PrintRight(x+Width-2,y+Height-FontHeight(defaultfont)-2, target, defaultfont, Level[levelindex].name);
+	
+	FreeImage(imgBuffer);
+}

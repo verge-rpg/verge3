@@ -1,0 +1,538 @@
+#define FIRE_MP 2
+#define HEAL_MP 5
+#define ICE_MP 15
+#define NOVA_MP 15
+
+#define FIRE_POWER 2
+//#define NOVA_POWER 5
+#define HEAL_POWER 10
+#define ICE_POWER 15
+#define LIGHT_POWER 0
+
+/*
+TODO:
+
+ice
+lightning
+*/
+
+//-----------------------------------------------------------------
+//------Fade effect
+//-----------------------------------------------------------------
+#define FADE_IN 1
+#define FADE_OUT 0
+
+void fade(int color, int duration, int direction){
+	int scrn=newimage(windowGetXRes(screen), windowGetYRes(screen));
+	grabRegion(0, 0, windowGetXRes(screen), windowGetYRes(screen), 0, 0, screen, scrn);
+	setEntitiesPaused(1);
+	int timeStamp=timer;
+	switch(direction){
+		case FADE_OUT:
+			while(timer-timeStamp<=duration){				
+				rectfill(0, 0, windowGetXRes(screen), windowGetYRes(screen), color, screen);
+				BlitLucent(0,0, (timer-timeStamp)*100/duration, scrn, screen);
+				showpage();
+			}
+		case FADE_IN:
+			while(timer-timeStamp<=duration){
+				rectfill(0, 0, windowGetXRes(screen), windowGetYRes(screen), color, screen);
+				BlitLucent(0,0, (duration-(timer-timestamp))*100/duration, scrn, screen);
+				showpage();
+			}
+	}
+	setEntitiesPaused(0);
+	freeimage(scrn);
+}
+
+//-----------------------------------------------------------------
+//------Ice
+//-----------------------------------------------------------------
+
+int iceImage, iceMask;
+void EFFECT_ice(){
+	if(iceImage){
+		removeCurrentEffect();
+		return; //there's a ice effect already in progress
+	}
+
+	int beamWidth=20;
+	int 	x1=effect[currentEffect].x1-xwin,
+		y1=effect[currentEffect].y1-ywin,
+		x2=effect[currentEffect].x2-xwin,
+		y2=effect[currentEffect].y2-ywin;
+	
+	int a=x2-x1;
+	int b=y2-y1;
+	int c=sqrt(pow(a,2)+pow(b,2));
+	int ang= abs(atan2(b,a));
+
+	if(b<0) ang=0-ang;
+	int x,y,i;
+	int mx=cos(ang),my=sin(ang);
+	for(i=0;i<c;i+=beamWidth){
+		x=i * mx/65536 + x1;
+		y=i * my/65536 + y1;
+		if(effect[currentEffect].affectWho==AFFECT_ENEMY)
+			PlayerAttackPoint(x+xwin,y+ywin,beamWidth,ICE_POWER, 1);
+		else
+			EnemyAttackPoint(x+xwin,y+ywin,beamWidth,ICE_POWER, 1);
+			
+	}
+	
+	if(abs(x1-x2) > abs(y1-y2)){
+		y1-=beamWidth/2;
+		y2+=beamWidth/2;
+	}
+	else{
+		x1-=beamWidth/2;
+		x2+=beamWidth/2;
+	}
+	
+	if(x2 > imageWidth(screen)){ x2=imageWidth(screen); effect[currentEffect].x2=imageWidth(screen)+xwin; }
+	else if(x2 < 0){ x2=0; effect[currentEffect].x2=0+xwin;}
+	if(y2 > imageHeight(screen)){ y2=imageHeight(screen); effect[currentEffect].y2=imageHeight(screen)+ywin; }
+	else if(y2 < 0){ y2=0; effect[currentEffect].y2=0+ywin;}
+	
+	iceImage=newImage(abs(x1-x2), abs(y1-y2));
+	iceMask=newImage(abs(x1-x2), abs(y1-y2));
+	grabRegion(x1,y1,x2,y2,0,0,screen,iceImage);
+	colorFilter(CF_GREY,iceImage);
+	additiveBlit(0,0,iceImage,iceImage);
+	rectFill(0,0,imageWidth(iceImage),imageHeight(iceImage),RGB(255,255,255),iceMask);
+	
+	addEffect(effect[currentEffect].x1,effect[currentEffect].y1,effect[currentEffect].x2,effect[currentEffect].y2,0,effect[currentEffect].affectWho,"EFFECT_icebeam1");
+	removeCurrentEffect();
+}
+
+void EFFECT_icebeam1(){
+	int 	life=50;
+	int 	x1=effect[currentEffect].x1-xwin,
+		y1=effect[currentEffect].y1-ywin,
+		x2=effect[currentEffect].x2-xwin,
+		y2=effect[currentEffect].y2-ywin,
+		ticks=timer-effect[currentEffect].timeStamp;
+	
+	int x,y;
+	if(abs(x1-x2) > abs(y1-y2)){
+		if(x1>x2) x=x2; //left
+		else x=x1; //right
+		y=y1-(imageHeight(iceImage)/2);
+	}
+	else{
+		if(y1>y2) y=y2; //up
+		else y=y1; //down
+		x=x1-(imageWidth(iceImage)/2);
+	}
+	
+	setLucent((life-ticks)*100/life);
+	Blit(x,y,iceImage,screen);
+	setLucent(0);
+	
+	if(ticks >= life){
+		addEffect(effect[currentEffect].x1,effect[currentEffect].y1,effect[currentEffect].x2,effect[currentEffect].y2,0,effect[currentEffect].affectWho,"EFFECT_icebeam2");
+		removeCurrentEffect();
+	}
+}
+
+void EFFECT_icebeam2(){
+	int 	life=150,
+		distance=5;
+	int 	x1=effect[currentEffect].x1-xwin,
+		y1=effect[currentEffect].y1-ywin,
+		x2=effect[currentEffect].x2-xwin,
+		y2=effect[currentEffect].y2-ywin,
+		ticks=timer-effect[currentEffect].timeStamp;
+	
+	int x,y;
+	if(abs(x1-x2) > abs(y1-y2)){
+		if(x1>x2) x=x2; //left
+		else x=x1; //right
+		y=y1-(imageHeight(iceImage)/2);
+	}
+	else{
+		if(y1>y2) y=y2; //up
+		else y=y1; //down
+		x=x1-(imageWidth(iceImage)/2);
+	}
+	y-=ticks*distance/life;
+	alphaBlit(x,y,iceImage,iceMask,screen);
+	
+	if(timer-effect[currentEffect].frameStamp >= 1){
+		effect[currentEffect].frameStamp=timer;
+		
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		setPixel( random(0,imageWidth(iceImage)), random(0,imageHeight(iceImage)), 0, iceMask);
+		
+		setLucent(99);
+		rectFill(0,0,imageWidth(iceImage),imageHeight(iceImage),0,iceMask);
+		setLucent(0);
+	}
+	
+	if(ticks >= life){
+		removeCurrentEffect();
+		freeImage(iceImage);
+		freeImage(iceMask);
+		iceImage=0;
+	}
+}
+
+//-----------------------------------------------------------------
+//------Fireball
+//-----------------------------------------------------------------
+
+int fireballImage=loadImage("images/fireball.gif"); //16x24
+void EFFECT_fireball(){
+	//initialize
+	int	columns=3,
+		width=imageWidth(fireballImage)/columns,
+		height=imageHeight(fireballImage);
+	
+	int 	speed=0250, //##.##
+		startDistance=8;
+		
+	int 	x1=effect[currentEffect].x1-xwin,
+		y1=effect[currentEffect].y1-ywin,
+		x2=effect[currentEffect].x2-xwin,
+		y2=effect[currentEffect].y2-ywin,
+		ticks=timer-effect[currentEffect].timeStamp;
+	
+	int a=x2-x1;
+	int b=y2-y1;
+	int c=sqrt(pow(a,2)+pow(b,2));
+	int ang= abs(atan2(b,a));
+		
+	if(b<0) ang=0-ang;
+	
+	int position=ticks*speed/100+startDistance;
+	int x=position * cos(ang)/65536 + x1 - (width / 2);
+	int y=position * sin(ang)/65536 + y1 - (height / 2);
+	
+	//blit
+	tGrabRotScale(	width * effect[currentEffect].frame,
+			0,	
+			width,
+			height,
+			x,
+			y,
+			0-ang-90,
+			1000,
+			fireballImage,
+			screen);
+	
+	//frame and removal processing
+	if(position >= c){
+		addEffect(x+xwin,y+ywin,0,0,0,effect[currentEffect].affectWho,"EFFECT_fire");
+		removeCurrentEffect();
+	}
+	
+	if(timer-effect[currentEffect].frameStamp >= 10){ //every 10ms, increase frame
+		effect[currentEffect].frameStamp=timer;
+		
+		//dammage
+		switch(ang){
+			case 0: ang=4;
+			case 0-90: ang=2;
+			case 180: ang=3;
+			case 90: ang=1;
+		}
+		if(effect[currentEffect].affectWho==AFFECT_ENEMY)
+			PlayerAttackPoint(x+xwin,y+ywin,width+height/2,FIRE_POWER, ang);
+		else
+			EnemyAttackPoint(x+xwin,y+ywin,width+height/2,FIRE_POWER, ang);
+		
+		//tail
+		addEffect(x+random(0-4,4)+xwin,y+random(0-4,4)+ywin,0,0,0,effect[currentEffect].affectWho,"EFFECT_flame");
+		
+		//animation
+		effect[currentEffect].frame++;
+		if(effect[currentEffect].frame >= columns)
+			effect[currentEffect].frame=0;
+	}
+}
+
+int flameImage=loadImage("images/flame.gif"); //16x16
+void EFFECT_flame(){
+	int life=50;
+	int 	x=effect[currentEffect].x1-xwin,
+		y=effect[currentEffect].y1-ywin,
+		ticks=timer-effect[currentEffect].timeStamp;
+
+	rotScale(x,y,0-ticks*4,1000+(ticks*life), flameImage, screen);
+	
+	if(1000+(ticks*life) >= 4000) 
+		removeCurrentEffect();
+}
+
+int fireImage=loadImage("images/fire.gif");
+void EFFECT_fire(){
+	int duration=300;
+
+	int	columns=6,
+		width=imageWidth(fireImage)/columns,
+		height=imageHeight(fireImage);
+	
+	int 	x=effect[currentEffect].x1-xwin,
+		y=effect[currentEffect].y1-ywin,
+		ticks=timer-effect[currentEffect].timeStamp;
+	
+	//blit
+	setLucent(ticks*100/duration);
+	tGrabRegion(	width * effect[currentEffect].frame,
+			0,	
+			width * (effect[currentEffect].frame + 1),
+			height,
+			x-(width/2),
+			y-height,
+			fireImage,
+			screen);
+	setLucent(0);
+	//frame and removal processing
+	if(ticks >= duration)
+		removeCurrentEffect();
+
+	if(timer-effect[currentEffect].frameStamp >= 10){ //every 10ms, increase frame
+		effect[currentEffect].frameStamp=timer;
+
+		//dammage
+		if(effect[currentEffect].affectWho==AFFECT_ENEMY)
+			PlayerAttackPoint(x+xwin,y+ywin,width+height/2,FIRE_POWER,1);
+		else
+			EnemyAttackPoint(x+xwin,y+ywin,width+height/2,FIRE_POWER,1);
+		
+		//animation
+		effect[currentEffect].frame++;
+		if(effect[currentEffect].frame >= columns)
+			effect[currentEffect].frame=0;
+	}
+}
+
+//-----------------------------------------------------------------
+//------Heal
+//-----------------------------------------------------------------
+
+int healImage=loadImage("images/heal.gif");
+int healImage2=loadImage("images/heal2.gif");
+void EFFECT_heal(){
+	//initialize
+	int	columns=7,
+		width=imageWidth(healImage)/columns,
+		height=imageHeight(healImage);
+	
+	int 	speed=0050; //##.##
+
+	int 	destx=entity.x[mainPlayer.ent],
+		desty=entity.y[mainPlayer.ent],
+		ticks=timer-effect2[currentEffect].timeStamp;
+	
+	effect2[currentEffect].x1 += (destx*100) - effect2[currentEffect].x1 /speed;
+	effect2[currentEffect].y1 += (desty*100) - effect2[currentEffect].y1 /speed;
+	int x=effect2[currentEffect].x1/100-xwin;
+	int y=effect2[currentEffect].y1/100-ywin;
+	
+	int x1=x;
+	int y1=y;
+
+	int x2=25 * cos(ticks*5)/65536 + x;
+	int y2=y;
+	
+	//blit
+	tGrabRegion(	width * effect2[currentEffect].frame,
+			0,	
+			width * (effect2[currentEffect].frame + 1),
+			height,
+			x1-(width/2),
+			y1-(height/2),
+			healImage,
+			screen);
+	tGrabRegion(	width * effect2[currentEffect].frame,
+			0,	
+			width * (effect2[currentEffect].frame + 1),
+			height,
+			x2-(width/2),
+			y2-(height/2),
+			healImage2,
+			screen);
+	
+	//frame and removal processing
+	if(abs(x1-(destx-xwin)) < 8 && abs(y1-(desty-ywin)) < 8){
+		addEffect2(x1+xwin,y1+ywin,0,0,0,effect2[currentEffect].affectWho,"EFFECT_healing");
+		removeCurrentEffect2();
+
+		if(effect2[currentEffect].affectWho==AFFECT_PLAYER)
+		{
+			MainPlayer.hp+=HEAL_POWER;
+			if (MainPlayer.hp>MainPlayer.maxhp) MainPlayer.hp=MainPlayer.maxhp;
+		}
+		else
+		{
+			//TODO: HEAL ENEMIES
+		}
+	}
+	
+	if(timer-effect2[currentEffect].frameStamp >= 10){ //every 10ms, increase frame
+		effect2[currentEffect].frameStamp=timer;
+		effect2[currentEffect].frame++;
+		
+		addEffect2(x1+xwin,y1+ywin,x2+xwin,y2+ywin,0,effect2[currentEffect].affectWho,"EFFECT_healtail");
+		
+		if(effect2[currentEffect].frame >= 3)
+			effect2[currentEffect].frame=0;
+	}
+}
+
+void EFFECT_healtail(){
+	//initialize
+	int	columns=7,
+		width=imageWidth(healImage)/columns,
+		height=imageHeight(healImage);
+		
+	int 	speed=45,
+		startSize=1500;
+		
+	int 	x1=effect2[currentEffect].x1-xwin,
+		y1=effect2[currentEffect].y1-ywin,
+		x2=effect2[currentEffect].x2-xwin,
+		y2=effect2[currentEffect].y2-ywin,
+		ticks=timer-effect2[currentEffect].timeStamp;
+	
+	//blit
+	tGrabRotScale(	width * effect2[currentEffect].frame,
+			0,	
+			width,
+			height,
+			x1,
+			y1,
+			0,
+			startSize+(ticks*speed),
+			healImage,
+			screen);
+	tGrabRotScale(	width * effect2[currentEffect].frame,
+			0,	
+			width,
+			height,
+			x2,
+			y2,
+			0,
+			startSize+(ticks*speed),
+			healImage2,
+			screen);
+	
+	//frame and removal processing
+	if(1000+(ticks*speed) >= 5000)
+		removeCurrentEffect2();
+	
+	if(timer-effect2[currentEffect].frameStamp >= 10){ //every 5ms, increase frame
+		effect2[currentEffect].frameStamp=timer;
+		effect2[currentEffect].frame++;
+		
+		if(effect2[currentEffect].frame >= 3)
+			effect2[currentEffect].frame=0;
+	}
+}
+
+void EFFECT_healing(){
+	//initialize
+	int	columns=7,
+		width=imageWidth(healImage)/columns,
+		height=imageHeight(healImage);
+	
+	int 	speed=0200; //##.##
+		
+	int 	x=effect2[currentEffect].x1-xwin,
+		y=effect2[currentEffect].y1-ywin,
+		ticks=timer-effect2[currentEffect].timeStamp;
+	
+	//blit
+	tGrabRegion(	width * effect2[currentEffect].frame,
+			0,	
+			width * (effect2[currentEffect].frame + 1),
+			height,
+			x-(width/2),
+			y-(height/2),
+			healImage,
+			screen);
+	
+	//frame and removal processing	
+	if(timer-effect2[currentEffect].frameStamp >= 10){ //every 10ms, increase frame
+		effect2[currentEffect].frameStamp=timer;
+		effect2[currentEffect].frame++;
+		
+		if(effect2[currentEffect].frame >= columns)
+			removeCurrentEffect2();
+	}
+}
+
+
+//-----------------------------------------------------------------
+//------Nova
+//-----------------------------------------------------------------
+
+void EFFECT_nova(){
+	int 	x=effect[currentEffect].x1,
+		y=effect[currentEffect].y1,
+		density=effect[currentEffect].wild;
+	
+	int i,ang;
+	for(i=0;i<density;i++){
+		ang = 360 * i / density;
+		addEffect(x, y, 0, 0, ang, effect[currentEffect].affectWho, "EFFECT_novaParticle");
+	}
+		
+	removeCurrentEffect();
+}
+
+int novaImage=loadImage("images/nova.gif");
+void EFFECT_novaParticle(){
+	//initialize
+	int	columns=3,
+		width=imageWidth(novaImage)/columns,
+		height=imageHeight(novaimage);
+	
+	int 	speed=0250, //##.##
+		distance=150,
+		startDistance=32;
+		
+	int 	x=effect[currentEffect].x1-xwin,
+		y=effect[currentEffect].y1-ywin,
+		ang=effect[currentEffect].wild,
+		ticks=timer-effect[currentEffect].timeStamp;
+	
+	int position=ticks*speed/100+startDistance;
+	x=position * cos(ang)/65536 + x;
+	y=position * sin(ang)/65536 + y;
+	
+	//blit
+	tGrabRotScale(	width * effect[currentEffect].frame,
+			0,	
+			width,
+			height,
+			x-(width/2),
+			y-(height/2),
+			0,
+			1000+(ticks*10),
+			novaImage,
+			screen);
+			
+	//frame and removal processing
+	if(position >= distance) 
+		removeCurrentEffect();
+	
+	if(timer-effect[currentEffect].frameStamp >= 10){ //every 10ms, increase frame
+		effect[currentEffect].frameStamp=timer;
+		
+		//PlayerAttackPoint(x+xwin,y+ywin,width+height/2,NOVA_POWER);
+		
+		effect[currentEffect].frame++;
+		if(effect[currentEffect].frame >= columns)
+			effect[currentEffect].frame=0;
+	}
+}

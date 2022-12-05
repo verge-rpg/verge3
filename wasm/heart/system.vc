@@ -1,0 +1,230 @@
+#include "code/intromenu.vc"
+#include "code/naming.vc"
+#include "code/music.vc"
+#include "code/input.vc"
+#include "code/utility.vh"
+#include "code/effects.vh"
+#include "code/effects.vc"
+#include "code/heartentity.vc"
+#include "code/ai.vc"
+#include "code/animations.vc"
+#include "code/graphics.vc"
+#include "code/equip.vc"
+#include "code/save.vc"
+#include "code/menu.vc"
+#include "code/tt64_textbox.vc"
+#include "code/engine.vc"
+#include "code/mapcapture.vc" //Disable me on public releases!
+
+string gameversion="v0.2";
+int begin=1;
+int mapswitchx=1;
+int mapswitchy=1;
+int menuon=0;
+int mainfont=0;
+int fixedfont=0;
+int music=0;
+string musicfn;
+string currentmap;
+
+int healsound;
+int novasound;
+int firesound;
+int icesound;
+int punchsound;
+int swordsound;
+int dorgdiesound;
+int shelldiesound;
+int bolddiesound;
+int effdiesound;
+
+int blue=RGB(0,0,255);
+int black=RGB(0,0,0);
+int yellow=RGB(255,255,0);
+int red=RGB(255,0,0);
+int green=RGB(0,255,0);
+
+int attack_scancode=SCAN_SPACE;
+int enter_scancode=SCAN_ENTER;
+int cancel_scancode=SCAN_ESC;
+int heal_scancode=SCAN_S;
+int nova_scancode=SCAN_D;
+int fire_scancode=SCAN_F;
+int ice_scancode=SCAN_A;
+
+void AllHooks()
+{
+	PlayerHook();
+	EnemyHook();
+	PickupHook();
+	renderEffects();
+	renderEffects2();
+	DisplayHUD();
+	DisplayAnimates();
+	MainMenuHook();
+	if (menuon==0 && MainPlayer.state!=STATE_DEAD)
+	{
+		//spells
+		switch(lastPressed)
+		{
+			case SCAN_1:
+				SaveMap();
+			case fire_scancode: //fire ball, 5 mp
+				if (systemtime>=MainPlayer.magiccooldown && MainPlayer.mp>=FIRE_MP)
+				{
+					MainPlayer.mp-=FIRE_MP;
+					MainPlayer.magiccooldown=systemtime+50;
+					PlaySound(firesound, 80);
+					switch(entity.face[mainPlayer.ent]){
+						case 2: //down
+							PlaySound(firesound, 80);
+							addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent], 
+									entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent] +100, 
+									0, 
+									AFFECT_ENEMY,
+									"EFFECT_fireball");
+						case 1: //up
+							PlaySound(firesound, 80);
+							addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent], 
+									entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent] -100, 
+									0, 
+									AFFECT_ENEMY,
+									"EFFECT_fireball");
+						case 3: //left
+							PlaySound(firesound, 80);
+							addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent], 
+									entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2) -100, 
+									entity.y[mainPlayer.ent], 
+									0,
+									AFFECT_ENEMY,
+									"EFFECT_fireball");
+						case 4: //right
+							PlaySound(firesound, 80);
+							addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent], 
+									entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2) +100, 
+									entity.y[mainPlayer.ent], 
+									0,
+									AFFECT_ENEMY,
+									"EFFECT_fireball");
+					}
+				}
+			case heal_scancode: //heal spell, 5 mp
+				if (MainPlayer.mp>=HEAL_MP)
+				{
+					MainPlayer.mp-=HEAL_MP;
+					//PlaySound(healsound, 80);
+					addEffect2(entity.x[mainPlayer.ent] + (entity.hotw[mainPlayer.ent] / 2)*100, ywin*100, 0, 0, 0, AFFECT_PLAYER, "EFFECT_heal");
+				}
+
+			case nova_scancode: //nova, 15 mp
+				if (systemtime>=MainPlayer.magiccooldown && MainPlayer.mp>=NOVA_MP)
+				{
+					MainPlayer.mp-=NOVA_MP;
+					PlaySound(novasound, 80);
+					addEffect(entity.x[mainPlayer.ent] + (entity.hotw[mainPlayer.ent] / 2), entity.y[mainPlayer.ent], 0, 0, 30, AFFECT_ENEMY, "EFFECT_nova");
+					PlayerAttackAllEnemies(20);
+				}
+			case ice_scancode: //ice, 15 mp
+				if (systemtime>=MainPlayer.magiccooldown && MainPlayer.mp>=ICE_MP)
+				{
+					MainPlayer.mp-=ICE_MP;
+					MainPlayer.magiccooldown=systemtime+200;
+					switch(entity.face[mainPlayer.ent]){
+						case 2: //down
+							PlaySound(icesound, 80);
+							addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent], 
+									entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent] +200, 
+									0, 
+									AFFECT_ENEMY,
+									"EFFECT_ice");
+						case 1: //up
+							PlaySound(icesound, 80);
+							addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent], 
+									entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent] -200, 
+									0,
+									AFFECT_ENEMY,
+									"EFFECT_ice");
+						case 3: //left
+							PlaySound(icesound, 80);
+							addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent], 
+									entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2) -200, 
+									entity.y[mainPlayer.ent], 
+									0,
+									AFFECT_ENEMY,
+									"EFFECT_ice");
+						case 4: //right
+							PlaySound(icesound, 80);
+							addEffect(	entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2), 
+									entity.y[mainPlayer.ent], 
+									entity.x[mainPlayer.ent]+(entity.hotw[mainPlayer.ent]/2) +200, 
+									entity.y[mainPlayer.ent], 
+									0,
+									AFFECT_ENEMY,
+									"EFFECT_ice");
+					}
+				}
+		}
+		lastpressed=0;
+	}
+}
+
+void autoexec()
+{
+	SetAppName("<3 "+gameversion);
+	SetRandSeed(systemtime);
+	
+	mainfont=LoadFont("images/thin.png");
+	fixedfont=LoadFont("images/thin.png");
+	EnableVariableWidth(mainfont);
+	
+	//healsound=LoadSound("sounds/nova.ogg");
+	novasound=LoadSound("sounds/nova.ogg");
+	firesound=LoadSound("sounds/fireball.ogg");
+	icesound=LoadSound("sounds/iceshort.ogg");
+	punchsound=LoadSound("sounds/punch.ogg");
+	swordsound=LoadSound("sounds/steelsword.ogg");
+	dorgdiesound=LoadSound("sounds/wolves.ogg");
+	shelldiesound=LoadSound("sounds/bubbles.ogg");
+	bolddiesound=LoadSound("sounds/wolves.ogg");
+	effdiesound=LoadSound("sounds/gasp.ogg");
+	
+	SetupEquipItems();
+	MakeMenuBoxes();
+
+	Splash(0,0,0);
+
+	IntroMenu();
+}
+
+void ini()
+{
+	log("entered ini");
+	HookKey(attack_scancode, "AnimateAttack");	
+	HookRetrace("AllHooks");
+	begin=0;
+	SetEntitiesPaused(0);
+	log("done ini");
+}
+
+void deinit()
+{
+	nextenemy=0;
+	nextdrop=0;
+	nextstranimate=0;
+	nexthpanimate=0;
+	HookKey(attack_scancode, "");	
+	HookRetrace("");
+	begin=1;
+	menuon=0;
+}

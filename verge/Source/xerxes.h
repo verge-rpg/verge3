@@ -228,7 +228,11 @@ typedef unsigned char  byte;
 #include "mac_keyboard.h"
 #include "mac_mouse.h"
 #include "mac_system.h"
-#include "mac_timer.h"
+    #ifdef __EMSCRIPTEN__
+    #include "wasm_timer.h"
+    #else
+    #include "mac_timer.h"
+    #endif
 #include "mac_movie.h"
 
 //mbg 9/5/05 adding psp support

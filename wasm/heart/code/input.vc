@@ -1,0 +1,96 @@
+string GetNameFromCode(int scancode)
+{
+	if (scancode==SCAN_ESC) return "ESC";
+	if (scancode==SCAN_1) return "1";
+	if (scancode==SCAN_2) return "2";
+	if (scancode==SCAN_3) return "3";
+	if (scancode==SCAN_4) return "4";
+	if (scancode==SCAN_5) return "5";
+	if (scancode==SCAN_6) return "6";
+	if (scancode==SCAN_7) return "7";
+	if (scancode==SCAN_8) return "8";
+	if (scancode==SCAN_9) return "9";
+	if (scancode==SCAN_0) return "0";
+	if (scancode==SCAN_MINUS) return "Minus";
+	if (scancode==SCAN_EQUALS) return "Equals";
+	if (scancode==SCAN_BACKSP) return "Backspace";
+	if (scancode==SCAN_TAB) return "Tab";
+	if (scancode==SCAN_Q) return "Q";
+	if (scancode==SCAN_W) return "W";
+	if (scancode==SCAN_E) return "E";
+	if (scancode==SCAN_R) return "R";
+	if (scancode==SCAN_T) return "T";
+	if (scancode==SCAN_Y) return "Y";
+	if (scancode==SCAN_U) return "U";
+	if (scancode==SCAN_I) return "I";
+	if (scancode==SCAN_O) return "O";
+	if (scancode==SCAN_P) return "P";
+	if (scancode==SCAN_LANGLE) return "[";
+	if (scancode==SCAN_RANGLE) return "]";
+	if (scancode==SCAN_ENTER) return "Enter";
+	if (scancode==SCAN_CTRL) return "Ctrl";
+	if (scancode==SCAN_A) return "A";
+	if (scancode==SCAN_S) return "S";
+	if (scancode==SCAN_D) return "D";
+	if (scancode==SCAN_F) return "F";
+	if (scancode==SCAN_G) return "G";
+	if (scancode==SCAN_H) return "H";
+	if (scancode==SCAN_J) return "J";
+	if (scancode==SCAN_K) return "K";
+	if (scancode==SCAN_L) return "L";
+	if (scancode==SCAN_SCOLON) return ";";
+	if (scancode==SCAN_QUOTA) return "Single Quote";
+	if (scancode==SCAN_RQUOTA) return "Double Quote";
+	if (scancode==SCAN_LSHIFT) return "Left Shift";
+	if (scancode==SCAN_BSLASH) return "Backslash";
+	if (scancode==SCAN_Z) return "Z";
+	if (scancode==SCAN_X) return "X";
+	if (scancode==SCAN_C) return "C";
+	if (scancode==SCAN_V) return "V";
+	if (scancode==SCAN_B) return "B";
+	if (scancode==SCAN_N) return "N";
+	if (scancode==SCAN_M) return "M";
+	if (scancode==SCAN_COMMA) return ",";
+	if (scancode==SCAN_DOT) return ".";
+	if (scancode==SCAN_SLASH) return "Forward Slash";
+	if (scancode==SCAN_RSHIFT) return "Right Shift";
+	if (scancode==SCAN_STAR) return "Asterisk";
+	if (scancode==SCAN_ALT) return "ALT";
+	if (scancode==SCAN_SPACE) return "Space Bar";
+	if (scancode==SCAN_CAPS) return "Caps Lock";
+	if (scancode==SCAN_F1) return "F1";
+	if (scancode==SCAN_F2) return "F2";
+	if (scancode==SCAN_F3) return "F3";
+	if (scancode==SCAN_F4) return "F4";
+	if (scancode==SCAN_F5) return "F5";
+	if (scancode==SCAN_F6) return "F6";
+	if (scancode==SCAN_F7) return "F7";
+	if (scancode==SCAN_F8) return "F8";
+	if (scancode==SCAN_F9) return "F9";
+	if (scancode==SCAN_F10) return "F10";
+	if (scancode==SCAN_NUMLOCK) return "Numlock";
+	if (scancode==SCAN_SCRLOCK) return "Scroll Lock";
+	if (scancode==SCAN_HOME) return "Numpad Home";
+	if (scancode==SCAN_UP) return "Up";
+	if (scancode==SCAN_PGUP) return "Numpad Page Up";
+	if (scancode==SCAN_GMINUS) return "Numpad Minus";
+	if (scancode==SCAN_LEFT) return "Left";
+	if (scancode==SCAN_PAD_5) return "Numpad 5";
+	if (scancode==SCAN_RIGHT) return "Right";
+	if (scancode==SCAN_GPLUS) return "Numpad Plus";
+	if (scancode==SCAN_END) return "Numpad End";
+	if (scancode==SCAN_DOWN) return "Down";
+	if (scancode==SCAN_PGDN) return "Numpad Page Down";
+	if (scancode==SCAN_INSERT) return "Numpad Insert";
+	if (scancode==SCAN_DEL) return "Numpad Delete";
+	if (scancode==SCAN_F11) return "F11";
+	if (scancode==SCAN_F12) return "F12"; 
+}
+
+int ScancodeIsAllowed(int newcode)
+{
+	if (newcode==SCAN_UP || newcode==SCAN_LEFT || newcode==SCAN_DOWN || newcode==SCAN_RIGHT) return 0;
+	else if (newcode==attack_scancode || newcode==enter_scancode || newcode==cancel_scancode || newcode==heal_scancode || newcode==nova_scancode || newcode==fire_scancode) return 0;
+	else return 1;
+}
+

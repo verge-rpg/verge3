@@ -1,0 +1,175 @@
+#define STATE_DEAD    100
+#define STATE_ATK     101
+#define STATE_NORMAL  102
+#define STATE_HURT    103
+#define STATE_ATKHURT 104
+
+#define AI_LEVEL1     101
+#define AI_LEVEL2     102
+#define AI_LEVEL3     103
+#define AI_LEVEL4     104
+#define AI_BOSSL1     151
+
+struct HeartEntity
+{
+	int ent;
+	string chrfn;
+	string name;
+	int hp;
+	int maxhp;
+	int mp;
+	int maxmp;
+	int atk;
+	int def;
+	int exp;
+	int level;
+	int nextlevelexp;
+	int equip;
+	int state;
+	int ai;
+	int cooldown;
+	int magiccooldown;
+	int nextmovetime;
+};
+
+struct ItemDrop
+{
+	int ent;
+	string name;
+	string chrfn;
+	int hpadd;
+	int mpadd;
+	int vanishtime;
+	int nextblink;
+};
+
+HeartEntity MainPlayer;
+HeartEntity Enemies[100];
+ItemDrop Drops[100];
+int nextenemy=0;
+int nextdrop=0;
+
+void SetupPlayer(int x, int y, string name, string chrfile, int hp, int mp, int atk, int def)
+{
+	MainPlayer.ent=EntitySpawn(x,y,chrfile);
+	MainPlayer.chrfn=chrfile;
+	MainPlayer.name=name;
+	MainPlayer.hp=hp;
+	MainPlayer.maxhp=hp;
+	MainPlayer.mp=mp;
+	MainPlayer.maxmp=mp;
+	MainPlayer.atk=atk;
+	MainPlayer.def=def;
+	MainPlayer.exp=0;
+	MainPlayer.level=1;
+	MainPlayer.nextlevelexp=16;
+	MainPlayer.equip=0;
+	MainPlayer.state=STATE_NORMAL;
+	MainPlayer.cooldown=0;
+	MainPlayer.nextmovetime=0;
+	MainPlayer.magiccooldown=0;
+	entity.obstructable[MainPlayer.ent]=1;
+	entity.obstruct[MainPlayer.ent]=1;
+	SetPlayer(MainPlayer.ent);
+}
+
+void SetupEnemy(int x, int y, string name, string chrfile, int hp, int mp, int atk, int def, int exp, int ai)
+{
+	if (nextenemy<100)
+	{
+		Enemies[nextenemy].ent=EntitySpawn(x,y,chrfile);
+		Enemies[nextenemy].chrfn=chrfile;
+		Enemies[nextenemy].name=name;
+		Enemies[nextenemy].hp=hp;
+		Enemies[nextenemy].maxhp=hp;
+		Enemies[nextenemy].mp=mp;
+		Enemies[nextenemy].maxmp=mp;
+		Enemies[nextenemy].atk=atk;
+		Enemies[nextenemy].def=def;
+		Enemies[nextenemy].exp=exp;
+		Enemies[nextenemy].state=STATE_NORMAL;
+		Enemies[nextenemy].ai=ai;
+		Enemies[nextenemy].cooldown=0;
+		Enemies[nextenemy].magiccooldown=0;
+		Enemies[nextenemy].nextmovetime=0;
+		entity.obstructable[Enemies[nextenemy].ent]=1;
+		entity.obstruct[Enemies[nextenemy].ent]=1;
+		nextenemy+=1;
+	}
+}
+
+void DropRandomItem(int x, int y)
+{
+	string chrfile="sprites/potions.chr";
+	int rand=Random(0,50);
+	if (rand==50) //2% chance
+	{
+		Drops[nextdrop].ent=EntitySpawn(x,y,chrfile);
+		EntityMove(Drops[nextdrop].ent,"z0w10z1w10z2w10b");
+		Drops[nextdrop].name="Full Potion";
+		Drops[nextdrop].chrfn=chrfile;
+		Drops[nextdrop].hpadd=MainPlayer.maxhp;
+		Drops[nextdrop].mpadd=0;
+		Drops[nextdrop].vanishtime=systemtime+1000;
+		Drops[nextdrop].nextblink=systemtime+500;
+		nextdrop+=1;
+	}
+	else if (rand==49) //2% chance
+	{
+		Drops[nextdrop].ent=EntitySpawn(x,y,chrfile);
+		EntityMove(Drops[nextdrop].ent,"z6w10z7w10z8w10b");
+		Drops[nextdrop].name="Full Magic Potion";
+		Drops[nextdrop].chrfn=chrfile;
+		Drops[nextdrop].hpadd=0;
+		Drops[nextdrop].mpadd=MainPlayer.maxmp;
+		Drops[nextdrop].vanishtime=systemtime+1000;
+		Drops[nextdrop].nextblink=systemtime+500;
+		nextdrop+=1;
+	}
+	else if (rand>=40) //16% chance
+	{
+		Drops[nextdrop].ent=EntitySpawn(x,y,chrfile);
+		EntityMove(Drops[nextdrop].ent,"z9w10z10w10z11w10b");
+		Drops[nextdrop].name="Magic Potion";
+		Drops[nextdrop].chrfn=chrfile;
+		Drops[nextdrop].hpadd=0;
+		Drops[nextdrop].mpadd=10;
+		Drops[nextdrop].vanishtime=systemtime+1000;
+		Drops[nextdrop].nextblink=systemtime+500;
+		nextdrop+=1;
+	}
+	else if (rand>=20) //40% chance
+	{
+		Drops[nextdrop].ent=EntitySpawn(x,y,chrfile);
+		EntityMove(Drops[nextdrop].ent,"z3w10z4w10z5w10b");
+		Drops[nextdrop].name="Potion";
+		Drops[nextdrop].chrfn=chrfile;
+		Drops[nextdrop].hpadd=10;
+		Drops[nextdrop].mpadd=0;
+		Drops[nextdrop].vanishtime=systemtime+1000;
+		Drops[nextdrop].nextblink=systemtime+500;
+		nextdrop+=1;
+	}
+}
+
+void PickupItem(int index)
+{
+	entity.visible[Drops[index].ent]=0;
+	MainPlayer.hp+=Drops[index].hpadd;
+	MainPlayer.mp+=Drops[index].mpadd;
+	if (MainPlayer.hp>MainPlayer.maxhp) MainPlayer.hp=MainPlayer.maxhp;
+	if (MainPlayer.mp>MainPlayer.maxmp) MainPlayer.mp=MainPlayer.maxmp;
+	int i;
+	for(i=index; i<nextdrop-1; i++)
+	{
+		Drops[i].ent=Drops[i+1].ent;
+		Drops[i].name=Drops[i+1].name;
+		Drops[i].chrfn=Drops[i+1].chrfn;
+		Drops[i].hpadd=Drops[i+1].hpadd;
+		Drops[i].mpadd=Drops[i+1].mpadd;
+		Drops[i].vanishtime=Drops[i+1].vanishtime;
+		Drops[i].nextblink=Drops[i+1].nextblink;
+	}
+	nextdrop-=1;
+}
+

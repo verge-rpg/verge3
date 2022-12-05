@@ -1,0 +1,135 @@
+#define POOF_FRAME_WIDTH 32
+#define POOF_FRAME_HEIGHT 32
+#define POOF_FRAME_DELAY 5
+#define POOF_FRAME_COUNT 8
+
+int img_poof;
+
+void AddPoof(int ent)
+{
+	int s = GetSprite();
+	if (s == -1) return;
+	
+	sprite.image[s] = NewImage(POOF_FRAME_WIDTH, POOF_FRAME_HEIGHT);
+	GrabRegion(0, 0, POOF_FRAME_WIDTH, POOF_FRAME_HEIGHT, 0, 0, img_poof, sprite.image[s]);
+	sprite.ent[s] = ent;
+	sprite.thinkproc[s] = "PoofThink";
+	sprite.thinkrate[s] = 1;
+}
+
+void PoofThink()
+{
+
+	if (!sprite.image[event.sprite]) return;
+	if (sprite.timer[event.sprite] < POOF_FRAME_DELAY * POOF_FRAME_COUNT)
+	{
+		SetLucent(0);
+		GrabRegion(POOF_FRAME_WIDTH * (sprite.timer[event.sprite] / POOF_FRAME_DELAY),
+			0,
+			POOF_FRAME_WIDTH * (sprite.timer[event.sprite] / POOF_FRAME_DELAY) + POOF_FRAME_WIDTH,
+			POOF_FRAME_HEIGHT,
+			0, 0, img_poof, sprite.image[event.sprite]);
+	}
+	else
+	{
+		FreeImage(sprite.image[event.sprite]);
+		sprite.image[event.sprite] = 0;
+	}
+}
+
+int GetBouncyFrame(int x, int bounciness)
+{
+	if (x * bounciness > 360)
+	{
+		return 0;
+	}
+	int v = sin(x * bounciness) * (bounciness * 8) >> 16;
+	if (v < 0)
+	{
+		return abs(v) / 3;
+	}
+	return v;
+}
+
+void AddChainNotice(int ent, string text)
+{
+	int s = GetSprite();
+	if (s == -1) return;
+	
+	sprite.image[s] = NewImage(TextWidth(defaultfont, text), FontHeight(defaultfont));
+	//sprite.y[s] = entity.hoth[sprite.ent[s]] / 2;
+	RectFill(0, 0, ImageWidth(sprite.image[s]), ImageHeight(sprite.image[s]),
+		RGB(255, 0, 255), sprite.image[s]);
+	PrintString(0, 0, sprite.image[s], defaultfont, text);
+	sprite.ent[s] = ent;
+	sprite.thinkproc[s] = "ChainNoticeThink";
+	sprite.thinkrate[s] = 1;
+	
+}
+
+void ChainNoticeThink()
+{
+	if (sprite.timer[event.sprite])
+	{
+		sprite.y[event.sprite] = entity.hoth[sprite.ent[event.sprite]] / 2 - GetBouncyFrame(sprite.timer[event.sprite], 3);
+	}
+	if (sprite.timer[event.sprite] > 15)
+	{		
+		SpriteFadeOut();
+	}	
+}
+
+void SpawnBouncyDigits(string text, int ent, int fnt)
+{	
+	int i;
+	int s;
+	int x;
+	
+	x = -TextWidth(fnt, text) / 2;
+	
+	for (i = 0; i < len(text); i++)
+	{
+		s = GetSprite();
+		// Couldn't get sprite!
+		if (s == - 1) return;
+		sprite.image[s] = NewImage(TextWidth(fnt, mid(text, i, 1)), FontHeight(fnt));
+		RectFill(0, 0, ImageWidth(sprite.image[s]), ImageHeight(sprite.image[s]),
+			RGB(255, 0, 255), sprite.image[s]);
+		PrintString(0, 0, sprite.image[s], fnt, mid(text, i, 1));
+		sprite.timer[s] = -(i * 5);
+		sprite.ent[s] = ent;
+		//Log(str(entity.x[player.ent]) + " " + str(entity.y[player.ent]));
+		sprite.x[s] = x;
+		sprite.y[s] = entity.hoth[sprite.ent[s]] / 2;
+		// Make completely opaque
+		sprite.lucent[s] = 0;
+		// Thinking procs.
+		sprite.thinkproc[s] = "BouncyDigitThink";
+		sprite.thinkrate[s] = 1;
+		//bouncy_sprite_frame[s] = 0;
+		x += TextWidth(fnt, mid(text, i, 1));
+	}	
+}
+
+void BouncyDigitThink()
+{
+	if (sprite.timer[event.sprite])
+	{
+		sprite.y[event.sprite] = entity.hoth[sprite.ent[event.sprite]] / 2 - GetBouncyFrame(sprite.timer[event.sprite], 3);
+	}
+	if (sprite.timer[event.sprite] > 15)
+	{		
+		SpriteFadeOut();
+	}	
+
+}
+
+void SpriteFadeOut()
+{
+	sprite.lucent[event.sprite]++;
+	if (sprite.lucent[event.sprite] >= 100)
+	{
+		FreeImage(sprite.image[event.sprite]);
+		sprite.image[event.sprite] = 0;
+	}
+}

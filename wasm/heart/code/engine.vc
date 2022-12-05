@@ -1,0 +1,721 @@
+int GetHPLoss(int atkheartent, int defheartent)
+{
+	int randatk=atkheartent/4;
+	int randdef=defheartent/4;
+	int hploss=atkheartent+(Random(0-randatk,randatk))-defheartent+(Random(0-randdef,randdef));
+	//int hploss=atkheartent-defheartent;
+	if (hploss<=0) hploss=Random(0,1);
+	return hploss;
+}
+
+void GainEXP(int exp)
+{
+	int NewNextLevelEXP=0;
+	MainPlayer.exp+=exp;
+	int x;
+	int hpgain;
+	int mpgain;
+	if (MainPlayer.exp >= MainPlayer.nextlevelexp)
+	{
+		//level up code
+		while (MainPlayer.exp >= MainPlayer.nextlevelexp)
+		{
+			MainPlayer.level+=1;
+			MainPlayer.atk+=Random(0,Random(1,2));
+			MainPlayer.def+=Random(0,Random(1,2));
+			hpgain=Random(2,Random(3,6));
+			mpgain=Random(1,Random(2,3));
+			MainPlayer.hp+=hpgain;
+			MainPlayer.maxhp+=hpgain;
+			MainPlayer.mp+=mpgain;
+			MainPlayer.maxmp+=mpgain;
+			x=(MainPlayer.level+1);
+			NewNextLevelEXP=((0-317000 + (350674 * x) - (87966 * (x * x)) + (20754 * (x * x * x)))/10000);
+			MainPlayer.nextlevelexp=NewNextLevelEXP;
+		}
+		QueueStringAnimate(ImageWidth(screen)/2, ImageHeight(screen)-20, "Level "+str(MainPlayer.level)+"!", 0);
+	}
+}
+
+void Death()
+{
+	while (!key[enter_scancode])
+	{
+		Render();
+		printcenter(ImageWidth(screen)/2,(ImageHeight(screen)/2)-((FontHeight(mainfont)+4)*1),screen,mainfont,"GAME OVER");
+		printcenter(ImageWidth(screen)/2,(ImageHeight(screen)/2)+((FontHeight(mainfont)+4)*1),screen,mainfont,"You have died a horrible DEATH!");
+		printcenter(ImageWidth(screen)/2,(ImageHeight(screen)/2)+((FontHeight(mainfont)+4)*2),screen,mainfont,"See how you bleed!");
+		printcenter(ImageWidth(screen)/2,(ImageHeight(screen)/2)+((FontHeight(mainfont)+4)*3),screen,mainfont,"Press ENTER to exit to main menu");
+		ShowPage();
+	}
+	FadeOut(50);
+	deinit();
+	IntroMenu();
+}
+
+void MapSwitch(string mapfn, int x, int y)
+{
+	mapswitchx=x;
+	mapswitchy=y;
+	nextenemy=0;
+	nextdrop=0;
+	FadeOut(50);
+	currentmap=mapfn;
+	map(mapfn);
+}
+
+void PlayEnemyDeadSound(int i)
+{
+	if (strcmp(Enemies[i].name,"Dorg")==0) PlaySound(dorgdiesound, 60);
+	if (strcmp(Enemies[i].name,"Shell")==0) PlaySound(shelldiesound, 80);
+	if (strcmp(Enemies[i].name,"Bold Wolf")==0) PlaySound(bolddiesound, 60);
+	if (strcmp(Enemies[i].name,"Gnome Wizard")==0) PlaySound(effdiesound, 80);
+}
+
+void PlayerAttack()
+{
+	int weaponlength=12;
+	int i;
+	int player_x1;
+	int player_y1;
+	int player_x2;
+	int player_y2;
+	int ent_x1;
+	int ent_y1;
+	int ent_x2;
+	int ent_y2;
+	int hploss;
+	if (MainPlayer.state==STATE_ATK || MainPlayer.state==STATE_ATKHURT)
+	{
+		for (i=0; i<nextenemy; i++)
+		{
+			if (Enemies[i].state!=STATE_DEAD)
+			{
+				player_x1=entity.x[MainPlayer.ent];
+				player_x2=entity.x[MainPlayer.ent]+entity.hotw[MainPlayer.ent];
+				player_y1=entity.y[MainPlayer.ent];
+				player_y2=entity.y[MainPlayer.ent]+entity.hoth[MainPlayer.ent];
+				ent_x1=entity.x[Enemies[i].ent];
+				ent_x2=entity.x[Enemies[i].ent]+entity.hotw[Enemies[i].ent];
+				ent_y1=entity.y[Enemies[i].ent];
+				ent_y2=entity.y[Enemies[i].ent]+entity.hoth[Enemies[i].ent];
+				hploss=GetHPLoss(MainPlayer.atk,Enemies[i].def);
+				switch (entity.face[MainPlayer.ent])
+				{
+					case 1:
+						if (ent_x1>=player_x1-8 && ent_x2<=player_x2+8 && ent_y1<player_y1 && ent_y2>=player_y1-weaponlength) //entity is above the player 
+						{
+							if (MainPlayer.equip==0) PlaySound(punchsound, 80);
+							if (MainPlayer.equip==1) PlaySound(swordsound, 80);
+							QueueHPAnimate(Enemies[i].ent, hploss, 0);
+							if (hploss<Enemies[i].hp)
+							{
+								Enemies[i].hp-=hploss;
+								EntityMove(Enemies[i].ent,"z42w10u1w5d0z0");
+							}
+							else
+							{
+								Enemies[i].hp=0;
+								Enemies[i].state=STATE_DEAD;
+								PlayEnemyDeadSound(i);
+								DropRandomItem(ent_x1/16,ent_y1/16);
+								entity.obstruct[Enemies[i].ent]=0;
+								entity.obstructable[Enemies[i].ent]=0;
+								EntityMove(Enemies[i].ent,"z12w5u1w5z13w5z14w5z15w5z16w5z17");
+								GainEXP(Enemies[i].exp);
+							}
+						}
+					case 2:
+						if (ent_x1>=player_x1-8 && ent_x2<=player_x2+8 && ent_y1>=player_y1 && ent_y1-weaponlength<=player_y2+weaponlength) //entity is below the player 
+						{
+							if (MainPlayer.equip==0) PlaySound(punchsound, 80);
+							if (MainPlayer.equip==1) PlaySound(swordsound, 80);
+							QueueHPAnimate(Enemies[i].ent, hploss, 0);
+							if (hploss<Enemies[i].hp)
+							{
+								Enemies[i].hp-=hploss;
+								EntityMove(Enemies[i].ent,"z43w10d1w5u0z0");
+							}
+							else
+							{
+								Enemies[i].hp=0;
+								Enemies[i].state=STATE_DEAD;
+								PlayEnemyDeadSound(i);
+								DropRandomItem(ent_x1/16,ent_y1/16);
+								entity.obstruct[Enemies[i].ent]=0;
+								entity.obstructable[Enemies[i].ent]=0;
+								EntityMove(Enemies[i].ent,"z12w5d1w5z13w5z14w5z15w5z16w5z17");
+								GainEXP(Enemies[i].exp);
+							}
+						}
+					case 3:
+						if (ent_y1>=player_y1-8 && ent_y2<=player_y2+8 && ent_x1<player_x1 && ent_x2>=player_x1-weaponlength) //entity is to the left of the player 
+						{
+							if (MainPlayer.equip==0) PlaySound(punchsound, 80);
+							if (MainPlayer.equip==1) PlaySound(swordsound, 80);
+							QueueHPAnimate(Enemies[i].ent, hploss, 0);
+							if (hploss<Enemies[i].hp)
+							{
+								Enemies[i].hp-=hploss;
+								EntityMove(Enemies[i].ent,"z45w10l1w5r0z0");
+							}
+							else
+							{
+								Enemies[i].hp=0;
+								Enemies[i].state=STATE_DEAD;
+								PlayEnemyDeadSound(i);
+								DropRandomItem(ent_x1/16,ent_y1/16);
+								entity.obstruct[Enemies[i].ent]=0;
+								entity.obstructable[Enemies[i].ent]=0;
+								EntityMove(Enemies[i].ent,"z12w5l1w5z13w5z14w5z15w5z16w5z17");
+								GainEXP(Enemies[i].exp);
+							}
+						}
+					case 4:
+						if (ent_y1>=player_y1-8 && ent_y2<=player_y2+8 && ent_x1>=player_x1 && ent_x1-weaponlength<=player_x2+weaponlength) //entity is to the right of the player 
+						{
+							if (MainPlayer.equip==0) PlaySound(punchsound, 80);
+							if (MainPlayer.equip==1) PlaySound(swordsound, 80);
+							QueueHPAnimate(Enemies[i].ent, hploss, 0);
+							if (hploss<Enemies[i].hp)
+							{
+								Enemies[i].hp-=hploss;
+								EntityMove(Enemies[i].ent,"z44w10r1w5l0z0");
+							}
+							else
+							{
+								Enemies[i].hp=0;
+								Enemies[i].state=STATE_DEAD;
+								PlayEnemyDeadSound(i);
+								DropRandomItem(ent_x1/16,ent_y1/16);
+								entity.obstruct[Enemies[i].ent]=0;
+								entity.obstructable[Enemies[i].ent]=0;
+								EntityMove(Enemies[i].ent,"z12w5r1w5z13w5z14w5z15w5z16w5z17");
+								GainEXP(Enemies[i].exp);
+							}
+						}
+				}
+			}
+		}
+	}
+}
+
+void PlayerAttackAllEnemies(int damage)
+{
+	int i;
+	int player_x1;
+	int player_y1;
+	int player_x2;
+	int player_y2;
+	int ent_x1;
+	int ent_y1;
+	int ent_x2;
+	int ent_y2;
+	int hploss=damage;
+	for (i=0; i<nextenemy; i++)
+	{
+		if (Enemies[i].state!=STATE_DEAD)
+		{
+			player_x1=entity.x[MainPlayer.ent];
+			player_x2=entity.x[MainPlayer.ent]+entity.hotw[MainPlayer.ent];
+			player_y1=entity.y[MainPlayer.ent];
+			player_y2=entity.y[MainPlayer.ent]+entity.hoth[MainPlayer.ent];
+			ent_x1=entity.x[Enemies[i].ent];
+			ent_x2=entity.x[Enemies[i].ent]+entity.hotw[Enemies[i].ent];
+			ent_y1=entity.y[Enemies[i].ent];
+			ent_y2=entity.y[Enemies[i].ent]+entity.hoth[Enemies[i].ent];
+			QueueHPAnimate(Enemies[i].ent, hploss, 0);
+			if (hploss<Enemies[i].hp)
+			{
+				Enemies[i].hp-=hploss;
+				EntityMove(Enemies[i].ent,"z42w10u1w5d0z0");
+			}
+			else
+			{
+				Enemies[i].hp=0;
+				Enemies[i].state=STATE_DEAD;
+				DropRandomItem(ent_x1/16,ent_y1/16);
+				entity.obstruct[Enemies[i].ent]=0;
+				entity.obstructable[Enemies[i].ent]=0;
+				EntityMove(Enemies[i].ent,"z12w5u1w5z13w5z14w5z15w5z16w5z17");
+				GainEXP(Enemies[i].exp);
+			}
+		}
+	}
+	MainPlayer.magiccooldown=systemtime+100;
+}
+
+void PlayerAttackPoint(int x, int y, int r, int damage, int direction)
+{
+	int i;
+	int player_x1;
+	int player_y1;
+	int player_x2;
+	int player_y2;
+	int ent_x1;
+	int ent_y1;
+	int ent_x2;
+	int ent_y2;
+	int hploss=damage;
+	for (i=0; i<nextenemy; i++)
+	{
+		if (Enemies[i].state!=STATE_DEAD)
+		{
+			player_x1=entity.x[MainPlayer.ent];
+			player_x2=entity.x[MainPlayer.ent]+entity.hotw[MainPlayer.ent];
+			player_y1=entity.y[MainPlayer.ent];
+			player_y2=entity.y[MainPlayer.ent]+entity.hoth[MainPlayer.ent];
+			ent_x1=entity.x[Enemies[i].ent];
+			ent_x2=entity.x[Enemies[i].ent]+entity.hotw[Enemies[i].ent];
+			ent_y1=entity.y[Enemies[i].ent];
+			ent_y2=entity.y[Enemies[i].ent]+entity.hoth[Enemies[i].ent];
+			if (ent_x1>=x-r && ent_x2<=x+r && ent_y1>=y-r && ent_y2<=y+r)
+			{
+				switch (direction)
+				{
+					case 1:
+						QueueHPAnimate(Enemies[i].ent, hploss, 0);
+						if (hploss<Enemies[i].hp)
+						{
+							Enemies[i].hp-=hploss;
+							EntityMove(Enemies[i].ent,"z42w10r1u1w5d0z0");
+						}
+						else
+						{
+							Enemies[i].hp=0;
+							Enemies[i].state=STATE_DEAD;
+							PlayEnemyDeadSound(i);
+							DropRandomItem(ent_x1/16,ent_y1/16);
+							entity.obstruct[Enemies[i].ent]=0;
+							entity.obstructable[Enemies[i].ent]=0;
+							EntityMove(Enemies[i].ent,"z12w5u1w5z13w5z14w5z15w5z16w5z17");
+							GainEXP(Enemies[i].exp);
+						}
+					case 2:
+						QueueHPAnimate(Enemies[i].ent, hploss, 0);
+						if (hploss<Enemies[i].hp)
+						{
+							Enemies[i].hp-=hploss;
+							EntityMove(Enemies[i].ent,"z43w10l1d1w5u0z0");
+						}
+						else
+						{
+							Enemies[i].hp=0;
+							Enemies[i].state=STATE_DEAD;
+							PlayEnemyDeadSound(i);
+							DropRandomItem(ent_x1/16,ent_y1/16);
+							entity.obstruct[Enemies[i].ent]=0;
+							entity.obstructable[Enemies[i].ent]=0;
+							EntityMove(Enemies[i].ent,"z12w5d1w5z13w5z14w5z15w5z16w5z17");
+							GainEXP(Enemies[i].exp);
+						}
+					case 3:
+						QueueHPAnimate(Enemies[i].ent, hploss, 0);
+						if (hploss<Enemies[i].hp)
+						{
+							Enemies[i].hp-=hploss;
+							EntityMove(Enemies[i].ent,"z45w10u1l1w5r0z0");
+						}
+						else
+						{
+							Enemies[i].hp=0;
+							Enemies[i].state=STATE_DEAD;
+							PlayEnemyDeadSound(i);
+							DropRandomItem(ent_x1/16,ent_y1/16);
+							entity.obstruct[Enemies[i].ent]=0;
+							entity.obstructable[Enemies[i].ent]=0;
+							EntityMove(Enemies[i].ent,"z12w5l1w5z13w5z14w5z15w5z16w5z17");
+							GainEXP(Enemies[i].exp);
+						}
+					case 4:
+						QueueHPAnimate(Enemies[i].ent, hploss, 0);
+						if (hploss<Enemies[i].hp)
+						{
+							Enemies[i].hp-=hploss;
+							EntityMove(Enemies[i].ent,"z44w10u1r1w5l0z0");
+						}
+						else
+						{
+							Enemies[i].hp=0;
+							Enemies[i].state=STATE_DEAD;
+							PlayEnemyDeadSound(i);
+							DropRandomItem(ent_x1/16,ent_y1/16);
+							entity.obstruct[Enemies[i].ent]=0;
+							entity.obstructable[Enemies[i].ent]=0;
+							EntityMove(Enemies[i].ent,"z12w5r1w5z13w5z14w5z15w5z16w5z17");
+							GainEXP(Enemies[i].exp);
+						}
+				}
+			}
+		}
+	}
+}
+
+void EnemyAttack(int enemyindex)
+{
+	int weaponlength=12;
+	int i;
+	int player_x1;
+	int player_y1;
+	int player_x2;
+	int player_y2;
+	int ent_x1;
+	int ent_y1;
+	int ent_x2;
+	int ent_y2;
+	int hploss;
+	if (Enemies[enemyindex].state==STATE_ATK && MainPlayer.state!=STATE_HURT && MainPlayer.state!=STATE_ATKHURT && MainPlayer.state!=STATE_DEAD)
+	{
+		player_x1=entity.x[MainPlayer.ent];
+		player_x2=entity.x[MainPlayer.ent]+entity.hotw[MainPlayer.ent];
+		player_y1=entity.y[MainPlayer.ent];
+		player_y2=entity.y[MainPlayer.ent]+entity.hoth[MainPlayer.ent];
+		ent_x1=entity.x[Enemies[enemyindex].ent];
+		ent_x2=entity.x[Enemies[enemyindex].ent]+entity.hotw[Enemies[enemyindex].ent];
+		ent_y1=entity.y[Enemies[enemyindex].ent];
+		ent_y2=entity.y[Enemies[enemyindex].ent]+entity.hoth[Enemies[enemyindex].ent];
+		hploss=GetHPLoss(Enemies[enemyindex].atk,MainPlayer.def);
+		switch (entity.face[Enemies[enemyindex].ent])
+		{
+			case 1:
+				if (player_x1>=ent_x1-8 && player_x2<=ent_x2+8 && player_y1<ent_y1 && player_y2>=ent_y1-weaponlength) //entity is above the player 
+				{
+					PlaySound(punchsound, 80);
+					QueueHPAnimate(MainPlayer.ent, hploss, 0);
+					if (hploss<MainPlayer.hp)
+					{
+						MainPlayer.hp-=hploss;
+						MainPlayer.state=STATE_HURT;
+						MainPlayer.nextmovetime=systemtime+100;
+						PlayerMove("z42w10u1w5d0z0");
+					}
+					else
+					{
+						MainPlayer.hp=0;
+						MainPlayer.state=STATE_DEAD;
+						entity.obstruct[MainPlayer.ent]=0;
+						entity.obstructable[MainPlayer.ent]=0;
+						cameratracker=MainPlayer.ent;
+						cameratracking=2;
+						SetPlayer(0-1);
+						EntityMove(MainPlayer.ent,"z12w5u1w5z13w5z14w5z15w5z16w5z17");
+						Death();
+					}
+				}
+			case 2:
+				if (player_x1>=ent_x1-8 && player_x2<=ent_x2+8 && player_y1>=ent_y1 && player_y1-weaponlength<=ent_y2+weaponlength) //entity is below the player 
+				{
+					PlaySound(punchsound, 80);
+					QueueHPAnimate(MainPlayer.ent, hploss, 0);
+					if (hploss<MainPlayer.hp)
+					{
+						MainPlayer.hp-=hploss;
+						MainPlayer.state=STATE_HURT;
+						MainPlayer.nextmovetime=systemtime+100;
+						PlayerMove("z43w10d1w5u0z0");
+					}
+					else
+					{
+						MainPlayer.hp=0;
+						MainPlayer.state=STATE_DEAD;
+						entity.obstruct[MainPlayer.ent]=0;
+						entity.obstructable[MainPlayer.ent]=0;
+						cameratracker=MainPlayer.ent;
+						cameratracking=2;
+						SetPlayer(0-1);
+						EntityMove(MainPlayer.ent,"z12w5d1w5z13w5z14w5z15w5z16w5z17");
+						Death();
+					}
+				}
+			case 3:
+				if (player_y1>=ent_y1-8 && player_y2<=ent_y2+8 && player_x1<ent_x1 && player_x2>=ent_x1-weaponlength) //entity is to the left of the player 
+				{
+					PlaySound(punchsound, 80);
+					QueueHPAnimate(MainPlayer.ent, hploss, 0);
+					if (hploss<MainPlayer.hp)
+					{
+						MainPlayer.hp-=hploss;
+						MainPlayer.state=STATE_HURT;
+						MainPlayer.nextmovetime=systemtime+100;
+						PlayerMove("z45w10l1w5r0z0");
+					}
+					else
+					{
+						MainPlayer.hp=0;
+						MainPlayer.state=STATE_DEAD;
+						entity.obstruct[MainPlayer.ent]=0;
+						entity.obstructable[MainPlayer.ent]=0;
+						cameratracker=MainPlayer.ent;
+						cameratracking=2;
+						SetPlayer(0-1);
+						EntityMove(MainPlayer.ent,"z12w5l1w5z13w5z14w5z15w5z16w5z17");
+						Death();
+					}
+				}
+			case 4:
+				if (player_y1>=ent_y1-8 && player_y2<=ent_y2+8 && player_x1>=ent_x1 && player_x1-weaponlength<=ent_x2+weaponlength) //entity is to the right of the player 
+				{
+					PlaySound(punchsound, 80);
+					QueueHPAnimate(MainPlayer.ent, hploss, 0);
+					if (hploss<MainPlayer.hp)
+					{
+						MainPlayer.hp-=hploss;
+						MainPlayer.state=STATE_HURT;
+						MainPlayer.nextmovetime=systemtime+100;
+						PlayerMove("z44w10r1w5l0z0");
+					}
+					else
+					{
+						MainPlayer.hp=0;
+						MainPlayer.state=STATE_DEAD;
+						entity.obstruct[MainPlayer.ent]=0;
+						entity.obstructable[MainPlayer.ent]=0;
+						cameratracker=MainPlayer.ent;
+						cameratracking=2;
+						SetPlayer(0-1);
+						EntityMove(MainPlayer.ent,"z12w5r1w5z13w5z14w5z15w5z16w5z17");
+						Death();
+					}
+				}
+		}
+		Enemies[enemyindex].cooldown=systemtime+100;
+	}
+}
+
+void EnemyAttackPoint(int x, int y, int r, int damage, int direction)
+{
+	int i;
+	int ent_x1;
+	int ent_y1;
+	int ent_x2;
+	int ent_y2;
+	int hploss=damage;
+	
+	ent_x1=entity.x[MainPlayer.ent];
+	ent_x2=entity.x[MainPlayer.ent]+entity.hotw[MainPlayer.ent];
+	ent_y1=entity.y[MainPlayer.ent];
+	ent_y2=entity.y[MainPlayer.ent]+entity.hoth[MainPlayer.ent];
+	if (MainPlayer.state!=STATE_HURT && MainPlayer.state!=STATE_ATKHURT && MainPlayer.state!=STATE_DEAD)
+	{
+		if (ent_x1>=x-r && ent_x2<=x+r && ent_y1>=y-r && ent_y2<=y+r)
+		{
+			switch (direction)
+			{
+				case 1:
+					PlaySound(punchsound, 80);
+					QueueHPAnimate(MainPlayer.ent, hploss, 0);
+					if (hploss<MainPlayer.hp)
+					{
+						MainPlayer.hp-=hploss;
+						MainPlayer.state=STATE_HURT;
+						MainPlayer.nextmovetime=systemtime+100;
+						PlayerMove("z42w10u1w5d0z0");
+					}
+					else
+					{
+						MainPlayer.hp=0;
+						MainPlayer.state=STATE_DEAD;
+						entity.obstruct[MainPlayer.ent]=0;
+						entity.obstructable[MainPlayer.ent]=0;
+						cameratracker=MainPlayer.ent;
+						cameratracking=2;
+						SetPlayer(0-1);
+						EntityMove(MainPlayer.ent,"z12w5u1w5z13w5z14w5z15w5z16w5z17");
+						Death();
+					}
+				case 2:
+					PlaySound(punchsound, 80);
+					QueueHPAnimate(MainPlayer.ent, hploss, 0);
+					if (hploss<MainPlayer.hp)
+					{
+						MainPlayer.hp-=hploss;
+						MainPlayer.state=STATE_HURT;
+						MainPlayer.nextmovetime=systemtime+100;
+						PlayerMove("z43w10d1w5u0z0");
+					}
+					else
+					{
+						MainPlayer.hp=0;
+						MainPlayer.state=STATE_DEAD;
+						entity.obstruct[MainPlayer.ent]=0;
+						entity.obstructable[MainPlayer.ent]=0;
+						cameratracker=MainPlayer.ent;
+						cameratracking=2;
+						SetPlayer(0-1);
+						EntityMove(MainPlayer.ent,"z12w5d1w5z13w5z14w5z15w5z16w5z17");
+						Death();
+					}
+				case 3:
+					PlaySound(punchsound, 80);
+					QueueHPAnimate(MainPlayer.ent, hploss, 0);
+					if (hploss<MainPlayer.hp)
+					{
+						MainPlayer.hp-=hploss;
+						MainPlayer.state=STATE_HURT;
+						MainPlayer.nextmovetime=systemtime+100;
+						PlayerMove("z45w10l1w5r0z0");
+					}
+					else
+					{
+						MainPlayer.hp=0;
+						MainPlayer.state=STATE_DEAD;
+						entity.obstruct[MainPlayer.ent]=0;
+						entity.obstructable[MainPlayer.ent]=0;
+						cameratracker=MainPlayer.ent;
+						cameratracking=2;
+						SetPlayer(0-1);
+						EntityMove(MainPlayer.ent,"z12w5l1w5z13w5z14w5z15w5z16w5z17");
+						Death();
+					}
+				case 4:
+					PlaySound(punchsound, 80);
+					QueueHPAnimate(MainPlayer.ent, hploss, 0);
+					if (hploss<MainPlayer.hp)
+					{
+						MainPlayer.hp-=hploss;
+						MainPlayer.state=STATE_HURT;
+						MainPlayer.nextmovetime=systemtime+100;
+						PlayerMove("z44w10r1w5l0z0");
+					}
+					else
+					{
+						MainPlayer.hp=0;
+						MainPlayer.state=STATE_DEAD;
+						entity.obstruct[MainPlayer.ent]=0;
+						entity.obstructable[MainPlayer.ent]=0;
+						cameratracker=MainPlayer.ent;
+						cameratracking=2;
+						SetPlayer(0-1);
+						EntityMove(MainPlayer.ent,"z12w5r1w5z13w5z14w5z15w5z16w5z17");
+						Death();
+					}
+			}
+		}
+	}
+}
+
+int Player__DetectWallCollision()
+{
+	int x, y;
+	for(x=0; x<=entity.hotw[MainPlayer.ent]; x++)
+	{
+		for(y=0; y<=entity.hoth[MainPlayer.ent]; y++)
+		{
+			if(GetObsPixel(entity.x[MainPlayer.ent]+x,entity.y[MainPlayer.ent]+y)) return 1;
+		}
+	}
+	return 0;
+}
+
+void PlayerHook()
+{
+	int time;
+	int i;
+	int player_centx=(entity.hotw[MainPlayer.ent]/2)+entity.x[MainPlayer.ent];
+	int player_centy=(entity.hoth[MainPlayer.ent]/2)+entity.y[MainPlayer.ent];
+	int drop_x1;
+	int drop_x2;
+	int drop_y1;
+	int drop_y2;
+	if (Player__DetectWallCollision())
+	{
+		MainPlayer.state=STATE_HURT;
+		MainPlayer.nextmovetime=30;
+	}
+	//else entity.obstructable[MainPlayer.ent]=1;
+	for(i=0; i<nextdrop; i++)
+	{
+		drop_x1=entity.x[Drops[i].ent];
+		drop_x2=entity.x[Drops[i].ent]+entity.hotw[Drops[i].ent];
+		drop_y1=entity.y[Drops[i].ent];
+		drop_y2=entity.y[Drops[i].ent]+entity.hoth[Drops[i].ent];
+		if (player_centx>=drop_x1 && player_centx<=drop_x2 && player_centy>=drop_y1 && player_centy<=drop_y2)
+		{
+			PickupItem(i);
+		}
+	}
+	if (MainPlayer.state==STATE_HURT || MainPlayer.state==STATE_ATKHURT)
+	{
+		if (MainPlayer.nextmovetime>systemtime)
+		{
+			time=systemtime-MainPlayer.nextmovetime;
+			if ((time/5)%2==0) entity.visible[MainPlayer.ent]=0;
+			else entity.visible[MainPlayer.ent]=1;
+		}
+		else
+		{
+			MainPlayer.state=STATE_NORMAL;
+			entity.visible[MainPlayer.ent]=1;
+		}
+	}
+	else if(entity.visible[MainPlayer.ent]==0) entity.visible[MainPlayer.ent]=1;
+}
+
+void EnemyHook()
+{
+	int i;
+	for (i=0; i<nextenemy; i++)
+	{
+		if (Enemies[i].state!=STATE_DEAD)
+		{
+			if (entity.movecode[Enemies[i].ent]==3 && systemtime>=Enemies[i].cooldown && systemtime>=Enemies[i].nextmovetime)
+			{
+				EntityStop(Enemies[i].ent);
+			}
+			AIStep(i);
+		}
+	}
+}
+
+void PickupHook()
+{
+	int i, j;
+	int time;
+	for (i=0; i<nextdrop; i++)
+	{
+		time=(Drops[i].vanishtime-systemtime)/200;
+		if(systemtime>=Drops[i].nextblink)
+		{
+			if (entity.visible[Drops[i].ent])
+			{
+				Drops[i].nextblink=systemtime+10;
+				entity.visible[Drops[i].ent]=0;
+			}
+			else
+			{
+				Drops[i].nextblink=systemtime+(10*time);
+				entity.visible[Drops[i].ent]=1;
+			}
+		}
+		if(systemtime>=Drops[i].vanishtime)
+		{
+			entity.visible[Drops[i].ent]=0;
+			for(j=i; j<nextdrop-1; j++)
+			{
+				Drops[j].ent=Drops[j+1].ent;
+				Drops[j].name=Drops[j+1].name;
+				Drops[j].chrfn=Drops[j+1].chrfn;
+				Drops[j].hpadd=Drops[j+1].hpadd;
+				Drops[j].mpadd=Drops[j+1].mpadd;
+				Drops[j].vanishtime=Drops[j+1].vanishtime;
+				Drops[j].nextblink=Drops[j+1].nextblink;
+			}
+			nextdrop-=1;
+		}	
+	}
+}
+
+void CleanUp()
+{
+	FreeSong(music);
+	//FreeSound(healsound);
+	FreeSound(novasound);
+	FreeSound(firesound);
+	FreeSound(punchsound);
+	FreeSound(swordsound);
+	FreeSound(dorgdiesound);
+	FreeSound(shelldiesound);
+	FreeSound(bolddiesound);
+	FreeSound(effdiesound);
+}
+
