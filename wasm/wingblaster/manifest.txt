@@ -2,7 +2,7 @@ background.png
 bigbadblocky.png
 blocky.png
 blockymad.png
-bosshit.WAV
+bosshit.wav
 config.exe
 Copy of starfield.png
 curvelaser.png
@@ -15,7 +15,7 @@ explode.wav
 font_white.png
 framethrottle.vc
 hit.wav
-jelly1.WAV
+jelly1.wav
 laser1.png
 laser2.png
 lasr1.png
@@ -35,7 +35,7 @@ shot.png
 shot.wav
 shuriken.png
 starfield.png
-sword2.WAV
+sword2.wav
 system-.vc
 system.vc
 system.xvc

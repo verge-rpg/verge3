@@ -32,6 +32,10 @@ PfnDliHook __pfnDliFailureHook2;
 #include "snd_oakra.h"
 #endif
 
+#ifdef SND_USE_WASM
+#include "snd_wasm.h"
+#endif
+
 SoundEngine *snd_engine;
 char playingsng[80] = {0};
 
@@ -59,6 +63,10 @@ bool snd_Init(int soundEngine) {
 #ifdef SND_USE_AUDIERE
 	if(soundEngine == 2)
 		snd_engine = new SoundEngine_Audiere();
+#endif
+
+#ifdef SND_USE_WASM
+    snd_engine = new SoundEngine_Wasm();
 #endif
 
 	bool ret;

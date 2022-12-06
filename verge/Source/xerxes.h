@@ -69,6 +69,9 @@ extern int G_TILESIZE;
 #define SND_USE_FMOD
 #endif
 
+#ifdef __EMSCRIPTEN__
+#define SND_USE_WASM
+#endif
 
 //mbg 9/5/05 determine whether to use asm in ddblit
 //and other configs too

@@ -1216,10 +1216,19 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  271584: ($0) => { console.log(UTF8ToString($0)); },  
- 271619: ($0) => { alert(UTF8ToString($0)); }
+  271680: ($0) => { console.log(UTF8ToString($0)); },  
+ 271715: ($0) => { alert(UTF8ToString($0)); }
 };
 function wasm_nextFrame() { return Asyncify.handleSleep(requestAnimationFrame); }
+function wasm_initSound() { const ctx = new AudioContext(); const musicGainNode = ctx.createGain(); musicGainNode.connect(ctx.destination); window.verge.audioContext = ctx; window.verge.musicGainNode = musicGainNode; window.verge.sounds = {}; window.verge.soundChannels = {}; window.verge.soundChannelNextID = 1; if (ctx.audioWorklet) { window.verge.mptInited = ctx.audioWorklet.addModule('mpt-worklet.js').then(() => { window.verge.mptNode = new AudioWorkletNode(ctx, 'libopenmpt-processor', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2], }); window.verge.mptNode.connect(musicGainNode); }).catch(err => console.log('failed to init audio worklet', err)); } else { console.warn("AudioWorklet is not supported in this browser.  No music.  Sorry!"); window.verge.mptInited = Promise.resolve(); } }
+function wasm_loadSound(filename,data,length) { const name = UTF8ToString(filename); const audioData = HEAPU8.buffer.slice(data, data + length); return Asyncify.handleSleep(wakeUp => { window.verge.audioContext.decodeAudioData( audioData, decoded => { window.verge.sounds[name] = decoded; wakeUp(); }, () => { console.log("Unable to load sound data for ", name); wakeUp(); } ); }); }
+function wasm_playSound(filename,volume) { const name = UTF8ToString(filename); const sound = window.verge.sounds[name]; if (!sound) { console.error("Unknown sound ", name); return; } const ctx = window.verge.audioContext; const channelID = window.verge.soundChannelNextID++; let destination = ctx.destination; const gainNode = volume < 100 ? ctx.createGain() : null; if (gainNode != null) { gainNode.gain.value = volume / 100; gainNode.connect(destination); destination = gainNode; } const source = ctx.createBufferSource(); source.connect(destination); source.buffer = sound; source.addEventListener('ended', () => { delete window.verge.soundChannels[channelID]; if (gainNode != null) { gainNode.disconnect(); } }); source.start(0); window.verge.soundChannels[channelID] = source; }
+function wasm_freeSound(filename) { const name = UTF8ToString(filename); const sound = window.verge.sounds[name]; if (!sound) { console.error("Unknown sound ", name); return; } delete window.verge.sounds[name]; }
+function wasm_stopSound(channelID) { const source = window.verge.soundChannels[channelID]; if (source) { source.stop(); } }
+function wasm_isSoundPlaying(channelID) { const source = window.verge.soundChannels[channelID]; return typeof(source) !== 'undefined'; }
+function wasm_playMusic(data,length) { const buffer = Module.HEAP8.buffer.slice(data, data + length); const songData = new Uint8Array(buffer); window.verge.mptInited.then(() => { if (!window.verge.mptNode) { return; } window.verge.mptNode.port.postMessage({ songData: songData, setRepeatCount: -1 }); }); }
+function wasm_stopMusic() { window.verge.mptInited.then(() => { window.verge.mptNode.port.postMessage({ songData: new ArrayBuffer(0) }); }); }
+function wasm_setMusicVolume(volume) { console.log('setvolume', volume); window.verge.musicGainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime); }
 
 
 
@@ -8716,7 +8725,7 @@ function wasm_nextFrame() { return Asyncify.handleSleep(requestAnimationFrame); 
   function runtimeKeepalivePop() {
     }
   var Asyncify = {instrumentWasmImports:function(imports) {
-        var ASYNCIFY_IMPORTS = ["env.fetchSync","env.downloadAll","env.wasm_nextFrame","env.emscripten_sleep","env.invoke_*","env.emscripten_sleep","env.emscripten_wget","env.emscripten_wget_data","env.emscripten_idb_load","env.emscripten_idb_store","env.emscripten_idb_delete","env.emscripten_idb_exists","env.emscripten_idb_load_blob","env.emscripten_idb_store_blob","env.SDL_Delay","env.emscripten_scan_registers","env.emscripten_lazy_load_code","env.emscripten_fiber_swap","wasi_snapshot_preview1.fd_sync","env.__wasi_fd_sync","env._emval_await","env._dlopen_js","env.__asyncjs__*"].map((x) => x.split('.')[1]);
+        var ASYNCIFY_IMPORTS = ["env.fetchSync","env.downloadAll","env.wasm_nextFrame","env.emscripten_sleep","env.wasm_loadSound","env.invoke_*","env.emscripten_sleep","env.emscripten_wget","env.emscripten_wget_data","env.emscripten_idb_load","env.emscripten_idb_store","env.emscripten_idb_delete","env.emscripten_idb_exists","env.emscripten_idb_load_blob","env.emscripten_idb_store_blob","env.SDL_Delay","env.emscripten_scan_registers","env.emscripten_lazy_load_code","env.emscripten_fiber_swap","wasi_snapshot_preview1.fd_sync","env.__wasi_fd_sync","env._emval_await","env._dlopen_js","env.__asyncjs__*"].map((x) => x.split('.')[1]);
         for (var x in imports) {
           (function(x) {
             var original = imports[x];
@@ -9306,7 +9315,16 @@ var asmLibraryArg = {
   "strftime": _strftime,
   "strftime_l": _strftime_l,
   "system": _system,
-  "wasm_nextFrame": wasm_nextFrame
+  "wasm_freeSound": wasm_freeSound,
+  "wasm_initSound": wasm_initSound,
+  "wasm_isSoundPlaying": wasm_isSoundPlaying,
+  "wasm_loadSound": wasm_loadSound,
+  "wasm_nextFrame": wasm_nextFrame,
+  "wasm_playMusic": wasm_playMusic,
+  "wasm_playSound": wasm_playSound,
+  "wasm_setMusicVolume": wasm_setMusicVolume,
+  "wasm_stopMusic": wasm_stopMusic,
+  "wasm_stopSound": wasm_stopSound
 };
 Asyncify.instrumentWasmImports(asmLibraryArg);
 var asm = createWasm();
@@ -9517,8 +9535,8 @@ var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = createExportWrap
 /** @type {function(...*):?} */
 var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = createExportWrapper("asyncify_stop_rewind");
 
-var ___start_em_js = Module['___start_em_js'] = 271648;
-var ___stop_em_js = Module['___stop_em_js'] = 271710;
+var ___start_em_js = Module['___start_em_js'] = 271744;
+var ___stop_em_js = Module['___stop_em_js'] = 274788;
 function invoke_ii(index,a1) {
   var sp = stackSave();
   try {

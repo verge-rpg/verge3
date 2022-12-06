@@ -538,15 +538,20 @@ int veof(VFILE *f)
 	return vtell(f) >= filesize(f);
 }
 
-std::unique_ptr<byte[]> vreadfile(const char *fname) {
-	VFILE *f = vopen(fname);
-	if(!f) return nullptr;
+bool vreadfile(const char* filename, std::vector<byte>& buf)
+{
+    buf.clear();
+
+	VFILE *f = vopen(filename);
+	if(!f) {
+        return false;
+    }
+
 	int len = filesize(f);
-	std::unique_ptr<byte[]> buf(new byte[len+4]);
-	*((int*)buf.get()) = len;
-	vread(buf.get()+4,len,f);
+    buf.resize(len);
+	vread(buf.data(), len, f);
 	vclose(f);
-	return buf;
+	return true;
 }
 
 int wildcmp(const char *wild, const char *string) {

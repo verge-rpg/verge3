@@ -166,8 +166,6 @@
             ctx.fillStyle = 'white';
             ctx.textAlign = 'center';
             ctx.fillText('Loading! :D', 160, 100);
-
-
         })();
         </script>
 
@@ -348,7 +346,7 @@
                 "bigbadblocky.png",
                 "blocky.png",
                 "blockymad.png",
-                "bosshit.WAV",
+                "bosshit.wav",
                 "config.exe",
                 "Copy of starfield.png",
                 "curvelaser.png",
@@ -361,7 +359,7 @@
                 "font_white.png",
                 "framethrottle.vc",
                 "hit.wav",
-                "jelly1.WAV",
+                "jelly1.wav",
                 "laser1.png",
                 "laser2.png",
                 "lasr1.png",
@@ -381,7 +379,7 @@
                 "shot.wav",
                 "shuriken.png",
                 "starfield.png",
-                "sword2.WAV",
+                "sword2.wav",
                 "system-.vc",
                 "system.vc",
                 "system.xvc",
@@ -754,13 +752,18 @@
                 }
             };
 
+            let clickedOnce = false;
             const u = new URLSearchParams(window.location.search);
             const game = u.get('game') || 'timeless';
             const folder = TIMELESS_FOLDER;
             const paths = TIMELESS_PATHS;
 
+            canvas.onclick = event => { clickedOnce = true; }
+
             window.Module = {
                 //arguments: [game + '/']
+                print: msg => console.log(msg),
+                printErr: msg => console.log(msg),
                 arguments: [],
                 canvas: canvas,
                 preRun: function() {
@@ -795,7 +798,21 @@
                             window.Module.FS_createDataFile(dirname, filename, source.data, true, true);
                         }
 
-                        window.Module.removeRunDependency('vc_source');
+                        const ctx = document.getElementById('canvas').getContext('2d');
+                        ctx.fillStyle = 'green';
+                        ctx.fillRect(0, 0, 320, 200);
+
+                        ctx.fillStyle = 'white';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('Click to start! :D', 160, 100);
+
+                        let interval = setInterval(() => {
+                            if (clickedOnce) {
+                                window.Module.removeRunDependency('vc_source');
+
+                                window.clearInterval(interval);
+                            }
+                        }, 1000);
                     });
                 },
             };

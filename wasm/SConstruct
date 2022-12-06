@@ -51,7 +51,7 @@ def EmscriptenEnvironment():
     emscriptenCompilerOpts = []
     emscriptenLinkerOpts = [
         '-s', 'ASYNCIFY',
-        '-s', 'ASYNCIFY_IMPORTS=["fetchSync","downloadAll","wasm_nextFrame","emscripten_sleep"]',
+        '-s', 'ASYNCIFY_IMPORTS=["fetchSync","downloadAll","wasm_nextFrame","emscripten_sleep","wasm_loadSound"]',
         '-s', 'FETCH=1',
         '-s', 'FORCE_FILESYSTEM=1',
         '-s', 'ALLOW_MEMORY_GROWTH=1',
@@ -166,7 +166,7 @@ verge_sources = [verge_dir + '/' + s for s in [
     'g_engine.cpp',
     'g_editcode.cpp',
     'g_sound.cpp',
-    'snd_fmod.cpp',
+    'snd_wasm.cpp',
     'g_entity.cpp',
     'g_sprites.cpp',
     'g_map.cpp',

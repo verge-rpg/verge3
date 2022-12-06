@@ -80,7 +80,7 @@ word vgetw(VFILE *f);
 void vgets(char *str, int len, VFILE *f);
 int vtell(VFILE* f);
 int veof(VFILE *f);
-std::unique_ptr<byte[]> vreadfile(const char *fname);
+bool vreadfile(const char* filename, std::vector<byte>& buf);
 
 inline void fread_le(int* dest, FILE *f) {
     fread(dest, 1, sizeof(int), f);

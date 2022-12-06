@@ -102,12 +102,11 @@ void LUA::LoadMapScript(VFILE *f, CStringRef filename) {
 }
 
 void LUA::loadFile(const char *fname) {
-
-	auto buf = vreadfile(fname);
-	if(!buf.get())
+	std::vector<byte> buf;
+    if (!vreadfile(fname, buf))
 		err("Error loading " + std::string(fname));
 
-	if(luaL_loadbuffer(L, (char*)buf.get()+4, *(int*)buf.get(), fname))
+	if(luaL_loadbuffer(L, (char*)buf.data(), buf.size(), fname))
 		err("Error loading " + std::string(fname));
 
 	if(lua_pcall(L, 0,0,0))
