@@ -82,7 +82,7 @@ EM_JS(void, wasm_initSound, (), {
             streamAudio: streamAudio,
             streamNode: streamNode,
             mptNode: mptNode,
-            activeSourceNode: node,
+            activeSourceNode: null,
             lastGetPosition: 0,
         }
     };
@@ -148,14 +148,15 @@ EM_JS(void, wasm_initSound, (), {
         if (song.activeSourceNode == song.streamAudio) {
             return Math.floor(song.streamAudio.currentTime * 1000);
         } else if (song.activeSourceNode == song.mptNode) {
-            response = await song.mptNode.port.postMessage({
+            /*response = await song.mptNode.port.postMessage({
                 getPosition: true,
             });
-            return Math.floor(response.position * 1000);
+            return Math.floor(response.position * 1000);*/
+            return 0;
         } else {
             return 0;
         }
-    }
+    };
 
     window.verge.setSongPosition = (song, position) => {
         if (song.activeSourceNode == song.streamAudio) {
@@ -167,7 +168,7 @@ EM_JS(void, wasm_initSound, (), {
         } else {
             return 0;
         }
-    }
+    };
 
     window.verge.getSongVolume = (song) => song.gainNode.gain.value;
 
