@@ -48,16 +48,15 @@ bool Exist(const char *fname)
 #endif
 }
 
-bool VExist(char *fname)
+bool VExist(const char *fname)
 {
-	VFILE *tempf;
-
-	tempf=vopen(fname);
-	if (tempf)
+	VFILE *f = vopen(fname);
+	if (f)
 	{
-		vclose(tempf);
+		vclose(f);
 		return true;
 	}
+
 	return false;
 }
 

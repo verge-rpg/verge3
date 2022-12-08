@@ -447,6 +447,7 @@
                 'MapedPreferences.xml',
                 'music/yfforest.it',
                 'music/yftown.it',
+                'music/level1.xm',
                 'README.txt',
                 'save00.sav',
                 'save01.sav',
@@ -755,8 +756,10 @@
             let clickedOnce = false;
             const u = new URLSearchParams(window.location.search);
             const game = u.get('game') || 'timeless';
-            const folder = TIMELESS_FOLDER;
-            const paths = TIMELESS_PATHS;
+            const folder = HEART_FOLDER;
+            const paths = HEART_PATHS;
+            //const folder = SNOWBALL_FOLDER;
+            //const paths = SNOWBALL_PATHS;            
 
             canvas.onclick = event => { clickedOnce = true; }
 

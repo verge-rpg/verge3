@@ -110,19 +110,37 @@ bool snd_Init(int soundEngine) {
 void PlayMusic(const std::string &ssng) { 
 	// Check all possible fail conditions. We do this so that if it does fail, we don't
 	// unnessarily stop whatever is presently playing.
-	if(!snd_engine) return;
+	if(!snd_engine)
+    {
+        log("PlayMusic: no sound engine");
+        return;
+    }
 
 	const char *sng = ssng.c_str();
+    log("PlayMusic: playing \"%s\"", sng);
 
-	if (!strlen(sng)) return;
-	if(!strcasecmp(sng, playingsng)) return;
+	if (!strlen(sng))
+    {
+        log("PlayMusic: no song, doing nothing");
+        return;
+    }
+	if (!strcasecmp(sng, playingsng))
+    {
+        log("PlayMusic: song already playing");
+        return;
+    }
+
 	VFILE *f = vopen(sng);
-	if (!f) {
-		GarlickFile *gf = GarlickOpen(sng,"library");
+	if (!f)
+    {
+		GarlickFile *gf = GarlickOpen(sng, "library");
 		if(!gf) return;
 		GarlickClose(gf);
 	}
-	else vclose(f);
+	else
+    {
+        vclose(f);
+    }
 
 	snd_engine->PlayMusic(sng);
 }

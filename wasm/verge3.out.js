@@ -1216,19 +1216,27 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  271680: ($0) => { console.log(UTF8ToString($0)); },  
- 271715: ($0) => { alert(UTF8ToString($0)); }
+  271968: ($0) => { console.log(UTF8ToString($0)); },  
+ 272003: ($0) => { alert(UTF8ToString($0)); }
 };
 function wasm_nextFrame() { return Asyncify.handleSleep(requestAnimationFrame); }
-function wasm_initSound() { const ctx = new AudioContext(); const musicGainNode = ctx.createGain(); musicGainNode.connect(ctx.destination); window.verge.audioContext = ctx; window.verge.musicGainNode = musicGainNode; window.verge.sounds = {}; window.verge.soundChannels = {}; window.verge.soundChannelNextID = 1; if (ctx.audioWorklet) { window.verge.mptInited = ctx.audioWorklet.addModule('mpt-worklet.js').then(() => { window.verge.mptNode = new AudioWorkletNode(ctx, 'libopenmpt-processor', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2], }); window.verge.mptNode.connect(musicGainNode); }).catch(err => console.log('failed to init audio worklet', err)); } else { console.warn("AudioWorklet is not supported in this browser.  No music.  Sorry!"); window.verge.mptInited = Promise.resolve(); } }
-function wasm_loadSound(filename,data,length) { const name = UTF8ToString(filename); const audioData = HEAPU8.buffer.slice(data, data + length); return Asyncify.handleSleep(wakeUp => { window.verge.audioContext.decodeAudioData( audioData, decoded => { window.verge.sounds[name] = decoded; wakeUp(); }, () => { console.log("Unable to load sound data for ", name); wakeUp(); } ); }); }
-function wasm_playSound(filename,volume) { const name = UTF8ToString(filename); const sound = window.verge.sounds[name]; if (!sound) { console.error("Unknown sound ", name); return; } const ctx = window.verge.audioContext; const channelID = window.verge.soundChannelNextID++; let destination = ctx.destination; const gainNode = volume < 100 ? ctx.createGain() : null; if (gainNode != null) { gainNode.gain.value = volume / 100; gainNode.connect(destination); destination = gainNode; } const source = ctx.createBufferSource(); source.connect(destination); source.buffer = sound; source.addEventListener('ended', () => { delete window.verge.soundChannels[channelID]; if (gainNode != null) { gainNode.disconnect(); } }); source.start(0); window.verge.soundChannels[channelID] = source; }
-function wasm_freeSound(filename) { const name = UTF8ToString(filename); const sound = window.verge.sounds[name]; if (!sound) { console.error("Unknown sound ", name); return; } delete window.verge.sounds[name]; }
+function wasm_initSound() { window.verge.audioContext = new AudioContext(); window.verge.mainSong = null; window.verge.songs = {}; window.verge.songDatas = {}; window.verge.songRefs = {}; window.verge.sounds = {}; window.verge.soundRefs = {}; window.verge.soundChannels = {}; window.verge.soundChannelNextID = 1; window.verge.initMpt = () => { const ctx = window.verge.audioContext; if (ctx.audioWorklet) { window.verge.mptInited = ctx.audioWorklet.addModule('mpt-worklet.js').then(() => { window.verge.mainSong = window.verge.createSong(); }).catch(err => console.log('failed to init audio worklet', err)); } else { console.warn("AudioWorklet is not supported in this browser.  No music.  Sorry!"); window.verge.mptInited = Promise.resolve(); } }; window.verge.createMptNode = () => { const ctx = window.verge.audioContext; return new AudioWorkletNode(ctx, 'libopenmpt-processor', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2], }); }; window.verge.createSong = () => { const ctx = window.verge.audioContext; const gainNode = ctx.createGain(); gainNode.connect(ctx.destination); const streamAudio = new Audio(); const streamNode = ctx.createMediaElementSource(streamAudio); streamNode.connect(gainNode); const mptNode = window.verge.createMptNode(); mptNode.connect(gainNode); return { gainNode: gainNode, streamAudio: streamAudio, streamNode: streamNode, mptNode: mptNode, activeSourceNode: node, lastGetPosition: 0, } }; window.verge.freeSong = (song) => { song.streamNode.disconnect(); song.mptNode.disconnect(); }; window.verge.playSong = (song, filename, songData) => { window.verge.stopSong(song); window.verge.mptInited.then(() => { console.log('window.verge.playSong: playing ', filename, songData); if (!song || !filename || !songData) { return; } if (filename.endsWith('mp3') || filename.endsWith('ogg') || filename.endsWith('wav')) { const songBlob = new Blob(buffer); const songBlobURL = URL.createObjectURL(songBlob); console.log('window.verge.playSong: streaming', filename); song.streamAudio.srcObject = songBlobURL; song.streamAudio.play(); song.activeSourceNode = song.streamNode; } else { console.log('window.verge.playSong: sequenced', filename); song.mptNode.port.postMessage({ songData: songData, setRepeatCount: -1 }); song.activeSourceNode = song.mptNode; } }); }; window.verge.stopSong = (song) => { window.verge.mptInited.then(() => { console.log('window.verge.stopSong'); if (song.activeSourceNode == song.streamAudio) { song.streamAudio.pause(); song.streamAudio.currentTime = 0; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ songData: new ArrayBuffer(0) }); } song.activeSourceNode = null; }); }; window.verge.getSongPosition = (song) => { if (song.activeSourceNode == song.streamAudio) { return Math.floor(song.streamAudio.currentTime * 1000); } else if (song.activeSourceNode == song.mptNode) { response = await song.mptNode.port.postMessage({ getPosition: true, }); return Math.floor(response.position * 1000); } else { return 0; } } window.verge.setSongPosition = (song, position) => { if (song.activeSourceNode == song.streamAudio) { song.streamAudio.currentTime = position / 1000; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ setPosition: position / 1000 }); } else { return 0; } } window.verge.getSongVolume = (song) => song.gainNode.gain.value; window.verge.setSongVolume = (song, volume) => { song.gainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime); }; window.verge.initMpt(); }
+function wasm_loadSound(filename,data,length) { const name = UTF8ToString(filename); const audioData = HEAPU8.buffer.slice(data, data + length); return Asyncify.handleSleep(wakeUp => { if (window.verge.sounds[name]) { window.verge.soundRefs[name]++; wakeUp(true); } else { window.verge.audioContext.decodeAudioData( audioData, decoded => { console.log("wasm_loadSound: Loaded sound ", name); window.verge.sounds[name] = decoded; window.verge.soundRefs[name] = (window.verge.soundRefs[name] || 0) + 1; wakeUp(true); }, () => { console.log("wasm_loadSound: Unable to load sound data for ", name); wakeUp(false); } ); } }); }
+function wasm_freeSound(filename) { const name = UTF8ToString(filename); const sound = window.verge.sounds[name]; if (!sound) { console.error("wasm_freeSound: Unknown sound ", name); return; } if (--window.verge.soundRefs[name] <= 0) { delete window.verge.sounds[name]; delete window.verge.soundRefs[name]; } }
+function wasm_playSound(filename,volume) { const name = UTF8ToString(filename); const sound = window.verge.sounds[name]; if (!sound) { console.error("wasm_playSound: Unknown sound ", name); return; } const ctx = window.verge.audioContext; const channelID = window.verge.soundChannelNextID++; let destination = ctx.destination; const gainNode = volume < 100 ? ctx.createGain() : null; if (gainNode != null) { gainNode.gain.value = volume / 100; gainNode.connect(destination); destination = gainNode; } const source = ctx.createBufferSource(); source.connect(destination); source.buffer = sound; source.addEventListener('ended', () => { delete window.verge.soundChannels[channelID]; if (gainNode != null) { gainNode.disconnect(); } }); source.start(0); window.verge.soundChannels[channelID] = source; }
 function wasm_stopSound(channelID) { const source = window.verge.soundChannels[channelID]; if (source) { source.stop(); } }
 function wasm_isSoundPlaying(channelID) { const source = window.verge.soundChannels[channelID]; return typeof(source) !== 'undefined'; }
-function wasm_playMusic(data,length) { const buffer = Module.HEAP8.buffer.slice(data, data + length); const songData = new Uint8Array(buffer); window.verge.mptInited.then(() => { if (!window.verge.mptNode) { return; } window.verge.mptNode.port.postMessage({ songData: songData, setRepeatCount: -1 }); }); }
-function wasm_stopMusic() { window.verge.mptInited.then(() => { window.verge.mptNode.port.postMessage({ songData: new ArrayBuffer(0) }); }); }
-function wasm_setMusicVolume(volume) { console.log('setvolume', volume); window.verge.musicGainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime); }
+function wasm_playMusic(filename,data,length) { const name = UTF8ToString(filename); const buffer = Module.HEAP8.buffer.slice(data, data + length); const songData = new Uint8Array(buffer); window.verge.mptInited.then(() => { window.verge.playSong(window.verge.mainSong, name, songData); }); }
+function wasm_stopMusic() { window.verge.mptInited.then(() => { window.verge.stopSong(window.verge.mainSong); }); }
+function wasm_setMusicVolume(volume) { window.verge.mptInited.then(() => { window.verge.setSongVolume(window.verge.mainSong, volume); }); }
+function wasm_loadSong(filename,data,length) { const name = UTF8ToString(filename); const buffer = Module.HEAP8.buffer.slice(data, data + length); const songData = new Uint8Array(buffer); return Asyncify.handleSleep(wakeUp => { window.verge.mptInited.then(() => { if (window.verge.songs[name]) { window.verge.songRefs[name]++; wakeUp(true); } else { window.verge.songs[name] = window.verge.createSong(); window.verge.songDatas[name] = songData; window.verge.songRefs[name] = (window.verge.songRefs[name] || 0) + 1; console.log("wasm_loadSong: Load song for ", name); wakeUp(true); } }); }); }
+function wasm_freeSong(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_freeSong: Unknown song ", name); return; } if (--window.verge.songRefs[name] <= 0) { window.verge.freeSong(song); delete window.verge.songs[name]; delete window.verge.songDatas[name]; delete window.verge.songRefs[name]; } }
+function wasm_playSong(filename) { const name = UTF8ToString(filename); window.verge.mptInited.then(() => { const song = window.verge.songs[name]; if (!song) { console.error("wasm_playSong: Unknown song ", name); return; } window.verge.playSong(song, name, window.verge.songDatas[name]); }); }
+function wasm_stopSong(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_stopSong: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.stopSong(song); }); }
+function wasm_getSongPosition(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_getSongPosition: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.getSongPosition(song); }); }
+function wasm_setSongPosition(filename,position) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_setSongPosition: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.setSongPosition(song, position); }); }
+function wasm_getSongVolume(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_getSongVolume: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.getSongVolume(song); }); }
+function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_setSongVolume: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.setSongVolume(song, volume); }); }
 
 
 
@@ -8725,7 +8733,7 @@ function wasm_setMusicVolume(volume) { console.log('setvolume', volume); window.
   function runtimeKeepalivePop() {
     }
   var Asyncify = {instrumentWasmImports:function(imports) {
-        var ASYNCIFY_IMPORTS = ["env.fetchSync","env.downloadAll","env.wasm_nextFrame","env.emscripten_sleep","env.wasm_loadSound","env.invoke_*","env.emscripten_sleep","env.emscripten_wget","env.emscripten_wget_data","env.emscripten_idb_load","env.emscripten_idb_store","env.emscripten_idb_delete","env.emscripten_idb_exists","env.emscripten_idb_load_blob","env.emscripten_idb_store_blob","env.SDL_Delay","env.emscripten_scan_registers","env.emscripten_lazy_load_code","env.emscripten_fiber_swap","wasi_snapshot_preview1.fd_sync","env.__wasi_fd_sync","env._emval_await","env._dlopen_js","env.__asyncjs__*"].map((x) => x.split('.')[1]);
+        var ASYNCIFY_IMPORTS = ["env.fetchSync","env.downloadAll","env.wasm_nextFrame","env.emscripten_sleep","env.wasm_loadSound","env.wasm_loadSong","env.invoke_*","env.emscripten_sleep","env.emscripten_wget","env.emscripten_wget_data","env.emscripten_idb_load","env.emscripten_idb_store","env.emscripten_idb_delete","env.emscripten_idb_exists","env.emscripten_idb_load_blob","env.emscripten_idb_store_blob","env.SDL_Delay","env.emscripten_scan_registers","env.emscripten_lazy_load_code","env.emscripten_fiber_swap","wasi_snapshot_preview1.fd_sync","env.__wasi_fd_sync","env._emval_await","env._dlopen_js","env.__asyncjs__*"].map((x) => x.split('.')[1]);
         for (var x in imports) {
           (function(x) {
             var original = imports[x];
@@ -9315,15 +9323,23 @@ var asmLibraryArg = {
   "strftime": _strftime,
   "strftime_l": _strftime_l,
   "system": _system,
+  "wasm_freeSong": wasm_freeSong,
   "wasm_freeSound": wasm_freeSound,
+  "wasm_getSongPosition": wasm_getSongPosition,
+  "wasm_getSongVolume": wasm_getSongVolume,
   "wasm_initSound": wasm_initSound,
   "wasm_isSoundPlaying": wasm_isSoundPlaying,
+  "wasm_loadSong": wasm_loadSong,
   "wasm_loadSound": wasm_loadSound,
   "wasm_nextFrame": wasm_nextFrame,
   "wasm_playMusic": wasm_playMusic,
+  "wasm_playSong": wasm_playSong,
   "wasm_playSound": wasm_playSound,
   "wasm_setMusicVolume": wasm_setMusicVolume,
+  "wasm_setSongPosition": wasm_setSongPosition,
+  "wasm_setSongVolume": wasm_setSongVolume,
   "wasm_stopMusic": wasm_stopMusic,
+  "wasm_stopSong": wasm_stopSong,
   "wasm_stopSound": wasm_stopSound
 };
 Asyncify.instrumentWasmImports(asmLibraryArg);
@@ -9333,9 +9349,6 @@ var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__w
 
 /** @type {function(...*):?} */
 var getTempRet0 = Module["getTempRet0"] = createExportWrapper("getTempRet0");
-
-/** @type {function(...*):?} */
-var _fflush = Module["_fflush"] = createExportWrapper("fflush");
 
 /** @type {function(...*):?} */
 var _memcpy = Module["_memcpy"] = createExportWrapper("memcpy");
@@ -9360,6 +9373,9 @@ var _saveSetjmp = Module["_saveSetjmp"] = createExportWrapper("saveSetjmp");
 
 /** @type {function(...*):?} */
 var setTempRet0 = Module["setTempRet0"] = createExportWrapper("setTempRet0");
+
+/** @type {function(...*):?} */
+var _fflush = Module["_fflush"] = createExportWrapper("fflush");
 
 /** @type {function(...*):?} */
 var _ntohs = Module["_ntohs"] = createExportWrapper("ntohs");
@@ -9535,8 +9551,8 @@ var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = createExportWrap
 /** @type {function(...*):?} */
 var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = createExportWrapper("asyncify_stop_rewind");
 
-var ___start_em_js = Module['___start_em_js'] = 271744;
-var ___stop_em_js = Module['___stop_em_js'] = 274788;
+var ___start_em_js = Module['___start_em_js'] = 272032;
+var ___stop_em_js = Module['___stop_em_js'] = 280692;
 function invoke_ii(index,a1) {
   var sp = stackSave();
   try {

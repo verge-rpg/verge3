@@ -65,7 +65,20 @@ void log(const char *text, ...)
 	vsprintf(msg, text, argptr);
 	va_end(argptr);
 
-	if (!log_on) return;
+#ifdef __EMSCRIPTEN__
+    EM_ASM({
+        console.log(UTF8ToString($0));
+#ifdef VERGE_EMSCRIPTEN_DEBUG     
+        console.log(stackTrace());
+#endif
+    }, msg);   
+
+#else
+	if (!log_on)
+    {
+        return;
+    }
+
 #ifndef PROHIBIT_DISK_LOG
 	logfile = fopen(LOGFILE,"a");
 #endif
@@ -82,15 +95,9 @@ void log(const char *text, ...)
 	}
 
 	if (logconsole)
+    {
 		printf("%s\n",msg);
-
-#ifdef __EMSCRIPTEN__
-    EM_ASM({
-        console.log(UTF8ToString($0));
-#ifdef VERGE_EMSCRIPTEN_DEBUG     
-        console.log(stackTrace());
-#endif
-    }, msg);
+    }
 #endif    
 }
 

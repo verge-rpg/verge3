@@ -8,7 +8,10 @@
 /// If you have altered this source file, please log your name, date, and what
 /// changes you made below this line.
 
+#include <string>
 #include <vector>
+#include <stdint.h>
+#include <stddef.h>
 
 class SoundEngine_Wasm : public SoundEngine {
     public:
@@ -31,11 +34,14 @@ class SoundEngine_Wasm : public SoundEngine {
         void SetPaused(int song, int paused) override;
         int GetSongPos(int song) override;
         void SetSongPos(int song, int pos) override;
-        void SetSongVol(int song, int vol) override;
         int GetSongVol(int song) override;
+        void SetSongVol(int song, int vol) override;
         void FreeSong(int song) override;
 
     private:
         std::string currentMusicName;
         std::vector<std::string> sounds;
+        std::vector<size_t> unusedSoundHandles;
+        std::vector<std::string> songs;
+        std::vector<size_t> unusedSongHandles;
 };

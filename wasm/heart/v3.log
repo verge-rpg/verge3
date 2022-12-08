@@ -1,11 +1,26 @@
-VC System Compilation stats: 
-168 ints (38722 expanded), 15 strings (5435 expanded), 103 functions, 3579 total lines
 
-compiled forest_1-01.map, (33 lines)  number of funcs is 3
-compiled forest_1-02.map, (36 lines)  number of funcs is 3
-compiled forest_1-03.map, (34 lines)  number of funcs is 3
-compiled forest_1-04.map, (36 lines)  number of funcs is 3
-compiled forest_1-05.map, (33 lines)  number of funcs is 3
-compiled forest_1-06.map, (33 lines)  number of funcs is 3
-compiled forest_1-07.map, (42 lines)  number of funcs is 3
-compiled town.map, (173 lines)  number of funcs is 13
+
+
+
+
+
+
+
+
+
+
+VC System Compilation stats: 
+183 globals (44157 expanded), 101 functions, 3583 total lines
+
+Compiled ./forest_1-01.map, (33 lines), 3 functions
+Compiled ./forest_1-02.map, (36 lines), 3 functions
+Compiled ./forest_1-03.map, (34 lines), 3 functions
+Compiled ./forest_1-04.map, (36 lines), 3 functions
+Compiled ./forest_1-05.map, (33 lines), 3 functions
+Compiled ./forest_1-06.map, (33 lines), 3 functions
+Compiled ./forest_1-07.map, (42 lines), 3 functions
+Compiled ./town.map, (173 lines), 13 functions
+start naming
+done naming
+entered ini
+done ini

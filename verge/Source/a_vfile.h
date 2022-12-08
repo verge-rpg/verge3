@@ -48,7 +48,7 @@ extern mountstruct pack[10];
 extern int filesmounted;
 
 bool Exist(const char *fname);
-bool VExist(char *fname);
+bool VExist(const char *fname);
 VFILE *vopen(const char *fname);
 void MountVFile(char *fname);
 
