@@ -1,0 +1,49 @@
+========================================
+04/04/04
+ - Map/Entity/CHR system.
+ - Map VC system implemented.
+ - Issue with Random seeding has been corrected.
+ - Tools and stuff released. 
+
+========================================
+02/22/04 
+ - Mikmod out. FMOD in. Music API restructured.
+   There is now a "simple music" API and an advanced
+   music API, which is needed to do things like
+   crossfading, pausing, and manipulation of music position.
+   Both APIs fully support modules, MIDIs and mp3/oggs.
+   Sound effects can also be either wav or mp3/ogg.
+   (however they are handled differently. sound effects are
+   fully loaded into memory; mp3s played as music are streamed)
+ - A bug in for() loops was fixed.
+ - The "system" font now renders to any image correctly.
+ - A few new window management routines were added.
+ - Some new string-handling functions. TokenCount() and
+   GetToken() will aid with breaking a string apart for 
+   purposes of word wrapping for instance. Also added 
+   ToUpper() and ToLower().
+ - LoadFont no longer takes w/h arguments. The cell size 
+   is automatically detected. Its not foolproof however, in 
+   cases where the autodetection fails, you can still use the
+   original loader that takes width/height, now named 
+   LoadFontEx.
+ - Joystick variables are now activated.
+ - Miscellaneous new VC commands: FontHeight(), MixColor(),
+   and chr().
+ - Fixed a bug involving string arrays causing problems with
+   all strings declared after it by not updating the offsets
+   correctly.
+ - Fixed a bizarre bug with launching v3 from Textpad :o
+ - Using %s or other %codes in VC strings wont screw stuff
+   up anymore.
+ - Added lastkey; returns the last key pressed as an ASCII
+   character
+ - Eagle/2xSAI has been removed until such time as we get around
+   to fixing it and putting it back in or giving a care about it
+   in general
+ - Preliminary AVI playback is in. There are still some bugs
+   and quirks that we are working out. We HIGHLY RECOMMEND 
+   that you use only simple codecs like intels Indeo and not
+   DIVX/XVID due to codec compatibility issues. Unless you 
+   plan to make an installer and include the codecs your 
+   game uses. ^_^

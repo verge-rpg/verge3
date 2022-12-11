@@ -1,0 +1,53 @@
+void OnEnter()
+{
+    PlayGameMusic(song_manufacturing);
+    
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+
+	gDoors[0].x = 7; gDoors[0].y = 16; gDoors[0].type = 1;
+	gDoors[0].id = DOOR_02;
+    
+	SpawnPlayer();
+    
+	//Door panel
+	
+	AddButton(0, 100, 120, 0,"iDoorOpen");
+	AddButton(0, 150, 120, 0,"iDoorClose");
+	
+	AddGlyph(0,110,155, glyph_OPEN);
+	AddGlyph(0,160,155, glyph_CLOSE);    
+}
+
+void TalkToStephanie()
+{
+    if (!gFlags[FLAG_SPOKEN_ELDER])
+        TBox(1, gFont, "Stephanie: ...? Where did you come from?");
+    else
+    {
+        TBox(1, gFont, "Stephanie: We think the vehicle bay controller may be in the Supply/CPU section of the factory... but we can't get there. It's blocked by some really tricky security devices.");
+        gFlags[FLAG_KNOWLEDGE_CPU] = 1;
+    }
+}
+
+void WarpToUUU()
+{
+	TeleportTo(20,16, "0-3.map");
+}
+
+void WarpTo33()
+{
+    WarpTo(23,14, "3-3.map");
+}
+
+void WarpToEEE()
+{
+    WarpTo(8,12, "EEE.map");
+}
+
+void DoorComputer()
+{
+    AddCollection(0);
+}

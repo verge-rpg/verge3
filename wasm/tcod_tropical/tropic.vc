@@ -1,0 +1,845 @@
+// tropic.vc
+
+void start()
+{
+SetMusicVolume(70);
+setresolution(640,480);
+playmusic("green.s3m");
+if(gamestart=2)
+showending();
+else
+showstart();
+InitMap();
+playmusic("trefus.it");
+SetMusicVolume(100);
+SetWeather(WEATHER_CLOUDS);
+if(tropic[1]=0)
+{
+wait(10);
+stext(0,"Starfish:","Welcome to Trefus Island!","");
+stext(1,"Elliot:","A...talking starfish?","");
+stext(0,"Starfish:","Sure! Why not?","");
+stext(1,"Elliot:","Where I come from, your kind don't","talk much.");
+stext(0,"Starfish:","Oh...well this is Trefus Island, and","here everyone talks!");
+stext(0,"Even the rocks and trees might have","something to say! Although some","of us are a bit shy.");
+stext(1,"Elliot:","Ok. What else can you tell me","about this place?");
+stext(0,"Starfish:","Well, I don't move around much...","Most of the time I just lay here.");
+stext(1,"Elliot:","Isn't that boring in the long run?","");
+stext(0,"Starfish:","Yeah...but someone's gotta welcome","the newcomers.");
+stext(1,"Elliot:","I see. Well, I'll just take a look","around by myself then.");
+stext(0,"Starfish:","Have fun! Come talk to me anytime!","Welcome to TREFUS ISLAND!");
+tropic[1]=1;
+}
+}
+
+void cottage1entry()
+{
+Warp(166, 45, TNONE);
+SetWeather(WEATHER_NONE);
+}
+
+void cottage1exit()
+{
+Warp(71, 58, TNONE);
+SetWeather(WEATHER_CLOUDS);
+}
+
+void cottage2entry()
+{
+Warp(176, 19, TNONE);
+SetWeather(WEATHER_NONE);
+}
+
+void cottage2exit()
+{
+Warp(82, 47, TNONE);
+SetWeather(WEATHER_CLOUDS);
+}
+
+void cottage3entry()
+{
+Warp(153, 18, TNONE);
+SetWeather(WEATHER_NONE);
+}
+
+void cottage3exit()
+{
+Warp(96, 54, TNONE);
+SetWeather(WEATHER_CLOUDS);
+}
+
+void seashell1()
+{
+if(tropic[3]=0)
+{
+SetTile(29,174,1,0);
+SetObs(29,174,0);
+foundstuff("Got a Seashell!");
+tropic[3]=1;
+tropic[2]++;
+}
+}
+
+void seashell2()
+{
+if(tropic[4]=0)
+{
+SetTile(67,167,1,0);
+SetObs(67,167,0);
+foundstuff("Got a Seashell!");
+tropic[4]=1;
+tropic[2]++;
+}
+}
+
+void seashell3()
+{
+if(tropic[5]=0)
+{
+SetTile(122,165,1,0);
+SetObs(122,165,0);
+foundstuff("Got a Seashell!");
+tropic[5]=1;
+tropic[2]++;
+}
+}
+
+void seashell4()
+{
+if(tropic[6]=0)
+{
+SetTile(167,187,1,0);
+SetObs(167,187,0);
+foundstuff("Got a Seashell!");
+tropic[6]=1;
+tropic[2]++;
+}
+}
+
+void seashell5()
+{
+if(tropic[7]=0)
+{
+SetTile(171,182,1,0);
+SetObs(171,182,0);
+foundstuff("Got a Seashell!");
+tropic[7]=1;
+tropic[2]++;
+}
+}
+
+void seashell6()
+{
+if(tropic[8]=0)
+{
+SetTile(156,82,1,0);
+SetObs(156,82,0);
+foundstuff("Got a Seashell!");
+tropic[8]=1;
+tropic[2]++;
+}
+}
+
+void seashell7()
+{
+if(tropic[9]=0)
+{
+SetTile(96,30,1,0);
+SetObs(96,30,0);
+foundstuff("Got a Seashell!");
+tropic[9]=1;
+tropic[2]++;
+}
+}
+
+void seashell8()
+{
+if(tropic[10]=0)
+{
+SetTile(55,110,1,0);
+SetObs(55,110,0);
+foundstuff("Got a Seashell!");
+tropic[10]=1;
+tropic[2]++;
+}
+}
+
+void seashell9()
+{
+if(tropic[11]=0)
+{
+SetTile(23,126,1,0);
+SetObs(23,126,0);
+foundstuff("Got a Seashell!");
+tropic[11]=1;
+tropic[2]++;
+}
+}
+
+void silentpalm()
+{
+stext(1,"Elliot:","This palm seems very quiet...","");
+}
+
+void silenttree()
+{
+stext(1,"Elliot:","This tree doesn't seem to have","anything to say...");
+}
+
+void silentrock()
+{
+stext(1,"Elliot:","Hello, Mister Rock.","....... No response...");
+}
+
+void silentbush()
+{
+stext(1,"Elliot:","It seems that he doesn't want to have","a conversation with me at the moment...");
+}
+
+void man2()//man missing a blue pig
+{
+int i;
+
+if(tropic[12]=1)
+{
+stext(0,"Man:","Don't forget that my pig is blue,","it's the only blue pig on this island!");
+}
+
+if(tropic[12]=6)
+{
+stext(0,"Man:","Phew, dang it's hot today...","");
+
+}
+if(tropic[12]=5)
+{
+stext(0,"Man:","Herbert is so happy now that he has","returned to me.");
+stext(0,"If it wasn't so hot, I'd build him","a small hut...","......");
+stext(1,"Elliot:","I'm not going to build a hut for","your pig.");
+stext(0,"Man:","......Damn.","");
+tropic[12]=6;
+}
+
+if(tropic[12]=4)
+{
+stext(0,"Man:","That's not my pig.","Don't forget that my pig is blue!");
+stext(1,"Elliot:","Oh yeah, I forgot...","");
+fadeout(50);
+i = players[3].entity;
+RemovePlayer(3);
+entity.x[i]=30000;
+tropic[12]=1;
+ent[3]=entitySpawn(80,56,"pig3.chr");
+entity.speed[ent[3]]=30;
+EntitySetWanderRect(ent[3], 80, 47, 100, 67);
+fadein(50);
+}
+
+if(tropic[12]=3)
+{
+stext(0,"Man:","That's not my pig.","Don't forget that my pig is blue!");
+stext(1,"Elliot:","Oh yeah, I forgot...","");
+fadeout(50);
+i = players[2].entity;
+RemovePlayer(2);
+entity.x[i]=30000;
+tropic[12]=1;
+ent[2]=entitySpawn(90,57,"pig1.chr");
+entity.speed[ent[2]]=30;
+EntitySetWanderRect(ent[2], 80, 47, 100, 67);
+fadein(50);
+}
+
+if(tropic[12]=2)
+{
+stext(0,"Man:","Don't forget that my pig is blue!","OH! That IS my Herbert!");
+stext(0,"Well done boy, here's your reward.","","");
+foundstuff("Got a Seashell!");
+tropic[2]++;
+stext(1,"Elliot:","Thanks.","");
+fadeout(50);
+i = players[1].entity;
+RemovePlayer(1);
+entity.x[i]=30000;
+tropic[12]=5;
+ent[1]=entitySpawn(83,53,"pig2.chr");
+entity.speed[ent[1]]=30;
+EntitySetWanderRect(ent[1], 73, 43, 93, 63);
+fadein(50);
+}
+
+if(tropic[12]=0)
+{
+stext(0,"Man:","Hey boy, you must help me, my pig","ran away from me!");
+stext(1,"Elliot:","Why don't you go get it back","yourself?");
+stext(0,"Man:","I could do it, but as you can see I've","found this cool spot in the shadows.");
+stext(1,"Elliot:","So?","");
+stext(0,"Man:","Naturally I have no interest in","leaving, I hate the heat.");
+stext(0,"AND I'm lazy. However, while I was","walking at the beach few days ago,","I found this lovely seashell.");
+stext(0,"I'm sure a boy like you could find","good use for it.","");
+stext(1,"Elliot:","I guess I could see if I can find","your pig...");
+stext(0,"Man:","That's a good boy! Even the thought","of leaving the shadows makes me...");
+stext(0,"...all sweatty. Remember now, my pig","is blue.","");
+tropic[12]=1;
+}
+}
+
+void pig1()
+{
+playsound(pigsound,100);
+if(tropic[12]!=1)
+{
+EntityStop(13);
+stext(1,"Elliot:","Nice little piggy.","");
+EntitySetWanderZone(13);
+}
+if(tropic[12]=1)
+{
+EntityStop(13);
+questio=1;
+question(2,"Will you take this pig back to","the man at the shadows?","","","yes","no","","");
+if(problem=1)
+{
+entity.x[13] = 30000;
+AddPlayer(2);
+tropic[12]=3;
+problem=0;
+}
+if(problem=2)
+{
+unpress(1);
+problem=0;
+}
+EntitySetWanderZone(13);
+}
+}
+
+void bluepig()
+{
+playsound(pigsound,100);
+if(tropic[12]!=1)
+{
+EntityStop(14);
+stext(1,"Elliot:","Nice little piggy.","");
+EntitySetWanderZone(14);
+}
+if(tropic[12]=1)
+{
+EntityStop(14);
+questio=1;
+question(2,"Will you take this pig back to","the man at the shadows?","","","yes","no","","");
+if(problem=1)
+{
+entity.x[14] = 30000;
+AddPlayer(1);
+tropic[12]=2;
+problem=0;
+}
+if(problem=2)
+{
+unpress(1);
+problem=0;
+}
+EntitySetWanderZone(14);
+}
+}
+
+void pig3()
+{
+playsound(pigsound,100);
+if(tropic[12]!=1)
+{
+EntityStop(15);
+stext(1,"Elliot:","Nice little piggy.","");
+EntitySetWanderZone(15);
+}
+if(tropic[12]=1)
+{
+EntityStop(15);
+questio=1;
+question(2,"Will you take this pig back to","the man at the shadows?","","","yes","no","","");
+if(problem=1)
+{
+entity.x[15] = 30000;
+AddPlayer(3);
+tropic[12]=4;
+problem=0;
+}
+if(problem=2)
+{
+unpress(1);
+problem=0;
+}
+EntitySetWanderZone(15);
+}
+}
+
+void man1()
+{
+EntityStop(7);
+if(tropic[20]=3)
+{
+stext(0,"Man:","It was a pleasure doing business with","you, young man! Heheh!");
+}
+if(tropic[20]=2)
+{
+stext(0,"Man:","Did you change your mind?","");
+}
+if(tropic[20]=1)
+{
+stext(0,"Man:","So, you're back with the 4 Crowns?","");
+}
+if(tropic[20]=0)
+{
+stext(0,"Man:","I found this seashell while I was","looking for firewood.");
+stext(1,"Elliot:","Could I have it?","");
+stext(0,"Man:","Heheh, many have shown interest in","this particular shell.");
+stext(0,"My price is no less than 4 Gold","Crowns.","");
+}
+if(tropic[15]>3 && tropic[20]<3)
+{
+questio=1;
+question(2,"Will you buy the seashell?","","","","yes","no","","");
+if(problem=1)
+{
+stext(0,"Man:","It's a deal! Here's your treasure.","");
+sound[1] = LoadSound("coins.wav");
+PlaySound(sound[1], 100);
+tropic[15]-=4;
+foundstuff("Got a Seashell!");
+tropic[2]++;
+problem=0;
+tropic[20]=3;
+FreeSound(sound[1]);
+}
+if(problem=2)
+{
+stext(1,"Elliot:","I'll think about it.","");
+stext(0,"Man:","As you wish.","");
+tropic[20]=2;
+problem=0;
+}
+}
+if(tropic[15]<4 && tropic[20]<3)
+{
+stext(1,"Elliot:","I don't have that much...","");
+stext(0,"Man:","Well, come back when you do, heheh!","");
+tropic[20]=1;
+}
+EntitySetWanderRect(7, 60, 50, 80, 70);
+}
+
+void man4()
+{
+EntityStop(16);
+stext(0,"Man:","I'm looking for seashells so that I","can get out of here. It's SO boring!");
+EntitySetWanderZone(16);
+}
+
+void woman1()
+{
+EntityStop(8);
+stext(0,"Woman:","I don't have time to talk at the","moment, I have to prepare supper.");
+EntitySetWanderRect(8, 70, 50, 90, 70);
+}
+
+void woman3()
+{
+EntityStop(12);
+stext(0,"Woman:","I seem to have lost my Chest Key.","I can't find it anywhere...");
+EntitySetWanderRect(8, 80, 50, 110, 65);
+}
+
+void boy1()
+{
+EntityStop(4);
+stext(0,"Boy:","You have funny looking clothes. But","that goes for most visitors.");
+EntitySetWanderRect(4, 60, 40, 100, 70);
+}
+
+void boy2()
+{
+EntityStop(5);
+stext(0,"Boy:","Dad is such a lazy bum! He just","hangs in the shadows all day.");
+EntitySetWanderRect(5, 60, 30, 100, 70);
+}
+
+void boy3()
+{
+EntityStop(6);
+stext(0,"Boy:","I hid a seashell in the sand, but I","lost my map so I can't find it anymore.");
+EntitySetWanderRect(6, 60, 50, 90, 70);
+}
+
+void map1()
+{
+stext(0,"Take nine steps east and two steps","north from the huge boulder.","");
+}
+
+void buriedshell()
+{
+if(tropic[13]=0)
+{
+if(key[28])
+{
+stext(1,"Elliot:","There's something buried here...","");
+SetTile(99,112,1,80);
+foundstuff("Got a Seashell!");
+tropic[13]=1;
+tropic[2]++;
+}
+}
+}
+
+void starfish()
+{
+
+if(tropic[1]=4)
+{
+stext(0,"Starfish:","There's a huge boulder on this","island. When you have enough...");
+stext(0,"...seashells, find the boulder and","the portal will open there.","");
+}
+
+if(tropic[1]=3)
+{
+stext(1,"Elliot:","One more thing...","");
+stext(0,"Starfish:","Yes, what is it?","");
+stext(1,"Elliot:","Where does the portal appear?","");
+stext(0,"Starfish:","There's a huge boulder on this","island. When you have enough...");
+stext(0,"...seashells, find the boulder and","the portal will open there.","");
+stext(1,"Elliot:","Ok, thanks!","");
+stext(0,"Starfish:","You're welcome!","");
+tropic[1]=4;
+}
+
+if(tropic[1]=2)
+{
+stext(1,"Elliot:","Listen...","");
+stext(0,"Starfish:","Yes?","");
+stext(1,"Elliot:","How do I get out of here?","");
+stext(0,"Starfish:","You don't like our island?","");
+stext(1,"Elliot:","No, it's fine, but I was just","wondering...");
+stext(0,"Starfish:","You need to collect 15 seashells to","open a portal!");
+stext(1,"Elliot:","Seashells?","");
+stext(0,"Starfish:","Yes, you can find the all around","the island. BUT!");
+stext(1,"Elliot:","Yes?","");
+stext(0,"Starfish:","There are others who want out as well.","And the number of seashells is limited!");
+stext(1,"Elliot:","Why make it so complicated?","");
+stext(0,"Starfish:","I dunno, I didn't create this place.","The fact is that you need seashells.");
+stext(1,"Elliot:","15?","");
+stext(0,"Starfish:","Yes, when you have 15, a portal will","open. You can leave then if you wish.");
+stext(0,"Many have chosen to stay, because this","is such a lovely place! Although I","admit it might be boring for some.");
+stext(1,"Elliot:","Okay, thanks for the info.","");
+stext(0,"Starfish:","You're welcome! See you later!","");
+tropic[1]=3;
+}
+if(tropic[1]=1)
+{
+stext(0,"Starfish:","Hey there, newcomer! What's up?","");
+stext(1,"Elliot:","Umm, where am I exactly?","");
+stext(0,"Starfish:","Trefus Island!","");
+stext(1,"Elliot:","Yes, you mentioned that already.","Where is this island on the map?");
+stext(0,"Starfish:","Oh, it's not on any map. This is","another dimension.");
+stext(1,"Elliot:","Really? How did I get here then?","");
+stext(0,"Starfish:","There are many portals in your world,","and in many others.");
+stext(1,"Elliot:","There are other worlds too?","");
+stext(0,"Starfish:","Sure! Why not? But keep it a secret!","People might think you're a looney.");
+stext(1,"Elliot:","Ok.","");
+tropic[1]=2;
+}
+}
+
+void rock1()
+{
+if(tropic[14]=1)
+{
+stext(0,"Rock:","I think I'll take a nap now...","");
+}
+if(tropic[14]=0)
+{
+stext(0,"Rock:","A man hid a seashell under me not","long ago...");
+stext(1,"Elliot:","Really? Could I have it?","");
+stext(0,"Rock:","Yes, I don't like it when people","stick things under me.");
+foundstuff("Got a Seashell!");
+stext(1,"Elliot:","Thanks!","");
+tropic[14]=1;
+tropic[2]++;
+}
+}
+
+void rock2()
+{
+stext(0,"Rock:","When you die on this island,","you become a rock, a tree etc.");
+stext(0,"This is a cycle which ensures","growth and sustains life on","Trefus Island.");
+}
+
+void chest1()
+{
+if(tropic[24]=0)
+{
+chest(167,39);
+foundstuff("Got a Gold Crown!");
+tropic[24]=1;
+tropic[15]++;
+}
+}
+
+void chest2()
+{
+if(tropic[22]=0)
+{
+chest(177,13);
+foundstuff("Got a Seashell!");
+tropic[22]=1;
+tropic[2]++;
+}
+}
+
+void chest3()
+{
+if(tropic[23]=1)
+{
+foundstuff("Used the Chest Key.");
+chest(175,13);
+foundstuff("Got 2 Seashells!");
+foundstuff("Got a Dictionary!");
+tropic[23]=2;
+tropic[25]=1;
+tropic[2]+=2;
+}
+if(tropic[23]=0)
+{
+lock();
+}
+}
+
+void crown1()
+{
+if(tropic[17]=0)
+{
+SetTile(166,168,1,0);
+SetObs(166,168,0);
+foundstuff("Got a Gold Crown!");
+tropic[17]=1;
+tropic[15]++;
+}
+}
+
+void crown2()
+{
+if(tropic[16]=0)
+{
+SetTile(27,39,1,0);
+SetObs(27,39,0);
+foundstuff("Got a Gold Crown!");
+tropic[16]=1;
+tropic[15]++;
+}
+}
+
+void crown3()
+{
+if(tropic[18]=0)
+{
+SetTile(136,107,1,0);
+SetObs(136,107,0);
+foundstuff("Got a Gold Crown!");
+tropic[18]=1;
+tropic[15]++;
+}
+}
+
+void crown4()
+{
+if(tropic[19]=0)
+{
+SetTile(84,147,1,0);
+SetObs(84,147,0);
+foundstuff("Got a Gold Crown!");
+tropic[19]=1;
+tropic[15]++;
+}
+}
+
+void crown5()
+{
+if(tropic[21]=0)
+{
+SetTile(38,80,1,0);
+SetObs(38,80,0);
+foundstuff("Got a Gold Crown!");
+tropic[21]=1;
+tropic[15]++;
+}
+}
+
+void bouncingball1()
+{
+EntityStop(0);
+if(tropic[25]=0)
+{
+stext(0,"Blue blobi:","blll blll blr lls bly...","");
+stext(1,"Elliot:","Huh?","");
+}
+if(tropic[25]=1)
+stext(0,"Blue blobi:","Nice mask....","");
+EntitySetWanderZone(0);
+}
+
+void bouncingball2()
+{
+EntityStop(1);
+if(tropic[25]=0)
+{
+stext(0,"Blue blobi:","blll blll blr lls bly...","");
+stext(1,"Elliot:","Can you repeat?","");
+}
+if(tropic[25]=1)
+{
+if(tropic[27]=1)
+{
+stext(0,"Nobo:","Southeast he stands. Godspeed on","your journey!");
+}
+if(tropic[27]=0)
+{
+stext(0,"Blue blobi:","Hello stranger, my name is Nobo.","");
+stext(1,"Elliot:","A pleasure to meet you nobo.","");
+stext(0,"Nobo:","Don't you think our island is","sooooo pretty?");
+stext(1,"Elliot:","Yeah, it sure is pretty to watch.","");
+stext(0,"Nobo:","I like you, you have this great","stamina I always admire.");
+stext(1,"Elliot:","Thank you. Would you happen to know","of any seashells?");
+stext(0,"Nobo:","Tell you what, go talk to a friend","of mine. He has the one you seek.");
+stext(1,"Elliot:","Where is this friend of yours?","");
+stext(0,"Nobo:","He's a palmtree, he stands at the","southeastern corner of the island.");
+stext(1,"Elliot:","Southeast...","");
+stext(0,"Nobo:","Yes, when you see him, tell him that","I sent you.");
+stext(1,"Elliot:","Thanks Nobo!","");
+stext(0,"Nobo:","The pleasure is all mine. Godspeed on","your journey!");
+tropic[27]=1;
+}
+}
+EntitySetWanderZone(1);
+}
+
+void bouncingball3()
+{
+EntityStop(2);
+if(tropic[25]=0)
+{
+stext(0,"Blue blobi:","blll blll blr lls bly...","");
+stext(1,"Elliot:","Was?","");
+}
+if(tropic[25]=1)
+stext(0,"Blue blobi:","How did you came here?","Most odd...");
+EntitySetWanderZone(2);
+}
+
+void bouncingball4()
+{
+EntityStop(3);
+if(tropic[25]=0)
+{
+stext(0,"Blue blobi:","blll blll blr lls bly...","");
+stext(1,"Elliot:","What was that you said?","");
+}
+if(tropic[25]=1)
+stext(0,"Blue blobi:","What could be any better than a","nice sunny weather.");
+EntitySetWanderZone(3);
+}
+
+void bouncingball5()
+{
+EntityStop(17);
+if(tropic[25]=0)
+{
+stext(0,"Red blobi:","blll blll blr lls bly...","");
+stext(1,"Elliot:","Eeeh...what?","");
+}
+if(tropic[25]=1)
+stext(0,"Red blobi:","I'm so happy today, I just feel like","bouncing all day long!");
+EntitySetWanderZone(17);
+}
+
+void bouncingball6()
+{
+EntityStop(18);
+if(tropic[25]=0)
+{
+stext(0,"Green blobi:","blll blll blr lls bly...","");
+stext(1,"Elliot:","You were saying?","");
+}
+if(tropic[25]=1)
+stext(0,"Green blobi:","Agh...slow day...I'm so bored.","");
+EntitySetWanderZone(18);
+}
+
+void nobosfriend()
+{
+if(tropic[27]=0 && tropic[26]=0)
+{
+stext(1,"Elliot:","This palm seems very quiet...","");
+}
+if(tropic[27]=1 && tropic[26]=1)
+{
+stext(0,"Palm:","Ah...I love the warm wind.","");
+}
+if(tropic[27]=1 && tropic[26]=0)
+{
+stext(0,"Palm:","Since youre a friend of Nobo's...","Here take it, it's under my roots.");
+foundstuff("Got a Seashell!");
+tropic[26]=1;
+tropic[2]++;
+stext(1,"Elliot:","Thank you.","");
+stext(0,"Palm:","Don't mention it.","");
+}
+}
+
+void chestkey()
+{
+if(tropic[23]=0)
+{
+SetTile(148,144,1,0);
+SetObs(148,144,0);
+foundstuff("Got a Chest Key!");
+tropic[23]=1;
+}
+}
+
+void womaninhut()
+{
+stext(0,"Woman:","Yes I know it's a bit empty in","here at the moment...");
+}
+
+void man3()
+{
+EntityStop(10);
+stext(0,"Man:","Hmmm...there seem to be no","seashells around here...");
+EntitySetWanderRect(5, 50, 30, 80, 45);
+}
+
+void portal1()
+{
+if(tropic[2]>14)
+{
+sound[1]=loadsound("wind2.wav");
+wait(10);
+stext(1,"Elliot:","Something's happening...","");
+PlaySound(sound[1], 100);
+whiteout(100);
+settile(89,113,4,625);
+settile(89,114,2,626);
+settile(89,115,2,627);
+SetObs(89,115,0);
+tropic[2]=0;
+whitein(100);
+wait(10);
+stext(1,"The portal has opened...I can get out.","","");
+freesound(sound[1]);
+}
+}
+
+void portal2()
+{
+stopmusic();
+gamestart=2;
+mapswitch("tropic.map",23,134,TBLACK);
+}

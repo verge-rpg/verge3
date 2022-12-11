@@ -1,0 +1,56 @@
+void OnEnter()
+{
+    PlayGameMusic(song_ambient);
+    
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+    
+	SpawnPlayer();
+}
+
+void TalkToJambora()
+{
+    TBox(1, gFont, "Jambora: Hmm... what's this painting here...? I swear I've seen it somewhere before in the factory... maybe that symbol in white means something.");
+}
+
+void TalkToSmithy()
+{
+    TBox(1, gFont, "Smithy: Up ahead you'll find what we think is the climate control room. It's the last room on the Products floor, which you're currently on, and the door won't open for some reason.");
+    gFlags[FLAG_KNOWLEDGE_PRODUCTS] = 1;
+}
+
+void Camera1()
+{
+    gSecurityCamera = 1;
+    WarpTo(27,0,"1-7.map");
+}
+
+void Camera2()
+{
+    gSecurityCamera = 1;
+    WarpTo(12,13,"2-1.map");
+}
+
+void Camera3()
+{
+    gSecurityCamera = 1;
+    WarpTo(12,18,"2-3.map");
+}
+
+void WarpTo00()
+{
+    WarpTo(11,22,"0-0.map");
+}
+
+void WarpTo15()
+{
+	WarpTo(27,24,"1-5.map");
+}
+
+void DeadPanel()
+{
+    TBox(0, gFont, "It looks as though this screen went black long ago... There's nothing you can get from it now.");
+}
+

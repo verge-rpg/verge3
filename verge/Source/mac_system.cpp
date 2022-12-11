@@ -64,8 +64,8 @@ void doMessageBox(std::string msg)
 #ifdef __EMSCRIPTEN__
 #include <emscripten/fetch.h>
 
-/*namespace v3wasm {
-    std::string gameRoot = "timeless/";
+namespace v3wasm {
+    /*std::string gameRoot = "timeless/";
     std::vector<std::string> manifest;
     std::string saveGameRoot;
 
@@ -231,9 +231,8 @@ void doMessageBox(std::string msg)
     EM_JS(void, setBuildDate, (const char* date), {
         if (v3wasm.setBuildDate)
             v3wasm.setBuildDate(UTF8ToString(date));
-    });
+    });*/
 }
-*/
 #endif
 
 

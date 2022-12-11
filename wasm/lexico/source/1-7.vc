@@ -1,0 +1,174 @@
+void OnEnter()
+{
+    PlayGameMusic(song_manufacturing);
+    
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+	
+    gBCompActive = -1;
+    gBComp[0] = 0;
+    gBComp[1] = 0;
+    gBComp[2] = 0;
+    gBComp[3] = 1;
+    gBComp[4] = 0;
+
+    if (gFlags[FLAG_HAS_BATTERY])
+        SetTile(41, 3, 1, 44);
+        
+    if (gFlags[FLAG_SCOTT_LOC] == 12 && !gFlags[FLAG_HAS_BATTERY])
+    {
+        gVNPC = EntitySpawn(24,21, "hippym1.chr");
+        entity.obstruct[gVNPC] = 1;
+        entity.script[gVNPC] = "TalkToScott";
+    }
+	SpawnPlayer();
+    
+    AddButton(0, 15, 140, -1, "iBCompOn");
+	AddButton(0, 65, 140, -1,"iBCompOff");
+    AddButton(0, 115, 140, -1,"iBCompBatt1");
+	AddButton(0, 165, 140, -1,"iBCompBatt2");
+    AddButton(0, 215, 140, -1,"iBCompBatt3");
+    AddButton(0, 265, 140, -1,"iBCompBatt4");
+	
+    AddGlyph(0,27,172, glyph_ON);
+	AddGlyph(0,77,172, glyph_OFF);
+	AddGlyph(0,127,152, glyph_REMOVE);
+    AddGlyph(0,127,172, glyph_BATTERY);
+    AddGlyph(0,127,192, glyph_1);
+    AddGlyph(0,177,152, glyph_REMOVE);
+    AddGlyph(0,177,172, glyph_BATTERY);
+    AddGlyph(0,177,192, glyph_2);
+    AddGlyph(0,227,152, glyph_REMOVE);
+    AddGlyph(0,227,172, glyph_BATTERY);
+    AddGlyph(0,227,192, glyph_3);
+    AddGlyph(0,277,152, glyph_REMOVE);
+    AddGlyph(0,277,172, glyph_BATTERY);
+    AddGlyph(0,277,192, glyph_4);
+	
+	AddRectangle(0, 70, 90, 180, 40, RGB(255,255,255), RGB(128,128,128));
+    
+    AddGlyph(0,100,102, glyph_COMPUTER);
+    AddGlyph(0,160,93, glyph_ON);
+    AddGlyph(0,160,111, glyph_OFF);
+    
+    AddGlyph(1,118,102, glyph_1);
+    AddGlyph(1,195,93, glyph_3);
+    AddGlyph(1,213,93, glyph_4);
+    AddGlyph(1,195,111, glyph_2);
+    AddGlyph(1,213,111, glyph_5);
+    
+    AddGlyph(2,118,102, glyph_2);
+    AddGlyph(2,195,93, glyph_4);
+    AddGlyph(2,213,93, glyph_5);
+    
+    AddGlyph(3,118,102, glyph_3);
+    AddGlyph(3,195,93, glyph_2);
+    AddGlyph(3,195,111, glyph_4);
+    AddGlyph(3,213,111, glyph_5);
+    
+    AddGlyph(4,118,102, glyph_4);
+    AddGlyph(4,195,93, glyph_3);
+    AddGlyph(4,195,111, glyph_1);
+    AddGlyph(4,213,111, glyph_5);
+    
+    AddGlyph(5,118,102, glyph_5);
+    AddGlyph(5,195,93, glyph_4);
+    AddGlyph(5,195,111, glyph_3);
+    
+    AddGlyph(6,118,102, glyph_6);
+    AddGlyph(6,195,93, glyph_1);
+    AddGlyph(6,213,93, glyph_2);
+    AddGlyph(6,231,93, glyph_3);
+    AddGlyph(6,195,111, glyph_4);
+    AddGlyph(6,213,111, glyph_5);
+    
+    AddRectangle(7, 15, 90, 45, 40, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(7,29,102, glyph_ERROR);
+    
+    AddRectangle(8, 15, 90, 45, 40, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(8,20,102, glyph_NO);
+    AddGlyph(8,38,102, glyph_BATTERY);
+    
+    AddRectangle(9, 15, 90, 45, 40, RGB(0,255,0), RGB(0,128,0));
+    AddGlyph(9,20,102, glyph_YES);
+    AddGlyph(9,38,102, glyph_BATTERY);
+    
+    AddRectangle(10, 15, 90, 45, 40, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(10,20,102, glyph_COMPUTER);
+    AddGlyph(10,38,102, glyph_OFF);
+    
+    AddRectangle(11, 20, 155, 260, 60, RGB(0,0,255), RGB(0,0,128));
+	AddGlyph(11,40+100, 160, glyph_ROOM2);
+
+	AddTemperature(11, 40, 180, FLAG_TEMPERATURE2);
+    
+    AddRectangle(19, 270, 5, 45, 26, RGB(0,0,255), RGB(0,0,128));
+    AddGlyph(19, 275, 10, glyph_ROOM2);
+    AddGlyph(19, 293, 10, glyph_CAMERA);
+}
+
+void TalkToScott()
+{
+    TBox(1, gFont, "Scott: Based on what that computer panel said and the presence of batteries here, I'd say that one glyph means =power room=. That's my best guess.");
+    TBox(1, gFont, "Scott: The setup here is really interesting. It looks to me as though the wiring here is faulty, so the computers can't just be turned on in any order. There's a particular order you have to do it, but I have no idea what it is. I bet that drove the old engineers crazy!");
+    
+}
+
+void Computer1()
+{
+    gBCompActive = 0;
+    AddCollection(0);
+    AddCollection(1);
+}
+
+void Computer2()
+{
+    gBCompActive = 1;
+    AddCollection(0);
+    AddCollection(2);
+}
+
+void Computer3()
+{
+    gBCompActive = 2;
+    AddCollection(0);
+    AddCollection(3);
+}
+
+void Computer4()
+{
+    gBCompActive = 3;
+    AddCollection(0);
+    AddCollection(4);
+}
+
+void Computer5()
+{
+    gBCompActive = 4;
+    AddCollection(0);
+    AddCollection(5);
+}
+
+void Computer6()
+{
+    gBCompActive = 5;
+    AddCollection(0);
+    AddCollection(6);
+}
+
+void TempComputer()
+{
+    AddCollection(11);
+}
+
+void BlockingCrate()
+{
+    TBox(0, gFont, "The crate is blocking your path. You see no way to move it.");
+}
+
+void WarpTo25()
+{
+	WarpTo(32,33, "2-5.map");
+}

@@ -1,0 +1,2 @@
+Pig1
+pig1.chr

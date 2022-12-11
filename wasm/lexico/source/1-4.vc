@@ -1,0 +1,60 @@
+void OnEnter()
+{
+    PlayGameMusic(song_ambient);
+    
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+	
+    gDoors[0].x = 22; gDoors[0].y = 9; gDoors[0].type = 0; 
+	gDoors[0].id = DOOR_14;
+    
+    if (gFlags[FLAG_BATTERY_USED])
+    {
+        SetTile(18, 11, 1, 43);
+        SetTile(19, 11, 2, 188);
+        SetTile(20, 11, 2, 190);
+    }
+    
+	SpawnPlayer();
+    
+    AddButton(0, 90, 120, -1, "iBPanelInsert"); 
+    AddButton(0, 140, 120, 0, "iBPanelOpen");
+    AddButton(0, 190, 120, 0, "iBPanelClose");
+
+    AddGlyph(0, 102, 143, glyph_INSERT);
+    AddGlyph(0, 102, 161, glyph_BATTERY);
+    AddGlyph(0, 152, 152, glyph_OPEN);
+    AddGlyph(0, 202, 152, glyph_CLOSE);
+    
+    AddRectangle(1, 100, 85, 120, 25, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(1, 125, 90, glyph_ERROR);
+    AddGlyph(1, 161, 90, glyph_NO);
+    AddGlyph(1, 179, 90, glyph_BATTERY);
+    
+    AddRectangle(2, 100, 85, 120, 25, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(2, 125, 90, glyph_ERROR);
+    AddGlyph(2, 161, 90, glyph_YES);
+    AddGlyph(2, 179, 90, glyph_BATTERY);
+    
+    AddRectangle(3, 100, 85, 120, 25, RGB(0,255,0), RGB(0,128,0));
+    AddGlyph(3, 134, 90, glyph_BATTERY);
+    AddGlyph(3, 152, 90, glyph_INSERT);
+    AddGlyph(3, 170, 90, glyph_YES);
+}
+
+void BatteryPanel()
+{
+    AddCollection(0);
+}
+
+void WarpTo00()
+{
+	WarpTo(37,9,"0-0.map");
+}
+
+void WarpTo21()
+{
+    WarpTo(11,55, "2-1.map");
+}

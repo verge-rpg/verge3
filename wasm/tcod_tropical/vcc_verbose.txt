@@ -1,0 +1,1637 @@
+Constructing VCCompiler object... Done.
+struct type declare anim_t: 7 elements 
+struct instance declared anims of type anim_t (16 arraysize) 
+func LoadAnimation found with 3 args and shit.
+func FreeAnimation found with 1 args and shit.
+func BlitFrame found with 5 args and shit.
+func TBlitFrame found with 5 args and shit.
+func BlitFrameAt found with 5 args and shit.
+func BlitAt found with 4 args and shit.
+int      crossfade_img: offset      112, size      1, initializer: =DuplicateImage(1)
+int          alpha_img: offset      113, size      1, initializer: =DuplicateImage(1)
+int           wipe_img: offset      114, size      1, initializer: =LoadImage("system\wipe2.gif")
+func FadeIn found with 1 args and shit.
+func FadeOut found with 1 args and shit.
+func WhiteIn found with 1 args and shit.
+func WhiteOut found with 1 args and shit.
+func CrossFade found with 1 args and shit.
+func TransWipe found with 1 args and shit.
+func BoxOut found with 1 args and shit.
+func BoxIn found with 1 args and shit.
+func CircleOut found with 1 args and shit.
+func CircleIn found with 1 args and shit.
+func FadeInImg found with 2 args and shit.
+func FadeOutImg found with 1 args and shit.
+func WhiteInImg found with 2 args and shit.
+func WhiteOutImg found with 1 args and shit.
+func CrossFadeImg found with 2 args and shit.
+func Wait found with 1 args and shit.
+int       weather_mode: offset      115, size      1, initializer: 
+int              lxwin: offset      116, size      1, initializer: 
+int              lywin: offset      117, size      1, initializer: 
+func SetWeather found with 1 args and shit.
+func RenderWeather found with 0 args and shit.
+int         cloudthink: offset      118, size      1, initializer: 
+int       clouds_initd: offset      119, size      1, initializer: 
+struct type declare CloudType: 5 elements 
+struct instance declared _clouds of type CloudType (15 arraysize) 
+int            _cloud1: offset      195, size      1, initializer: 
+int            _cloud2: offset      196, size      1, initializer: 
+int            _cloud3: offset      197, size      1, initializer: 
+int           _cloud1s: offset      198, size      1, initializer: 
+int           _cloud2s: offset      199, size      1, initializer: 
+int           _cloud3s: offset      200, size      1, initializer: 
+func InitializeClouds found with 0 args and shit.
+func ThinkClouds found with 0 args and shit.
+func RenderClouds found with 0 args and shit.
+int               _fog: offset      201, size      1, initializer: =LoadImage("system\fog.png")
+func RenderFog found with 0 args and shit.
+struct type declare SnowNode: 2 elements 
+func InitializeRain found with 0 args and shit.
+func InitializeSnow found with 0 args and shit.
+string       moneyname: offset        0, size      1, initializer: ="GP" 
+int          speechprt: offset      202, size      1, initializer: =LoadAnimation("speech.gif",32,32)
+int           sfx_open: offset      203, size      1, initializer: =LoadSound("sfx/open03.wav")
+int           sfx_warp: offset      204, size      1, initializer: =LoadSound("sfx/shadow.wav")
+int         sfx_switch: offset      205, size      1, initializer: =LoadSound("sfx/boxopen.wav")
+int           sfx_save: offset      206, size      1, initializer: =LoadSound("sfx/ding.wav")
+int         sfx_magic1: offset      207, size      1, initializer: =LoadSound("sfx/magic05.mp3")
+int              money: offset      208, size      1, initializer: 
+int               font: offset      209, size      1, initializer: 
+struct type declare pc: 3 elements 
+struct instance declared players of type pc (5 arraysize) 
+int              party: offset      215, size      5, initializer: 
+int       curpartysize: offset      220, size      1, initializer: 
+int              flags: offset      221, size   8000, initializer: 
+int            vclayer: offset     8221, size      1, initializer: =DuplicateImage(1)
+int            screeny: offset     8222, size      1, initializer: 
+int       textboxframe: offset     8223, size      1, initializer: 
+int           textmore: offset     8224, size      1, initializer: 
+int                 im: offset     8225, size      1, initializer: 
+int          gamestart: offset     8226, size      1, initializer: 
+int               apnt: offset     8227, size      1, initializer: 
+int           textfont: offset     8228, size      1, initializer: =LoadFont("system\font3_vw.gif")
+int           menufont: offset     8229, size      1, initializer: =LoadFont("system\smallfont1.gif")
+int            v1_blue: offset     8230, size      1, initializer: =RGB(0,0,200)
+int           v1_dgray: offset     8231, size      1, initializer: =RGB(140,140,140)
+int           v1_lgray: offset     8232, size      1, initializer: =RGB(200,200,200)
+int         mapswitchx: offset     8233, size      1, initializer: 
+int         mapswitchy: offset     8234, size      1, initializer: 
+int         mapswitche: offset     8235, size      1, initializer: =1
+int          playerent: offset     8236, size      1, initializer: 
+int            charpic: offset     8237, size     10, initializer: 
+int            tint_on: offset     8247, size      1, initializer: 
+int         tint_color: offset     8248, size      1, initializer: 
+int        tint_lucent: offset     8249, size      1, initializer: 
+func RPG_RenderFunc found with 0 args and shit.
+func LoadResources found with 0 args and shit.
+func MapSwitch found with 4 args and shit.
+func abs found with 1 args and shit.
+func TintScreen found with 2 args and shit.
+func TintOff found with 0 args and shit.
+func InitializeParty found with 0 args and shit.
+func InitializePC found with 2 args and shit.
+func AddPlayer found with 1 args and shit.
+func CharInParty found with 1 args and shit.
+func FindCharacter found with 1 args and shit.
+func RemovePlayer found with 1 args and shit.
+func AutoOn found with 0 args and shit.
+func AutoOff found with 0 args and shit.
+func InitMap found with 0 args and shit.
+func Warp found with 3 args and shit.
+func MenuBox found with 4 args and shit.
+func TextBox found with 4 args and shit.
+func TextBoxM found with 4 args and shit.
+func GiveMoney found with 1 args and shit.
+int          menusound: offset     8250, size      1, initializer: 
+int           shellpic: offset     8251, size      1, initializer: 
+int           crownpic: offset     8252, size      1, initializer: 
+string          shells: offset       11, size      1, initializer:  
+string          crowns: offset       12, size      1, initializer:  
+int             tropic: offset     8253, size    100, initializer: 
+int           pigsound: offset     8353, size      1, initializer: 
+int               dodo: offset     8354, size      1, initializer: 
+int            questio: offset     8355, size      1, initializer: 
+int            problem: offset     8356, size      1, initializer: 
+int           storypic: offset     8357, size     10, initializer: 
+int            menupnt: offset     8367, size      5, initializer: 
+int                ent: offset     8372, size      5, initializer: 
+int              sound: offset     8377, size      5, initializer: 
+func Autoexec found with 0 args and shit.
+func loadcharpics found with 1 args and shit.
+func chest found with 2 args and shit.
+func lock found with 0 args and shit.
+func Wait2 found with 1 args and shit.
+func showstart found with 0 args and shit.
+func showending found with 0 args and shit.
+func SText found with 4 args and shit.
+func foundstuff found with 1 args and shit.
+func question found with 9 args and shit.
+Compiling sysvc_global_initializers ->>>>
+compiling libfunc DuplicateImage  done
+compiling libfunc DuplicateImage  done
+compiling libfunc LoadImage  done
+compiling libfunc LoadImage  done
+compiling libfunc LoadSound  done
+compiling libfunc LoadSound  done
+compiling libfunc LoadSound  done
+compiling libfunc LoadSound  done
+compiling libfunc LoadSound  done
+compiling libfunc DuplicateImage  done
+compiling libfunc LoadFont  done
+compiling libfunc LoadFont  done
+compiling libfunc RGB  done
+compiling libfunc RGB  done
+compiling libfunc RGB  done
+finished compiling globalinitializers
+compiling function LoadAnimation ->>>>
+compiling libfunc Exit  done
+compiling libfunc LoadImage0  done
+compiling libfunc ImageHeight  done
+compiling libfunc NewImage  done
+Finished compiling function LoadAnimation
+compiling function FreeAnimation ->>>>
+compiling libfunc Log  done
+compiling libfunc FreeImage  done
+compiling libfunc FreeImage  done
+Finished compiling function FreeAnimation
+compiling function BlitFrame ->>>>
+compiling libfunc Exit  done
+compiling libfunc Blit  done
+compiling libfunc GrabRegion  done
+compiling libfunc Blit  done
+Finished compiling function BlitFrame
+compiling function TBlitFrame ->>>>
+compiling libfunc Exit  done
+compiling libfunc TBlit  done
+compiling libfunc GrabRegion  done
+compiling libfunc TBlit  done
+Finished compiling function TBlitFrame
+compiling function BlitFrameAt ->>>>
+compiling libfunc Exit  done
+compiling libfunc TBlit  done
+compiling libfunc GrabRegion  done
+compiling libfunc TBlit  done
+Finished compiling function BlitFrameAt
+compiling function BlitAt ->>>>
+compiling libfunc TBlit compiling libfunc ImageWidth  done
+compiling libfunc ImageWidth  done
+ done
+Finished compiling function BlitAt
+compiling function FadeIn ->>>>
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc ImageWidth  done
+compiling libfunc ImageHeight  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+Finished compiling function FadeIn
+compiling function FadeOut ->>>>
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc ImageWidth  done
+compiling libfunc ImageHeight  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+Finished compiling function FadeOut
+compiling function WhiteIn ->>>>
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc ImageWidth  done
+compiling libfunc ImageHeight  done
+compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+Finished compiling function WhiteIn
+compiling function WhiteOut ->>>>
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc ImageWidth  done
+compiling libfunc ImageHeight  done
+compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+Finished compiling function WhiteOut
+compiling function CrossFade ->>>>
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc Blit  done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+Finished compiling function CrossFade
+compiling function TransWipe ->>>>
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc Blit  done
+compiling libfunc RectFill  done
+compiling libfunc Render  done
+compiling libfunc AlphaBlit  done
+compiling libfunc ShowPage  done
+Finished compiling function TransWipe
+compiling function BoxOut ->>>>
+compiling libfunc Render  done
+compiling libfunc RectFill  done
+compiling libfunc RectFill  done
+compiling libfunc RectFill  done
+compiling libfunc RectFill  done
+compiling libfunc ShowPage  done
+Finished compiling function BoxOut
+compiling function BoxIn ->>>>
+compiling libfunc Render  done
+compiling libfunc RectFill  done
+compiling libfunc RectFill  done
+compiling libfunc RectFill  done
+compiling libfunc RectFill  done
+compiling libfunc ShowPage  done
+Finished compiling function BoxIn
+compiling function CircleOut ->>>>
+compiling libfunc Render  done
+compiling libfunc RectFill  done
+compiling libfunc CircleFill  done
+compiling libfunc TBlit  done
+compiling libfunc ShowPage  done
+Finished compiling function CircleOut
+compiling function CircleIn ->>>>
+compiling libfunc Render  done
+compiling libfunc RectFill  done
+compiling libfunc CircleFill  done
+compiling libfunc TBlit  done
+compiling libfunc ShowPage  done
+Finished compiling function CircleIn
+compiling function FadeInImg ->>>>
+compiling libfunc Blit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc ImageWidth  done
+compiling libfunc ImageHeight  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+Finished compiling function FadeInImg
+compiling function FadeOutImg ->>>>
+compiling libfunc DuplicateImage  done
+compiling libfunc Blit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc ImageWidth  done
+compiling libfunc ImageHeight  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+compiling libfunc FreeImage  done
+Finished compiling function FadeOutImg
+compiling function WhiteInImg ->>>>
+compiling libfunc Blit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc ImageWidth  done
+compiling libfunc ImageHeight  done
+compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+Finished compiling function WhiteInImg
+compiling function WhiteOutImg ->>>>
+compiling libfunc DuplicateImage  done
+compiling libfunc Blit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc ImageWidth  done
+compiling libfunc ImageHeight  done
+compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+compiling libfunc FreeImage  done
+Finished compiling function WhiteOutImg
+compiling function CrossFadeImg ->>>>
+compiling libfunc DuplicateImage  done
+compiling libfunc Blit  done
+compiling libfunc SetLucent  done
+compiling libfunc Blit  done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+compiling libfunc FreeImage  done
+Finished compiling function CrossFadeImg
+compiling function Wait ->>>>
+compiling libfunc Render  done
+compiling libfunc ShowPage  done
+Finished compiling function Wait
+compiling function SetWeather ->>>>
+Finished compiling function SetWeather
+compiling function RenderWeather ->>>>
+compiling libfunc ColorFilter  done
+Finished compiling function RenderWeather
+compiling function InitializeClouds ->>>>
+compiling libfunc LoadImage  done
+compiling libfunc LoadImage  done
+compiling libfunc LoadImage  done
+compiling libfunc DuplicateImage  done
+compiling libfunc Silhouette compiling libfunc RGB  done
+ done
+compiling libfunc DuplicateImage  done
+compiling libfunc Silhouette compiling libfunc RGB  done
+ done
+compiling libfunc DuplicateImage  done
+compiling libfunc Silhouette compiling libfunc RGB  done
+ done
+compiling libfunc Random  done
+compiling libfunc Random  done
+compiling libfunc Random  done
+compiling libfunc Random  done
+Finished compiling function InitializeClouds
+compiling function ThinkClouds ->>>>
+compiling libfunc Random  done
+compiling libfunc Random  done
+compiling libfunc Random  done
+compiling libfunc Random  done
+Finished compiling function ThinkClouds
+compiling function RenderClouds ->>>>
+compiling libfunc SetLucent  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+Finished compiling function RenderClouds
+compiling function RenderFog ->>>>
+compiling libfunc SetLucent  done
+compiling libfunc WrapBlit  done
+compiling libfunc SetLucent  done
+Finished compiling function RenderFog
+compiling function InitializeRain ->>>>
+Finished compiling function InitializeRain
+compiling function InitializeSnow ->>>>
+Finished compiling function InitializeSnow
+compiling function RPG_RenderFunc ->>>>
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill  done
+compiling libfunc SetLucent  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+Finished compiling function RPG_RenderFunc
+compiling function LoadResources ->>>>
+compiling libfunc LoadImage  done
+compiling libfunc LoadImage  done
+compiling libfunc EnableVariableWidth  done
+compiling libfunc EnableVariableWidth  done
+Finished compiling function LoadResources
+compiling function MapSwitch ->>>>
+compiling libfunc Blit  done
+compiling libfunc Blit  done
+compiling libfunc Map  done
+Finished compiling function MapSwitch
+compiling function abs ->>>>
+Finished compiling function abs
+compiling function TintScreen ->>>>
+Finished compiling function TintScreen
+compiling function TintOff ->>>>
+Finished compiling function TintOff
+compiling function InitializeParty ->>>>
+compiling libfunc FileOpen  done
+compiling libfunc Exit  done
+compiling libfunc val compiling libfunc FileReadToken  done
+ done
+compiling libfunc FileReadToken  done
+compiling libfunc FileClose  done
+Finished compiling function InitializeParty
+compiling function InitializePC ->>>>
+compiling libfunc FileOpen  done
+compiling libfunc Exit  done
+compiling libfunc FileReadToken  done
+compiling libfunc FileReadToken  done
+compiling libfunc FileClose  done
+Finished compiling function InitializePC
+compiling function AddPlayer ->>>>
+compiling libfunc EntitySpawn  done
+compiling libfunc EntityStalk  done
+Finished compiling function AddPlayer
+compiling function CharInParty ->>>>
+Finished compiling function CharInParty
+compiling function FindCharacter ->>>>
+Finished compiling function FindCharacter
+compiling function RemovePlayer ->>>>
+Finished compiling function RemovePlayer
+compiling function AutoOn ->>>>
+compiling libfunc EntityStalk  done
+Finished compiling function AutoOn
+compiling function AutoOff ->>>>
+compiling libfunc EntityStalk  done
+Finished compiling function AutoOff
+compiling function InitMap ->>>>
+compiling libfunc EntitySpawn  done
+compiling libfunc EntityStalk  done
+compiling libfunc SetPlayer  done
+Finished compiling function InitMap
+compiling function Warp ->>>>
+compiling libfunc Blit  done
+compiling libfunc Blit  done
+compiling libfunc Render  done
+Finished compiling function Warp
+compiling function MenuBox ->>>>
+compiling libfunc SetLucent  done
+compiling libfunc RectFill  done
+compiling libfunc SetLucent  done
+compiling libfunc Rect  done
+compiling libfunc Rect  done
+compiling libfunc Rect  done
+Finished compiling function MenuBox
+compiling function TextBox ->>>>
+compiling libfunc len  done
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc len  done
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc len  done
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Unpress  done
+Finished compiling function TextBox
+compiling function TextBoxM ->>>>
+compiling libfunc len  done
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc len  done
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc len  done
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetClip  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc SetClip  done
+compiling libfunc ShowPage  done
+compiling libfunc Unpress  done
+Finished compiling function TextBoxM
+compiling function GiveMoney ->>>>
+compiling libfunc Render  done
+compiling libfunc PrintCenter  done
+compiling libfunc ShowPage  done
+Finished compiling function GiveMoney
+compiling function Autoexec ->>>>
+compiling libfunc CallFunction  done
+compiling libfunc LoadImage  done
+compiling libfunc LoadImage  done
+compiling libfunc HookRetrace  done
+compiling libfunc RectFill  done
+compiling libfunc LoadSound  done
+compiling libfunc LoadSound  done
+compiling libfunc LoadFont  done
+Finished compiling function Autoexec
+compiling function loadcharpics ->>>>
+compiling libfunc LoadImage  done
+Finished compiling function loadcharpics
+compiling function chest ->>>>
+compiling libfunc LoadSound  done
+compiling libfunc SetTile  done
+compiling libfunc PlaySound  done
+compiling libfunc FreeSound  done
+Finished compiling function chest
+compiling function lock ->>>>
+compiling libfunc LoadSound  done
+compiling libfunc PlaySound  done
+compiling libfunc FreeSound  done
+Finished compiling function lock
+compiling function Wait2 ->>>>
+compiling libfunc ShowPage  done
+Finished compiling function Wait2
+compiling function showstart ->>>>
+compiling libfunc LoadImage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc PlaySound  done
+compiling libfunc PlaySound  done
+compiling libfunc StopMusic  done
+compiling libfunc Exit  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc ShowPage  done
+compiling libfunc SetMusicVolume  done
+compiling libfunc StopMusic  done
+compiling libfunc SetResolution  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc ShowPage  done
+compiling libfunc SetMusicVolume  done
+compiling libfunc StopMusic  done
+compiling libfunc SetResolution  done
+compiling libfunc Unpress  done
+compiling libfunc LoadImage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc FreeImage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc LoadImage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc FreeImage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc LoadImage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc FreeImage  done
+compiling libfunc LoadImage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc FreeImage  done
+compiling libfunc Unpress  done
+compiling libfunc LoadImage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc FreeImage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc ShowPage  done
+compiling libfunc SetMusicVolume  done
+compiling libfunc StopMusic  done
+compiling libfunc SetResolution  done
+compiling libfunc FreeImage  done
+Finished compiling function showstart
+compiling function showending ->>>>
+compiling libfunc PlayMusic  done
+compiling libfunc LoadImage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Unpress  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc TBlit compiling libfunc cos  done
+ done
+compiling libfunc ShowPage  done
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+Finished compiling function showending
+compiling function SText ->>>>
+compiling libfunc Render  done
+compiling libfunc TBlit  done
+compiling libfunc Rect compiling libfunc RGB  done
+ done
+compiling libfunc Rect compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc FreeImage  done
+compiling libfunc Unpress  done
+Finished compiling function SText
+compiling function foundstuff ->>>>
+compiling libfunc len  done
+compiling libfunc Render  done
+compiling libfunc Rect compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc ShowPage  done
+compiling libfunc Unpress  done
+Finished compiling function foundstuff
+compiling function question ->>>>
+compiling libfunc Render  done
+compiling libfunc Rect compiling libfunc RGB  done
+ done
+compiling libfunc Rect compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc RectFill compiling libfunc RGB  done
+ done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc PrintString  done
+compiling libfunc SetLucent  done
+compiling libfunc ShowPage  done
+compiling libfunc PlaySound  done
+compiling libfunc PlaySound  done
+compiling libfunc Unpress  done
+Finished compiling function question
+Compiling Tropic.mapfunc start found with 0 args and shit.
+func cottage1entry found with 0 args and shit.
+func cottage1exit found with 0 args and shit.
+func cottage2entry found with 0 args and shit.
+func cottage2exit found with 0 args and shit.
+func cottage3entry found with 0 args and shit.
+func cottage3exit found with 0 args and shit.
+func seashell1 found with 0 args and shit.
+func seashell2 found with 0 args and shit.
+func seashell3 found with 0 args and shit.
+func seashell4 found with 0 args and shit.
+func seashell5 found with 0 args and shit.
+func seashell6 found with 0 args and shit.
+func seashell7 found with 0 args and shit.
+func seashell8 found with 0 args and shit.
+func seashell9 found with 0 args and shit.
+func silentpalm found with 0 args and shit.
+func silenttree found with 0 args and shit.
+func silentrock found with 0 args and shit.
+func silentbush found with 0 args and shit.
+func man2 found with 0 args and shit.
+func pig1 found with 0 args and shit.
+func bluepig found with 0 args and shit.
+func pig3 found with 0 args and shit.
+func man1 found with 0 args and shit.
+func man4 found with 0 args and shit.
+func woman1 found with 0 args and shit.
+func woman3 found with 0 args and shit.
+func boy1 found with 0 args and shit.
+func boy2 found with 0 args and shit.
+func boy3 found with 0 args and shit.
+func map1 found with 0 args and shit.
+func buriedshell found with 0 args and shit.
+func starfish found with 0 args and shit.
+func rock1 found with 0 args and shit.
+func rock2 found with 0 args and shit.
+func chest1 found with 0 args and shit.
+func chest2 found with 0 args and shit.
+func chest3 found with 0 args and shit.
+func crown1 found with 0 args and shit.
+func crown2 found with 0 args and shit.
+func crown3 found with 0 args and shit.
+func crown4 found with 0 args and shit.
+func crown5 found with 0 args and shit.
+func bouncingball1 found with 0 args and shit.
+func bouncingball2 found with 0 args and shit.
+func bouncingball3 found with 0 args and shit.
+func bouncingball4 found with 0 args and shit.
+func bouncingball5 found with 0 args and shit.
+func bouncingball6 found with 0 args and shit.
+func nobosfriend found with 0 args and shit.
+func chestkey found with 0 args and shit.
+func womaninhut found with 0 args and shit.
+func man3 found with 0 args and shit.
+func portal1 found with 0 args and shit.
+func portal2 found with 0 args and shit.
+compiling function start ->>>>
+compiling libfunc SetMusicVolume  done
+compiling libfunc SetResolution  done
+compiling libfunc PlayMusic  done
+compiling libfunc PlayMusic  done
+compiling libfunc SetMusicVolume  done
+Finished compiling function start
+compiling function cottage1entry ->>>>
+Finished compiling function cottage1entry
+compiling function cottage1exit ->>>>
+Finished compiling function cottage1exit
+compiling function cottage2entry ->>>>
+Finished compiling function cottage2entry
+compiling function cottage2exit ->>>>
+Finished compiling function cottage2exit
+compiling function cottage3entry ->>>>
+Finished compiling function cottage3entry
+compiling function cottage3exit ->>>>
+Finished compiling function cottage3exit
+compiling function seashell1 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function seashell1
+compiling function seashell2 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function seashell2
+compiling function seashell3 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function seashell3
+compiling function seashell4 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function seashell4
+compiling function seashell5 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function seashell5
+compiling function seashell6 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function seashell6
+compiling function seashell7 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function seashell7
+compiling function seashell8 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function seashell8
+compiling function seashell9 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function seashell9
+compiling function silentpalm ->>>>
+Finished compiling function silentpalm
+compiling function silenttree ->>>>
+Finished compiling function silenttree
+compiling function silentrock ->>>>
+Finished compiling function silentrock
+compiling function silentbush ->>>>
+Finished compiling function silentbush
+compiling function man2 ->>>>
+compiling libfunc EntitySpawn  done
+compiling libfunc EntitySetWanderRect  done
+compiling libfunc EntitySpawn  done
+compiling libfunc EntitySetWanderRect  done
+compiling libfunc EntitySpawn  done
+compiling libfunc EntitySetWanderRect  done
+Finished compiling function man2
+compiling function pig1 ->>>>
+compiling libfunc PlaySound  done
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+compiling libfunc EntityStop  done
+compiling libfunc Unpress  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function pig1
+compiling function bluepig ->>>>
+compiling libfunc PlaySound  done
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+compiling libfunc EntityStop  done
+compiling libfunc Unpress  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function bluepig
+compiling function pig3 ->>>>
+compiling libfunc PlaySound  done
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+compiling libfunc EntityStop  done
+compiling libfunc Unpress  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function pig3
+compiling function man1 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc LoadSound  done
+compiling libfunc PlaySound  done
+compiling libfunc FreeSound  done
+compiling libfunc EntitySetWanderRect  done
+Finished compiling function man1
+compiling function man4 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function man4
+compiling function woman1 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderRect  done
+Finished compiling function woman1
+compiling function woman3 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderRect  done
+Finished compiling function woman3
+compiling function boy1 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderRect  done
+Finished compiling function boy1
+compiling function boy2 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderRect  done
+Finished compiling function boy2
+compiling function boy3 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderRect  done
+Finished compiling function boy3
+compiling function map1 ->>>>
+Finished compiling function map1
+compiling function buriedshell ->>>>
+compiling libfunc SetTile  done
+Finished compiling function buriedshell
+compiling function starfish ->>>>
+Finished compiling function starfish
+compiling function rock1 ->>>>
+Finished compiling function rock1
+compiling function rock2 ->>>>
+Finished compiling function rock2
+compiling function chest1 ->>>>
+Finished compiling function chest1
+compiling function chest2 ->>>>
+Finished compiling function chest2
+compiling function chest3 ->>>>
+Finished compiling function chest3
+compiling function crown1 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function crown1
+compiling function crown2 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function crown2
+compiling function crown3 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function crown3
+compiling function crown4 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function crown4
+compiling function crown5 ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function crown5
+compiling function bouncingball1 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function bouncingball1
+compiling function bouncingball2 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function bouncingball2
+compiling function bouncingball3 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function bouncingball3
+compiling function bouncingball4 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function bouncingball4
+compiling function bouncingball5 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function bouncingball5
+compiling function bouncingball6 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderZone  done
+Finished compiling function bouncingball6
+compiling function nobosfriend ->>>>
+Finished compiling function nobosfriend
+compiling function chestkey ->>>>
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+Finished compiling function chestkey
+compiling function womaninhut ->>>>
+Finished compiling function womaninhut
+compiling function man3 ->>>>
+compiling libfunc EntityStop  done
+compiling libfunc EntitySetWanderRect  done
+Finished compiling function man3
+compiling function portal1 ->>>>
+compiling libfunc LoadSound  done
+compiling libfunc PlaySound  done
+compiling libfunc SetTile  done
+compiling libfunc SetTile  done
+compiling libfunc SetTile  done
+compiling libfunc SetObs  done
+compiling libfunc FreeSound  done
+Finished compiling function portal1
+compiling function portal2 ->>>>
+compiling libfunc StopMusic  done
+Finished compiling function portal2
+Deconstructing VCCompiler object... Done.

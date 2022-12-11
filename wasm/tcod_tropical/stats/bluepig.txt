@@ -1,0 +1,2 @@
+pig2
+pig2.chr

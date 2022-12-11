@@ -1,0 +1,180 @@
+/***************************************************************************
+*                                                                          *
+*                    V1RPG VergeC Library for Verge3                       *
+*                        Copyright (C)2004 vecna                           *
+*                                                                          *
+***************************************************************************/
+
+#define WEATHER_NONE		0
+#define WEATHER_CLOUDS		1
+#define WEATHER_RAIN		2
+#define WEATHER_SNOW		3
+#define WEATHER_FOG			4
+#define WEATHER_NIGHT		5
+
+/********************************** data **********************************/
+
+int weather_mode;
+int lxwin, lywin;
+
+/********************************** code **********************************/
+
+void SetWeather(int mode)
+{
+	weather_mode = mode;
+	switch (mode)
+	{
+		case WEATHER_CLOUDS: InitializeClouds();
+		case WEATHER_RAIN: InitializeRain();
+		case WEATHER_SNOW: InitializeSnow();
+	}
+	
+	lxwin = xwin;
+	lywin = ywin;
+}
+
+void RenderWeather()
+{
+	switch (weather_mode)
+	{
+		case WEATHER_CLOUDS: RenderClouds();
+		case WEATHER_FOG: RenderFog();
+		case WEATHER_NIGHT: ColorFilter(CF_BLUE, screen);
+	}
+}
+
+/********************************* clouds *********************************/
+
+#define NUM_CLOUDS 			15
+#define CLOUDSX 			640
+#define CLOUDSY 			480
+
+int cloudthink;
+int clouds_initd;
+
+struct CloudType
+{
+	int x, y, c;
+	int speed, cnt;
+}
+
+CloudType _clouds[NUM_CLOUDS];
+
+int _cloud1, _cloud2, _cloud3;
+int _cloud1s, _cloud2s, _cloud3s;
+
+void InitializeClouds()
+{
+	if (!clouds_initd)
+	{
+		_cloud1 = LoadImage("system/cloud1.gif");
+		_cloud2 = LoadImage("system/cloud2.gif");
+		_cloud3 = LoadImage("system/cloud3.gif");
+		
+		_cloud1s= DuplicateImage(_cloud1); Silhouette(0, 0, RGB(40, 40, 40), _cloud1, _cloud1s);
+		_cloud2s= DuplicateImage(_cloud2); Silhouette(0, 0, RGB(40, 40, 40), _cloud2, _cloud2s);
+		_cloud3s= DuplicateImage(_cloud3); Silhouette(0, 0, RGB(40, 40, 40), _cloud3, _cloud3s);
+		clouds_initd = 1;
+	}
+	
+	int i;
+	for (i=0; i<NUM_CLOUDS; i++)
+	{
+		_clouds[i].x = Random(0, CLOUDSX) * 65536;
+		_clouds[i].y = Random(0, CLOUDSY) * 65536;		
+		_clouds[i].c = Random(0,2);
+		_clouds[i].speed = Random(10, 30) * 65536 / 100;
+		_clouds[i].cnt = 0;
+	}
+	cloudthink = systemtime;
+}
+
+void ThinkClouds()
+{
+	int i;
+	
+	if (abs(lxwin - xwin) > 50 || abs(lywin - ywin) > 50)
+	{
+		InitializeClouds();
+		return;
+	}
+		
+	for (i=0; i<NUM_CLOUDS; i++)
+	{
+		_clouds[i].x -= _clouds[i].speed  - ((lxwin-xwin) * 65536);
+		_clouds[i].y -= _clouds[i].speed  - ((lywin-ywin) * 65536);
+		
+		if (_clouds[i].x < 0) _clouds[i].x = Random(480, 640) * 65536;
+		if (_clouds[i].y < 0) _clouds[i].y = Random(360, 480) * 65536;
+		if (_clouds[i].x > 640*65536) _clouds[i].x = Random(0, 60) * 65535;
+		if (_clouds[i].y > 480*65536) _clouds[i].y = Random(0, 10) * 65535;
+	}
+	lxwin=xwin;
+	lywin=ywin;
+}
+
+void RenderClouds()
+{
+	while (cloudthink<systemtime)
+	{
+		ThinkClouds();
+		cloudthink++;
+	}
+	
+	SetLucent(50);
+	int i, zx, zy;
+	for (i=0; i<NUM_CLOUDS; i++)
+	{
+	SetLucent(25);
+		zx = _clouds[i].x / 65536 - 160;
+		zy = _clouds[i].y / 65536 - 120;
+		
+		switch (_clouds[i].c)
+		{
+			case 0: TBlit(zx, zy, _cloud1, screen);
+			SetLucent(75);
+					TBlit(zx+3, zy+46, _cloud1s, screen);
+			case 1: TBlit(zx, zy, _cloud2, screen);
+			SetLucent(75);
+					TBlit(zx+3, zy+64, _cloud2s, screen);
+			case 2: TBlit(zx, zy, _cloud3, screen);
+			SetLucent(75);
+					TBlit(zx+3, zy+72, _cloud3s, screen);
+		}		
+	}
+	SetLucent(0);
+	lxwin = xwin;
+	lywin = ywin;
+}
+
+/********************************** fog ***********************************/
+
+int _fog = LoadImage("system/fog.png");
+
+void RenderFog()
+{
+	SetLucent(50);
+	WrapBlit((systemtime/4)+xwin, (systemtime/4)+ywin, _fog, screen);
+	SetLucent(0);
+}
+
+/********************************** rain **********************************/
+
+struct SnowNode 
+{
+	int x, y;
+}
+
+void InitializeRain()
+{
+
+}
+
+void InitializeSnow()
+{
+/*	for (int i=0; i<SnowParticles; i++)
+	{
+		snow[i].x = rnd(0, SnowScrX);
+		snow[i].y = rnd(0, SnowScrY);
+	}*/
+}

@@ -1,0 +1,113 @@
+void OnEnter()
+{
+	PlayGameMusic(song_ambient);
+
+	RemoveRenderString("RenderLights");
+	RemoveUpdateString("TransitionLights");
+
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+	
+	AddUpdate("UpdateTemperature");
+	AddRender("RenderTemperature");
+	
+	//gDoors[0].x = 20; gDoors[0].y = 19; gDoors[0].type = 1; gDoors[0].status = DOOR_CLOSED;
+	
+	//Light panel
+	
+    if (gFlags[FLAG_ENGINEER_LOC] == 1)
+    {
+        gEngineer = EntitySpawn(53,19, "hippym1.chr");
+        entity.obstruct[gEngineer] = 1;
+        entity.script[gEngineer] = "TalkToJaymie";
+    }
+    
+	SpawnPlayer();
+    
+    AddInput(0, 20, 60, 140, 5);
+    
+    AddButton(1, 245, 90, -1, "iRobotGo");
+    AddGlyph(1, 257, 113, glyph_OUTPUT);
+    AddGlyph(1, 257, 131, glyph_ON);
+    
+    AddRectangle(2, 245, 60, 40, 26, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(2, 257, 65, glyph_ERROR);
+    
+    AddRectangle(3, 130, 95, 60, 50, RGB(255,255,255), RGB(128,128,128));
+    AddGlyph(3, 152, 107, glyph_BOB);
+    AddText(3, 136, 125, "robert");
+}
+
+void TalkToJaymie()
+{
+    if (gFlags[FLAG_ENGINEER_LOC] == 1)
+    {
+        TBox(1, gFont, "Jaymie: Well, my rounds are complete. If you find something else that's broken, let me know.");
+    }
+}
+
+void TalkToLois()
+{
+    TBox(1, gFont, "Lois: Hey, I've never seen you before... that's a cool spacesuit you've got there!");
+}
+
+void TalkToMary()
+{
+    TBox(1, gFont, "Mary: Keeping this place clean is a huge chore. There are barely any cleaning supplies, either. I wish I could be a nurse instead. That's what I've been trained to do, you know... but, I know... we all have to chip in to survive. And this is the hand I was dealt.");
+}
+
+void TalkToGeorge()
+{
+    TBox(1, gFont, "George: The people left are a healthy bunch... it makes my job easier when I have a lot of downtime. I'm actually trying to improve my Suphtu skills, too.");
+}
+
+void TalkToRobert()
+{
+    if (gFlags[FLAG_KNOWLEDGE_CPU] && gFlags[FLAG_DATABASE_FIXED])
+    {
+        TBox(1, gFont, "Robert: What? You want to know the password to get into the Supply/CPU sector? Why, that's simple! It's my name, of course!");
+        Wait(200);
+        TBox(1, gFont, "Robert: What? You want to know my name? Why, that's simple! It's Robert, of course!");
+        AddCollection(3);
+    }
+    else
+        TBox(1, gFont, "Robert: This factory is so complicated. I can't remember where I'm going half the time. That computer past the room that requires a battery would help, if we could get to it... It's supposedly a navigational aid. Tells you how to get to a specific room from there.");
+        
+}
+
+void InputTest()
+{
+    AddCollection(0);
+    AddCollection(1);
+    AddCollection(20);
+    AddCollection(21);
+}
+
+void WarpTo11()
+{
+	WarpTo(21,19,"1-1.map");
+}
+
+void WarpTo12()
+{
+	WarpTo(30,15,"1-2.map");
+}
+
+void WarpTo14()
+{
+	WarpTo(17,24,"1-4.map");
+}
+
+void WarpTo16()
+{
+    WarpTo(32,24,"1-6.map");
+}
+
+void UseComputer()
+{
+	AddCollection(0);
+	AddCollection(20);
+	AddCollection(21);
+}

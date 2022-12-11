@@ -1,0 +1,285 @@
+// ----------------------------------------------------------- --- -- -
+// TBOX.VC. This VC file contains the main code for the textbox
+// ----------------------------------------------------------- --- -- -
+
+// Initiate global text box variables
+
+int fb_tboximg;
+int fb_tboximg2;
+int fb_c_arrow;
+int fb_banner;
+int textoffset;
+int fb_font;
+int screenx, screeny;
+int fadespeed;
+int maxlinelength;
+int linelengthlimit;
+int maxwraplines;
+int tboxwait;
+
+// Execute this function first to set up the global variables the text box will use
+
+void SetupTextBox()
+{
+    screenx = ImageWidth(screen);
+    screeny = ImageHeight(screen);
+    fb_tboximg = LoadImage("tbox.png");
+    fb_tboximg2 = LoadImage("tbox2.png");
+    fb_banner = LoadImage("banner.png");
+    fb_c_arrow = LoadImage("c_arrow.png");
+    fb_font = LoadFont("fonts\font0.png");
+    //EnableVariableWidth(fb_font);
+    textoffset = 9;				// How much to offset the contents of a textbox from
+                        // its top right corner in both x and y
+
+    fadespeed = 0;				// Decrease this to make fades faster
+    maxlinelength = 280;	// the Tbox function alters this number
+    linelengthlimit = 280;	// *This* number never changes. Its the maximum size a line can be in pixels
+    maxwraplines = 5;
+    tboxwait = 6;
+}
+
+// The text box routine
+
+void TBox(int portrait, int tboxfont, string tboxmessage)
+{
+    int textx, texty, linelength, numlines, curpos, totallines;
+    int screencap;	// Holds image of the screen under the textbox
+    int tboxbuffer;	// Buffer to hold the composite textbox image so it can all be faded out
+    int port, pages,i, cnt=0;
+
+    linelength = maxlinelength;
+    textx = textoffset;
+
+    screencap = CopyScreen();
+    tboxbuffer = NewImage(ImageWidth(fb_tboximg), ImageHeight(fb_tboximg));
+    if (portrait == 0)
+        Blit(0, 0, fb_tboximg, tboxbuffer);
+    else
+        Blit(0, 0, fb_tboximg2, tboxbuffer);
+
+    maxlinelength = linelengthlimit;
+
+    FadeInTbox(tboxbuffer, screencap);		// Fade in textbox
+    totallines = WrapText2(tboxfont, tboxmessage);	// Grab the number of lines to print. We decrease by one since we're using it to handle the array textwrap[], which starts at 0, not 1.
+    pages = (totallines-1) / maxwraplines;
+    numlines = totallines;
+    if (totallines > maxwraplines)
+        numlines = maxwraplines;
+    texty = textoffset;
+    // Blit the text, letter by letter:
+    while (pages >= 0)
+    {
+        texty = textoffset;
+        tboxbuffer = NewImage(ImageWidth(fb_tboximg), ImageHeight(fb_tboximg));
+        if (portrait == 0)
+            Blit(0, 0, fb_tboximg, tboxbuffer);
+        else
+            Blit(0, 0, fb_tboximg2, tboxbuffer);        
+        while (numlines > 0)
+        {
+            for (curpos = 1; curpos <= len(textwrap[cnt]); curpos++)
+            {
+                PrintString(textx, texty, tboxbuffer, tboxfont, left(textwrap[cnt], curpos));
+                tBlit((screenx/2)-(ImageWidth(fb_tboximg)/2), screeny-(ImageHeight(fb_tboximg)+10), tboxbuffer, screen);
+                ShowPage();
+                if (b1)
+                    PlaySound(sfx_type, 5);
+                else
+                    PlaySound(sfx_type, 25);
+                SkipWait(tboxwait);
+            }
+            numlines--;
+            texty = texty+(fontheight+1);
+            cnt++;
+        }
+        
+        Unpress(0);
+        while (!b1)
+            ShowPage();
+        
+        cnt = 0;
+        for (i=maxwraplines; i<totallines; i++)
+        {
+            textwrap[i-maxwraplines] = textwrap[i];
+            textwrap[i] = "";
+        }
+        pages--;
+        totallines -= maxwraplines;
+        numlines = totallines;
+        if (totallines > maxwraplines)
+            numlines = maxwraplines;
+    }
+        
+    //WaitForEnter();
+
+    FadeOutTbox(tboxbuffer, screencap);		// Fade out textbox
+
+    FreeImage(tboxbuffer);
+    FreeImage(screencap);
+
+    Unpress(b1);
+
+}
+
+// --------------------------------
+
+// Choice box. This pops up with a prompt and a series of choices to select. Handy for
+// alternatives in conversations etc. Choices are separated by a "/" and there can be a total
+// of four per box
+
+string option[6];		// Array to hold choices
+int a_lines[6];
+int lastchoice;			// Holds what the last choice made was.
+
+void Choice(int img, string prompt, string choices)
+{
+int numchoices;			// Number of choices
+int curchoice;			// Current choice the player has selected
+int loop;			// Loop counter
+int curcharacter;		// Current letter the routine is checking
+string tmp;
+int lines;
+int screencap;
+int cnt, i, totlines;
+
+int cboxbuffer;			// Holds the composite choice box image
+
+loop = 0;
+numchoices = 0;
+curcharacter = 0;
+curchoice = 0;
+tmp = "";
+screencap = CopyScreen();
+
+while (loop != 1)
+	{
+	option[numchoices] = "";
+	while (strcmp(tmp,"/") != 0 && curcharacter <= len(choices))
+		{
+		UpdateControls();
+		tmp = mid(choices, curcharacter, 1);
+		if (strcmp(tmp,"/") != 0) { option[numchoices] = option[numchoices]+tmp; }
+		curcharacter = curcharacter + 1;
+		}
+	numchoices++;
+	if (curcharacter > len(choices)){loop = 1;}
+	tmp = "";
+	}
+	
+// Have we messed anything up?
+if (numchoices > 6){ Exit("Too many choices passed to Choice Function!"); }
+if (numchoices = 0){ Exit("Choice function called with no choices!"); }
+
+cboxbuffer = NewImage(ImageWidth(fb_tboximg), ImageHeight(fb_tboximg));
+if (img == 0)
+    Blit(0, 0, fb_tboximg, cboxbuffer);
+else
+    Blit(0, 0, fb_tboximg2, cboxbuffer);
+PrintString(textoffset, textoffset, cboxbuffer, fb_font, prompt);
+Line(textoffset, textoffset+fontheight, textoffset+linelengthlimit, textoffset+fontheight, RGB(255,255,255), cboxbuffer);
+Line(textoffset, textoffset+(fontheight+1), textoffset+linelengthlimit, textoffset+(fontheight+1), RGB(1,1,1), cboxbuffer);
+
+totlines = 0;
+tmp = "";
+
+for (lines = 1; lines<=numchoices; lines++) 
+{ 
+    cnt = 0;
+    a_lines[lines-1] = (textoffset+3)+((fontheight+1)*(lines+totlines));
+    for (i=0; i<len(option[lines-1]); i++)
+    {
+        tmp += mid(option[lines-1], i, 1);
+        cnt += TextWidth(fb_font, mid(option[lines-1], i, 1));
+        if (!strcmp(mid(option[lines-1], i, 1)," ") || i == (len(option[lines-1])-1))
+        {
+            PrintString(textoffset+(ImageWidth(fb_c_arrow)+4)+cnt-TextWidth(fb_font,tmp), (textoffset+3)+((fontheight+1)*(lines+totlines)), cboxbuffer, fb_font, tmp);
+            tmp = "";
+        }
+        if (i != (len(option[lines-1])-1) && cnt >= (linelengthlimit-(ImageWidth(fb_c_arrow)+4)))
+        {
+            totlines++;
+            cnt = TextWidth(fb_font,tmp);
+        }
+    }
+    //PrintString(textoffset+(ImageWidth(fb_c_arrow)+4), (textoffset+3)+((fontheight+1)*lines), cboxbuffer, fb_font, option[lines-1]);
+}
+
+FadeInTbox(cboxbuffer, screencap);		// Fade in choice box
+
+while(!b1)
+	{
+	Blit(0, 0, screencap, screen);
+	tBlit((screenx/2)-(ImageWidth(fb_tboximg)/2), screeny-(ImageHeight(fb_tboximg)+10), cboxbuffer, screen);
+	tblit((screenx/2)-(ImageWidth(fb_tboximg)/2)+textoffset, screeny-ImageHeight(fb_tboximg)-11+a_lines[curchoice], fb_c_arrow, screen);
+	ShowPage();
+	if (right || down)
+		{
+		if (curchoice = numchoices-1) { curchoice = 0; }
+		else { curchoice++; }
+		UnpressDirectionals();
+		}
+	if (left || up)
+		{
+		if (curchoice = 0) { curchoice = numchoices-1; }
+		else { curchoice--; }
+		UnpressDirectionals();
+		}
+	}
+
+FadeOutTbox(cboxbuffer, screencap);		// Fade out choice box
+
+SetLucent(0);
+ShowPage();
+FreeImage(cboxbuffer);
+lastchoice = curchoice+1;
+}
+
+// --------------------------------
+
+// A mini-textbox for brief informative messages
+
+void Banner(string text)
+{
+int screencap, bannerback;
+int fadestage;
+
+SetLucent(0);
+screencap = CopyScreen();
+bannerback = NewImage(ImageWidth(fb_banner), ImageHeight(fb_banner));
+tBlit(0, 0, fb_banner, bannerback);
+PrintCenter(ImageWidth(bannerback)/2, 8, bannerback, fb_font, text);
+
+fadestage = 100;
+
+while (fadestage >= 0)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(fadestage);
+	tBlit((screenx/2)-(ImageWidth(fb_banner)/2), 20, bannerback, screen);
+	ShowPage();
+	Wait(fadespeed);
+	fadestage=fadestage-2;
+	}
+
+Unpress(0);
+WaitForEnter();
+
+while (fadestage <= 100)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(fadestage);
+	tBlit((screenx/2)-(ImageWidth(fb_banner)/2), 20, bannerback, screen);
+	ShowPage();
+	Wait(fadespeed);
+	fadestage=fadestage+2;
+	}
+
+Unpress(0);
+SetLucent(0);
+FreeImage(screencap);
+FreeImage(bannerback);
+}
+

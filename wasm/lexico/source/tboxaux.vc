@@ -1,0 +1,198 @@
+// ----------------------------------------------------------- --- -- -
+// TBOXAUX.VC. Auxiliary functions for handling certain areas of the
+// textbox. You may also find them handy elsewhere in your game
+// ----------------------------------------------------------- --- -- -
+
+// Returns a screenshot of the whole screen
+
+int CopyScreen()
+{
+int screenreturn;
+
+screenreturn = NewImage(screenx, screeny);
+
+GrabRegion(0, 0, screenx-1, screeny-1, 0, 0, screen, screenreturn);
+Return(screenreturn);
+}
+
+// Fade in a textbox or choice box
+
+void FadeInTbox(int tboximage, int screencapture)
+{
+int fadestage;
+int screencap;
+
+fadestage = 100;
+
+while (fadestage >= 0)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencapture, screen);
+	SetLucent(fadestage);
+	tBlit((screenx/2)-(ImageWidth(fb_tboximg)/2), screeny-(ImageHeight(fb_tboximg)+10), tboximage, screen);
+	ShowPage();
+	Wait(fadespeed);
+	fadestage=fadestage-2;
+	}
+}
+
+// Fade out a textbox or choice box
+
+void FadeOutTbox(int tboximage, int screencapture)
+{
+int fadestage;
+SetEntitiesPaused(1);
+fadestage = 0;
+
+while (fadestage <= 100)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencapture, screen);
+	SetLucent(fadestage);
+	tBlit((screenx/2)-(ImageWidth(fb_tboximg)/2), screeny-(ImageHeight(fb_tboximg)+10), tboximage, screen);
+	ShowPage();
+	Wait(fadespeed);
+	fadestage=fadestage+2;
+	}
+SetLucent(0);
+SetEntitiesPaused(0);
+}
+
+// A variant on tSB's wraptext function. Modified for v3, it can now handle variable
+// width fonts.
+// It returns the total number of lines the passed string was cut into, so you'd use
+// it buy assigning it to an integer variable (eg. numlines = WrapText(myfont, "hello mum"); )
+// which will store how many lines the string was cut to.
+
+string textwrap[50];		// Stores output from the wrap text routine
+
+int WrapText2(int txtfont, string s)
+{
+int curline, curpos, countpos;
+int charwrap;
+string tempst, countst;
+
+curline=0;
+tempst=s;
+charwrap = maxlinelength;
+
+// Just one line of text? Don't bother processing it
+
+if (TextWidth(txtfont, s)<charwrap)
+	{
+	textwrap[0]=s;
+	return 1;
+	}
+
+// Calculate how many characters fit in a string that's the maximum line length
+// and stick this number in charwrap
+ 
+ while (len(tempst)>0)
+ 	{
+ 	countst = "";
+ 	charwrap = 0;
+ 	countpos = 1;
+
+	if (TextWidth(txtfont, tempst) >= maxlinelength)
+ 		{
+		while(TextWidth(txtfont, countst) <= maxlinelength)
+			{
+			countst = left(tempst, countpos);
+			countpos++;
+			}
+		charwrap = len(countst)-1;
+		}
+	else
+		{
+		charwrap = len(tempst);
+		tempst = tempst+" ";
+		}
+
+// Start at the charwrap-th char and go backwards until we find a space.
+// Chop it there
+	
+ 	for (curpos=charwrap; curpos>0; curpos--)
+ 	 	{
+ 	 	if (strcmp(mid(tempst,curpos,1), " ") = 0)
+ 	 		{       
+ 	 		textwrap[curline]=left(tempst,curpos);
+ 	 		tempst=right(tempst,len(tempst)-curpos-1);
+ 	 		curline++;
+ 	 		curpos=0-1; // Jump out of the loop
+ 	 		}
+ 	   	}
+	}
+return curline;
+}
+
+
+// Wait in hundredths of a second
+
+void Wait(int delay)
+{
+int t;
+t=timer; timer=0;
+while(delay)
+	{
+	if(timer)
+		{
+        	timer--;
+        	delay--;
+        	UpdateControls();
+        	}
+	}
+timer=t;
+}
+
+// Wait in hundredths of a second. Skippable by holding ESC or Return
+
+void SkipWait(int delay)
+{
+int t;
+t=timer; timer=0;
+
+while(!b3 && !b1 && delay)
+	{
+	if(timer)
+		{
+		timer--;
+		delay--;
+		UpdateControls();
+		}
+	}
+timer=t;
+}
+
+// Wait for the enter key to be pressed
+
+void WaitForEnter()
+{
+while (!b1)
+	{
+	UpdateControls();
+	Wait(1);
+	}
+}
+
+// Unpresses the directional buttons easily and conveniently.
+
+void UnpressDirectionals()
+{
+Unpress(5);
+Unpress(6);
+Unpress(7);
+Unpress(8);
+}
+
+// Center an image on the screen
+void CenterImage(int imagepointer, int usetransparency)
+{
+if (usetransparency == 1)
+	{
+	tBlit((screenx/2)-(ImageWidth(imagepointer)/2), (screeny/2)-(ImageHeight(imagepointer)/2), imagepointer, screen);
+	}
+else 
+	{
+	Blit((screenx/2)-(ImageWidth(imagepointer)/2), (screeny/2)-(ImageHeight(imagepointer)/2), imagepointer, screen);
+	}
+}

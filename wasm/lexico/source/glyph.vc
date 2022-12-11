@@ -1,0 +1,141 @@
+string GlyphImage[100];
+int GlyphData;
+string GlyphDefinition[100];
+int DefinedGlyphList[101]; //Used for sorting in command panels.  0 is length.
+
+#define glyph_ON 0
+#define glyph_OFF 1
+#define glyph_OPEN 2
+#define glyph_CLOSE 3
+#define glyph_TOOMUCH 4
+#define glyph_LEFT 5
+#define glyph_RIGHT 6
+#define glyph_UP 7
+#define glyph_DOWN 8
+#define glyph_RESET 9
+#define glyph_HOT 10
+#define glyph_COLD 11
+#define glyph_ROOM1 12
+#define glyph_ROOM2 13
+#define glyph_ROOM3 14
+#define glyph_ROOM4 15
+#define glyph_BOB 16
+#define glyph_INSERT 17
+#define glyph_REMOVE 18
+#define glyph_BATTERY 19
+#define glyph_COMPUTER 20
+#define glyph_ERROR 21
+#define glyph_YES 22
+#define glyph_NO 23
+#define glyph_DRILL 24
+#define glyph_INPUT 25
+#define glyph_OUTPUT 26
+#define glyph_LIST 27
+#define glyph_CAMERA 28
+
+#define glyph_0 29
+#define glyph_1 30
+#define glyph_2 31
+#define glyph_3 32
+#define glyph_4 33
+#define glyph_5 34
+#define glyph_6 35
+#define glyph_7 36
+#define glyph_8 37
+#define glyph_9 38
+
+void GetDefinedGlyphs()
+{
+	int i,i2;
+	
+	i2 = 1;
+	
+	for (i = 0; i < 100; i++)
+	{
+		if (strcmp(GlyphDefinition[i],""))
+		{
+			DefinedGlyphList[i2] = i;
+			i2++;
+		}
+	}
+	
+	DefinedGlyphList[0] = i2-1;
+    
+}
+
+void LoadGlyphImages()
+{
+	int Glyph_Num = 39;
+	int i;
+    string s;
+	
+	GlyphImage[glyph_ON] = "glyphs\glyph01";
+	GlyphImage[glyph_OFF] = "glyphs\glyph02";
+	GlyphImage[glyph_OPEN] = "glyphs\glyph03";
+	GlyphImage[glyph_CLOSE] = "glyphs\glyph04";
+	GlyphImage[glyph_TOOMUCH] = "glyphs\glyph05";
+	GlyphImage[glyph_LEFT] = "glyphs\glyph06";
+	GlyphImage[glyph_RIGHT] = "glyphs\glyph07";
+	GlyphImage[glyph_UP] = "glyphs\glyph08";
+	GlyphImage[glyph_DOWN] = "glyphs\glyph09";
+	GlyphImage[glyph_RESET] = "glyphs\glyph10";
+	GlyphImage[glyph_HOT] = "glyphs\glyph11";
+	GlyphImage[glyph_COLD] = "glyphs\glyph12";
+	GlyphImage[glyph_ROOM1] = "glyphs\glyph13";
+	GlyphImage[glyph_ROOM2] = "glyphs\glyph14";
+	GlyphImage[glyph_ROOM3] = "glyphs\glyph15";
+	GlyphImage[glyph_ROOM4] = "glyphs\glyph16";
+	GlyphImage[glyph_BOB] = "glyphs\glyph17";
+    GlyphImage[glyph_INSERT] = "glyphs\glyph18";
+    GlyphImage[glyph_REMOVE] = "glyphs\glyph19";
+    GlyphImage[glyph_BATTERY] = "glyphs\glyph20";
+    GlyphImage[glyph_COMPUTER] = "glyphs\glyph21";
+    GlyphImage[glyph_ERROR] = "glyphs\glyph22";
+    GlyphImage[glyph_YES] = "glyphs\glyph23";
+    GlyphImage[glyph_NO] = "glyphs\glyph24";
+    GlyphImage[glyph_DRILL] = "glyphs\glyph25";
+    GlyphImage[glyph_INPUT] = "glyphs\glyph26";
+    GlyphImage[glyph_OUTPUT] = "glyphs\glyph27";
+    GlyphImage[glyph_LIST] = "glyphs\glyph28";
+    GlyphImage[glyph_CAMERA] = "glyphs\glyph29";
+    
+    GlyphImage[glyph_0] = "glyphs\glyph30";
+    GlyphImage[glyph_1] = "glyphs\glyph31";
+    GlyphImage[glyph_2] = "glyphs\glyph32";
+    GlyphImage[glyph_3] = "glyphs\glyph33";
+    GlyphImage[glyph_4] = "glyphs\glyph34";
+    GlyphImage[glyph_5] = "glyphs\glyph35";
+    GlyphImage[glyph_6] = "glyphs\glyph36";
+    GlyphImage[glyph_7] = "glyphs\glyph37";
+    GlyphImage[glyph_8] = "glyphs\glyph38";
+    GlyphImage[glyph_9] = "glyphs\glyph39";
+    
+	GlyphData = DictNew();
+
+	for (i = 1; i <= Glyph_Num; i++)
+	{
+        s = str(i);
+        if (len(s) == 1)
+            s = "0" + s;
+		DictSetInt(GlyphData,"glyphs\glyph"+s+".png", LoadImage("glyphs\glyph"+s+".png"));
+		DictSetInt(GlyphData,"glyphs\glyph"+s+"g.png", LoadImage("glyphs\glyph"+s+"g.png"));
+		DictSetInt(GlyphData,"glyphs\glyph"+s+"y.png", LoadImage("glyphs\glyph"+s+"y.png"));		
+	}
+
+
+}
+
+int GetGlyphImage(string name)
+{
+	return DictGetInt(GlyphData, name);
+}
+
+void ClearGlyphDefinitions()
+{
+	int i;
+	
+	for (i = 0; i < 255; i++)
+	{
+		GlyphDefinition[i] = "";
+	}
+}

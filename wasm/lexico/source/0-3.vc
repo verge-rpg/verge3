@@ -1,0 +1,26 @@
+void OnEnter()
+{
+    PlayGameMusic(song_ambient);
+    
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+	
+	SpawnPlayer();
+}
+
+void WarpToDDD()
+{
+	TeleportTo(50,7, "0-2.map");
+}
+
+void WarpTo15()
+{
+    WarpTo(2,26,"1-5.map");
+}
+
+void DeadPanel()
+{
+    TBox(0, gFont, "It's obvious that this panel was once used to control the door, but it no longer works.");
+}

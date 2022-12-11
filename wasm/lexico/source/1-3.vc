@@ -1,0 +1,84 @@
+void OnEnter()
+{
+    PlayGameMusic(song_manufacturing);
+    
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+
+    if (gFlags[FLAG_SCOTT_LOC] == 8)
+    {
+        gVNPC = EntitySpawn(14,17, "hippym1.chr");
+        entity.y[gVNPC] += 8;
+        entity.obstruct[gVNPC] = 1;
+        entity.script[gVNPC] = "TalkToScott";
+    }
+    else
+        SetTile(14,15,2,199);
+    
+	SpawnPlayer();
+    
+    AddRectangle(0, 100, 85, 120, 25, RGB(255,255,255), RGB(128,128,128));
+    AddGlyph(0, 116, 90, glyph_ROOM2);
+    AddGlyph(0, 134, 90, glyph_RIGHT);
+    if (gFlags[FLAG_HAS_BATTERY])
+        AddGlyph(0, 170, 90, glyph_1);
+    else
+        AddGlyph(0, 170, 90, glyph_2);
+    AddGlyph(0, 188, 90, glyph_BATTERY);
+    
+    AddRectangle(1, 140, 95, 40, 50, RGB(255,255,255), RGB(128,128,128));
+    AddGlyph(1, 152, 107, glyph_UP);
+    AddText(1, 152, 125, "up");
+}
+
+void TalkToScott()
+{
+    TBox(1, gFont, "Scott: Hey, could you help me? I'm trying to learn the alien language, and I want to know what that computer panel says. Do you know?");
+    if (!strcmp(GlyphDefinition[glyph_ROOM2],"") || !strcmp(GlyphDefinition[glyph_RIGHT],""))
+        TBox(1, gFont, "Scott: Oh, you have no idea, eh? Well, if it helps any, I think that first character relates to the name of some room...");
+    else
+    {
+        TBox(1, gFont, "Scott: Hmm... so you think that one that looks like a person means =" + GlyphDefinition[glyph_ROOM2] + "= and that weird-looking one next to it means =" + GlyphDefinition[glyph_RIGHT] + "=?");
+        if (!strcmp(GlyphDefinition[glyph_RIGHT],"right"))
+        {
+            TBox(1, gFont, "Scott: Hey, I think you're onto something with =right=! I'm not sure about that other one, though... I guess I'll head east and find out! Thanks!");
+            Wait(100);
+            TBox(1, gFont, "Scott: Oh, wait. Let me help you out. I learned this symbol from the elder; maybe it'll help you, too. It means =up=; you know, the opposite of =down=. I'll draw it on the crate here...");
+            TBox(1, gFont, "Scott: Take a look at it on the crate here and it'll, er, bring up a window so you can define it. Wait, what's that mean? Oh well, see ya!");
+            gFlags[FLAG_SCOTT_LOC] = 12;
+            FadeOut(1);
+            SetTile(14,15,2,199);
+            Wait(100);
+            entity.x[gVNPC] = 0;
+            entity.y[gVNPC] = 0;
+            FadeIn(1);
+        }
+        else
+        {
+            TBox(1, gFont, "Scott: ...No, that doesn't really make any sense. Keep trying, though; you're probably getting closer all the time.");
+        }
+    }
+}
+
+void GetUpGlyph()
+{
+    if (gFlags[FLAG_SCOTT_LOC] != 8)
+        AddCollection(1);
+}
+
+void WarpTo01()
+{
+    WarpTo(16,28, "0-1.map");
+}
+
+void DirectionComputer()
+{
+    AddCollection(0);
+}
+
+void SeePainting()
+{
+    TBox(0, gFont, "Beyond the crate, you see a sinister-looking painting of what appears to be a robot. You can only see the head and one hand, though.");
+}

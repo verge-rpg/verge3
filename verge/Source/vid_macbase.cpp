@@ -34,7 +34,6 @@ AuxWindow *sdl_findAuxWindow(int handle);
 /***************************** data *****************************/
 
 bool sdl_initd = false;
-bool sdl_bGameWindowRectInitialized = false;
 
 std::vector<sdl_Window*> sdl_windows;
 std::stack<int> sdl_handles;
@@ -45,6 +44,7 @@ int sdl_handleCount;
 void handleResize(const SDL_WindowEvent& e)
 {
 	assert(e.event == SDL_WINDOWEVENT_RESIZED);
+	log("resize event %d %d", e.data1, e.data2);
 	sdl_gameWindow->adjust(e.data1, e.data2);
 	// Uncomment the following to have it redraw immediately
 	// after we resize the window. This could result in a
@@ -128,14 +128,10 @@ int sdl_SetMode(int xres, int yres, int bpp, bool windowflag)
 
 	dd_RegisterBlitters();
 
-	//do this now for the gamewindow, because this is the first time we know what size to make the gamewindow
-	//TODO: might want to check to see if we're moving up to a higher res than the window can display,
-	//      and switch to the higher res if we are: xres > sdl_gameWindow->winw || yres > sdl_gameWindow->winh
-	if(!sdl_bGameWindowRectInitialized)
+	if (xres > sdl_gameWindow->winw || yres > sdl_gameWindow->winh)
 	{
-		sdl_gameWindow->adjust(xres,yres); // this sets the winw/winh correctly
-
-		sdl_bGameWindowRectInitialized = true;
+		log("expanding to fit resolution %d %d", xres, yres);
+		sdl_gameWindow->adjust(xres, yres);
 	}
 
 	return 1;
@@ -183,6 +179,8 @@ AuxWindow *sdl_findAuxWindow(int handle)
 
 void sdl_toggleFullscreen()
 {
+	log("toggle fullscreen %d %d", vid_xres, vid_yres);
+
 	vid_window = !vid_window;
 	sdl_gameWindow->adjust(vid_xres, vid_yres);
 }
@@ -302,19 +300,59 @@ void sdl_Window::flip_win()
 	}
 	else
 	{
+    	ScaleFormat sf = vid_window ? v3_scale_win : v3_scale_full;
+
+		int iw = 0;
+		int ih = 0;
+		if (sf == SCALE_FORMAT_STRETCH)
+		{
+			iw = dst_w;
+			ih = dst_h;
+		}
+		else
+		{
+			int factor = dst_w / xres;
+			if (sf == SCALE_FORMAT_ASPECT && factor > dst_h / yres)
+			{
+				factor = dst_h / yres;
+			}
+			// Window can fit entire screen. Factor is upscaling, multiply by integer ratio.
+			if (sf == SCALE_FORMAT_ASPECT && factor >= 1)
+			{
+				iw = xres * factor;
+				ih = yres * factor;
+			}
+			// Window can't fit entire screen. Need to downscale this, fallback on lossy floating point scaling.
+			else
+			{
+				float ratio = (float)dst_w / xres;
+				float ph = ratio * (float)yres;
+				if((int)ph > dst_h)
+				{
+					ratio = (float)dst_h / (float)yres;
+					ih = dst_h;
+					iw = (int)(ratio * (float)xres);
+				}
+				else
+				{
+					ih = (int)ph;
+					iw = dst_w;
+				}
+			}
+		}		
+
 		// TODO: look at vid_gdibase to see how to handle ScaleFormat stuff
 
-		int out_h, out_w; // the eventual size of the image
-		int off_h, off_w; // the eventual placement of the image
+		int out_w = iw;
+		int out_h = ih;
+		int off_w = (dst_w - iw) / 2;
+		int off_h = (dst_h - ih) / 2;
 
-		get_displayed_area(out_w, out_h, off_w, off_h);
-		
 		// run the actual scaling, using algorithm from vid_ddblit's dd32_ScaleBlit
 		// with some parts removed because we know the whole image is blitted
 		// (ie no clipping)
 		int xadj = (src_w << 16) / out_w;
 		int yadj = (src_h << 16) / out_h;
-		int xerr;
 		int yerr = 0;
 		
 		// these pitches are in pixels, instead of bytes as SDL
@@ -323,13 +361,15 @@ void sdl_Window::flip_win()
 		
 		SDL_LockSurface(screen_surface);
 		SDL_LockSurface(back_surface);
+
+		//memset(screen_surface->pixels, 0, screen_surface->pitch * screen->width);
 		
 		quad* s = (quad*) back_surface->pixels;
 		quad* d = ((quad*) screen_surface->pixels) + (off_h * dst_pitch) + off_w;
 		
 		for (int i = 0; i < out_h; i++)
 		{
-			xerr = 0;
+			int xerr = 0;
 			for (int j = 0; j < out_w; j++)
 			{
 #ifdef __EMSCRIPTEN__
@@ -448,10 +488,11 @@ void sdl_Window::createWindow()
 	window = SDL_CreateWindow("verge3",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		winh,
+		winw,
 		winh,
 		(vid_window || !bGameWindow ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP)
 			| (bGameWindow ? 0 : SDL_WINDOW_HIDDEN));
+	SDL_GetWindowSize(window, &winw, &winh);
 
 #ifdef __EMSCRIPTEN__
 	EM_ASM(
@@ -484,6 +525,7 @@ void sdl_Window::setupDummyImage()
 // Sets actual window dimensions & attrs
 void sdl_Window::adjust(int w, int h)
 {
+	log("adjust %d %d %d %d", xres, yres, w, h);		
 	SDL_SetWindowSize(window, w, h);
 	if (bGameWindow)
 	{
@@ -572,12 +614,14 @@ void sdl_Window::setResolution(int w, int h)
 {
 	xres = w;
 	yres = h;
-	if(bActive)
+	if (bActive)
 	{
+		log("setResolution %d %d", w, h);		
+
 		if(bGameWindow)
-			sdl_SetMode(w,h,vid_bpp,vid_window);
+			sdl_SetMode(w, h, vid_bpp, vid_window);
 		else
-			set_win(w,h,vid_bpp);
+			set_win(w, h, vid_bpp);
 	}
 	else
 		setupDummyImage();
@@ -590,6 +634,8 @@ void sdl_Window::setPosition(int x, int y)
 
 void sdl_Window::setSize(int w, int h)
 {
+	log("set size %d %d", w, h);		
+
 	adjust(w, h);
 }
 

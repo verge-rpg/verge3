@@ -1,0 +1,1036 @@
+#include "v1_rpg.vc"
+
+int menusound;
+int shellpic, crownpic;
+string shells, crowns;
+int tropic[100],pigsound;
+int dodo, questio, problem;
+int storypic[10], menupnt[5], ent[5], sound[5];
+
+void Autoexec()
+{
+CallFunction("v3splash");  // We use CallFunction here so v3splash is optional. GameIntro is req'd tho.
+shellpic=loadimage("seashell.pcx");
+crownpic=loadimage("crown.pcx");
+HookRetrace("rpg_renderfunc");
+LoadResources();
+RectFill(0, 0, 320, 240, transcolor, vclayer);
+InitializeParty();
+party[0] = 0;
+shells=str(tropic[2]);
+crowns=str(tropic[15]);
+menusound=loadsound("menumove.wav");
+pigsound=loadsound("pig01.wav");
+curpartysize = 1;
+font=loadfont("smallfont.pcx");
+mapswitch("tropic.map",23,134,TNONE);	
+}
+
+void loadcharpics(int char)
+{
+switch(char)
+{
+case 1: charpic[char]=loadimage("elliots.pcx");
+}
+}
+
+void chest(int x, int y)
+{
+sound[1]=loadsound("open2.wav");
+SetTile(x,y,2,623);
+PlaySound(sound[1], 100);
+wait(25);
+FreeSound(sound[1]);
+}
+
+void lock()
+{
+sound[1]=loadsound("lock1.wav");
+PlaySound(sound[1], 100);
+wait(20);
+foundstuff("It's locked.");
+FreeSound(sound[1]);
+}
+
+void Wait2(int _dur)
+{
+timer = 0;
+while (timer<_dur)
+{
+ShowPage();
+}
+}
+void showstart()
+{
+int j,a,x,y;
+im=loadimage("title01.png");
+
+gamestart=0;
+apnt=1;
+
+while(x<28)
+{
+tropic[x]=0;
+x++;
+}
+
+while(gamestart=0)
+{
+render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(30, 460, 610, 476, RGB(21,57,115), screen);
+SetLucent(0);
+PrintString(125, 464, screen, font, "Game (C) Ratgash & Immortalowl, powered by Verge 3");
+if(apnt=1)
+{
+SetLucent(70);
+RectFill(260, 256, 377, 274, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(277, 260, screen, font, "Watch Intro");
+}
+ELSE
+{
+SetLucent(90);
+RectFill(260, 256, 377, 274, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(277, 260, screen, font, "Watch Intro");
+}
+if(apnt=2)
+{
+SetLucent(70);
+RectFill(260, 276, 377, 294, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(280, 280, screen, font, "Skip Intro");
+}
+ELSE
+{
+SetLucent(90);
+RectFill(260, 276, 377, 294, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(280, 280, screen, font, "Skip Intro");
+}
+if(apnt=3)
+{
+SetLucent(70);
+RectFill(260, 296, 377, 314, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(305, 300, screen, font, "Quit");
+}
+ELSE
+{
+SetLucent(90);
+RectFill(260, 296, 377, 314, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(305, 300, screen, font, "Quit");
+}
+showpage();
+If(key[80]) { apnt++; wait2(10); playsound(menusound,100);}
+if(key[72]) { apnt--;  wait2(10);playsound(menusound,100);}
+If(apnt<1) { apnt = 3; }
+If(apnt>3) { apnt = 1; }
+
+if(apnt=3 && key[28])//Quit game
+{
+stopmusic();
+exit("Thank you for playing!");  
+}
+
+if(apnt=2 && key[28])//Skip Intro
+{
+x=70;
+while(x>0)
+{
+Render();
+Tblit(0,0,im,screen);
+ShowPage();
+SetMusicVolume(x);
+x-=3;
+}
+tropic[1]=1;
+stopmusic();
+gamestart=1;
+setresolution(320,240);
+}
+
+if(apnt=2 && key[28])//Skip Intro
+{
+x=70;
+while(x>0)
+{
+Render();
+Tblit(0,0,im,screen);
+ShowPage();
+SetMusicVolume(x);
+x-=3;
+}
+tropic[1]=1;
+stopmusic();
+gamestart=1;
+setresolution(320,240);
+}
+
+if(apnt=1 && key[28])//Watch Intro
+{
+gamestart=0;
+apnt=1;
+unpress(key[28]);
+x=100;
+y=100;
+storypic[1]=loadimage("story01.png");
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(340,180,storypic[1],screen);
+SetLucent(x);
+RectFill(56, 196, 310, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 240, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 290, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 270, 274, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(75, 200, screen, font, "Is it not every boy's dream");
+PrintString(50, 220, screen, font, "to sail the seven seas.");
+PrintString(90, 240, screen, font, "To be one with the wind,");
+PrintString(60, 260, screen, font, "to face danger most grim.");
+ShowPage();
+x-=3;
+y-=8;
+}
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(20);
+Tblit(340,180,storypic[1],screen);
+SetLucent(70);
+RectFill(56, 196, 310, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 240, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 290, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 270, 274, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(75, 200, screen, font, "Is it not every boy's dream");
+PrintString(50, 220, screen, font, "to sail the seven seas.");
+PrintString(90, 240, screen, font, "To be one with the wind,");
+PrintString(60, 260, screen, font, "to face danger most grim.");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(340,180,storypic[1],screen);
+SetLucent(x);
+RectFill(56, 196, 310, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 240, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 290, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 270, 274, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(75, 200, screen, font, "Is it not every boy's dream");
+PrintString(50, 220, screen, font, "to sail the seven seas.");
+PrintString(90, 240, screen, font, "To be one with the wind,");
+PrintString(60, 260, screen, font, "to face danger most grim.");
+ShowPage();
+x+=3;
+y+=8;
+}
+freeimage(storypic[1]);
+unpress(1);
+x=100;
+y=100;
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(156, 196, 350, 214, RGB(0,0,255), screen);
+RectFill(216, 216, 400, 234, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(167, 200, screen, font, "It was Elliot's dream,");
+PrintString(227, 220, screen, font, "he wanted to be free.");
+ShowPage();
+x-=3;
+y-=8;
+}
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(156, 196, 350, 214, RGB(0,0,255), screen);
+RectFill(216, 216, 400, 234, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(167, 200, screen, font, "It was Elliot's dream,");
+PrintString(227, 220, screen, font, "he wanted to be free.");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(156, 196, 350, 214, RGB(0,0,255), screen);
+RectFill(216, 216, 400, 234, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(167, 200, screen, font, "It was Elliot's dream,");
+PrintString(227, 220, screen, font, "he wanted to be free.");
+ShowPage();
+x+=3;
+y+=8;
+}
+storypic[3]=loadimage("story03.png");
+unpress(1);
+x=100;
+y=100;
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(330,190,storypic[3],screen);
+SetLucent(x);
+RectFill(56, 196, 225, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 240, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 225, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 215, 274, RGB(0,0,255), screen);
+RectFill(66, 276, 280, 294, RGB(0,0,255), screen);
+RectFill(36, 296, 250, 314, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(70, 200, screen, font, "A pirate once told");
+PrintString(48, 220, screen, font, "Of a treasure most old.");
+PrintString(90, 240, screen, font, "But warn did he:");
+PrintString(58, 260, screen, font, "'Danger await thee");
+PrintString(83, 280, screen, font, "who challenge the waves");
+PrintString(53, 300, screen, font, "and the merciless sea!'");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(20);
+Tblit(330,190,storypic[3],screen);
+SetLucent(70);
+RectFill(56, 196, 225, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 240, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 225, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 215, 274, RGB(0,0,255), screen);
+RectFill(66, 276, 280, 294, RGB(0,0,255), screen);
+RectFill(36, 296, 250, 314, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(70, 200, screen, font, "A pirate once told");
+PrintString(48, 220, screen, font, "Of a treasure most old.");
+PrintString(90, 240, screen, font, "But warn did he:");
+PrintString(58, 260, screen, font, "'Danger await thee");
+PrintString(83, 280, screen, font, "who challenge the waves");
+PrintString(53, 300, screen, font, "and the merciless sea!'");
+ShowPage();
+}
+
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(330,190,storypic[3],screen);
+SetLucent(x);
+RectFill(56, 196, 225, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 240, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 225, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 215, 274, RGB(0,0,255), screen);
+RectFill(66, 276, 280, 294, RGB(0,0,255), screen);
+RectFill(36, 296, 250, 314, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(70, 200, screen, font, "A pirate once told");
+PrintString(48, 220, screen, font, "Of a treasure most old.");
+PrintString(90, 240, screen, font, "But warn did he:");
+PrintString(58, 260, screen, font, "'Danger await thee");
+PrintString(83, 280, screen, font, "who challenge the waves");
+PrintString(53, 300, screen, font, "and the merciless sea!'");
+ShowPage();
+x+=3;
+y+=8;
+}
+
+freeimage(storypic[3]);
+unpress(1);
+x=100;
+y=100;
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(56, 196, 300, 214, RGB(0,0,255), screen);
+RectFill(136, 216, 360, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 270, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 245, 274, RGB(0,0,255), screen);
+RectFill(66, 276, 210, 294, RGB(0,0,255), screen);
+RectFill(86, 296, 330, 314, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(77, 200, screen, font, "Elliot did not fear danger");
+PrintString(151, 220, screen, font, "he yearned for adventure.");
+PrintString(90, 240, screen, font, "He rented a fine boat");
+PrintString(62, 260, screen, font, "from a silly old goat.");
+PrintString(80, 280, screen, font, "Now he was free");
+PrintString(107, 300, screen, font, "to sail the deep blue sea.");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(56, 196, 300, 214, RGB(0,0,255), screen);
+RectFill(136, 216, 360, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 270, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 245, 274, RGB(0,0,255), screen);
+RectFill(66, 276, 210, 294, RGB(0,0,255), screen);
+RectFill(86, 296, 330, 314, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(77, 200, screen, font, "Elliot did not fear danger");
+PrintString(151, 220, screen, font, "he yearned for adventure.");
+PrintString(90, 240, screen, font, "He rented a fine boat");
+PrintString(62, 260, screen, font, "from a silly old goat.");
+PrintString(80, 280, screen, font, "Now he was free");
+PrintString(107, 300, screen, font, "to sail the deep blue sea.");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(56, 196, 300, 214, RGB(0,0,255), screen);
+RectFill(136, 216, 360, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 270, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 245, 274, RGB(0,0,255), screen);
+RectFill(66, 276, 210, 294, RGB(0,0,255), screen);
+RectFill(86, 296, 330, 314, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(77, 200, screen, font, "Elliot did not fear danger");
+PrintString(151, 220, screen, font, "he yearned for adventure.");
+PrintString(90, 240, screen, font, "He rented a fine boat");
+PrintString(62, 260, screen, font, "from a silly old goat.");
+PrintString(80, 280, screen, font, "Now he was free");
+PrintString(107, 300, screen, font, "to sail the deep blue sea.");
+ShowPage();
+x+=3;
+y+=8;
+}
+
+storypic[4]=loadimage("story04.png");
+unpress(1);
+x=100;
+y=100;
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(200,100,storypic[4],screen);
+SetLucent(x);
+RectFill(226, 306, 435, 324, RGB(0,0,255), screen);
+RectFill(206, 326, 415, 344, RGB(0,0,255), screen);
+RectFill(256, 346, 500, 364, RGB(0,0,255), screen);
+RectFill(216, 366, 425, 384, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(243, 310, screen, font, "He traveled many miles");
+PrintString(221, 330, screen, font, "and met many creatures.");
+PrintString(276, 350, screen, font, "He even saw a white dragon");
+PrintString(233, 370, screen, font, "flying in the distance.");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(20);
+Tblit(200,100,storypic[4],screen);
+SetLucent(70);
+RectFill(226, 306, 435, 324, RGB(0,0,255), screen);
+RectFill(206, 326, 415, 344, RGB(0,0,255), screen);
+RectFill(256, 346, 500, 364, RGB(0,0,255), screen);
+RectFill(216, 366, 425, 384, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(243, 310, screen, font, "He traveled many miles");
+PrintString(221, 330, screen, font, "and met many creatures.");
+PrintString(276, 350, screen, font, "He even saw a white dragon");
+PrintString(233, 370, screen, font, "flying in the distance.");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(200,100,storypic[4],screen);
+SetLucent(x);
+RectFill(226, 306, 435, 324, RGB(0,0,255), screen);
+RectFill(206, 326, 415, 344, RGB(0,0,255), screen);
+RectFill(256, 346, 500, 364, RGB(0,0,255), screen);
+RectFill(216, 366, 425, 384, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(243, 310, screen, font, "He traveled many miles");
+PrintString(221, 330, screen, font, "and met many creatures.");
+PrintString(276, 350, screen, font, "He even saw a white dragon");
+PrintString(233, 370, screen, font, "flying in the distance.");
+ShowPage();
+x+=3;
+y+=8;
+}
+
+freeimage(storypic[4]);
+storypic[5]=loadimage("story05.png");
+unpress(1);
+x=100;
+y=100;
+
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(330,160,storypic[5],screen);
+SetLucent(x);
+RectFill(56, 196, 210, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 270, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 315, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 250, 274, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(70, 200, screen, font, "But bear with me,");
+PrintString(51, 220, screen, font, "a storm came from nowhere!");
+PrintString(92, 240, screen, font, "Tearing his ship to pieces");
+PrintString(60, 260, screen, font, "knocking him senseless.");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(20);
+Tblit(330,160,storypic[5],screen);
+SetLucent(70);
+RectFill(56, 196, 210, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 270, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 315, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 250, 274, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(70, 200, screen, font, "But bear with me,");
+PrintString(51, 220, screen, font, "a storm came from nowhere!");
+PrintString(92, 240, screen, font, "Tearing his ship to pieces");
+PrintString(60, 260, screen, font, "knocking him senseless.");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(330,160,storypic[5],screen);
+SetLucent(x);
+RectFill(56, 196, 210, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 270, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 315, 254, RGB(0,0,255), screen);
+RectFill(46, 256, 250, 274, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(70, 200, screen, font, "But bear with me,");
+PrintString(51, 220, screen, font, "a storm came from nowhere!");
+PrintString(92, 240, screen, font, "Tearing his ship to pieces");
+PrintString(60, 260, screen, font, "knocking him senseless.");
+ShowPage();
+x+=3;
+y+=8;
+}
+
+freeimage(storypic[5]);
+unpress(1);
+storypic[6]=loadimage("story06.png");
+x=100;
+y=100;
+
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(340,180,storypic[6],screen);
+SetLucent(x);
+RectFill(56, 196, 255, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 245, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 265, 254, RGB(0,0,255), screen);
+RectFill(106, 256, 325, 274, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(73, 200, screen, font, "A vision most strange");
+PrintString(52, 220, screen, font, "he saw when he came to.");
+PrintString(93, 240, screen, font, "Balls of many colors");
+PrintString(123, 260, screen, font, "were jumping around him.");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(20);
+Tblit(340,180,storypic[6],screen);
+SetLucent(70);
+RectFill(56, 196, 255, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 245, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 265, 254, RGB(0,0,255), screen);
+RectFill(106, 256, 325, 274, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(73, 200, screen, font, "A vision most strange");
+PrintString(52, 220, screen, font, "he saw when he came to.");
+PrintString(93, 240, screen, font, "Balls of many colors");
+PrintString(123, 260, screen, font, "were jumping around him.");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(y);
+Tblit(340,180,storypic[6],screen);
+SetLucent(x);
+RectFill(56, 196, 255, 214, RGB(0,0,255), screen);
+RectFill(36, 216, 245, 234, RGB(0,0,255), screen);
+RectFill(76, 236, 265, 254, RGB(0,0,255), screen);
+RectFill(106, 256, 325, 274, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(73, 200, screen, font, "A vision most strange");
+PrintString(52, 220, screen, font, "he saw when he came to.");
+PrintString(93, 240, screen, font, "Balls of many colors");
+PrintString(123, 260, screen, font, "were jumping around him.");
+ShowPage();
+x+=3;
+y+=8;
+}
+freeimage(storypic[6]);
+unpress(1);
+x=100;
+y=100;
+
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(176, 216, 460, 234, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(213, 200, screen, font, "He thought he was dreaming,");
+PrintString(193, 220, screen, font, "when a starfish started talking.");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(176, 216, 460, 234, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(213, 200, screen, font, "He thought he was dreaming,");
+PrintString(193, 220, screen, font, "when a starfish started talking.");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(176, 216, 460, 234, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(213, 200, screen, font, "He thought he was dreaming,");
+PrintString(193, 220, screen, font, "when a starfish started talking.");
+ShowPage();
+x+=3;
+y+=8;
+}
+unpress(1);
+x=70;
+while(x>0)
+{
+Render();
+Tblit(0,0,im,screen);
+ShowPage();
+SetMusicVolume(x);
+x-=2;
+}
+stopmusic();
+tropic[1]=0;
+gamestart=1;
+setresolution(320,240);
+}
+}
+freeimage(im);
+}
+
+void showending()
+{
+playmusic("green.s3m");
+int j,a,x,y;
+im=loadimage("title01.png");
+
+gamestart=0;
+while(gamestart=0)
+{
+render();
+Tblit(0,0,im,screen);
+x=100;
+y=100;
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(235, 216, 400, 234, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(218, 200, screen, font, "Stepping through the gate");
+PrintString(258, 220, screen, font, "sealed his fate.");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(235, 216, 400, 234, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(218, 200, screen, font, "Stepping through the gate");
+PrintString(258, 220, screen, font, "sealed his fate.");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+unpress(1);
+x=100;
+y=100;
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(235, 216, 400, 234, RGB(0,0,255), screen);
+SetLucent(x);
+RectFill(196, 236, 440, 254, RGB(0,0,255), screen);
+RectFill(140, 256, 500, 274, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(218, 200, screen, font, "Stepping through the gate");
+PrintString(258, 220, screen, font, "sealed his fate.");
+SetLucent(y);
+PrintString(215, 240, screen, font, "He was falling and falling,");
+PrintString(155, 260, screen, font, "through darkness he heard someone calling.");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(235, 216, 400, 234, RGB(0,0,255), screen);
+RectFill(196, 236, 440, 254, RGB(0,0,255), screen);
+RectFill(140, 256, 500, 274, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(218, 200, screen, font, "Stepping through the gate");
+PrintString(258, 220, screen, font, "sealed his fate.");
+PrintString(215, 240, screen, font, "He was falling and falling,");
+PrintString(155, 260, screen, font, "through darkness he heard someone calling.");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+unpress(1);
+x=100;
+y=100;
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(235, 216, 400, 234, RGB(0,0,255), screen);
+RectFill(196, 236, 440, 254, RGB(0,0,255), screen);
+RectFill(140, 256, 500, 274, RGB(0,0,255), screen);
+SetLucent(x);
+RectFill(206, 276, 430, 294, RGB(0,0,255), screen);
+RectFill(196, 296, 440, 314, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(218, 200, screen, font, "Stepping through the gate");
+PrintString(258, 220, screen, font, "sealed his fate.");
+PrintString(215, 240, screen, font, "He was falling and falling,");
+PrintString(155, 260, screen, font, "through darkness he heard someone calling.");
+SetLucent(y);
+PrintString(225, 280, screen, font, "'Elliot, get up damn it!");
+PrintString(208, 300, screen, font, "It's way past noon already!'");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(235, 216, 400, 234, RGB(0,0,255), screen);
+RectFill(196, 236, 440, 254, RGB(0,0,255), screen);
+RectFill(140, 256, 500, 274, RGB(0,0,255), screen);
+RectFill(206, 276, 430, 294, RGB(0,0,255), screen);
+RectFill(196, 296, 440, 314, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(218, 200, screen, font, "Stepping through the gate");
+PrintString(258, 220, screen, font, "sealed his fate.");
+PrintString(215, 240, screen, font, "He was falling and falling,");
+PrintString(155, 260, screen, font, "through darkness he heard someone calling.");
+PrintString(225, 280, screen, font, "'Elliot, get up damn it!");
+PrintString(208, 300, screen, font, "It's way past noon already!'");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(196, 196, 440, 214, RGB(0,0,255), screen);
+RectFill(235, 216, 400, 234, RGB(0,0,255), screen);
+RectFill(196, 236, 440, 254, RGB(0,0,255), screen);
+RectFill(140, 256, 500, 274, RGB(0,0,255), screen);
+RectFill(206, 276, 430, 294, RGB(0,0,255), screen);
+RectFill(196, 296, 440, 314, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(218, 200, screen, font, "Stepping through the gate");
+PrintString(258, 220, screen, font, "sealed his fate.");
+PrintString(215, 240, screen, font, "He was falling and falling,");
+PrintString(155, 260, screen, font, "through darkness he heard someone calling.");
+PrintString(225, 280, screen, font, "'Elliot, get up damn it!");
+PrintString(208, 300, screen, font, "It's way past noon already!'");
+ShowPage();
+x+=3;
+y+=8;
+}
+unpress(1);
+
+x=100;
+y=100;
+while(x>69)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(215, 196, 420, 214, RGB(0,0,255), screen);
+RectFill(245, 216, 390, 234, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(230, 200, screen, font, "Thank you for playing!");
+PrintString(268, 220, screen, font, "11 April 2004");
+ShowPage();
+x-=3;
+y-=8;
+}
+
+while(!b1)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(70);
+RectFill(215, 196, 420, 214, RGB(0,0,255), screen);
+RectFill(245, 216, 390, 234, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(230, 200, screen, font, "Thank you for playing!");
+PrintString(268, 220, screen, font, "11 April 2004");
+TBlit(605, 466+(cos(systemtime*2)*4/65536), textmore, screen);
+ShowPage();
+}
+
+while(x<101)
+{
+Render();
+Tblit(0,0,im,screen);
+SetLucent(x);
+RectFill(215, 196, 420, 214, RGB(0,0,255), screen);
+RectFill(245, 216, 390, 234, RGB(0,0,255), screen);
+SetLucent(y);
+PrintString(230, 200, screen, font, "Thank you for playing!");
+PrintString(268, 220, screen, font, "11 April 2004");
+ShowPage();
+x+=3;
+y+=8;
+}
+gamestart=1;
+}
+showstart();
+//freeimage(im);
+}
+
+
+
+void SText(int pic, string a, string b, string c)
+{
+int j;
+int x;
+screeny=240;
+loadcharpics(pic);
+j=screeny-50;
+while(!b1)
+{
+Render();
+if(pic!=0)
+{
+Tblit(2,j-62,charpic[pic],screen);
+Rect(1,j-63,62,j-2,RGB(0,0,0),screen);
+}
+Rect(1,j,318,j+47,RGB(255,255,255),screen);
+SetLucent(50);
+RectFill(1, j, 318, j+47, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(8, j+7, screen, font, a);
+PrintString(8, j+19, screen, font, b);
+PrintString(8, j+31, screen, font, c);
+ShowPage();
+}
+if(pic!=0)
+{
+freeimage(charpic[pic]);
+}
+unpress(1);
+}
+
+void foundstuff(string a)
+{
+int x,b; 
+x=len(a);
+x=x*8+10;
+b=x/2;
+x=x+(160-b);
+timer = 0;   
+while(!b1)
+{
+Render();
+Rect(161-b,145,x-1,162,RGB(255,255,255),screen);
+SetLucent(50);
+RectFill(161-b, 145, x-1, 162, RGB(0,0,255), screen);
+SetLucent(0);
+PrintString(168-b, 149, screen, font, a);
+ShowPage();
+}
+unpress(1);
+}
+
+void question(int qnum,string a,string b,string c,string d,string answer1,string answer2,string answer3,string answer4)
+{
+menupnt[1]=1;
+while(questio=1)
+{
+Render();
+
+Rect(1,180,276,238,RGB(255,255,255),screen);
+Rect(278,180,318,238,RGB(255,255,255),screen);
+
+SetLucent(50);
+RectFill(1, 180, 276, 238, RGB(0,0,255), screen);
+RectFill(278, 180, 318, 238, RGB(0,0,255), screen);
+SetLucent(0);
+
+PrintString(10, 186, screen, font, a);
+PrintString(10, 198, screen, font, b);
+PrintString(10, 210, screen, font, c);
+PrintString(10, 222, screen, font, d);
+
+if(menupnt[1]=1)
+{    
+PrintString(287, 186, screen, font, answer1);
+}
+ElSE
+{
+SetLucent(60);    
+PrintString(287, 186, screen, font, answer1);
+SetLucent(0);
+}
+if(menupnt[1]=2)
+{
+PrintString(287, 198, screen, font, answer2);
+}
+ELSE
+{
+SetLucent(60);
+PrintString(287, 198, screen, font, answer2);
+SetLucent(0);
+}
+if(menupnt[1]=3)
+{
+PrintString(287, 210, screen, font, answer3);
+}
+ELSE
+{
+SetLucent(60); 
+PrintString(287, 210, screen, font, answer3);
+SetLucent(0); 
+}
+if(menupnt[1]=4)
+{
+PrintString(287, 222, screen, font, answer4); 
+}
+ELSE
+{
+SetLucent(60); 
+PrintString(287, 222, screen, font, answer4); 
+SetLucent(0); 
+}
+showpage();
+If(key[80]) { menupnt[1]++; wait2(15); playsound(menusound,100);}
+If(key[72]) { menupnt[1]--; wait2(15); playsound(menusound,100);}
+If(menupnt[1]<1) { menupnt[1] = qnum; }
+If(menupnt[1]>qnum) { menupnt[1] = 1; }
+if(b1)
+{
+unpress(1);
+problem=menupnt[1];
+questio=0;
+} 
+}
+}

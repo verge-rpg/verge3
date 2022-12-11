@@ -1,0 +1,455 @@
+/***************************************************************************
+*                                                                          *
+*                    V1RPG VergeC Library for Verge3                       *
+*                        Copyright (C)2004 vecna                           *
+*                                                                          *
+***************************************************************************/
+
+#include "animation.vc"
+#include "v1_maineffects.vc"
+#include "v1_weather.vc"
+
+/****************************** game constants ****************************/
+
+#define TNONE			0
+#define TBLACK			1
+#define TWHITE			2
+#define TCROSS			3
+#define TBOX			4
+#define TWIPE			5
+#define	TCIRCLE			6
+
+/************************* stuff you should change ************************/
+
+#define NUM_PCS			5
+#define MENU_NEWGAME	1
+#define	MENU_LOADGAME	2
+#define MENU_QUITGAME	3
+#define SPEECH_Y		152
+
+string moneyname = "GP";
+int speechprt = LoadAnimation("speech.gif", 32, 32);
+
+/**************************** public resources ****************************/
+
+int sfx_open = LoadSound("sfx/open03.wav");
+int sfx_warp = LoadSound("sfx/shadow.wav");
+int sfx_switch = LoadSound("sfx/boxopen.wav");
+int sfx_save = LoadSound("sfx/ding.wav");
+int sfx_magic1 = LoadSound("sfx/magic05.mp3");
+
+/***************************** gamestate data *****************************/
+int money;
+int font;
+
+struct pc
+{
+	string name;
+	string chrname;
+	int entity;
+}
+
+pc players[NUM_PCS];
+
+int party[5];
+int curpartysize;
+
+int flags[8000];
+
+int vclayer = DuplicateImage(screen);
+
+/****************************** internal data *****************************/
+int screeny;
+int textboxframe;
+int textmore;
+int im, gamestart, apnt;
+int textfont = LoadFont("system/font3_vw.gif");
+int menufont = LoadFont("system/smallfont1.gif");
+int v1_blue = RGB(0, 0, 200);
+int v1_dgray = RGB(140, 140, 140);
+int v1_lgray = RGB(200, 200, 200);
+
+int mapswitchx, mapswitchy, mapswitche = TBLACK;
+int playerent;
+int charpic[10];
+int tint_on, tint_color, tint_lucent;
+
+/********************************** code **********************************/
+
+void RPG_RenderFunc()
+{
+	RenderWeather();
+	TBlit(0, 0, vclayer, screen);
+	if (tint_on)
+	{
+		SetLucent(tint_lucent);
+		RectFill(0, 0, 320, 240, tint_color, screen);
+		SetLucent(0);
+	}
+	//lines below added for Tropical Adventure! 
+	SetLucent(50);
+	RectFill(264, 5, 318, 17, RGB(0, 0, 0), screen);
+	RectFill(264, 20, 318, 32, RGB(0, 0, 0), screen);
+	SetLucent(0);
+      shells=str(tropic[2]);
+      Tblit(265,3,shellpic,screen);
+      PrintString(280, 7, screen, font, " x "+shells);
+      crowns=str(tropic[15]);
+      Tblit(265,18,crownpic,screen);
+      PrintString(280, 22, screen, font, " x "+crowns);
+      //lines above added for Tropical Adventure! 
+}
+
+void LoadResources()
+{
+	textboxframe = LoadImage("system/textbox2.gif");
+	textmore = LoadImage("system/more.gif");
+		
+	EnableVariableWidth(textfont);
+	EnableVariableWidth(menufont);
+}
+
+void MapSwitch(string mapn, int x, int y, int effect)
+{
+	mapswitche = effect;
+	mapswitchx = x;
+	mapswitchy = y;
+	
+	switch (effect)
+	{
+		case 1: FadeOut(30);
+		case 2: WhiteOut(30);
+		case 3: Blit(0, 0, screen, crossfade_img);
+		case 4: BoxOut(30);
+		case 5: Blit(0, 0, screen, crossfade_img);
+		case 6: CircleIn(50);
+	}
+	SetWeather(WEATHER_NONE);
+	Map(mapn);
+}
+
+void TintScreen(int color, int percent)
+{
+	tint_on = 1;
+	tint_color = color;
+	tint_lucent = percent;
+}
+
+void TintOff()
+{
+	tint_on = 0;
+}
+
+/*******************************************
+ *               Party Stuff               *
+ *******************************************/
+
+void InitializeParty()
+{
+	int partyf = FileOpen("stats/party.txt", FILE_READ);
+	if (!partyf)
+		Exit("Unable to open stats/party.txt!");
+	
+	int numplayers = val(FileReadToken(partyf));
+	int i;
+	for (i=0; i<numplayers; i++)
+		InitializePC(i, "stats/"+FileReadToken(partyf));
+	
+	FileClose(partyf);
+}
+
+void InitializePC(int idx, string fn)
+{
+	int pf = FileOpen(fn, FILE_READ);
+	if (!pf)
+		Exit("Unable to open "+fn+"!");
+	
+	players[idx].name = FileReadToken(pf);/*
+	players[idx].xp = val(FileReadToken(pf));
+
+	players[idx].maxhp = val(FileReadToken(pf));
+	players[idx].maxmp = val(FileReadToken(pf));
+	
+	players[idx].xp4next = val(FileReadToken(pf));*/
+	players[idx].chrname = FileReadToken(pf);
+	FileClose(pf);
+}
+
+void AddPlayer(int i)
+{
+	if (CharInParty(i)) return;
+	if (curpartysize = 5) return;
+
+	party[curpartysize] = i;	
+	
+	int e = EntitySpawn(0, 0, players[i].chrname);
+	EntityStalk(e, players[party[curpartysize-1]].entity);
+	players[party[curpartysize]].entity = e;
+	curpartysize++;	
+	entity.x[playerent] = entity.x[playerent];
+}
+
+int CharInParty(int i)
+{
+	int j;
+	for (j=0; j<curpartysize; j++)
+		if (party[j]=i) return 1;
+	return 0;
+}
+
+int FindCharacter(int i)
+{
+	int j;
+	for (j=0; j<curpartysize; j++)
+		if (party[j]=i) return i;
+	return 0-1;
+}
+
+void RemovePlayer(int i)
+{
+	if (!CharInParty(i)) return;
+	AutoOn();
+	int j=0;
+	for (j=FindCharacter(i); j<curpartysize-2; j++)
+		party[j]=party[j+1];
+	curpartysize--;
+	AutoOff();
+
+}
+
+void AutoOn()
+{
+	int i;
+	for (i=1; i<curpartysize; i++)
+		EntityStalk(players[party[i]].entity, 0-1);
+}
+
+void AutoOff()
+{
+	int i;
+	for (i=1; i<curpartysize; i++)
+		EntityStalk(players[party[i]].entity, players[party[i-1]].entity);
+}
+
+void InitMap()
+{
+	// Initialize entities
+	int i, e, last=0-1;
+	for (i=0; i<curpartysize; i++)
+	{
+		e = EntitySpawn(mapswitchx, mapswitchy, players[party[i]].chrname);
+		EntityStalk(e, last);
+		players[party[i]].entity = e;
+		if (last<0) 
+		{
+			SetPlayer(e);
+			playerent = e;
+		}
+		last = e;
+	}
+	
+	// Do fade transition
+	switch (mapswitche)
+	{
+		case 1: FadeIn(30);
+		case 2: WhiteIn(30);
+		case 3: CrossFade(50);
+		case 4: BoxIn(30);
+		case 5: TransWipe(100);
+		case 6: CircleIn(50);
+	}	
+}
+
+void Warp(int x, int y, int effect)
+{
+	switch (effect)
+	{
+		case 1:	FadeOut(30);
+		case 2: WhiteOut(30);
+		case 3: Blit(0, 0, screen, crossfade_img);
+		case 4: BoxOut(30);
+		case 5: Blit(0, 0, screen, crossfade_img);
+		case 6: CircleOut(50);
+	}
+
+	entity.x[playerent] = x*16;
+	entity.y[playerent] = y*16;
+	Render();
+	
+	switch (effect)
+	{
+		case 1: FadeIn(30);
+		case 2: WhiteIn(30);
+		case 3: CrossFade(50);
+		case 4: BoxIn(30);
+		case 5: TransWipe(50);
+		case 6: CircleIn(50);
+	}
+}
+
+/*******************************************
+ *                 UI Stuff                *
+ *******************************************/
+
+void MenuBox(int x, int y, int w, int h)
+{
+	SetLucent(50);
+	RectFill(x, y, x+w, y+h, v1_blue, screen);
+	SetLucent(0);
+	
+	Rect(x+1, y+1, x+w-1, y+h-1, v1_dgray, screen);
+	Rect(x+2, y+2, x+w-2, y+h-2, v1_lgray, screen);
+	Rect(x+3, y+3, x+w-3, y+h-3, v1_dgray, screen);
+}
+
+void TextBox(int sp, string s1, string s2, string s3)
+{
+	timer=0;
+	while (!b1 && timer/2<=len(s1))
+	{
+		Render();
+		TBlitFrame(1, SPEECH_Y, speechprt, sp, screen);
+		SetLucent(50);
+		RectFill(3, 187, 317, 236, RGB(0,0,255), screen);
+		SetLucent(0);
+		TBlit(0, 184, textboxframe, screen);
+		PrintString(6, 190, screen, textfont, left(s1,timer/2));
+		ShowPage();		
+	}
+	
+	timer=0;
+	while (!b1 && timer/2<=len(s2))
+	{
+		Render();
+		TBlitFrame(1, SPEECH_Y, speechprt, sp, screen);
+		SetLucent(50);
+		RectFill(3, 187, 317, 236, RGB(0,0,255), screen);
+		SetLucent(0);
+		TBlit(0, 184, textboxframe, screen);
+		PrintString(6, 190, screen, textfont, s1);
+		PrintString(6, 204, screen, textfont, left(s2,timer/2));
+		ShowPage();	
+	}
+	
+	timer=0;
+	while (!b1 && timer/2<=len(s3))
+	{
+		Render();
+		TBlitFrame(1, SPEECH_Y, speechprt, sp, screen);
+		SetLucent(50);
+		RectFill(3, 187, 317, 236, RGB(0,0,255), screen);
+		SetLucent(0);
+		TBlit(0, 184, textboxframe, screen);
+		PrintString(6, 190, screen, textfont, s1);
+		PrintString(6, 204, screen, textfont, s2);
+		PrintString(6, 218, screen, textfont, left(s3,timer/2));
+		ShowPage();		
+	}
+	Unpress(1);
+	
+	while (!b1)
+	{
+		Render();
+		TBlitFrame(1, SPEECH_Y, speechprt, sp, screen);
+		SetLucent(50);
+		RectFill(3, 187, 317, 236, RGB(0,0,255), screen);
+		SetLucent(0);
+		TBlit(0, 184, textboxframe, screen);
+		PrintString(6, 190, screen, textfont, s1);
+		PrintString(6, 204, screen, textfont, s2);
+		PrintString(6, 218, screen, textfont, s3);
+		ShowPage();	
+	}
+	Unpress(1);
+}
+
+void TextBoxM(int sp, string s1, string s2, string s3)
+{
+	timer=0;
+	while (!b1 && timer/2<=len(s1))
+	{
+		Render();
+		TBlitFrame(1, SPEECH_Y, speechprt, sp, screen);
+		SetLucent(50);
+		RectFill(3, 187, 317, 236, RGB(0,0,255), screen);
+		SetLucent(0);
+		TBlit(0, 184, textboxframe, screen);
+		PrintString(6, 190, screen, textfont, left(s1,timer/2));
+		ShowPage();		
+	}
+	
+	timer=0;
+	while (!b1 && timer/2<=len(s2))
+	{
+		Render();
+		TBlitFrame(1, SPEECH_Y, speechprt, sp, screen);
+		SetLucent(50);
+		RectFill(3, 187, 317, 236, RGB(0,0,255), screen);
+		SetLucent(0);
+		TBlit(0, 184, textboxframe, screen);
+		PrintString(6, 190, screen, textfont, s1);
+		PrintString(6, 204, screen, textfont, left(s2,timer/2));
+		ShowPage();	
+	}
+	
+	timer=0;
+	while (!b1 && timer/2<=len(s3))
+	{
+		Render();
+		TBlitFrame(1, SPEECH_Y, speechprt, sp, screen);
+		SetLucent(50);
+		RectFill(3, 187, 317, 236, RGB(0,0,255), screen);
+		SetLucent(0);
+		TBlit(0, 184, textboxframe, screen);
+		PrintString(6, 190, screen, textfont, s1);
+		PrintString(6, 204, screen, textfont, s2);
+		PrintString(6, 218, screen, textfont, left(s3,timer/2));
+		ShowPage();		
+	}
+	Unpress(1);
+	
+	while (!b1)
+	{
+		Render();
+		TBlitFrame(1, SPEECH_Y, speechprt, sp, screen);
+		SetLucent(50);
+		RectFill(3, 187, 317, 236, RGB(0,0,255), screen);
+		SetLucent(0);
+		TBlit(0, 184, textboxframe, screen);
+		PrintString(6, 190, screen, textfont, s1);
+		PrintString(6, 204, screen, textfont, s2);
+		PrintString(6, 218, screen, textfont, s3);
+		TBlit(300, 232+(cos(systemtime*2)*4/65536), textmore, screen);		
+		ShowPage();
+	}
+	
+	timer = 0;
+	while (timer<30)
+	{
+		Render();
+		TBlitFrame(1, SPEECH_Y, speechprt, sp, screen);
+		SetLucent(50);
+		RectFill(3, 187, 317, 236, RGB(0,0,255), screen);
+		SetLucent(0);
+		TBlit(0, 184, textboxframe, screen);
+		SetClip(0, 189, 320, 240, screen);
+		PrintString(6, 190-(timer*2), screen, textfont, s1);
+		PrintString(6, 204-(timer*2), screen, textfont, s2);
+		PrintString(6, 218-(timer*2), screen, textfont, s3);
+		SetClip(0, 0, 320, 240, screen);
+		ShowPage();
+	}
+	Unpress(1);
+}
+
+void GiveMoney(int amount)
+{
+	while (!b1)
+	{
+		Render();
+		MenuBox(110, 80, 100, 40);
+		PrintCenter(160, 95, screen, menufont, "Got "+str(amount)+" "+moneyname+"!");
+		ShowPage();
+	}
+	money += amount;
+}

@@ -1,0 +1,222 @@
+#define MAX_UPDATE 10
+#define MAX_RENDER 10
+
+#define MAX_ENTITIES 255
+
+string UpdateList[MAX_UPDATE];
+string RenderList[MAX_RENDER];
+
+int UpdateLength = 0;
+int RenderLength = 0;
+
+////////////////////////////////////////////////////////////////
+
+void AddRender(string Renderer)
+{
+	if (RenderLength < MAX_RENDER)
+	{
+		if (!IsRenderString(Renderer))
+		{
+			RenderList[RenderLength] = Renderer;
+			RenderLength++;
+		}
+	}
+}
+
+void RemoveRender(int index)
+{
+	int i;
+	
+	for (i = index; i < RenderLength+1; i++)
+	{
+		RenderList[i] = RenderList[i+1];
+	}
+	
+	RenderLength--;
+}
+
+void RemoveRenderString(string Name)
+{
+	int i;
+	
+	for (i = 0; i < RenderLength; i++)
+	{
+		if (!strcmp(RenderList[i],Name))
+		{
+			RemoveRender(i);
+			i = 500000000;
+		}
+	}		
+}
+
+int IsRenderString(string Name)
+{
+	int i;
+	
+	for (i = 0; i < RenderLength; i++)
+	{
+		if (!strcmp(RenderList[i],Name))
+		{
+			return 1;
+		}
+	}		
+	
+	return 0;
+}
+
+////////////////////////////////////////////////////////////////
+
+void AddUpdate(string Updater)
+{
+	if (UpdateLength < MAX_UPDATE)
+	{
+		if (!IsUpdateString(Updater))
+		{
+			UpdateList[UpdateLength] = Updater;
+			UpdateLength++;
+		}
+	}
+}
+
+void RemoveUpdate(int index)
+{
+	int i;
+	
+	for (i = index; i < UpdateLength+1; i++)
+	{
+		UpdateList[i] = UpdateList[i+1];
+	}
+	
+	UpdateLength--;
+}
+
+void RemoveUpdateString(string Name)
+{
+	int i;
+	
+	for (i = 0; i < UpdateLength+1; i++)
+	{
+		if (!strcmp(UpdateList[i],Name))
+		{
+			RemoveUpdate(i);
+			i = 500000000;
+		}
+	}		
+}
+
+int IsUpdateString(string Name)
+{
+	int i;
+	
+	for (i = 0; i < UpdateLength+1; i++)
+	{
+		if (!strcmp(UpdateList[i],Name))
+		{
+
+			return 1;
+		}
+	}		
+	
+	return 0;
+}
+
+////////////////////////////////////////////////////////////////
+
+void UpdateScript()
+{
+	int i;
+	
+	for (i = 0; i < UpdateLength; i++)
+	{
+		CallFunction(UpdateList[i]);
+	}
+	
+}
+
+void RenderScript()
+{
+	
+	int i;
+
+	for (i = 0; i < RenderLength; i++)
+	{
+		CallFunction(RenderList[i]);
+	}	
+	
+	if (gGUILength > 0)
+	{
+		SetLucent(min(max(gGUIFade + ((100 - gGUIFade) * (50 + (sin(systemtime) * 50 >> 16)) / 100), 25), 75));
+		SubtractiveBlit(mouse.x, mouse.y, GUIImage[img_MOUSE], screen);
+		SetLucent(gGUIFade);
+		AdditiveBlit(mouse.x, mouse.y, GUIImage[img_MOUSE], screen);
+		TBlit(mouse.x, mouse.y, GUIImage[img_MOUSE_OUTLINE], screen);
+		SetLucent(0);
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
+/*void UpdateEntities()
+{
+	int i;
+	
+	for (i = 0; i < MAX_ENTITIES; i++)
+	{
+		if (strcmp(gEntities[i][1], "-1"))
+		{
+			if (FunctionExists("e" + gEntities[i][1] + "Update"))
+			{
+				gCurrentEntityIndex =  gEntities[i][0];
+				gCurrentEntityType =  gEntities[i][1];
+				
+				CallFunction("e" +gCurrentEntityType + "Update");
+				
+			}
+		}
+		
+	}
+}
+
+////////////////////////////////////////////////////////////////
+
+void RenderGUI()
+{
+	int i;
+	
+	for (i = 0; i < MAX_GUI; i++)
+	{
+		if (strcmp(gGUI[i][1], "-1"))
+		{
+			if (FunctionExists("e" + gGUI[i][1] + "Render"))
+			{
+				gCurrentGUIIndex =  gGUI[i][0];
+				gCurrentGUIType =  gGUI[i][1];
+				
+				CallFunction("e" +gCurrentGUIType + "Render");
+				
+			}
+		}
+		
+	}	
+}
+
+void UpdateGUI()
+{
+	int i;
+	
+	for (i = 0; i < MAX_GUI; i++)
+	{
+		if (strcmp(gGUI[i][1], "-1"))
+		{
+			if (FunctionExists("e" + gGUI[i][1] + "Update"))
+			{
+				gCurrentGUIIndex =  gGUI[i][0];
+				gCurrentGUIType =  gGUI[i][1];
+				
+				CallFunction("e" +gCurrentGUIType + "Update");
+				
+			}
+		}
+		
+	}		
+}*/

@@ -1,0 +1,45 @@
+void OnEnter()
+{
+    PlayGameMusic(song_manufacturing);
+    
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+
+	gDoors[0].x = 3; gDoors[0].y = 14; gDoors[0].type = 1; 
+	gDoors[0].id = DOOR_31;
+    
+	SpawnPlayer();
+    
+	//Door panel
+	
+    AddInput(0, 20, 60, 140, 4);
+    
+    AddButton(1, 245, 90, 0, "iNumPasswordCheck");
+    AddGlyph(1, 257, 122, glyph_OPEN);
+    
+    AddRectangle(2, 245, 60, 40, 26, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(2, 257, 65, glyph_ERROR);
+    
+    AddRectangle(3, 245, 60, 40, 26, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(3, 257, 65, glyph_NO);
+}
+
+void PasswordComputer()
+{
+    AddCollection(0);
+    AddCollection(1);
+    AddCollection(20);
+    AddCollection(21);
+}
+
+void WarpTo33()
+{
+	WarpTo(3,14, "3-3.map");
+}
+
+void WarpTo04()
+{
+    WarpTo(23,14, "0-4.map");
+}

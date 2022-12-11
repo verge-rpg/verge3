@@ -1,0 +1,38 @@
+void OnEnter()
+{
+	PlayGameMusic(song_manufacturing);
+
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+	
+	SpawnPlayer();
+}
+
+void TalkToJudas()
+{
+    TBox(1, gFont, "Judas: Access to Manufacturing A side has been blocked off for a while now. Smithy up above has been trying to figure out why, but he hasn't had much luck.");
+    gFlags[FLAG_KNOWLEDGE_MANUA] = 1;
+}
+
+
+void WarpToUUU()
+{
+	TeleportTo(27,34, "1-2.map");
+}
+
+void WarpTo24()
+{
+    WarpTo(5,17,"2-4.map");
+}
+
+void WarpTo23()
+{
+    WarpTo(11,13,"2-3.map");
+}
+
+void WarpTo13()
+{
+    WarpTo(27,13,"1-3.map");
+}
