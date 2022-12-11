@@ -48,28 +48,28 @@ FARPROC WINAPI FmodFailHook(unsigned /* dliNotify */, PDelayLoadInfo  /* pdli */
 
 
 bool snd_Init(int soundEngine) {
-	snd_engine = nullptr;
+	SoundEngine* engine = nullptr;
 
 #ifdef SND_USE_FMOD
 	if(soundEngine == 0)
-		snd_engine = new SoundEngine_Fmod();
+		engine = new SoundEngine_Fmod();
 #endif
 
 #ifdef SND_USE_OAKRA
 	if(soundEngine == 1)
-		snd_engine = new SoundEngine_Oakra();
+		engine = new SoundEngine_Oakra();
 #endif
 
 #ifdef SND_USE_AUDIERE
 	if(soundEngine == 2)
-		snd_engine = new SoundEngine_Audiere();
+		engine = new SoundEngine_Audiere();
 #endif
 
 #ifdef SND_USE_WASM
-    snd_engine = new SoundEngine_Wasm();
+    engine = new SoundEngine_Wasm();
 #endif
 
-	bool ret;
+	bool result;
 
 	#ifdef _WIN32
 	if(soundEngine == 0)
@@ -90,17 +90,25 @@ bool snd_Init(int soundEngine) {
     }
 	#endif
 	
-	if(snd_engine)
-		ret = snd_engine->init();
-	else ret = false;
+	if (engine)
+	{
+		result = engine->init();
+		if (result)
+		{
+			snd_engine = engine;
+		}
+	}
+	else
+	{
+		result = false;
+	}
 	
 	#ifdef _WIN32
-	if(soundEngine == 0)
+	if (engine == nullptr)
 		__pfnDliFailureHook2 = nullptr;
 	#endif
 
-	return ret;
-	
+	return result;
 }
 
 

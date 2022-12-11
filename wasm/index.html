@@ -690,9 +690,12 @@
             ];
 
 
+            let filesToFetch = 0;
+            let fetchedSources = [];
+
             function fetchSources(folder, paths, completeCallback) {
-                let sourcesToFetch = 0;
-                let sources = [];
+                fetchedSources = [];
+
                 for (let i = 0; i < paths.length; i++) {
                     ;((i) => {
                         const path = paths[i];
@@ -701,26 +704,31 @@
 
                         console.log('fetching ' + path);
 
-                        sourcesToFetch++;
-                        sources.push(null);
+                        filesToFetch++;
+                        fetchedSources.push(null);
 
                         fetch((folder !== '' ? folder + '/' : '') + path)
                             .then(response => response.arrayBuffer())
                             .then(result => {
                                 console.log('fetched ' + path + ' ' + result);
-                                sources[i] = {
+                                fetchedSources[i] = {
                                     path: path,
                                     data: new Uint8Array(result),
                                 }
-                                sourcesToFetch--;
 
-                                if (sourcesToFetch == 0) {
-                                    console.log('done');
-                                    completeCallback(sources);
-                                }
+                                onFetchedFile(completeCallback);
                             })
                             .catch(err => console.log(err));
                     })(i);
+                }
+            }
+
+            function onFetchedFile(completeCallback) {
+                filesToFetch--;
+
+                if (filesToFetch == 0) {
+                    console.log('done');
+                    completeCallback(fetchedSources);
                 }
             }
 
@@ -756,10 +764,10 @@
             let clickedOnce = false;
             const u = new URLSearchParams(window.location.search);
             const game = u.get('game') || 'timeless';
-            const folder = HEART_FOLDER;
-            const paths = HEART_PATHS;
-            //const folder = SNOWBALL_FOLDER;
-            //const paths = SNOWBALL_PATHS;            
+            //const folder = HEART_FOLDER;
+            //const paths = HEART_PATHS;
+            const folder = SNOWBALL_FOLDER;
+            const paths = SNOWBALL_PATHS;            
 
             canvas.onclick = event => { clickedOnce = true; }
 
@@ -771,7 +779,8 @@
                 canvas: canvas,
                 preRun: function() {
                     window.Module.addRunDependency('vc_source');
-                    fetchSources(folder, paths, sources => {
+
+                    const completeCallback = sources => {
                         console.log('passing sources to emscripten');
                         let dirLevelsToCreate = [];
 
@@ -801,6 +810,8 @@
                             window.Module.FS_createDataFile(dirname, filename, source.data, true, true);
                         }
 
+                        console.log("found mpt? = ", foundMPT);
+
                         const ctx = document.getElementById('canvas').getContext('2d');
                         ctx.fillStyle = 'green';
                         ctx.fillRect(0, 0, 320, 200);
@@ -816,7 +827,20 @@
                                 window.clearInterval(interval);
                             }
                         }, 1000);
-                    });
+                    };
+
+                    let foundMPT = false;
+                    filesToFetch++;
+                    fetch('mpt-worklet.js')
+                        .then(response => response.text())
+                        .then(result => {
+                            console.warn('fetched mpt-worklet');
+                            foundMPT = true;
+                            onFetchedFile(completeCallback);
+                        })
+                        .catch(err => console.warn(err));
+
+                    fetchSources(folder, paths, completeCallback);
                 },
             };
 

@@ -1216,27 +1216,28 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  271968: ($0) => { console.log(UTF8ToString($0)); },  
- 272003: ($0) => { alert(UTF8ToString($0)); }
+  272160: ($0) => { console.log(UTF8ToString($0)); },  
+ 272195: ($0) => { alert(UTF8ToString($0)); }
 };
 function wasm_nextFrame() { return Asyncify.handleSleep(requestAnimationFrame); }
-function wasm_initSound() { window.verge.audioContext = new AudioContext(); window.verge.mainSong = null; window.verge.songs = {}; window.verge.songDatas = {}; window.verge.songRefs = {}; window.verge.sounds = {}; window.verge.soundRefs = {}; window.verge.soundChannels = {}; window.verge.soundChannelNextID = 1; window.verge.initMpt = () => { const ctx = window.verge.audioContext; if (ctx.audioWorklet) { window.verge.mptInited = ctx.audioWorklet.addModule('mpt-worklet.js').then(() => { window.verge.mainSong = window.verge.createSong(); }).catch(err => console.log('failed to init audio worklet', err)); } else { console.warn("AudioWorklet is not supported in this browser.  No music.  Sorry!"); window.verge.mptInited = Promise.resolve(); } }; window.verge.createMptNode = () => { const ctx = window.verge.audioContext; return new AudioWorkletNode(ctx, 'libopenmpt-processor', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2], }); }; window.verge.createSong = () => { const ctx = window.verge.audioContext; const gainNode = ctx.createGain(); gainNode.connect(ctx.destination); const streamAudio = new Audio(); const streamNode = ctx.createMediaElementSource(streamAudio); streamNode.connect(gainNode); const mptNode = window.verge.createMptNode(); mptNode.connect(gainNode); return { gainNode: gainNode, streamAudio: streamAudio, streamNode: streamNode, mptNode: mptNode, activeSourceNode: null, lastGetPosition: 0, } }; window.verge.freeSong = (song) => { song.streamNode.disconnect(); song.mptNode.disconnect(); }; window.verge.playSong = (song, filename, songData) => { window.verge.stopSong(song); window.verge.mptInited.then(() => { console.log('window.verge.playSong: playing ', filename, songData); if (!song || !filename || !songData) { return; } if (filename.endsWith('mp3') || filename.endsWith('ogg') || filename.endsWith('wav')) { const songBlob = new Blob(buffer); const songBlobURL = URL.createObjectURL(songBlob); console.log('window.verge.playSong: streaming', filename); song.streamAudio.srcObject = songBlobURL; song.streamAudio.play(); song.activeSourceNode = song.streamNode; } else { console.log('window.verge.playSong: sequenced', filename); song.mptNode.port.postMessage({ songData: songData, setRepeatCount: -1 }); song.activeSourceNode = song.mptNode; } }); }; window.verge.stopSong = (song) => { window.verge.mptInited.then(() => { console.log('window.verge.stopSong'); if (song.activeSourceNode == song.streamAudio) { song.streamAudio.pause(); song.streamAudio.currentTime = 0; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ songData: new ArrayBuffer(0) }); } song.activeSourceNode = null; }); }; window.verge.getSongPosition = (song) => { if (song.activeSourceNode == song.streamAudio) { return Math.floor(song.streamAudio.currentTime * 1000); } else if (song.activeSourceNode == song.mptNode) { return 0; } else { return 0; } }; window.verge.setSongPosition = (song, position) => { if (song.activeSourceNode == song.streamAudio) { song.streamAudio.currentTime = position / 1000; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ setPosition: position / 1000 }); } else { return 0; } }; window.verge.getSongVolume = (song) => song.gainNode.gain.value; window.verge.setSongVolume = (song, volume) => { song.gainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime); }; window.verge.initMpt(); }
+function wasm_initSound() { if (typeof(window.verge.initMpt) === 'undefined') { window.verge.audioContext = new AudioContext(); window.verge.mainSong = null; window.verge.songs = {}; window.verge.songDatas = {}; window.verge.songRefs = {}; window.verge.sounds = {}; window.verge.soundRefs = {}; window.verge.soundChannels = {}; window.verge.soundChannelNextID = 1; window.verge.mptLoaded = false; window.verge.initSoundError = ""; window.verge.initMpt = () => { const ctx = window.verge.audioContext; if (ctx.audioWorklet) { console.log("initializing mpt-worklet.js module"); window.verge.mptInited = ctx.audioWorklet.addModule('mpt-worklet.js').then(() => { console.log("mpt-worklet.js module finished initializing!"); window.verge.mainSong = window.verge.createSong(); window.verge.mptLoaded = true; }).catch(err => { console.warn("mpt-worklet.js failed!", err); window.verge.initSoundError = err.toString(); }); } else { window.verge.initSoundError = 'AudioWorklet is not supported in this browser. No music. Sorry!'; window.verge.mptInited = Promise.resolve(); } }; window.verge.createMptNode = () => { const ctx = window.verge.audioContext; return new AudioWorkletNode(ctx, 'libopenmpt-processor', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2], }); }; window.verge.createSong = () => { const ctx = window.verge.audioContext; const gainNode = ctx.createGain(); gainNode.connect(ctx.destination); const streamAudio = new Audio(); const streamNode = ctx.createMediaElementSource(streamAudio); streamNode.connect(gainNode); const mptNode = window.verge.createMptNode(); mptNode.connect(gainNode); return { gainNode: gainNode, streamAudio: streamAudio, streamNode: streamNode, mptNode: mptNode, activeSourceNode: null, lastGetPosition: 0, } }; window.verge.freeSong = (song) => { song.streamNode.disconnect(); song.mptNode.disconnect(); }; window.verge.playSong = (song, filename, songData) => { window.verge.stopSong(song); console.log('window.verge.playSong: playing ', filename, songData); if (!song || !filename || !songData) { return; } if (filename.endsWith('mp3') || filename.endsWith('ogg') || filename.endsWith('wav')) { const songBlob = new Blob(buffer); const songBlobURL = URL.createObjectURL(songBlob); console.log('window.verge.playSong: streaming', filename); song.streamAudio.srcObject = songBlobURL; song.streamAudio.play(); song.activeSourceNode = song.streamNode; } else { console.log('window.verge.playSong: sequenced', filename); song.mptNode.port.postMessage({ songData: songData, setRepeatCount: -1 }); song.activeSourceNode = song.mptNode; } }; window.verge.stopSong = (song) => { console.log('window.verge.stopSong'); if (song.activeSourceNode == song.streamAudio) { song.streamAudio.pause(); song.streamAudio.currentTime = 0; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ songData: new ArrayBuffer(0) }); } song.activeSourceNode = null; }; window.verge.getSongPositionAsync = (song) => { if (song.activeSourceNode == song.streamAudio) { return Promise.resolve({position: song.streamAudio.currentTime}); } else if (song.activeSourceNode == song.mptNode) { return song.mptNode.port.postMessage({ getPosition: true, }); } else { return 0; } }; window.verge.setSongPosition = (song, position) => { if (song.activeSourceNode == song.streamAudio) { song.streamAudio.currentTime = position; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ setPosition: position }); } else { return 0; } }; window.verge.getSongVolume = (song) => song.gainNode.gain.value; window.verge.setSongVolume = (song, volume) => { song.gainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime); }; } return Asyncify.handleSleep(wakeUp => { window.verge.initMpt(); window.verge.mptInited.then(() => { wakeUp(window.verge.mptLoaded); }); }); }
+function wasm_getInitSoundError() { const result = Module._malloc(window.verge.initSoundError.length * 4 + 1); stringToUTF8(window.verge.initSoundError, result, window.verge.initSoundError.length + 1); return result; }
 function wasm_loadSound(filename,data,length) { const name = UTF8ToString(filename); const audioData = HEAPU8.buffer.slice(data, data + length); return Asyncify.handleSleep(wakeUp => { if (window.verge.sounds[name]) { window.verge.soundRefs[name]++; wakeUp(true); } else { window.verge.audioContext.decodeAudioData( audioData, decoded => { console.log("wasm_loadSound: Loaded sound ", name); window.verge.sounds[name] = decoded; window.verge.soundRefs[name] = (window.verge.soundRefs[name] || 0) + 1; wakeUp(true); }, () => { console.log("wasm_loadSound: Unable to load sound data for ", name); wakeUp(false); } ); } }); }
 function wasm_freeSound(filename) { const name = UTF8ToString(filename); const sound = window.verge.sounds[name]; if (!sound) { console.error("wasm_freeSound: Unknown sound ", name); return; } if (--window.verge.soundRefs[name] <= 0) { delete window.verge.sounds[name]; delete window.verge.soundRefs[name]; } }
 function wasm_playSound(filename,volume) { const name = UTF8ToString(filename); const sound = window.verge.sounds[name]; if (!sound) { console.error("wasm_playSound: Unknown sound ", name); return; } const ctx = window.verge.audioContext; const channelID = window.verge.soundChannelNextID++; let destination = ctx.destination; const gainNode = volume < 100 ? ctx.createGain() : null; if (gainNode != null) { gainNode.gain.value = volume / 100; gainNode.connect(destination); destination = gainNode; } const source = ctx.createBufferSource(); source.connect(destination); source.buffer = sound; source.addEventListener('ended', () => { delete window.verge.soundChannels[channelID]; if (gainNode != null) { gainNode.disconnect(); } }); source.start(0); window.verge.soundChannels[channelID] = source; }
 function wasm_stopSound(channelID) { const source = window.verge.soundChannels[channelID]; if (source) { source.stop(); } }
 function wasm_isSoundPlaying(channelID) { const source = window.verge.soundChannels[channelID]; return typeof(source) !== 'undefined'; }
-function wasm_playMusic(filename,data,length) { const name = UTF8ToString(filename); const buffer = Module.HEAP8.buffer.slice(data, data + length); const songData = new Uint8Array(buffer); window.verge.mptInited.then(() => { window.verge.playSong(window.verge.mainSong, name, songData); }); }
-function wasm_stopMusic() { window.verge.mptInited.then(() => { window.verge.stopSong(window.verge.mainSong); }); }
-function wasm_setMusicVolume(volume) { window.verge.mptInited.then(() => { window.verge.setSongVolume(window.verge.mainSong, volume); }); }
-function wasm_loadSong(filename,data,length) { const name = UTF8ToString(filename); const buffer = Module.HEAP8.buffer.slice(data, data + length); const songData = new Uint8Array(buffer); return Asyncify.handleSleep(wakeUp => { window.verge.mptInited.then(() => { if (window.verge.songs[name]) { window.verge.songRefs[name]++; wakeUp(true); } else { window.verge.songs[name] = window.verge.createSong(); window.verge.songDatas[name] = songData; window.verge.songRefs[name] = (window.verge.songRefs[name] || 0) + 1; console.log("wasm_loadSong: Load song for ", name); wakeUp(true); } }); }); }
+function wasm_playMusic(filename,data,length) { const name = UTF8ToString(filename); const buffer = Module.HEAP8.buffer.slice(data, data + length); const songData = new Uint8Array(buffer); window.verge.playSong(window.verge.mainSong, name, songData); }
+function wasm_stopMusic() { window.verge.stopSong(window.verge.mainSong); }
+function wasm_setMusicVolume(volume) { window.verge.setSongVolume(window.verge.mainSong, volume); }
+function wasm_loadSong(filename,data,length) { const name = UTF8ToString(filename); const buffer = Module.HEAP8.buffer.slice(data, data + length); const songData = new Uint8Array(buffer); if (window.verge.songs[name]) { window.verge.songRefs[name]++; return true; } else { window.verge.songs[name] = window.verge.createSong(); window.verge.songDatas[name] = songData; window.verge.songRefs[name] = (window.verge.songRefs[name] || 0) + 1; console.log("wasm_loadSong: Load song for ", name); return true; } }
 function wasm_freeSong(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_freeSong: Unknown song ", name); return; } if (--window.verge.songRefs[name] <= 0) { window.verge.freeSong(song); delete window.verge.songs[name]; delete window.verge.songDatas[name]; delete window.verge.songRefs[name]; } }
-function wasm_playSong(filename) { const name = UTF8ToString(filename); window.verge.mptInited.then(() => { const song = window.verge.songs[name]; if (!song) { console.error("wasm_playSong: Unknown song ", name); return; } window.verge.playSong(song, name, window.verge.songDatas[name]); }); }
-function wasm_stopSong(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_stopSong: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.stopSong(song); }); }
-function wasm_getSongPosition(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_getSongPosition: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.getSongPosition(song); }); }
-function wasm_setSongPosition(filename,position) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_setSongPosition: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.setSongPosition(song, position); }); }
-function wasm_getSongVolume(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_getSongVolume: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.getSongVolume(song); }); }
-function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_setSongVolume: Unknown song ", name); return; } window.verge.mptInited.then(() => { window.verge.setSongVolume(song, volume); }); }
+function wasm_playSong(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_playSong: Unknown song ", name); return; } window.verge.playSong(song, name, window.verge.songDatas[name]); }
+function wasm_stopSong(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_stopSong: Unknown song ", name); return; } window.verge.stopSong(song); }
+function wasm_getSongPosition(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_getSongPosition: Unknown song ", name); return; } return Asyncify.handleSleep(wakeUp => { window.verge.getSongPositionAsync(song).then(result => { wakeUp(Math.floor(result.position * 1000)); }); }); }
+function wasm_setSongPosition(filename,position) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_setSongPosition: Unknown song ", name); return; } window.verge.setSongPosition(song, position / 1000); }
+function wasm_getSongVolume(filename) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_getSongVolume: Unknown song ", name); return; } window.verge.getSongVolume(song); }
+function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filename); const song = window.verge.songs[name]; if (!song) { console.error("wasm_setSongVolume: Unknown song ", name); return; } window.verge.setSongVolume(song, volume); }
 
 
 
@@ -3910,12 +3911,15 @@ function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filenam
         (tempI64 = [stat.size>>>0,(tempDouble=stat.size,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(40))>>2)] = tempI64[0],HEAP32[(((buf)+(44))>>2)] = tempI64[1]);
         HEAP32[(((buf)+(48))>>2)] = 4096;
         HEAP32[(((buf)+(52))>>2)] = stat.blocks;
-        (tempI64 = [Math.floor(stat.atime.getTime() / 1000)>>>0,(tempDouble=Math.floor(stat.atime.getTime() / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(56))>>2)] = tempI64[0],HEAP32[(((buf)+(60))>>2)] = tempI64[1]);
-        HEAPU32[(((buf)+(64))>>2)] = 0;
-        (tempI64 = [Math.floor(stat.mtime.getTime() / 1000)>>>0,(tempDouble=Math.floor(stat.mtime.getTime() / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(72))>>2)] = tempI64[0],HEAP32[(((buf)+(76))>>2)] = tempI64[1]);
-        HEAPU32[(((buf)+(80))>>2)] = 0;
-        (tempI64 = [Math.floor(stat.ctime.getTime() / 1000)>>>0,(tempDouble=Math.floor(stat.ctime.getTime() / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(88))>>2)] = tempI64[0],HEAP32[(((buf)+(92))>>2)] = tempI64[1]);
-        HEAPU32[(((buf)+(96))>>2)] = 0;
+        var atime = stat.atime.getTime();
+        var mtime = stat.mtime.getTime();
+        var ctime = stat.ctime.getTime();
+        (tempI64 = [Math.floor(atime / 1000)>>>0,(tempDouble=Math.floor(atime / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(56))>>2)] = tempI64[0],HEAP32[(((buf)+(60))>>2)] = tempI64[1]);
+        HEAPU32[(((buf)+(64))>>2)] = (atime % 1000) * 1000;
+        (tempI64 = [Math.floor(mtime / 1000)>>>0,(tempDouble=Math.floor(mtime / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(72))>>2)] = tempI64[0],HEAP32[(((buf)+(76))>>2)] = tempI64[1]);
+        HEAPU32[(((buf)+(80))>>2)] = (mtime % 1000) * 1000;
+        (tempI64 = [Math.floor(ctime / 1000)>>>0,(tempDouble=Math.floor(ctime / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(88))>>2)] = tempI64[0],HEAP32[(((buf)+(92))>>2)] = tempI64[1]);
+        HEAPU32[(((buf)+(96))>>2)] = (ctime % 1000) * 1000;
         (tempI64 = [stat.ino>>>0,(tempDouble=stat.ino,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(104))>>2)] = tempI64[0],HEAP32[(((buf)+(108))>>2)] = tempI64[1]);
         return 0;
       },doMsync:function(addr, stream, len, flags, offset) {
@@ -4887,10 +4891,6 @@ function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filenam
         };
   
         var ctx = Browser.createContext(canvas, is_SDL_OPENGL, usePageCanvas, webGLContextAttributes);
-  
-        // REMOVEME: ovk: TESTING
-        //document.body.appendChild(canvas);
-        // REMOVEME: ovk: TESTING
   
         SDL.surfaces[surf] = {
           width: width,
@@ -6240,11 +6240,6 @@ function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filenam
       abort('Assertion failed: ' + UTF8ToString(condition) + ', at: ' + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']);
     }
 
-  function ___cxa_allocate_exception(size) {
-      // Thrown object is prepended by exception metadata block
-      return _malloc(size + 24) + 24;
-    }
-
   var exceptionCaught =  [];
   
   function exception_addRef(info) {
@@ -6266,6 +6261,30 @@ function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filenam
 
   var exceptionLast = 0;
   
+  function exception_decRef(info) {
+      // A rethrown exception can reach refcount 0; it must not be discarded
+      // Its next handler will clear the rethrown flag and addRef it, prior to
+      // final decRef and destruction here
+      if (info.release_ref() && !info.get_rethrown()) {
+        var destructor = info.get_destructor();
+        if (destructor) {
+          // In Wasm, destructors return 'this' as in ARM
+          ((a1) => dynCall_ii.apply(null, [destructor, a1]))(info.excPtr);
+        }
+        ___cxa_free_exception(info.excPtr);
+      }
+    }
+  function ___cxa_end_catch() {
+      // Clear state flag.
+      _setThrew(0);
+      assert(exceptionCaught.length > 0);
+      // Call destructor if one is registered then clear it.
+      var info = exceptionCaught.pop();
+  
+      exception_decRef(info);
+      exceptionLast = 0; // XXX in decRef?
+    }
+
   /** @constructor */
   function ExceptionInfo(excPtr) {
       this.excPtr = excPtr;
@@ -6356,37 +6375,7 @@ function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filenam
         return this.excPtr;
       };
     }
-  function ___cxa_free_exception(ptr) {
-      try {
-        return _free(new ExceptionInfo(ptr).ptr);
-      } catch(e) {
-        err('exception during __cxa_free_exception: ' + e);
-      }
-    }
-  function exception_decRef(info) {
-      // A rethrown exception can reach refcount 0; it must not be discarded
-      // Its next handler will clear the rethrown flag and addRef it, prior to
-      // final decRef and destruction here
-      if (info.release_ref() && !info.get_rethrown()) {
-        var destructor = info.get_destructor();
-        if (destructor) {
-          // In Wasm, destructors return 'this' as in ARM
-          ((a1) => dynCall_ii.apply(null, [destructor, a1]))(info.excPtr);
-        }
-        ___cxa_free_exception(info.excPtr);
-      }
-    }
-  function ___cxa_end_catch() {
-      // Clear state flag.
-      _setThrew(0);
-      assert(exceptionCaught.length > 0);
-      // Call destructor if one is registered then clear it.
-      var info = exceptionCaught.pop();
   
-      exception_decRef(info);
-      exceptionLast = 0; // XXX in decRef?
-    }
-
   function ___resumeException(ptr) {
       if (!exceptionLast) { exceptionLast = ptr; }
       throw ptr;
@@ -6501,7 +6490,6 @@ function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filenam
       setTempRet0(thrownType);
       return thrown;
     }
-
 
   function ___cxa_get_exception_ptr(ptr) {
       return new ExceptionInfo(ptr).get_exception_ptr();
@@ -8733,7 +8721,7 @@ function wasm_setSongVolume(filename,volume) { const name = UTF8ToString(filenam
   function runtimeKeepalivePop() {
     }
   var Asyncify = {instrumentWasmImports:function(imports) {
-        var ASYNCIFY_IMPORTS = ["env.fetchSync","env.downloadAll","env.wasm_nextFrame","env.emscripten_sleep","env.wasm_loadSound","env.wasm_loadSong","env.invoke_*","env.emscripten_sleep","env.emscripten_wget","env.emscripten_wget_data","env.emscripten_idb_load","env.emscripten_idb_store","env.emscripten_idb_delete","env.emscripten_idb_exists","env.emscripten_idb_load_blob","env.emscripten_idb_store_blob","env.SDL_Delay","env.emscripten_scan_registers","env.emscripten_lazy_load_code","env.emscripten_fiber_swap","wasi_snapshot_preview1.fd_sync","env.__wasi_fd_sync","env._emval_await","env._dlopen_js","env.__asyncjs__*"].map((x) => x.split('.')[1]);
+        var ASYNCIFY_IMPORTS = ["env.fetchSync","env.downloadAll","env.wasm_nextFrame","env.emscripten_sleep","env.wasm_initSound","env.wasm_loadSound","env.wasm_getSongPosition","env.invoke_*","env.emscripten_sleep","env.emscripten_wget","env.emscripten_wget_data","env.emscripten_idb_load","env.emscripten_idb_store","env.emscripten_idb_delete","env.emscripten_idb_exists","env.emscripten_idb_load_blob","env.emscripten_idb_store_blob","env.SDL_Delay","env.emscripten_scan_registers","env.emscripten_lazy_load_code","env.emscripten_fiber_swap","wasi_snapshot_preview1.fd_sync","env.__wasi_fd_sync","env._emval_await","env._dlopen_js","env.__asyncjs__*"].map((x) => x.split('.')[1]);
         for (var x in imports) {
           (function(x) {
             var original = imports[x];
@@ -9238,13 +9226,11 @@ var asmLibraryArg = {
   "SDL_WM_SetCaption": _SDL_WM_SetCaption,
   "SDL_WarpMouse": _SDL_WarpMouse,
   "__assert_fail": ___assert_fail,
-  "__cxa_allocate_exception": ___cxa_allocate_exception,
   "__cxa_begin_catch": ___cxa_begin_catch,
   "__cxa_end_catch": ___cxa_end_catch,
   "__cxa_find_matching_catch_2": ___cxa_find_matching_catch_2,
   "__cxa_find_matching_catch_3": ___cxa_find_matching_catch_3,
   "__cxa_find_matching_catch_5": ___cxa_find_matching_catch_5,
-  "__cxa_free_exception": ___cxa_free_exception,
   "__cxa_get_exception_ptr": ___cxa_get_exception_ptr,
   "__cxa_rethrow": ___cxa_rethrow,
   "__cxa_throw": ___cxa_throw,
@@ -9325,6 +9311,7 @@ var asmLibraryArg = {
   "system": _system,
   "wasm_freeSong": wasm_freeSong,
   "wasm_freeSound": wasm_freeSound,
+  "wasm_getInitSoundError": wasm_getInitSoundError,
   "wasm_getSongPosition": wasm_getSongPosition,
   "wasm_getSongVolume": wasm_getSongVolume,
   "wasm_initSound": wasm_initSound,
@@ -9349,6 +9336,9 @@ var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__w
 
 /** @type {function(...*):?} */
 var getTempRet0 = Module["getTempRet0"] = createExportWrapper("getTempRet0");
+
+/** @type {function(...*):?} */
+var ___cxa_free_exception = Module["___cxa_free_exception"] = createExportWrapper("__cxa_free_exception");
 
 /** @type {function(...*):?} */
 var _memcpy = Module["_memcpy"] = createExportWrapper("memcpy");
@@ -9551,8 +9541,8 @@ var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = createExportWrap
 /** @type {function(...*):?} */
 var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = createExportWrapper("asyncify_stop_rewind");
 
-var ___start_em_js = Module['___start_em_js'] = 272032;
-var ___stop_em_js = Module['___stop_em_js'] = 280587;
+var ___start_em_js = Module['___start_em_js'] = 272224;
+var ___stop_em_js = Module['___stop_em_js'] = 281056;
 function invoke_ii(index,a1) {
   var sp = stackSave();
   try {

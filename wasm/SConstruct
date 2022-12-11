@@ -51,7 +51,7 @@ def EmscriptenEnvironment():
     emscriptenCompilerOpts = []
     emscriptenLinkerOpts = [
         '-s', 'ASYNCIFY',
-        '-s', 'ASYNCIFY_IMPORTS=["fetchSync","downloadAll","wasm_nextFrame","emscripten_sleep","wasm_loadSound","wasm_loadSong"]',
+        '-s', 'ASYNCIFY_IMPORTS=["fetchSync","downloadAll","wasm_nextFrame","emscripten_sleep","wasm_initSound","wasm_loadSound","wasm_getSongPosition"]',
         '-s', 'FETCH=1',
         '-s', 'FORCE_FILESYSTEM=1',
         '-s', 'ALLOW_MEMORY_GROWTH=1',
@@ -257,8 +257,6 @@ verge_cpppath = [
     #libpng_dir,
     #libjpeg_dir
 ]
-
-# TODO: audio engine. could it use libmodopenmpt + another library for wav/ogg/mp3 instead of Audiere?
 
 verge_libs = [
     'lua',

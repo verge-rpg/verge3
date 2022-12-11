@@ -30,72 +30,80 @@
 
 #ifdef SND_USE_WASM
 
-EM_JS(void, wasm_initSound, (), {
-    window.verge.audioContext = new AudioContext();
-    window.verge.mainSong = null;
+EM_JS(bool, wasm_initSound, (), {
+    if (typeof(window.verge.initMpt) === 'undefined') {
+        window.verge.audioContext = new AudioContext();
+        window.verge.mainSong = null;
 
-    window.verge.songs = {};
-    window.verge.songDatas = {};
-    window.verge.songRefs = {};
+        window.verge.songs = {};
+        window.verge.songDatas = {};
+        window.verge.songRefs = {};
 
-    window.verge.sounds = {};
-    window.verge.soundRefs = {};
-    window.verge.soundChannels = {};
-    window.verge.soundChannelNextID = 1;
+        window.verge.sounds = {};
+        window.verge.soundRefs = {};
+        window.verge.soundChannels = {};
+        window.verge.soundChannelNextID = 1;
 
-    window.verge.initMpt = () => {
-        const ctx = window.verge.audioContext;
-        if (ctx.audioWorklet) {
-            window.verge.mptInited = ctx.audioWorklet.addModule('mpt-worklet.js').then(() => {
-                window.verge.mainSong = window.verge.createSong();
-            }).catch(err => console.log('failed to init audio worklet', err));
-        } else {
-            console.warn("AudioWorklet is not supported in this browser.  No music.  Sorry!");
-            window.verge.mptInited = Promise.resolve();
-        }
-    };
+        window.verge.mptLoaded = false;
+        window.verge.initSoundError = "";
 
-    window.verge.createMptNode = () => {
-        const ctx = window.verge.audioContext;
-        return new AudioWorkletNode(ctx, 'libopenmpt-processor', {
-            numberOfInputs: 0,
-            numberOfOutputs: 1,
-            outputChannelCount: [2],
-        });
-    };
+        window.verge.initMpt = () => {
+            const ctx = window.verge.audioContext;
+            if (ctx.audioWorklet) {
+                console.log("initializing mpt-worklet.js module");
+                window.verge.mptInited = ctx.audioWorklet.addModule('mpt-worklet.js').then(() => {
+                    console.log("mpt-worklet.js module finished initializing!");
+                    window.verge.mainSong = window.verge.createSong();
+                    window.verge.mptLoaded = true;                
+                }).catch(err => {
+                    console.warn("mpt-worklet.js failed!", err);
+                    window.verge.initSoundError = err.toString();
+                });
+            } else {
+                window.verge.initSoundError = 'AudioWorklet is not supported in this browser. No music. Sorry!';
+                window.verge.mptInited = Promise.resolve();
+            }
+        };
 
-    window.verge.createSong = () => {
-        const ctx = window.verge.audioContext;
-        const gainNode = ctx.createGain();
-        gainNode.connect(ctx.destination);
+        window.verge.createMptNode = () => {
+            const ctx = window.verge.audioContext;
+            return new AudioWorkletNode(ctx, 'libopenmpt-processor', {
+                numberOfInputs: 0,
+                numberOfOutputs: 1,
+                outputChannelCount: [2],
+            });
+        };
 
-        const streamAudio = new Audio();
-        const streamNode = ctx.createMediaElementSource(streamAudio);
-        streamNode.connect(gainNode);
+        window.verge.createSong = () => {
+            const ctx = window.verge.audioContext;
+            const gainNode = ctx.createGain();
+            gainNode.connect(ctx.destination);
 
-        const mptNode = window.verge.createMptNode();
-        mptNode.connect(gainNode);
+            const streamAudio = new Audio();
+            const streamNode = ctx.createMediaElementSource(streamAudio);
+            streamNode.connect(gainNode);
 
+            const mptNode = window.verge.createMptNode();
+            mptNode.connect(gainNode);
 
-        return {
-            gainNode: gainNode,
-            streamAudio: streamAudio,
-            streamNode: streamNode,
-            mptNode: mptNode,
-            activeSourceNode: null,
-            lastGetPosition: 0,
-        }
-    };
+            return {
+                gainNode: gainNode,
+                streamAudio: streamAudio,
+                streamNode: streamNode,
+                mptNode: mptNode,
+                activeSourceNode: null,
+                lastGetPosition: 0,
+            }
+        };
 
-    window.verge.freeSong = (song) => {
-        song.streamNode.disconnect();
-        song.mptNode.disconnect();
-    };
+        window.verge.freeSong = (song) => {
+            song.streamNode.disconnect();
+            song.mptNode.disconnect();
+        };
 
-    window.verge.playSong = (song, filename, songData) => {
-        window.verge.stopSong(song);
+        window.verge.playSong = (song, filename, songData) => {
+            window.verge.stopSong(song);
 
-        window.verge.mptInited.then(() => {
             console.log('window.verge.playSong: playing ', filename, songData);  
 
             if (!song || !filename || !songData) {
@@ -122,11 +130,9 @@ EM_JS(void, wasm_initSound, (), {
                 });
                 song.activeSourceNode = song.mptNode;
             }
-        });
-    };
+        };
 
-    window.verge.stopSong = (song) => {
-        window.verge.mptInited.then(() => {
+        window.verge.stopSong = (song) => {
             console.log('window.verge.stopSong');
 
             if (song.activeSourceNode == song.streamAudio) {
@@ -139,45 +145,54 @@ EM_JS(void, wasm_initSound, (), {
             }
 
             song.activeSourceNode = null;
+        };
+
+        // TODO: pause/resume (still needs to be implemented in mpt-worklet)
+
+        window.verge.getSongPositionAsync = (song) => {
+            if (song.activeSourceNode == song.streamAudio) {
+                return Promise.resolve({position: song.streamAudio.currentTime});
+            } else if (song.activeSourceNode == song.mptNode) {
+                return song.mptNode.port.postMessage({
+                    getPosition: true,
+                });
+            } else {
+                return 0;
+            }
+        };
+
+        window.verge.setSongPosition = (song, position) => {
+            if (song.activeSourceNode == song.streamAudio) {
+                song.streamAudio.currentTime = position;
+            } else if (song.activeSourceNode == song.mptNode) {
+                song.mptNode.port.postMessage({
+                    setPosition: position
+                });
+            } else {
+                return 0;
+            }
+        };
+
+        window.verge.getSongVolume = (song) => song.gainNode.gain.value;
+
+        window.verge.setSongVolume = (song, volume) => {
+            //console.log('window.verge.setSongVolume', volume);
+            song.gainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime);
+        };
+    }
+    
+    return Asyncify.handleSleep(wakeUp => {
+        window.verge.initMpt();
+        window.verge.mptInited.then(() => {
+            wakeUp(window.verge.mptLoaded);
         });
-    };
+    });
+});
 
-    // TODO: pause/resume (still needs to be implemented in mpt-worklet)
-
-    window.verge.getSongPosition = (song) => {
-        if (song.activeSourceNode == song.streamAudio) {
-            return Math.floor(song.streamAudio.currentTime * 1000);
-        } else if (song.activeSourceNode == song.mptNode) {
-            /*response = await song.mptNode.port.postMessage({
-                getPosition: true,
-            });
-            return Math.floor(response.position * 1000);*/
-            return 0;
-        } else {
-            return 0;
-        }
-    };
-
-    window.verge.setSongPosition = (song, position) => {
-        if (song.activeSourceNode == song.streamAudio) {
-            song.streamAudio.currentTime = position / 1000;
-        } else if (song.activeSourceNode == song.mptNode) {
-            song.mptNode.port.postMessage({
-                setPosition: position / 1000
-            });
-        } else {
-            return 0;
-        }
-    };
-
-    window.verge.getSongVolume = (song) => song.gainNode.gain.value;
-
-    window.verge.setSongVolume = (song, volume) => {
-        //console.log('window.verge.setSongVolume', volume);
-        song.gainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime);
-    };
-
-    window.verge.initMpt();
+EM_JS(char*, wasm_getInitSoundError, (), {
+    const result = Module._malloc(window.verge.initSoundError.length * 4 + 1);
+    stringToUTF8(window.verge.initSoundError, result, window.verge.initSoundError.length + 1);
+    return result;
 });
 
 EM_JS(bool, wasm_loadSound, (const char* filename, const void* data, int length), {
@@ -271,21 +286,15 @@ EM_JS(void, wasm_playMusic, (const char* filename, const void* data, int length)
     const buffer = Module.HEAP8.buffer.slice(data, data + length);
     const songData = new Uint8Array(buffer);
 
-    window.verge.mptInited.then(() => {
-        window.verge.playSong(window.verge.mainSong, name, songData);
-    });
+    window.verge.playSong(window.verge.mainSong, name, songData);
 });
 
 EM_JS(void, wasm_stopMusic, (), {
-    window.verge.mptInited.then(() => {
-        window.verge.stopSong(window.verge.mainSong);
-    });
+    window.verge.stopSong(window.verge.mainSong);
 })
 
 EM_JS(void, wasm_setMusicVolume, (int volume), {
-    window.verge.mptInited.then(() => {
-        window.verge.setSongVolume(window.verge.mainSong, volume);
-    });
+    window.verge.setSongVolume(window.verge.mainSong, volume);
 });
 
 EM_JS(bool, wasm_loadSong, (const char* filename, const void* data, int length), {
@@ -293,21 +302,17 @@ EM_JS(bool, wasm_loadSong, (const char* filename, const void* data, int length),
     const buffer = Module.HEAP8.buffer.slice(data, data + length);
     const songData = new Uint8Array(buffer);    
 
-    return Asyncify.handleSleep(wakeUp => {
-        window.verge.mptInited.then(() => {
-            if (window.verge.songs[name]) {
-                window.verge.songRefs[name]++;
-                wakeUp(true);
-            } else {
-                window.verge.songs[name] = window.verge.createSong();
-                window.verge.songDatas[name] = songData;
-                window.verge.songRefs[name] = (window.verge.songRefs[name] || 0) + 1;
+    if (window.verge.songs[name]) {
+        window.verge.songRefs[name]++;
+        return true;
+    } else {
+        window.verge.songs[name] = window.verge.createSong();
+        window.verge.songDatas[name] = songData;
+        window.verge.songRefs[name] = (window.verge.songRefs[name] || 0) + 1;
 
-                console.log("wasm_loadSong: Load song for ", name);
-                wakeUp(true);
-            }
-        });
-    });
+        console.log("wasm_loadSong: Load song for ", name);
+        return true;
+    }
 });
 
 EM_JS(void, wasm_freeSong, (const char* filename), {
@@ -329,16 +334,13 @@ EM_JS(void, wasm_freeSong, (const char* filename), {
 
 EM_JS(void, wasm_playSong, (const char* filename), {
     const name = UTF8ToString(filename);
+    const song = window.verge.songs[name];
+    if (!song) {
+        console.error("wasm_playSong: Unknown song ", name);
+        return;
+    }
 
-    window.verge.mptInited.then(() => {
-        const song = window.verge.songs[name];
-        if (!song) {
-            console.error("wasm_playSong: Unknown song ", name);
-            return;
-        }
-
-        window.verge.playSong(song, name, window.verge.songDatas[name]);
-    });
+    window.verge.playSong(song, name, window.verge.songDatas[name]);
 });
 
 EM_JS(void, wasm_stopSong, (const char* filename), {
@@ -349,9 +351,7 @@ EM_JS(void, wasm_stopSong, (const char* filename), {
         return;
     }
 
-    window.verge.mptInited.then(() => {
-        window.verge.stopSong(song);
-    });
+    window.verge.stopSong(song);
 })
 
 EM_JS(int, wasm_getSongPosition, (const char* filename), {
@@ -362,8 +362,10 @@ EM_JS(int, wasm_getSongPosition, (const char* filename), {
         return;
     }    
 
-    window.verge.mptInited.then(() => {
-        window.verge.getSongPosition(song);
+    return Asyncify.handleSleep(wakeUp => {
+        window.verge.getSongPositionAsync(song).then(result => {
+            wakeUp(Math.floor(result.position * 1000));
+        });
     });
 })
 
@@ -375,9 +377,7 @@ EM_JS(void, wasm_setSongPosition, (const char* filename, int position), {
         return;
     }
 
-    window.verge.mptInited.then(() => {
-        window.verge.setSongPosition(song, position);
-    });
+    window.verge.setSongPosition(song, position / 1000);
 })
 
 EM_JS(int, wasm_getSongVolume, (const char* filename), {
@@ -388,9 +388,7 @@ EM_JS(int, wasm_getSongVolume, (const char* filename), {
         return;
     }    
 
-    window.verge.mptInited.then(() => {
-        window.verge.getSongVolume(song);
-    });
+    window.verge.getSongVolume(song);
 })
 
 EM_JS(void, wasm_setSongVolume, (const char* filename, int volume), {
@@ -401,16 +399,21 @@ EM_JS(void, wasm_setSongVolume, (const char* filename, int volume), {
         return;
     }
 
-    window.verge.mptInited.then(() => {
-        window.verge.setSongVolume(song, volume);
-    });
+    window.verge.setSongVolume(song, volume);
 })
 
 bool SoundEngine_Wasm::init() {
-    wasm_initSound();
-    log("SoundEngine_Wasm::init: initialized wasm sound");
-
-    return true;
+    if (wasm_initSound()) {
+        log("SoundEngine_Wasm::init: initialized wasm sound engine");
+        return true;
+    } else {
+        char* err = wasm_getInitSoundError();
+        log("SoundEngine_Wasm::init: failed to init wasm sound engine: %s", err);
+        showMessageBox("SoundEngine_Wasm::init: failed to init wasm sound engine: " + std::string(err));
+        free(err);
+        
+        return false;
+    }
 }
 
 void SoundEngine_Wasm::shutdown() {}
