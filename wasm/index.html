@@ -131,7 +131,7 @@
 
     <script>
         (function() {
-            const screen_size = [320, 200];
+            const screen_size = [320, 240];
             const canvas = document.getElementById('canvas');
             const canvasContainer = canvas.parentNode;
             canvas.setAttribute('width', screen_size[0]);
@@ -141,17 +141,18 @@
                 canvas.style.display = "none";
 
                 const parentRect = canvasContainer.getClientRects()[0];
-                const scaleX = (parentRect.width / screen_size[0]) | 0;
-                const scaleY = (parentRect.height / screen_size[1]) | 0;
+                const scaleX = (parentRect.width / canvas.width) | 0;
+                const scaleY = (parentRect.height / canvas.height) | 0;
                 const scale = Math.max(Math.min(scaleX, scaleY), 1);
 
-                canvas.style.width = (screen_size[0] * scale) + "px";
-                canvas.style.height = (screen_size[1] * scale) + "px";
+                canvas.style.width = (canvas.width * scale) + "px";
+                canvas.style.height = (canvas.height * scale) + "px";
                 canvas.style.display = "";
             };
 
             window.addEventListener('resize', resizeCallback);
             resizeCallback();
+            window.onWindowResize = resizeCallback;
 
             if (!('audioWorklet' in AudioContext.prototype)) {
                 document.getElementById('no-audio-worklet').style.display = 'block';
@@ -762,10 +763,12 @@
             let clickedOnce = false;
             const u = new URLSearchParams(window.location.search);
             const game = u.get('game') || 'timeless';
-            //const folder = HEART_FOLDER;
-            //const paths = HEART_PATHS;
-            const folder = SNOWBALL_FOLDER;
-            const paths = SNOWBALL_PATHS;            
+            const folder = HEART_FOLDER;
+            const paths = HEART_PATHS;
+            //const folder = SNOWBALL_FOLDER;
+            //const paths = SNOWBALL_PATHS;
+            //const folder = TIMELESS_FOLDER;
+            //const paths = TIMELESS_PATHS;
 
             canvas.onclick = event => { clickedOnce = true; }
 

@@ -44,7 +44,7 @@ int sdl_handleCount;
 
 void handleResize(const SDL_WindowEvent& e)
 {
-	assert(e.type == SDL_WINDOWEVENT_RESIZED);
+	assert(e.event == SDL_WINDOWEVENT_RESIZED);
 	sdl_gameWindow->adjust(e.data1, e.data2);
 	// Uncomment the following to have it redraw immediately
 	// after we resize the window. This could result in a
@@ -267,12 +267,13 @@ void sdl_Window::flip_win()
 
 	// gather information about the back-buffer and
 	// front buffer sizes
-	const int dst_w = winw;
-	const int dst_h = winh;
+	SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
+	winw = screen_surface->w;
+	winh = screen_surface->h;	
+	const int dst_w = screen_surface->w;
+	const int dst_h = screen_surface->h;
 	const int src_w = xres;
 	const int src_h = yres;
-
-	SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
 	
 	if (dst_w == src_w && dst_h == src_h)
 	{
@@ -451,6 +452,12 @@ void sdl_Window::createWindow()
 		winh,
 		(vid_window || !bGameWindow ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP)
 			| (bGameWindow ? 0 : SDL_WINDOW_HIDDEN));
+
+#ifdef __EMSCRIPTEN__
+	EM_ASM(
+    	window.onWindowResize();
+	);
+#endif
 }
 
 void sdl_Window::setupDummyImage()
@@ -478,10 +485,17 @@ void sdl_Window::setupDummyImage()
 void sdl_Window::adjust(int w, int h)
 {
 	SDL_SetWindowSize(window, w, h);
-	SDL_SetWindowFullscreen(window, vid_window ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
+	if (bGameWindow)
+	{
+		SDL_SetWindowFullscreen(window, vid_window ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
+	}
+	SDL_GetWindowSize(window, &winw, &winh);
 
-	SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
-	SDL_GetWindowSize(window, &this->winw, &this->winh);
+#ifdef __EMSCRIPTEN__
+	EM_ASM(
+    	window.onWindowResize();
+	);
+#endif	
 }
 
 void sdl_Window::get_displayed_area(int &out_w, int &out_h, int &out_x, int &out_y) 

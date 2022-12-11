@@ -371,11 +371,16 @@ void HandleMessages(void)
 			continue;
 		}
 		switch (event.type) {
-			case SDL_WINDOWEVENT_RESIZED:
-				if(!vid_window)
-					break; // not in windowed mode; what's a resize?
-				handleResize(event.window);
-				break;
+            case SDL_WINDOWEVENT:
+                switch (event.window.event)  {
+			        case SDL_WINDOWEVENT_RESIZED: {
+                        if (!vid_window)
+                            break; // not in windowed mode; what's a resize?
+                        handleResize(event.window);
+                        break;
+                    }
+                }
+                break;
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 				handleMouseButton(event.button);
