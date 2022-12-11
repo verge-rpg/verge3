@@ -85,7 +85,7 @@ void autoexec()
 	gGUIFade = 0;
 	gInput = 0;
 	
-	gFont = LoadFont("fonts\font0.png");
+	gFont = LoadFont("fonts/font0.png");
 	
 	SetupTextBox();
 	

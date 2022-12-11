@@ -138,7 +138,7 @@ void LoadGame(int slot)
 	{
 		if ( FileReadQuad(f) == 1)
 		{
-			DictSetInt(gRoomFlags, gRoomList[i], LoadImage("minimaps\"+gRoomList[i]+".png"));
+			DictSetInt(gRoomFlags, gRoomList[i], LoadImage("minimaps/"+gRoomList[i]+".png"));
 		}
 	}		
 	

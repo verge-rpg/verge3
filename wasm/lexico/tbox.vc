@@ -27,7 +27,7 @@ void SetupTextBox()
     fb_tboximg2 = LoadImage("tbox2.png");
     fb_banner = LoadImage("banner.png");
     fb_c_arrow = LoadImage("c_arrow.png");
-    fb_font = LoadFont("fonts\font0.png");
+    fb_font = LoadFont("fonts/font0.png");
     //EnableVariableWidth(fb_font);
     textoffset = 9;				// How much to offset the contents of a textbox from
                         // its top right corner in both x and y

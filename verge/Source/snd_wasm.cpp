@@ -110,15 +110,25 @@ EM_JS(bool, wasm_initSound, (), {
                 return;
             }            
 
-            if (filename.endsWith('mp3')
-            || filename.endsWith('ogg')
-            || filename.endsWith('wav')) {
-                const songBlob = new Blob(buffer);
-                const songBlobURL = URL.createObjectURL(songBlob);
+            let mediaMimetype = "";
+            if (filename.endsWith('mp3')) {
+                mediaMimetype = 'audio/mpeg';
+            } else if (filename.endsWith('ogg')) {
+                mediaMimetype = 'audio/ogg';
+            } else if (filename.endsWith('wav')) {
+                mediaMimetype = 'audio/x-wav';
+            }
 
-                console.log('window.verge.playSong: streaming', filename);
+            if (mediaMimetype != "") {
+                let songDataString = "";
+                for (let i = 0; i < songData.length; i++) {
+                    songDataString += String.fromCharCode(songData[i]);
+                }
+                const songDataURL = "data:" + mediaMimetype + ";base64," + btoa(songDataString);
 
-                song.streamAudio.srcObject = songBlobURL;
+                console.log('window.verge.playSong: streaming', filename, songDataURL);
+
+                song.streamAudio.src = songDataURL;
                 song.streamAudio.play();
                 song.activeSourceNode = song.streamNode;
             } else {

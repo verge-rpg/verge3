@@ -84,7 +84,7 @@ void SetRoomFlag(string amap)
 
 	if (!DictContains(gRoomFlags, amap) && strcmp(amap,"tit"))
 	{
-		DictSetInt(gRoomFlags, amap, LoadImage("minimaps\"+amap+".png"));
+		DictSetInt(gRoomFlags, amap, LoadImage("minimaps/"+amap+".png"));
 	}
 }
 

@@ -20,7 +20,7 @@ void LoadFonts()
 int loop;
 for(loop = 0; loop < maxfonts; loop++)
 	{
-	font[loop] = LoadFont("fonts\font"+str(loop)+".png");
+	font[loop] = LoadFont("fonts/font"+str(loop)+".png");
 	EnableVariableWidth(font[loop]);
 	}
 }
