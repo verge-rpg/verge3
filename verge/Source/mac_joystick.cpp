@@ -18,119 +18,147 @@
 
 /***************************** data *****************************/
 
-#define MAX_DEVS 16
-#define DEADZONE 30
-#define NOJOY 0
+static constexpr int DEADZONE = 30;
 
 bool joy_initd = false;
-SDL_Joystick * joy_sticks[4];
-int joy_numsticks;
+SDL_Joystick* sdl_joysticks[4];
 
 stick sticks[4];
 
 /***************************** code *****************************/
 
-int joy_NumSticks()
-{
-	joy_numsticks = SDL_NumJoysticks();
-	return joy_numsticks;
-}
-
-
 int joy_Init()
 {
-	SDL_JoystickEventState(SDL_ENABLE);
+	SDL_JoystickUpdate();
 
-	joy_NumSticks(); /* Get number of attached joysticks */
-	if (!joy_numsticks) return 0;  /* No joysticks */
+	int joysticks_detected = SDL_NumJoysticks();
 
-	int numsticks = 0;
+	log("joy_Init: Detected %d devices from SDL", joysticks_detected);
+	
+	int joysticks_opened = 0;
 
-	/* Initialize all joysticks */
-
-	for (int i=0; i<4; i++)
+	// Initialize all joysticks
+	for (int i = 0; i < 4; i++)
 	{
-		if(i < joy_numsticks)
+		if (i < joysticks_detected)
 		{
-			joy_sticks[i] = SDL_JoystickOpen(i);
-		}
-		else
-		{
-			joy_sticks[i] = NOJOY;
+			joy_Add(i);
 		}
 
-		if (joy_sticks[i] == NOJOY)
+		if (sdl_joysticks[i] != nullptr)
 		{
-			memset(&sticks[i], 0, sizeof (stick));
-			continue;
+			joysticks_opened++;
 		}
-		sticks[i].active = true;
-		numsticks++;
-		sticks[i].xmin = -32768; // SDL-defined mins and maxes
-		sticks[i].xmax = 32767;
-		sticks[i].ymin = -32768;
-		sticks[i].ymax = 32767;
-		sticks[i].xrange = sticks[i].xmax - sticks[i].xmin;
-		sticks[i].yrange = sticks[i].ymax - sticks[i].ymin;
-		sticks[i].range_left = (sticks[i].xrange * DEADZONE / 100) + sticks[i].xmin;
-		sticks[i].range_right = (sticks[i].xrange * (100 - DEADZONE) / 100) + sticks[i].xmin;
-		sticks[i].range_up = (sticks[i].yrange * DEADZONE / 100) + sticks[i].ymin;
-		sticks[i].range_down = (sticks[i].yrange * (100 - DEADZONE) / 100) + sticks[i].ymin;
-
-		sticks[i].analog_x = 0;
-		sticks[i].analog_y = 0;
-		sticks[i].up = false;
-		sticks[i].down = false;
-		sticks[i].left = false;
-		sticks[i].right = false;
-		memset(sticks[i].button, 0, sizeof (sticks[i].button));
-		//log("x1 %d x2 %d y1 %d y2 %d xr %d yr %d", sticks[i].xmin, sticks[i].xmax, sticks[i].ymin, sticks[i].ymax, sticks[i].xrange, sticks[i].yrange);
-		//log("left %d right %d up %d down %d", sticks[i].range_left, sticks[i].range_right, sticks[i].range_up, sticks[i].range_down);
 	}
 
-	if (numsticks) joy_initd = true;
-	return numsticks;
-}
+	log("joy_Init: Opened %d / %d joysticks (joystick system %s)", joysticks_opened, joysticks_detected, joysticks_opened > 0 ? "initialized" : "disabled");
 
+	joy_initd = true;
+	return true;
+}
 
 void joy_Close()
 {
-	/* You don't need to call this unless you want to turn off joystick
-	   input after it's been initialized to save cycles. */
-
 	joy_initd = false;
-	for(int i = 0; i < 4; i++)
+
+	for (int i = 0; i < 4; i++)
 	{
-		if(joy_sticks[i] != NOJOY)
-			SDL_JoystickClose(joy_sticks[i]);
-		joy_sticks[i] = NOJOY;
+		if (sdl_joysticks[i] != nullptr)
+		{
+			SDL_JoystickClose(sdl_joysticks[i]);
+		}
+
+		sdl_joysticks[i] = nullptr;
 	}
-	SDL_JoystickEventState(SDL_IGNORE);
-	joy_numsticks = 0;
 }
 
+void joy_Add(int i)
+{
+	auto joy = SDL_JoystickOpen(i);
+
+	if (joy == nullptr)
+	{
+		log("joy_Init: Couldn't open joystick %d", i);
+		return;
+	}
+
+	sdl_joysticks[i] = joy;
+
+	auto& stick = sticks[i];
+	stick = {};
+	stick.active = true;
+	stick.xmin = -32768; // SDL-defined mins and maxes
+	stick.xmax = 32767;
+	stick.ymin = -32768;
+	stick.ymax = 32767;
+	stick.xrange = stick.xmax - stick.xmin;
+	stick.yrange = stick.ymax - stick.ymin;
+	stick.range_left = (stick.xrange * DEADZONE / 100) + stick.xmin;
+	stick.range_right = (stick.xrange * (100 - DEADZONE) / 100) + stick.xmin;
+	stick.range_up = (stick.yrange * DEADZONE / 100) + stick.ymin;
+	stick.range_down = (stick.yrange * (100 - DEADZONE) / 100) + stick.ymin;
+	stick.analog_x = 0;
+	stick.analog_y = 0;
+	stick.up = false;
+	stick.down = false;
+	stick.left = false;
+	stick.right = false;
+
+	//log("x1 %d x2 %d y1 %d y2 %d xr %d yr %d", stick.xmin, stick.xmax, stick.ymin, stick.ymax, stick.xrange, stick.yrange);
+	//log("left %d right %d up %d down %d", stick.range_left, stick.range_right, stick.range_up, stick.range_down);
+	log("joy_Add: Opened joystick %d", i);
+}
+
+void joy_Remove(int instance_id)
+{	
+	for (int i = 3; i >= 0; i--)
+	{
+		auto joy = sdl_joysticks[i];
+
+		if (joy != nullptr
+		&& SDL_JoystickInstanceID(joy) == instance_id)
+		{
+			SDL_JoystickClose(joy);
+			sticks[i] = {};
+			sdl_joysticks[i] = nullptr;
+			log("joy_Remove: Closed joystick %d", i);
+			break;
+		}
+	}
+}
 
 void joy_Update()
 {
-	if (!joy_initd) return;
-	for (int i=0; i<4; i++)
+	if (!joy_initd)
 	{
+		return;
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		auto& stick = sticks[i];
+		log("joy_Update: updating joystick %d %s", i, stick.active ? "active" : "inactive");
+		if (!stick.active)
+		{
+			continue;
+		}
+
 		Sint16 xpos, ypos;
-		xpos = SDL_JoystickGetAxis(joy_sticks[i], 0);
-		ypos = SDL_JoystickGetAxis(joy_sticks[i], 1);
+		xpos = SDL_JoystickGetAxis(sdl_joysticks[i], 0);
+		ypos = SDL_JoystickGetAxis(sdl_joysticks[i], 1);		
 
-		if (!sticks[i].active) continue;
-
-		sticks[i].left  = (xpos < sticks[i].range_left);
-		sticks[i].right = (xpos > sticks[i].range_right);
-		sticks[i].up    = (ypos < sticks[i].range_up);
-		sticks[i].down  = (ypos > sticks[i].range_down);
+		stick.left = xpos < stick.range_left;
+		stick.right = xpos > stick.range_right;
+		stick.up = ypos < stick.range_up;
+		stick.down = ypos > stick.range_down;
 
 		// convert to (-1000,1000) range for verge
-		sticks[i].analog_x = (xpos * 2000 / sticks[i].xrange) - 1000;
-		sticks[i].analog_y = (ypos * 2000 / sticks[i].yrange) - 1000;
+		stick.analog_x = (xpos * 2000 / stick.xrange) - 1000;
+		stick.analog_y = (ypos * 2000 / stick.yrange) - 1000;
 
-		for (int b=0; b<32; b++)
-			sticks[i].button[b] = SDL_JoystickGetButton(joy_sticks[i], b);
+		for (int b = 0; b < 32; b++)
+		{
+			stick.button[b] = SDL_JoystickGetButton(sdl_joysticks[i], b);
+		}
 	}
 }

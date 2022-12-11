@@ -24,10 +24,10 @@ struct stick
 };
 extern stick sticks[4];
 
-int joy_NumSticks();
 int joy_Init();
-int joy_Init(int j1, int j2, int j3, int j4);
 void joy_Close();
+void joy_Add(int i);
+void joy_Remove(int instance_id);
 void joy_Update();
 
 #endif

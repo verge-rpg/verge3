@@ -265,8 +265,8 @@ int main(int argc, char **argv)
 #endif
     
 	// we must init SDL before any other sdl stuff
-	if(SDL_Init(sdlFlags) != 0)
-		err("Couldn't start up SDL.");
+	if(SDL_Init(sdlFlags) < 0)
+		err("Couldn't start up SDL: %s", SDL_GetError());
 
 	// create video window
 	sdl_video_init();
@@ -382,11 +382,17 @@ void HandleMessages(void)
 				break;
 			case SDL_MOUSEWHEEL:
 				handleMouseWheel(event.wheel);
-				break;            
+				break;
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
 				ParseKeyEvent(event.key);
 				break;
+            case SDL_JOYDEVICEADDED:
+                joy_Add(event.jdevice.which);
+                break;
+            case SDL_JOYDEVICEREMOVED:
+                joy_Remove(event.jdevice.which);
+                break;
 			case SDL_QUIT:
 				err("");
 				break;

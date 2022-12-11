@@ -173,6 +173,7 @@ typedef unsigned char  byte;
 
     #ifdef __EMSCRIPTEN__
     #include <emscripten.h>
+    #include <emscripten/html5.h>
     #endif
 
 //mbg 9/5/05 adding psp support
