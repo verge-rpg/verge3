@@ -419,6 +419,7 @@ void dd_Window::positionCommand(int command, int arg1, int arg2)
 			//SetWindowPos(hwnd,0,rSrc.left,rSrc.top,0,0,SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOZORDER);
 			setPosition(rSrc.left,rSrc.top);
 		}
+		break;
 	}
 }
 
@@ -905,9 +906,8 @@ dd_Window::dd_Window(bool bGameWindow) : AuxWindow()
 	dx_os = 0;
 	dx_win_bs = 0;
 	bVisible = false;
-    handle = dd_handles.top();
+    handle = dd_handlePop();
 
-	dd_handles.pop();
 	dd_windows.push_back(this);
 
 	//get an image handle to use from now on. we will fill in the imagebank slot for that handle

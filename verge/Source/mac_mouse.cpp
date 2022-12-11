@@ -34,13 +34,14 @@ void mouse_Init()
 
 void mouse_set(int x, int y)
 {
-	float _x = (float)x/(float)vid_xres;
-	float _y = (float)y/(float)vid_yres;
+	float xRatio = (float)x / (float)vid_xres;
+	float yRatio = (float)y / (float)vid_yres;
 
-	Uint16 xToSet = (Uint16)(_x*(float)(gameWindow->getWidth()));
-	Uint16 yToSet = (Uint16)(_y*(float)(gameWindow->getHeight()));
+	int scaledX = (int)(xRatio * (float)(gameWindow->getWidth()));
+	int scaledY = (int)(yRatio * (float)(gameWindow->getHeight()));
 
-	SDL_WarpMouse(xToSet, yToSet);
+	sdl_Window* window = static_cast<sdl_Window*>(gameWindow);
+	SDL_WarpMouseInWindow(window->window, scaledX, scaledY);
 
 	mouse_Update();
 }
@@ -51,7 +52,7 @@ void mouse_Update()
 
 	SDL_GetMouseState(&x, &y);
 
-	sdl_Window *window = dynamic_cast<sdl_Window*>(gameWindow);
+	sdl_Window* window = static_cast<sdl_Window*>(gameWindow);
 	
 	// the displayed area within the window
 	int win_w, win_h;
@@ -59,7 +60,7 @@ void mouse_Update()
 	
 	if(window) {
 		// an sdl_Window - we can get the actual displayed area
-		window->get_displayed_area(win_w,win_h,win_x,win_y);
+		window->get_displayed_area(win_w, win_h, win_x, win_y);
 	} else {
 		// fill in with best-guess (window completely taken up)
 		win_w = gameWindow->getWidth();
@@ -67,6 +68,6 @@ void mouse_Update()
 		win_x = win_y = 0;
 	}
 	
-	mouse_x = (int)((float)(x - win_x)/((float)(win_w)/(float)vid_xres));
-	mouse_y = (int)((float)(y - win_y)/((float)(win_h)/(float)vid_yres));
+	mouse_x = (int)((float)(x - win_x) / ((float)(win_w) / (float)vid_xres));
+	mouse_y = (int)((float)(y - win_y) / ((float)(win_h) / (float)vid_yres));
 }

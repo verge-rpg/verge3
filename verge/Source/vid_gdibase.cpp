@@ -897,9 +897,7 @@ gdi_Window::gdi_Window(bool bGameWindow) : AuxWindow()
     backSurface = 0;
     backBuffer = 0;    
 	bVisible = false;
-    handle = dd_handles.top();
-
-	dd_handles.pop();
+    handle = dd_handlePop();
 	dd_windows.push_back(this);
 
 	//get an image handle to use from now on. we will fill in the imagebank slot for that handle

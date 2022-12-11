@@ -15,23 +15,21 @@
 class sdl_Window : public AuxWindow
 {
 public:
-	image *img;
+	image* img;
 	int imgHandle;
-	SDL_Surface *screen_surface;
-	SDL_Surface *back_surface;
-	char *back_buffer;
+	SDL_Window* window;
+	SDL_Surface* back_surface;
+	char* back_buffer;
 	bool bGameWindow;
 	bool bActive;
 	bool shouldclear;
 	int handle;
-	int xres,yres;
+	int xres, yres;
 	bool bVisible;
 	
-	int winx,winy;
-	int winw,winh;
+	int winw, winh;
 	
-	
-	sdl_Window(bool bGameWindow);
+	sdl_Window(bool bGameWindow, int w, int h);
 	virtual ~sdl_Window();
 	void dispose();
 	void flip_win();
@@ -62,7 +60,7 @@ public:
 };
 
 
-void handleResize(SDL_ResizeEvent e);
+void handleResize(const SDL_WindowEvent& e);
 void sdl_Flip();
 void sdl_Fallback();
 int sdl_SetMode(int xres, int yres, int bpp, bool windowflag);

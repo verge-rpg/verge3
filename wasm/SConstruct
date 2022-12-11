@@ -43,7 +43,7 @@ def EmscriptenEnvironment():
 
     emscriptenCommonOpts = [
         '-s', 'USE_ZLIB=1',
-        '-s', 'USE_SDL=1',
+        '-s', 'USE_SDL=2',
         '-s', 'USE_GIFLIB=1',
         '-s', 'USE_LIBPNG=1',
         '-s', 'USE_LIBJPEG=1',

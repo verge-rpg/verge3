@@ -169,7 +169,6 @@ typedef unsigned char  byte;
 #include <corona.h>
     #ifdef __LINUX__
     #include <fmod.h>
-    #include <gtk/gtk.h>
     #endif
 
     #ifdef __EMSCRIPTEN__

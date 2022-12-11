@@ -50,27 +50,19 @@ StringRef GetSystemSaveDirectory(CStringRef name)
 	static const StringRef dotSlash = "./";
 	return dotSlash;
 }
+
+void doMessageBox(std::string msg)
+{
+#ifdef __LINUX__
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION, "verge3", msg.c_str(), NULL);
+#elif defined(__EMSCRIPTEN__)
+	EM_ASM({ alert(UTF8ToString($0)); }, msg.c_str());
+#endif
+}
 #endif
 
-#ifdef __LINUX__
-void doMessageBox(std::string msg)
-{
-	GtkWidget* w = GTK_WIDGET(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL, GTK_MESSAGE_ERROR, GTK_BUTTONS_CLOSE, "%s", msg.c_str()));
-	gtk_window_set_title(GTK_WINDOW(w), "verge3");
-	gtk_dialog_set_default_response(GTK_DIALOG(w), GTK_RESPONSE_CLOSE);
-
-	gtk_dialog_run(GTK_DIALOG(w));
-
-	gtk_widget_destroy(w);
-}
-#elif defined(__EMSCRIPTEN__)
-
+#ifdef __EMSCRIPTEN__
 #include <emscripten/fetch.h>
-
-void doMessageBox(std::string msg)
-{
-	EM_ASM({ alert(UTF8ToString($0)); }, msg.c_str());
-}
 
 /*namespace v3wasm {
     std::string gameRoot = "timeless/";
@@ -258,9 +250,7 @@ int getCurrentBpp();
 
 int main(int argc, char **argv)
 {
-#ifdef __LINUX__
-	gtk_init(&argc, &argv);
-#elif defined(__EMSCRIPTEN__)
+#if defined(__EMSCRIPTEN__)
     /*v3wasm::setBuildDate(__DATE__);
     v3wasm::downloadGame();
     v3wasm::initFileSystem();*/
@@ -280,7 +270,6 @@ int main(int argc, char **argv)
 
 	// create video window
 	sdl_video_init();
-	SDL_GL_SetAttribute(SDL_GL_RETAINED_BACKING,0);
 
 	// hide the cursor while we're open -
 	// SDL shows it when it moves outside of window
@@ -336,7 +325,7 @@ void clipboard_putImage(image *img)
 
 // called to update state variables based
 // on a mouse event
-void handleMouseButton(SDL_MouseButtonEvent e)
+void handleMouseButton(const SDL_MouseButtonEvent& e)
 {
 	bool state = (e.type == SDL_MOUSEBUTTONDOWN ? true : false);
 	switch(e.button)
@@ -350,53 +339,50 @@ void handleMouseButton(SDL_MouseButtonEvent e)
 		case SDL_BUTTON_MIDDLE:
 			mouse_m = state;
 			break;
-			/* XXX These are changed by 120 each time
-			because that seems to be what happens
-			in Windows. */
-		case SDL_BUTTON_WHEELUP:
-			mwheel += 120;
-			break;
-		case SDL_BUTTON_WHEELDOWN:
-			mwheel -= 120;
-			break;
 	}
 }
 
-void handleActive(SDL_ActiveEvent e)
+void handleMouseWheel(const SDL_MouseWheelEvent& e)
 {
-  if(e.state & SDL_APPINPUTFOCUS)
-  {
-    AppIsForeground = e.gain;
-  }
+    /* XXX These are changed by 120 each time
+    because that seems to be what happens
+    in Windows. */    
+    if (e.y > 0)
+    {
+        mwheel += 120;
+    }
+    else if (e.y < 0)
+    {
+        mwheel -= 120;
+    }
 }
 
 /* Run the SDL event loop to get waiting messages */
 void HandleMessages(void)
 {
-#ifdef __LINUX__
-	while (gtk_events_pending())
-	{
-		gtk_main_iteration();
-	}
-#endif
 	SDL_Event event;
-	while ( SDL_PollEvent(&event) ) {
-		if(IgnoreEvents) {
+	while (SDL_PollEvent(&event))
+    {
+		if (IgnoreEvents)
+        {
 			// ignore everything but quit
 			if(event.type == SDL_QUIT)
 				err("");
 			continue;
 		}
 		switch (event.type) {
-			case SDL_VIDEORESIZE:
+			case SDL_WINDOWEVENT_RESIZED:
 				if(!vid_window)
 					break; // not in windowed mode; what's a resize?
-				handleResize(event.resize);
+				handleResize(event.window);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
 				handleMouseButton(event.button);
 				break;
+			case SDL_MOUSEWHEEL:
+				handleMouseWheel(event.wheel);
+				break;            
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
 				ParseKeyEvent(event.key);
@@ -404,9 +390,12 @@ void HandleMessages(void)
 			case SDL_QUIT:
 				err("");
 				break;
-      case SDL_ACTIVEEVENT:
-        handleActive(event.active);
-        break;
+            case SDL_WINDOWEVENT_FOCUS_GAINED:
+                AppIsForeground = true;
+                break;
+            case SDL_WINDOWEVENT_FOCUS_LOST:
+                AppIsForeground = false;
+                break;
 			default:
 				break;
 		}

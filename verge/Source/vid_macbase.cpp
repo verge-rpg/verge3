@@ -16,6 +16,7 @@
 
 #include "xerxes.h"
 #include <stack>
+#include <cassert>
 
 /*
  * AuxWindows are not supported in Mac (SDL) video.
@@ -41,23 +42,24 @@ int sdl_handleCount;
 
 /***************************** code *****************************/
 
-void handleResize(SDL_ResizeEvent e)
+void handleResize(const SDL_WindowEvent& e)
 {
-	sdl_gameWindow->adjust(e.w, e.h);
+	assert(e.type == SDL_WINDOWEVENT_RESIZED);
+	sdl_gameWindow->adjust(e.data1, e.data2);
 	// Uncomment the following to have it redraw immediately
 	// after we resize the window. This could result in a
 	// partial image being drawn.
 	// sdl_gameWindow->flip_win();
 }
 
-
 int sdl_handlePop()
 {
 	if(sdl_handles.empty())
 	{
-		for(int i=1;i<=4;i++)
-			sdl_handles.push(sdl_handleCount+i);
-		sdl_handleCount += 4;
+		for(int i = 1; i <= 4; i++)
+		{
+			sdl_handles.push(++sdl_handleCount);
+		}
 	}
 
 	int handle = sdl_handles.top();
@@ -67,22 +69,38 @@ int sdl_handlePop()
 
 void sdl_removeWindow(sdl_Window *window)
 {
-	for(std::vector<sdl_Window*>::iterator it = sdl_windows.begin(); it != sdl_windows.end(); it++)
-		if(*it == window)
+	for (auto it = sdl_windows.begin(); it != sdl_windows.end(); ++it)
+	{
+		if (*it == window)
 		{
 			sdl_windows.erase(it);
 			return;
 		}
+	}
 }
 
 void sdl_video_init()
 {
-	for(int i=16;i>0;i--)
-		sdl_handles.push(i);
-	sdl_handleCount=16;
+	sdl_handleCount = 0;
+	for (int i = 1; i <= 16; i++)
+	{
+		sdl_handles.push(++sdl_handleCount);
+	}
 
-	sdl_gameWindow = new sdl_Window(true);
-	gameWindow = dynamic_cast<AuxWindow*>(sdl_gameWindow);
+	int winw = v3_xres;
+	int winh = v3_yres;
+	int base_win_x_res = getInitialWindowXres();
+	int base_win_y_res = getInitialWindowYres();
+
+	/// this is for the windowsize verge.cfg vars.
+	if (base_win_x_res > 0 && base_win_y_res > 0)
+	{
+		winw = base_win_x_res;
+		winh = base_win_y_res;
+	}
+
+	sdl_gameWindow = new sdl_Window(true, winw, winh);
+	gameWindow = sdl_gameWindow;
 	sdl_gameWindow->setVisibility(true);
 
 	vid_Close = sdl_Close;
@@ -97,7 +115,7 @@ int sdl_SetMode(int xres, int yres, int bpp, bool windowflag)
 	if (!sdl_initd)
 		sdl_video_init();
 
-	int ret = sdl_gameWindow->set_win(xres,yres,bpp);
+	int ret = sdl_gameWindow->set_win(xres, yres, bpp);
 	if(!ret)
 		return 0;
 
@@ -127,41 +145,45 @@ void sdl_Flip()
 {
 	if(vid_window)
 	{
-		for(std::vector<sdl_Window*>::iterator it = sdl_windows.begin(); it != sdl_windows.end(); it++)
-			(*it)->flip_win();
+		for (auto& win : sdl_windows)
+		{
+			win->flip_win();
+		}
 	}
 	else
+	{
 		sdl_gameWindow->flip_win();
+	}
 }
 
 void sdl_Close()
 {
-	std::vector<sdl_Window*> deletes;
-	for(std::vector<sdl_Window*>::iterator it = sdl_windows.begin(); it != sdl_windows.end(); it++)
-		deletes.push_back(*it);
-
-	for(std::vector<sdl_Window*>::iterator it = deletes.begin(); it != deletes.end(); it++)
-		(*it)->dispose();
+	for (auto& win : sdl_windows)
+	{
+		win->dispose();
+	}
 }
 
 AuxWindow *sdl_createAuxWindow()
 {
-	/* TODO Aux window create */
-	err("Creating new windows is not implemented.");
-	return 0;
+	return new sdl_Window(false, 320, 240);
 }
 
 AuxWindow *sdl_findAuxWindow(int handle)
 {
-	for(std::vector<sdl_Window*>::iterator it = sdl_windows.begin(); it != sdl_windows.end(); it++)
-		if((*it)->handle == handle)
-			return dynamic_cast<AuxWindow *>(*it);
-	return 0;
+	for (auto& win : sdl_windows)
+	{
+		if (win->handle == handle)
+		{
+			return win;
+		}
+	}
+	return nullptr;
 }
 
 void sdl_toggleFullscreen()
 {
-	vid_window = ! vid_window;
+	vid_window = !vid_window;
 	sdl_gameWindow->adjust(vid_xres, vid_yres);
 }
 
@@ -170,133 +192,296 @@ void sdl_toggleFullscreen()
 ///////////////////////////////
 
 
-int sdl_Window::getHandle() { return handle; }
-int sdl_Window::getImageHandle() { return imgHandle; }
-image *sdl_Window::getImage() { return img; }
+sdl_Window::sdl_Window(bool bGameWindow, int w, int h)
+: AuxWindow(),
+	img(0),
+	imgHandle(0),
+	window(nullptr),
+	back_surface(nullptr),
+	back_buffer(nullptr),
+	bGameWindow(bGameWindow),
+	bActive(false),
+    handle(0),
+	xres(0), yres(0),
+	bVisible(false),
+	winw(w), winh(h)
+{
+	handle = sdl_handlePop();
 
-int sdl_Window::getXres()
-{
-	return this->xres;
-}
-int sdl_Window::getYres()
-{
-	return this->yres;
-}
-int sdl_Window::getWidth()
-{
-	return this->winw;
-}
-int sdl_Window::getHeight()
-{
-	return this->winh;
-}
+	sdl_windows.push_back(this);
 
+	//get an image handle to use from now on. we will fill in the imagebank slot for that handle
+	//when we have an image to put there
+	if(bGameWindow)
+		imgHandle = 1;
+	else
+		imgHandle = HandleForImage(0);
 
-void sdl_Window::setPosition(int x, int y)
-{
-	/* TODO set position */
-}
-
-void sdl_Window::positionCommand(int command, int arg1, int arg2)
-{
-	/* TODO set position */
-}
-
-void sdl_Window::setupDummyImage()
-{
-	if(!img)
+	if(bGameWindow)
+		bActive = true;
+	else
 	{
-		img = new image(xres,yres);
-		SetHandleImage(imgHandle,img);
-		return;
-	}
-
-	image *newimg = new image(xres,yres);
-
-	//copy current image to the new dummy image
-	Blit(0,0,img,newimg);
-
-	if(img)
-		delete img;
-
-	img = newimg;
-	SetHandleImage(imgHandle,img);
-}
-
-
-void sdl_Window::setResolution(int w, int h)
-{
-	xres = w;
-	yres = h;
-	if(bActive)
-	{
-		if(bGameWindow)
-			sdl_SetMode(w,h,vid_bpp,vid_window);
+		if(vid_window)
+			bActive = true;
 		else
-			set_win(w,h,vid_bpp);
+			bActive = false;
+	}
+	//always create the window now
+	createWindow();
+}
+
+sdl_Window::~sdl_Window()
+{
+	if(back_buffer)
+	{
+		delete back_buffer;		
+		SDL_FreeSurface(back_surface);
+	}
+}
+
+void sdl_Window::dispose()
+{
+	if (bGameWindow)
+		return;
+
+	sdl_removeWindow(this);
+	sdl_handles.push(handle);
+
+	if(!bGameWindow)
+		FreeImageHandle(this->imgHandle);
+
+	if (window != nullptr)
+	{
+		SDL_DestroyWindow(window);
+		window = nullptr;
+	}
+}
+
+void sdl_Window::flip_win()
+{
+	if (!bVisible)
+		return;
+
+	if (!img)
+		return;
+
+	// gather information about the back-buffer and
+	// front buffer sizes
+	const int dst_w = winw;
+	const int dst_h = winh;
+	const int src_w = xres;
+	const int src_h = yres;
+
+	SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
+	
+	if (dst_w == src_w && dst_h == src_h)
+	{
+#ifdef __EMSCRIPTEN__
+        SDL_LockSurface(screen_surface);
+
+        int size = dst_w * dst_h;
+        quad* s = (quad*) back_buffer;
+        quad* d = (quad*) screen_surface->pixels;
+
+        // same size - no scaling needed
+        for (int i = 0; i != size; i++)
+		{
+            quad p = *s++;
+            byte r = p & 0xFF;
+            byte g = (p >> 8) & 0xFF;
+            byte b = (p >> 16) & 0xFF;
+            *d++ = (r << 16) | (g << 8) | b | 0xFF000000;
+        }
+
+        SDL_UnlockSurface(screen_surface);
+#else		
+		// same size - no scaling needed
+		SDL_BlitSurface(back_surface, NULL, screen_surface, NULL);
+#endif		
 	}
 	else
-		setupDummyImage();
-}
-
-void sdl_Window::setSize(int w, int h)
-{
-	adjust(w,h);
-
-	/* TODO Window placement */
-}
-
-void sdl_Window::setVisibility(bool vis)
-{
-	if(bActive)
 	{
-		if(!bVisible && vis)
+		// TODO: look at vid_gdibase to see how to handle ScaleFormat stuff
+
+		int out_h, out_w; // the eventual size of the image
+		int off_h, off_w; // the eventual placement of the image
+
+		get_displayed_area(out_w, out_h, off_w, off_h);
+		
+		// run the actual scaling, using algorithm from vid_ddblit's dd32_ScaleBlit
+		// with some parts removed because we know the whole image is blitted
+		// (ie no clipping)
+		int xadj = (src_w << 16) / out_w;
+		int yadj = (src_h << 16) / out_h;
+		int xerr;
+		int yerr = 0;
+		
+		// these pitches are in pixels, instead of bytes as SDL
+		int src_pitch = back_surface->pitch / 4;
+		int dst_pitch = screen_surface->pitch / 4;
+		
+		SDL_LockSurface(screen_surface);
+		SDL_LockSurface(back_surface);
+		
+		quad* s = (quad*) back_surface->pixels;
+		quad* d = ((quad*) screen_surface->pixels) + (off_h * dst_pitch) + off_w;
+		
+		for (int i = 0; i < out_h; i++)
 		{
-			/* TODO re-show window */
-		}
-		if(bVisible && !vis)
-			SDL_WM_IconifyWindow();
-	}
-	bVisible = vis;
-}
+			xerr = 0;
+			for (int j = 0; j < out_w; j++)
+			{
+#ifdef __EMSCRIPTEN__
+	            quad p = s[(xerr >> 16)];
+	            byte r = p & 0xFF;
+	            byte g = (p >> 8) & 0xFF;
+	            byte b = (p >> 16) & 0xFF;
+				d[j] = (r << 16) | (g << 8) | b | 0xFF000000;
+#else
 
-void sdl_Window::setTitle(const char *title)
-{
-	string titleConverted = title;
-	for(int i = 0; i < titleConverted.length(); i++) {
-		// check for high-ascii characters,
-		// remove them and give warning message
-		if(titleConverted[i] & 0x80) {
-			// special case often used >= character
-			if(titleConverted[i] == -77) {
-				titleConverted[i] = '3';
-			} else {
-				titleConverted[i] = ' ';
+				d[j] = s[(xerr >> 16)];
+#endif				
+				xerr += xadj;
 			}
-			log("Modified non 7-bit-ascii title.\n");
+			d    += dst_pitch;
+			yerr += yadj;
+			s    += (yerr >> 16) * src_pitch;
+			yerr &= 0xffff;
 		}
+		
+		SDL_UnlockSurface(back_surface);
+		SDL_UnlockSurface(screen_surface);
 	}
-	SDL_WM_SetCaption(titleConverted.c_str(), 0);
+	
+	SDL_UpdateWindowSurface(window);
 }
 
-void sdl_Window::createWindow()
+// sets virtual window attributes (ie the buffer
+// verge draws into, not the window on the screen)
+int sdl_Window::set_win(int w, int h, int bpp)
 {
+	if(back_buffer)
+	{
+		if(w == xres
+		&& h == yres
+		&& bpp == vid_bpp)
+		{
+			return 1; // no changes to be made
+		}
+	}
+	if(back_buffer)
+	{
+		delete back_buffer;
+		SDL_FreeSurface(back_surface);
+	}
+
+	try
+	{
+		back_buffer = new char[w * h * bpp/8];
+	}
+	catch(std::bad_alloc&)
+	{
+		err("Couldn't make back buffer of %dx%d at %d bpp", w, h, bpp);
+	}
+
+	back_surface = SDL_CreateRGBSurfaceFrom(back_buffer, w, h, 32, w * 4, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
+
+	vid_bpp = bpp;
+	vid_bytesperpixel = bpp / 8;
+
+	if(img) delete img;
+	img = new image();
+	img->shell = true;
+	SetHandleImage(imgHandle,img);
+
+	if(bGameWindow)
+	{
+		SetHandleImage(1,img);
+		screen = img;
+	}
+
+	img->data = (quad*)back_buffer;
+	img->bpp = bpp;
+	img->width = w;
+	img->height = h;
+	img->pitch = w;
+	img->cx1 = 0;
+	img->cx2 = w-1;
+	img->cy1 = 0;
+	img->cy2 = h-1;
+
+	return 1;
 }
 
 void sdl_Window::shutdown_win()
 {
 }
 
-void sdl_Window::dispose()
-{
-}
-
 void sdl_Window::deactivate()
 {
+	if (!bActive)
+		return;
+	bActive = false;
+	setupDummyImage();
+	shutdown_win();
+	SDL_HideWindow(window);
 }
 
 void sdl_Window::activate()
 {
+	image* tempimg = new image(xres,yres);
+	Blit(0,0,img,tempimg);
+	if (bActive)
+		return;
+	bActive = true;
+	set_win(xres,yres,vid_bpp);
+	Blit(0,0,tempimg,img);
+	if (bVisible)
+	{
+		SDL_ShowWindow(window);
+	}
+}
+
+void sdl_Window::createWindow()
+{
+	window = SDL_CreateWindow("verge3",
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		winh,
+		winh,
+		(vid_window || !bGameWindow ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP)
+			| (bGameWindow ? 0 : SDL_WINDOW_HIDDEN));
+}
+
+void sdl_Window::setupDummyImage()
+{
+	if(!img)
+	{
+		img = new image(xres, yres);
+		SetHandleImage(imgHandle, img);
+		return;
+	}
+
+	image *newimg = new image(xres,yres);
+
+	//copy current image to the new dummy image
+	Blit(0, 0, img, newimg);
+
+	if(img)
+		delete img;
+
+	img = newimg;
+	SetHandleImage(imgHandle, img);
+}
+
+// Sets actual window dimensions & attrs
+void sdl_Window::adjust(int w, int h)
+{
+	SDL_SetWindowSize(window, w, h);
+	SDL_SetWindowFullscreen(window, vid_window ? SDL_WINDOW_RESIZABLE : SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+	SDL_Surface* screen_surface = SDL_GetWindowSurface(window);
+	SDL_GetWindowSize(window, &this->winw, &this->winh);
 }
 
 void sdl_Window::get_displayed_area(int &out_w, int &out_h, int &out_x, int &out_y) 
@@ -348,214 +533,116 @@ void sdl_Window::get_displayed_area(int &out_w, int &out_h, int &out_x, int &out
 	}
 }
 
-void sdl_Window::flip_win()
+int sdl_Window::getHandle() { return handle; }
+int sdl_Window::getImageHandle() { return imgHandle; }
+image *sdl_Window::getImage() { return img; }
+
+int sdl_Window::getXres()
 {
-	if(!bVisible)
-		return;
-
-	if(!img)
-		return;
-
-	// gather information about the back-buffer and
-	// front buffer sizes
-	const int dst_w = winw;
-	const int dst_h = winh;
-	const int src_w = xres;
-	const int src_h = yres;
-	
-	if (dst_w == src_w && dst_h == src_h) {
-#ifdef __EMSCRIPTEN__
-        SDL_LockSurface(screen_surface);
-
-        int size = dst_w * dst_h;
-        quad* s = (quad*) back_buffer;
-        quad* d = (quad*) screen_surface->pixels;
-
-        // same size - no scaling needed
-        for (int i = 0; i != size; i++) {		
-            quad p = *s++;
-            byte r = p & 0xFF;
-            byte g = (p >> 8) & 0xFF;
-            byte b = (p >> 16) & 0xFF;
-            *d++ = (r << 16) | (g << 8) | b | 0xFF000000;
-        }
-
-        SDL_UnlockSurface(screen_surface);
-#else		
-		// same size - no scaling needed
-		SDL_BlitSurface(back_surface, NULL, screen_surface, NULL);
-#endif		
-	} else {
-		
-		int out_h, out_w; // the eventual size of the image
-		int off_h, off_w; // the eventual placement of the image
-
-		get_displayed_area(out_w, out_h, off_w, off_h);
-		
-		// run the actual scaling, using algorithm from vid_ddblit's dd32_ScaleBlit
-		// with some parts removed because we know the whole image is blitted
-		// (ie no clipping)
-		int xadj = (src_w << 16) / out_w;
-		int yadj = (src_h << 16) / out_h;
-		int xerr;
-		int yerr = 0;
-		
-		// these pitches are in pixels, instead of bytes as SDL
-		int src_pitch = back_surface->pitch / 4;
-		int dst_pitch = screen_surface->pitch / 4;
-		
-		SDL_LockSurface(screen_surface);
-		SDL_LockSurface(back_surface);
-		
-		quad* s = (quad*) back_surface->pixels;
-		quad* d = ((quad*) screen_surface->pixels) + (off_h * dst_pitch) + off_w;
-		
-		for (int i = 0; i < out_h; i++) {
-			xerr = 0;
-			for (int j = 0; j < out_w; j++) {
-#ifdef __EMSCRIPTEN__
-	            quad p = s[(xerr >> 16)];
-	            byte r = p & 0xFF;
-	            byte g = (p >> 8) & 0xFF;
-	            byte b = (p >> 16) & 0xFF;
-				d[j] = (r << 16) | (g << 8) | b | 0xFF000000;
-#else
-
-				d[j] = s[(xerr >> 16)];
-#endif				
-				xerr += xadj;
-			}
-			d    += dst_pitch;
-			yerr += yadj;
-			s    += (yerr >> 16) * src_pitch;
-			yerr &= 0xffff;
-		}
-		
-		SDL_UnlockSurface(back_surface);
-		SDL_UnlockSurface(screen_surface);
-	}
-	
-	SDL_Flip(screen_surface);	
+	return this->xres;
+}
+int sdl_Window::getYres()
+{
+	return this->yres;
+}
+int sdl_Window::getWidth()
+{
+	return this->winw;
+}
+int sdl_Window::getHeight()
+{
+	return this->winh;
 }
 
-
-// sets virtual window attributes (ie the buffer
-// verge draws into, not the window on the screen)
-int sdl_Window::set_win(int w, int h, int bpp)
+void sdl_Window::setResolution(int w, int h)
 {
-	if(back_buffer) {
-		if(w == xres &&
-		   h == yres &&
-		   bpp == vid_bpp)
-			return 1; // no changes to be made
-	}
-	if(back_buffer) {
-		delete back_buffer;
-		SDL_FreeSurface(back_surface);
-	}
-
-	try {
-		back_buffer = new char[w * h * bpp/8];
-	} catch(std::bad_alloc&) {
-		err("Couldn't make back buffer of %dx%d at %d bpp", w, h, bpp);
-	}
-
-	back_surface = SDL_CreateRGBSurfaceFrom(back_buffer, w, h, 32, w * 4, 0x00FF0000, 0x0000FF00, 0x000000FF, 0x00000000);
-
-	vid_bpp = bpp;
-	vid_bytesperpixel = bpp / 8;
-
-	if(img) delete img;
-	img = new image();
-	img->shell = true;
-	SetHandleImage(imgHandle,img);
-
-	if(bGameWindow)
+	xres = w;
+	yres = h;
+	if(bActive)
 	{
-		SetHandleImage(1,img);
-		screen = img;
-	}
-
-	img->data = (quad*)back_buffer;
-	img->bpp = bpp;
-	img->width = w;
-	img->height = h;
-	img->pitch = w;
-	img->cx1 = 0;
-	img->cx2 = w-1;
-	img->cy1 = 0;
-	img->cy2 = h-1;
-
-	return 1;
-}
-
-sdl_Window::sdl_Window(bool bGameWindow) : AuxWindow()
-{
-	img = 0;
-	bVisible = false;
-	shouldclear = true;
-	back_buffer = 0;
-	back_surface = 0;
-	screen_surface = 0;
-	xres = yres = 0;
-    handle = sdl_handles.top();
-
-	sdl_handles.pop();
-	sdl_windows.push_back(this);
-
-	//get an image handle to use from now on. we will fill in the imagebank slot for that handle
-	//when we have an image to put there
-	if(bGameWindow)
-		imgHandle = 1;
-	else
-		imgHandle = HandleForImage(0);
-
-	if(bGameWindow)
-		bActive = true;
-	else
-	{
-		if(vid_window)
-			bActive = true;
+		if(bGameWindow)
+			sdl_SetMode(w,h,vid_bpp,vid_window);
 		else
-			bActive = false;
+			set_win(w,h,vid_bpp);
 	}
-
-	this->bGameWindow = bGameWindow;
-
-	//always create the window now
-	createWindow();
+	else
+		setupDummyImage();
 }
 
-sdl_Window::~sdl_Window()
+void sdl_Window::setPosition(int x, int y)
 {
-	if(back_buffer) {
-		delete back_buffer;		
-		SDL_FreeSurface(back_surface);
-	}
-
+	SDL_SetWindowPosition(window, x, y);
 }
 
-// Sets actual window dimensions & attrs
-void sdl_Window::adjust(int w, int h)
+void sdl_Window::setSize(int w, int h)
 {
-#ifndef __EMSCRIPTEN__  
-    // we're never going to get a 320x240 window back from SDL,
-    // so just ask for a 640x480 one and we'll scale it up when we flip
-    if(!vid_window && w == 320 && h == 240 )
-    {
-        w = 640;
-        h = 480;
-    }
-#endif
-	
-	screen_surface = SDL_SetVideoMode(w, h, vid_bpp, (vid_window ? SDL_RESIZABLE : SDL_FULLSCREEN) | SDL_SWSURFACE); // SWSURFACE because we may need to scale into it in flip_win
-	shouldclear = true;
+	adjust(w, h);
+}
 
-	if(!screen_surface) {
-		err("Could not get SDL window: %s.", SDL_GetError());
+void sdl_Window::setVisibility(bool vis)
+{
+	if(bActive)
+	{
+		if (vis)
+		{
+			SDL_ShowWindow(window);
+		}
+		else
+		{
+			SDL_HideWindow(window);
+		}
 	}
-	// set to resulting video height/width, not requested
-	// so that blitting knows the actual dimensions
-	this->winw = screen_surface->w;
-	this->winh = screen_surface->h;
+
+	bVisible = vis;
+}
+
+void sdl_Window::setTitle(const char *title)
+{
+	string titleConverted = title;
+	for(int i = 0; i < titleConverted.length(); i++)
+	{
+		// check for high-ascii characters,
+		// remove them and give warning message
+		if(titleConverted[i] & 0x80)
+		{
+			// special case often used >= character
+			if(titleConverted[i] == -77)
+			{
+				titleConverted[i] = '3';
+			}
+			else
+			{
+				titleConverted[i] = ' ';
+			}
+			log("Modified non 7-bit-ascii title.\n");
+		}
+	}
+
+	SDL_SetWindowTitle(window, titleConverted.c_str());
+}
+
+void sdl_Window::positionCommand(int command, int arg1, int arg2)
+{
+	switch (command)
+	{
+		case 0:
+		{
+			auto destwin = sdl_findAuxWindow(arg1);
+
+			int srcX, srcY;
+			int srcW, srcH;
+			SDL_GetWindowPosition(window, &srcX, &srcY);
+			SDL_GetWindowSize(window, &srcW, &srcH);
+			
+			int destX, destY;
+			int destW, destH;
+			SDL_GetWindowPosition(window, &destX, &destY);
+			SDL_GetWindowSize(window, &destW, &destH);
+
+			srcX = destX - srcW;
+			srcY = destY;
+			setPosition(srcX, srcY);
+		}
+		break;
+	}
 }

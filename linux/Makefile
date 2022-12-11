@@ -148,11 +148,9 @@ clean:
 INCDIR = $(ZLIBSRC) $(V3SRC) $(CORSRC)jpeg-6b $(CORSRC)libungif-4.1.0 $(CORSRC)libpng-1.2.1 $(CORSRC)
 SDL_CFLAGS = $(shell sdl-config --cflags)
 SDL_LDFLAGS = $(shell sdl-config --libs)
-GTK_CFLAGS = $(shell pkg-config --cflags gtk+-2.0)
-GTK_LDFLAGS = $(shell pkg-config --libs gtk+-2.0)
-CFLAGS = $(SDL_CFLAGS) $(GTK_CFLAGS) -O3 -Wall
+CFLAGS = $(SDL_CFLAGS) -O3 -Wall
 LIBDIR = .
-LDFLAGS = -lm -lc -lcorona -lzlib -llua -lluabind -lfmod-3.75 $(SDL_LDFLAGS) $(GTK_LDFLAGS)
+LDFLAGS = -lm -lc -lcorona -lzlib -llua -lluabind -lfmod-3.75 $(SDL_LDFLAGS)
 CXXFLAGS = $(CFLAGS) -D__LINUX__ -I$(ZLIBSRC) -I$(CORSRC) -I$(CORSRC)jpeg-6b -I$(CORSRC)libungif-4.1.0/ -I$(CORSRC)libpng-1.2.1/ -I../boost-1.37.0/ -I../sdl/include/ -I../fmod/ -I$(LUASRC)
 ASFLAGS = $(CFLAGS)
 
