@@ -198,9 +198,6 @@ void ShowPage()
 	Flip();
 
 #ifdef __EMSCRIPTEN__
-	const auto em_sample_result = emscripten_sample_gamepad_data();
-	//log("em_sample_result = %d", em_sample_result);
-	//log("emscripten_get_num_gamepads = %d", emscripten_get_num_gamepads());
     wasm_nextFrame();
 #else
     if (systemtime - last_showpage <= 0 && showpage_auto_sleep)

@@ -259,7 +259,7 @@ int main(int argc, char **argv)
 	srand(timeGetTime());
 	log_Init(true);
 
-    unsigned long sdlFlags = SDL_INIT_VIDEO | SDL_INIT_JOYSTICK;
+    unsigned long sdlFlags = SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER;
 #ifndef __IPHONE__
     sdlFlags |= SDL_INIT_TIMER;
 #endif
@@ -387,10 +387,10 @@ void HandleMessages(void)
 			case SDL_KEYUP:
 				ParseKeyEvent(event.key);
 				break;
-            case SDL_JOYDEVICEADDED:
+            case SDL_CONTROLLERDEVICEADDED:
                 joy_Add(event.jdevice.which);
                 break;
-            case SDL_JOYDEVICEREMOVED:
+            case SDL_CONTROLLERDEVICEREMOVED:
                 joy_Remove(event.jdevice.which);
                 break;
 			case SDL_QUIT:

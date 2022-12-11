@@ -21,7 +21,7 @@
 static constexpr int DEADZONE = 30;
 
 bool joy_initd = false;
-SDL_Joystick* sdl_joysticks[4];
+SDL_GameController* sdl_controllers[4];
 
 stick sticks[4];
 
@@ -45,13 +45,13 @@ int joy_Init()
 			joy_Add(i);
 		}
 
-		if (sdl_joysticks[i] != nullptr)
+		if (sdl_controllers[i] != nullptr)
 		{
 			joysticks_opened++;
 		}
 	}
 
-	log("joy_Init: Opened %d / %d joysticks (joystick system %s)", joysticks_opened, joysticks_detected, joysticks_opened > 0 ? "initialized" : "disabled");
+	log("joy_Init: Opened %d / %d joysticks at startup", joysticks_opened, joysticks_detected);
 
 	joy_initd = true;
 	return true;
@@ -63,26 +63,26 @@ void joy_Close()
 
 	for (int i = 0; i < 4; i++)
 	{
-		if (sdl_joysticks[i] != nullptr)
+		if (sdl_controllers[i] != nullptr)
 		{
-			SDL_JoystickClose(sdl_joysticks[i]);
+			SDL_GameControllerClose(sdl_controllers[i]);
+			sdl_controllers[i] = nullptr;
 		}
 
-		sdl_joysticks[i] = nullptr;
+		sticks[i] = {};
 	}
 }
 
 void joy_Add(int i)
 {
-	auto joy = SDL_JoystickOpen(i);
-
-	if (joy == nullptr)
+	auto controller = SDL_GameControllerOpen(i);
+	if (controller == nullptr)
 	{
 		log("joy_Init: Couldn't open joystick %d", i);
 		return;
 	}
 
-	sdl_joysticks[i] = joy;
+	sdl_controllers[i] = controller;
 
 	auto& stick = sticks[i];
 	stick = {};
@@ -113,16 +113,23 @@ void joy_Remove(int instance_id)
 {	
 	for (int i = 3; i >= 0; i--)
 	{
-		auto joy = sdl_joysticks[i];
+		auto controller = sdl_controllers[i];
 
-		if (joy != nullptr
-		&& SDL_JoystickInstanceID(joy) == instance_id)
+		if (controller != nullptr)
 		{
-			SDL_JoystickClose(joy);
-			sticks[i] = {};
-			sdl_joysticks[i] = nullptr;
-			log("joy_Remove: Closed joystick %d", i);
-			break;
+			auto joy = SDL_GameControllerGetJoystick(controller);
+
+			if (joy != nullptr)
+			{
+				if (SDL_JoystickInstanceID(joy) == instance_id)
+				{
+					SDL_GameControllerClose(controller);
+					sticks[i] = {};
+					sdl_controllers[i] = nullptr;
+					log("joy_Remove: Closed joystick %d", i);
+					break;
+				}
+			}
 		}
 	}
 }
@@ -142,22 +149,24 @@ void joy_Update()
 			continue;
 		}
 
-		Sint16 xpos, ypos;
-		xpos = SDL_JoystickGetAxis(sdl_joysticks[i], 0);
-		ypos = SDL_JoystickGetAxis(sdl_joysticks[i], 1);		
+		auto controller = sdl_controllers[i];
 
-		stick.left = xpos < stick.range_left;
-		stick.right = xpos > stick.range_right;
-		stick.up = ypos < stick.range_up;
-		stick.down = ypos > stick.range_down;
+		Sint16 xpos, ypos;
+		xpos = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTX);
+		ypos = SDL_GameControllerGetAxis(controller, SDL_CONTROLLER_AXIS_LEFTY);
+
+		stick.left = xpos < stick.range_left || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_LEFT);
+		stick.right = xpos > stick.range_right || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_RIGHT);
+		stick.up = ypos < stick.range_up || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_UP);
+		stick.down = ypos > stick.range_down || SDL_GameControllerGetButton(controller, SDL_CONTROLLER_BUTTON_DPAD_DOWN);
 
 		// convert to (-1000,1000) range for verge
 		stick.analog_x = (xpos * 2000 / stick.xrange) - 1000;
 		stick.analog_y = (ypos * 2000 / stick.yrange) - 1000;
 
-		for (int b = 0; b < 32; b++)
+		for (int b = 0; b < SDL_CONTROLLER_BUTTON_MAX; b++)
 		{
-			stick.button[b] = SDL_JoystickGetButton(sdl_joysticks[i], b);
+			stick.button[b] = SDL_GameControllerGetButton(controller, static_cast<SDL_GameControllerButton>(b));
 		}
 	}
 }
