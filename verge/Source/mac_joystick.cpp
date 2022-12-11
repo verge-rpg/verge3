@@ -137,7 +137,6 @@ void joy_Update()
 	for (int i = 0; i < 4; i++)
 	{
 		auto& stick = sticks[i];
-		log("joy_Update: updating joystick %d %s", i, stick.active ? "active" : "inactive");
 		if (!stick.active)
 		{
 			continue;
