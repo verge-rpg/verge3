@@ -168,11 +168,19 @@ EM_JS(bool, wasm_initSound, (), {
                 song.mptNode.port.postMessage({
                     setPosition: position
                 });
-            } else {
-                return 0;
             }
         };
 
+        window.verge.setSongPaused = (song, paused) => {
+            if (song.activeSourceNode == song.streamAudio) {
+                song.streamAudio.paused = paused;
+            } else if (song.activeSourceNode == song.mptNode) {
+                song.mptNode.port.postMessage({
+                    setPaused: paused
+                });
+            }
+        };
+            
         window.verge.getSongVolume = (song) => song.gainNode.gain.value;
 
         window.verge.setSongVolume = (song, volume) => {
@@ -352,6 +360,17 @@ EM_JS(void, wasm_stopSong, (const char* filename), {
     }
 
     window.verge.stopSong(song);
+})
+
+EM_JS(void, wasm_setSongPaused, (const char* filename, bool paused), {
+    const name = UTF8ToString(filename);
+    const song = window.verge.songs[name];
+    if (!song) {
+        console.error("wasm_setSongPosition: Unknown song ", name);
+        return;
+    }
+
+    window.verge.setSongPaused(song, paused);
 })
 
 EM_JS(int, wasm_getSongPosition, (const char* filename), {
@@ -536,7 +555,7 @@ void SoundEngine_Wasm::StopSong(int song) {
 
 void SoundEngine_Wasm::SetPaused(int song, int paused) {
     if (song > 0 && song <= static_cast<int>(songs.size())) {
-        //return wasm_setSongPaused(songs[song - 1].c_str());
+        return wasm_setSongPaused(songs[song - 1].c_str(), paused != 0);
     }
 }
 
