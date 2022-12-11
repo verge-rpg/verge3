@@ -112,7 +112,7 @@ EM_JS(bool, wasm_initSound, (), {
 
             let mediaMimetype = "";
             if (filename.endsWith('mp3')) {
-                mediaMimetype = 'audio/mpeg';
+                mediaMimetype = 'audio/mp3';
             } else if (filename.endsWith('ogg')) {
                 mediaMimetype = 'audio/ogg';
             } else if (filename.endsWith('wav')) {
@@ -128,9 +128,9 @@ EM_JS(bool, wasm_initSound, (), {
 
                 console.log('window.verge.playSong: streaming', filename, songDataURL);
 
-                song.streamAudio.src = songDataURL;
-                song.streamAudio.play();
                 song.activeSourceNode = song.streamNode;
+                song.streamAudio.src = songDataURL;
+                song.streamAudio.addEventListener('canplaythrough', () => song.streamAudio.play());
             } else {
                 console.log('window.verge.playSong: sequenced', filename);
 
@@ -191,7 +191,7 @@ EM_JS(bool, wasm_initSound, (), {
             }
         };
             
-        window.verge.getSongVolume = (song) => song.gainNode.gain.value;
+        window.verge.getSongVolume = (song) => song.gainNode.gain.value * 100;
 
         window.verge.setSongVolume = (song, volume) => {
             //console.log('window.verge.setSongVolume', volume);
@@ -417,7 +417,7 @@ EM_JS(int, wasm_getSongVolume, (const char* filename), {
         return;
     }    
 
-    window.verge.getSongVolume(song);
+    return window.verge.getSongVolume(song);
 })
 
 EM_JS(void, wasm_setSongVolume, (const char* filename, int volume), {
