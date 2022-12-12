@@ -200,34 +200,20 @@ void wasm_nextFrame()
 	wasm_scriptTimeSinceLastFrame = wasm_nextFrame_();
 }
 
-void wasm_detectScriptBusyWait()
+void wasm_detectScriptTimeout_()
 {
-	if (++wasm_scriptBusyWaitCounter >= WASM_SCRIPT_BUSY_WAIT_COUNTER_LIMIT)
+	double time = EM_ASM_DOUBLE(
 	{
-		//log("wasm_detectScriptBusyWait: possible busy wait detected, yielding until next frame (hit counter = %d)", wasm_scriptBusyWaitCounter);
+		return performance.now();
+	});
+
+	double delta = time - wasm_scriptTimeSinceLastFrame;
+
+	if (delta >= WASM_SCRIPT_TIMEOUT_TIME_LIMIT_MS)
+	{
+		log("wasm_detectScriptTimeout: script timeout hit, yielding until next frame", time, wasm_scriptTimeSinceLastFrame, delta);
 
 		wasm_nextFrame();
-	}
-}
-
-void wasm_detectScriptTimeout()
-{
-	if (++wasm_scriptTimeoutCallCounter >= WASM_SCRIPT_TIMEOUT_CALL_CHECK_THRESHOLD)
-	{
-		wasm_scriptTimeoutCallCounter = 0;
-
-		double time = EM_ASM_DOUBLE(
-		{
-			return performance.now();
-		});
-
-		double delta = time - wasm_scriptTimeSinceLastFrame;
-		if (delta >= WASM_SCRIPT_TIMEOUT_TIME_LIMIT_MS)
-		{
-			//log("wasm_detectScriptTimeout: script timeout hit, yielding until next frame (now = %lf, last = %lf, delta = %lf)", time, wasm_scriptTimeSinceLastFrame, delta);
-
-			wasm_nextFrame();
-		}
 	}
 }
 #endif

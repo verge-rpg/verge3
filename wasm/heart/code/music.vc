@@ -5,12 +5,12 @@ void FadeMusic(string to)
 	{
 		song=LoadSong(to);
 		timer=0;
-		while(timer<=50) { Sleep(0); SetSongVolume(music, 50-timer); }
+		while(timer<=50) { SetSongVolume(music, 50-timer); }
 		StopSong(music);
 		musicfn=to;
 		music=song;
 		PlaySong(music);
 		timer=0;
-		while(timer<=50) { Sleep(0); SetSongVolume(music, timer); }
+		while(timer<=50) { SetSongVolume(music, timer); }
 	}
 }

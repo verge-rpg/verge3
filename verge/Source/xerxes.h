@@ -141,6 +141,11 @@ typedef unsigned char  byte;
 #define FORCEINLINE __forceinline
 #endif
 
+#if defined(__clang__) || defined(__GNUC__)
+#undef FORCEINLINE
+#define FORCEINLINE __attribute__((always_inline)) inline
+#endif
+
 /* system includes */
 
 

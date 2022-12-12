@@ -35,8 +35,8 @@ void xtestmain(int argc, char* argv[]); // for doctest init
 void xmain(int argc, char* argv[]);
 
 #ifdef __EMSCRIPTEN__
-constexpr int WASM_SCRIPT_TIMEOUT_CALL_CHECK_THRESHOLD = 300;
-constexpr double WASM_SCRIPT_TIMEOUT_TIME_LIMIT_MS = 30.0;
+constexpr int WASM_SCRIPT_TIMEOUT_CALL_CHECK_THRESHOLD = 10000;
+constexpr double WASM_SCRIPT_TIMEOUT_TIME_LIMIT_MS = 50.0;
 constexpr int WASM_SCRIPT_BUSY_WAIT_COUNTER_LIMIT = 500;
 
 extern int wasm_scriptBusyWaitCounter;
@@ -46,8 +46,30 @@ extern double wasm_scriptTimeSinceLastFrame;
 extern "C" double wasm_nextFrame_();
 
 void wasm_nextFrame();
-void wasm_detectScriptBusyWait();
-void wasm_detectScriptTimeout();
+
+FORCEINLINE void wasm_detectScriptBusyWait()
+{
+	if (++wasm_scriptBusyWaitCounter >= WASM_SCRIPT_BUSY_WAIT_COUNTER_LIMIT)
+	{
+		log("wasm_detectScriptBusyWait: possible busy wait detected, yielding until next frame (hit counter = %d)", wasm_scriptBusyWaitCounter);
+
+		wasm_nextFrame();
+	}
+}
+
+void wasm_detectScriptTimeout_();
+
+FORCEINLINE void wasm_detectScriptTimeout()
+{
+	if (++wasm_scriptTimeoutCallCounter >= WASM_SCRIPT_TIMEOUT_CALL_CHECK_THRESHOLD)
+	{
+        log("wasm_detectScriptTimeout: %d library calls hit", wasm_scriptTimeoutCallCounter);
+        
+		wasm_scriptTimeoutCallCounter = 0;
+        
+        wasm_detectScriptTimeout_();
+    }
+}
 #endif
 
 #ifdef ALLOW_SCRIPT_COMPILATION
