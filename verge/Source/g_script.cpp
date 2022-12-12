@@ -250,6 +250,10 @@ void ScriptEngine::WriteHvar_str_derived(int category, int loc, int ofs, CString
 
 StringRef ScriptEngine::ReadHvar_str(int category, int loc, int arg)
 {
+#ifdef __EMSCRIPTEN__
+	wasm_detectScriptTimeout();
+#endif
+
 	switch(category)
 	{
 		case strHSTR0:
@@ -324,13 +328,29 @@ StringRef ScriptEngine::ReadHvar_str_derived(int category, int loc, int ofs)
 
 int ScriptEngine::ReadHvar(int category, int loc, int ofs)
 {
+#ifdef __EMSCRIPTEN__
+	wasm_detectScriptTimeout();
+#endif
+
 	switch(category)
 	{
 		case intHVAR0:
 			switch (loc)
 			{
-				case 0: return systemtime;
-				case 1: return vctimer;
+				case 0:
+				{
+#ifdef __EMSCRIPTEN__
+					wasm_detectScriptBusyWait();
+#endif
+					return systemtime;
+				}
+				case 1:
+				{
+#ifdef __EMSCRIPTEN__
+					wasm_detectScriptBusyWait();
+#endif
+					return vctimer;
+				}
 				case 3: return lastpressed;
 				case 4: return mouse_x;
 				case 5: return mouse_y;
@@ -1167,7 +1187,12 @@ void ScriptEngine::ResetSprites() { return ::ResetSprites(); }
 //VI.h. Sound/Music Functions
 void ScriptEngine::FreeSong(int handle) { ::FreeSong(handle); }
 void ScriptEngine::FreeSound(int slot) { ::FreeSample((void*)slot); }
-int ScriptEngine::GetSongPos(int handle) { return ::GetSongPos(handle); }
+int ScriptEngine::GetSongPos(int handle) {
+#ifdef __EMSCRIPTEN__
+	wasm_detectScriptBusyWait();
+#endif	
+	return ::GetSongPos(handle);
+}
 int ScriptEngine::GetSongVolume(int handle) { return ::GetSongVol(handle); }
 int ScriptEngine::LoadSong(CStringRef fn) { return ::LoadSong(fn.c_str()); }
 int ScriptEngine::LoadSound(CStringRef fn) { return (int)LoadSample(fn.c_str()); }

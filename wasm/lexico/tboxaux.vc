@@ -140,7 +140,6 @@ while(delay)
         	delay--;
         	UpdateControls();
         	}
-		Sleep(0);
 	}
 timer=t;
 }
@@ -160,7 +159,6 @@ while(!b3 && !b1 && delay)
 		delay--;
 		UpdateControls();
 		}
-		Sleep(0);
 	}
 timer=t;
 }

@@ -184,10 +184,52 @@ void InitVideo()
 }
 
 #ifdef __EMSCRIPTEN__
-EM_JS(void, wasm_nextFrame, (), 
+int wasm_scriptBusyWaitCounter;
+int wasm_scriptTimeoutCallCounter;
+double wasm_scriptTimeSinceLastFrame;
+
+EM_JS(double, wasm_nextFrame_, (), 
 {
     return Asyncify.handleSleep(requestAnimationFrame);
 });
+
+void wasm_nextFrame()
+{
+	wasm_scriptBusyWaitCounter = 0;
+	wasm_scriptTimeoutCallCounter = 0;
+	wasm_scriptTimeSinceLastFrame = wasm_nextFrame_();
+}
+
+void wasm_detectScriptBusyWait()
+{
+	if (++wasm_scriptBusyWaitCounter >= WASM_SCRIPT_BUSY_WAIT_COUNTER_LIMIT)
+	{
+		//log("wasm_detectScriptBusyWait: possible busy wait detected, yielding until next frame (hit counter = %d)", wasm_scriptBusyWaitCounter);
+
+		wasm_nextFrame();
+	}
+}
+
+void wasm_detectScriptTimeout()
+{
+	if (++wasm_scriptTimeoutCallCounter >= WASM_SCRIPT_TIMEOUT_CALL_CHECK_THRESHOLD)
+	{
+		wasm_scriptTimeoutCallCounter = 0;
+
+		double time = EM_ASM_DOUBLE(
+		{
+			return performance.now();
+		});
+
+		double delta = time - wasm_scriptTimeSinceLastFrame;
+		if (delta >= WASM_SCRIPT_TIMEOUT_TIME_LIMIT_MS)
+		{
+			//log("wasm_detectScriptTimeout: script timeout hit, yielding until next frame (now = %lf, last = %lf, delta = %lf)", time, wasm_scriptTimeSinceLastFrame, delta);
+
+			wasm_nextFrame();
+		}
+	}
+}
 #endif
 
 void ShowPage()

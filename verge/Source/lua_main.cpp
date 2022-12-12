@@ -281,8 +281,12 @@ void LUA::VerifyFunctionSignature(lua_State* L, int functionIndex)
 // Careful, this needs to be static and return an int so it can be bound to Lua.
 int LUA::InvokeBuiltinFunction(lua_State* L)
 {
+#ifdef __EMSCRIPTEN__
+	wasm_detectScriptTimeout();
+#endif
+
 	// Grab the function index upvalue
-	int functionIndex = (int)lua_tonumber(L, lua_upvalueindex(1));
+	int functionIndex = (int)lua_tonumber(L, lua_upvalueindex(1));	
 
 	// Track the active function
 	activeFunctionIndex = functionIndex;

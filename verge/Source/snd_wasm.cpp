@@ -130,6 +130,7 @@ EM_JS(bool, wasm_initSound, (), {
 
                 song.activeSourceNode = song.streamNode;
                 song.streamAudio.src = songDataURL;
+                song.streamAudio.loop = true;
                 song.streamAudio.addEventListener('canplaythrough', () => song.streamAudio.play());
             } else {
                 console.log('window.verge.playSong: sequenced', filename);

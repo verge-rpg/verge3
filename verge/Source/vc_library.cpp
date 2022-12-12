@@ -1760,6 +1760,10 @@ VC_LIBFUNC(vc_MessageBox) ()
 
 void VCCore::HandleLibFunc(word c)
 {
+#ifdef __EMSCRIPTEN__
+	wasm_detectScriptTimeout();
+#endif
+
 	VcFunctionImpl ptr = dispatchTable[c];
 	if (ptr) {
 		ptr();

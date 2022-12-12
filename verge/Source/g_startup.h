@@ -34,6 +34,22 @@ void ShowPage();
 void xtestmain(int argc, char* argv[]); // for doctest init
 void xmain(int argc, char* argv[]);
 
+#ifdef __EMSCRIPTEN__
+constexpr int WASM_SCRIPT_TIMEOUT_CALL_CHECK_THRESHOLD = 300;
+constexpr double WASM_SCRIPT_TIMEOUT_TIME_LIMIT_MS = 30.0;
+constexpr int WASM_SCRIPT_BUSY_WAIT_COUNTER_LIMIT = 500;
+
+extern int wasm_scriptBusyWaitCounter;
+extern int wasm_scriptTimeoutCallCounter;
+extern double wasm_scriptTimeSinceLastFrame;
+
+extern "C" double wasm_nextFrame_();
+
+void wasm_nextFrame();
+void wasm_detectScriptBusyWait();
+void wasm_detectScriptTimeout();
+#endif
+
 #ifdef ALLOW_SCRIPT_COMPILATION
 extern VCCompiler *vcc;
 #endif

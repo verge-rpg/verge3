@@ -51,7 +51,7 @@ def EmscriptenEnvironment():
     emscriptenCompilerOpts = []
     emscriptenLinkerOpts = [
         '-s', 'ASYNCIFY',
-        '-s', 'ASYNCIFY_IMPORTS=["fetchSync","downloadAll","wasm_nextFrame","emscripten_sleep","wasm_initSound","wasm_loadSound","wasm_getSongPosition"]',
+        '-s', 'ASYNCIFY_IMPORTS=["fetchSync","downloadAll","wasm_nextFrame_","emscripten_sleep","wasm_initSound","wasm_loadSound","wasm_getSongPosition"]',
         '-s', 'FETCH=1',
         '-s', 'FORCE_FILESYSTEM=1',
         '-s', 'ALLOW_MEMORY_GROWTH=1',

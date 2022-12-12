@@ -985,6 +985,11 @@ void VCCore::ExecuteBlock()
 	while (!done)
 	{
 		if (die) break;
+
+#ifdef __EMSCRIPTEN__
+		wasm_detectScriptTimeout();
+#endif
+
 		byte opcode = currentvc->GrabC();
 		byte temp = 0;
 		switch (opcode)
