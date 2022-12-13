@@ -59,7 +59,11 @@ void replace_all(std::string& s, char match, char replacement) {
 }
 
 int strcasecmp(CStringRef s1, CStringRef s2) {
-	return strcasecmp(s1.c_str(),s2.c_str());
+	return strcasecmp(s1.c_str(), s2.c_str());
+}
+
+int strcasecmp(std::string_view s1, std::string_view s2) {
+	return strcasecmp(s1.data(), s2.data());
 }
 
 //a vc-style substring operation (very kind and lenient)

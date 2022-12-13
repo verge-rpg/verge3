@@ -29,11 +29,11 @@ int v3_window_xres=0, v3_window_yres = 0;
 // Overkill (2010-04-29): Aspect ratio enforcing.
 ScaleFormat v3_scale_win = SCALE_FORMAT_ASPECT, v3_scale_full = SCALE_FORMAT_STRETCH;
 
-bool windowmode=true;
-bool sound=true;
-bool cheats=false;
+bool windowmode = true;
+bool sound = true;
+bool cheats = false;
 char mapname[255];
-bool releasemode=false;
+bool releasemode = false;
 bool automax = true;
 bool decompile = false;
 bool editcode = false;
@@ -41,6 +41,7 @@ int gamerate = 100;
 int soundengine = 0;
 bool use_lua = false;
 bool vc_oldstring = false;
+bool vc_redefinelibfuncs = false;
 bool showpage_auto_sleep = true;
 int last_showpage = 0;
 
@@ -56,7 +57,10 @@ void LoadConfig()
 {
 	cfg_Init("verge.cfg");
 	cfg_SetDefaultKeyValue("startmap", "");
+}
 
+void ApplyConfig()
+{
 	if (cfg_KeyPresent("lua"))
 		use_lua = cfg_GetIntKeyValue("lua") ? true : false;
 	if (cfg_KeyPresent("xres"))
@@ -99,7 +103,7 @@ void LoadConfig()
 	if (cfg_KeyPresent("tilesize"))
 		G_TILESIZE = cfg_GetIntKeyValue("tilesize");
 	if (cfg_KeyPresent("startmap"))
-		strcpy(mapname, cfg_GetKeyValue("startmap"));
+		strcpy(mapname, cfg_GetKeyValue("startmap").c_str());
 	if (cfg_KeyPresent("vcverbose"))
 		verbose = cfg_GetIntKeyValue("vcverbose");
 //	if (cfg_KeyPresent("paranoid"))                FIXME
@@ -107,7 +111,7 @@ void LoadConfig()
 	if (cfg_KeyPresent("arraycheck"))
 		vc_arraycheck = cfg_GetIntKeyValue("arraycheck");
 	if (cfg_KeyPresent("appname"))
-		setWindowTitle(cfg_GetKeyValue("appname"));
+		setWindowTitle(cfg_GetKeyValue("appname").c_str());
 	if (cfg_KeyPresent("releasemode"))
 		releasemode = cfg_GetIntKeyValue("releasemode") ? true : false;
 	if (cfg_KeyPresent("gamerate"))
@@ -127,13 +131,15 @@ void LoadConfig()
 	}
     if (cfg_KeyPresent("oldstring"))
         vc_oldstring = true;
+    if (cfg_KeyPresent("redefinelibfuncs"))
+        vc_redefinelibfuncs = true;
 
 	if (cfg_KeyPresent("mount1"))
-		MountVFile(cfg_GetKeyValue("mount1"));
+		MountVFile(cfg_GetKeyValue("mount1").c_str());
 	if (cfg_KeyPresent("mount2"))
-		MountVFile(cfg_GetKeyValue("mount2"));
+		MountVFile(cfg_GetKeyValue("mount2").c_str());
 	if (cfg_KeyPresent("mount3"))
-		MountVFile(cfg_GetKeyValue("mount3"));
+		MountVFile(cfg_GetKeyValue("mount3").c_str());
 
     if (cfg_KeyPresent("autosleep"))
 		showpage_auto_sleep = cfg_GetIntKeyValue("autosleep") ? true : false;
@@ -188,16 +194,23 @@ int wasm_scriptBusyWaitCounter;
 int wasm_scriptTimeoutCallCounter;
 double wasm_scriptTimeSinceLastFrame;
 
-EM_JS(double, wasm_nextFrame_, (), 
+EM_JS(void, wasm_nextFrame_, (), 
 {
     return Asyncify.handleSleep(requestAnimationFrame);
 });
 
 void wasm_nextFrame()
 {
+	wasm_nextFrame_();
+
 	wasm_scriptBusyWaitCounter = 0;
-	wasm_scriptTimeoutCallCounter = 0;
-	wasm_scriptTimeSinceLastFrame = wasm_nextFrame_();
+	wasm_scriptTimeoutCallCounter = 0;	
+
+	double time = EM_ASM_DOUBLE(
+	{
+		return performance.now();
+	});	
+	wasm_scriptTimeSinceLastFrame = time;
 }
 
 void wasm_detectScriptTimeout_()
@@ -322,96 +335,152 @@ bool CompileMaps(const char *ext, MapScriptCompiler *compiler, char *directory =
 }
 #endif
 
+void parseCommandlineConfigOption(const char* arg, size_t arglen, size_t start_offset, bool force_config)
+{
+	size_t equal_pos = SIZE_MAX;
+	for (size_t i = start_offset; i < arglen; i++)
+	{
+		if (arg[i] == '=')
+		{
+			equal_pos = i;
+		}
+	}
+	
+	if (equal_pos != SIZE_MAX)
+	{
+		StringRef key(arg + start_offset, arg + equal_pos);
+		StringRef value(arg + equal_pos + 1, arg + arglen);
+
+		if (force_config)
+		{
+			cfg_SetKeyValue(key, value);
+		}
+		else
+		{
+			cfg_SetDefaultKeyValue(key, value);
+		}
+	}
+	else
+	{
+		err("Argument %s is missing =value", arg);
+	}
+}
+
 void _main(int argc, char** argv)
 {
-  vc_initBuiltins();
-  vc_initLibrary();
+    vc_initBuiltins();
+    vc_initLibrary();
 
-  InitGarlick();
-  Handle::init();
+    InitGarlick();
+    Handle::init();
 
-  strcpy(mapname,"");
+    strcpy(mapname, "");
 
-
-  LoadConfig();
-  if (argc == 2)
-  {
-    if (strlen(argv[1]) > 254)
-      err("Mapname argument too long!");
-    strcpy(mapname, argv[1]);
-  }
-
-  InitVideo();
-
-  mouse_Init();
-  InitKeyboard();
-  joy_Init();
-  InitScriptEngine();
-
-  //---cross-platform plugins initialization
-  //	extern void p_datastructs();
-  //p_datastructs();
-  //---------
-
-  gameWindow->setTitle(APPNAME);
-
-  if (sound) snd_Init(soundengine);
-
-  win_movie_init();
-  ResetSprites();
-  timer_Init(gamerate);
-
-#ifdef ALLOW_SCRIPT_COMPILATION
-  if(!releasemode)
-    vcc = new VCCompiler();
-#endif
-
-#ifdef ALLOW_SCRIPT_COMPILATION
-  if(editcode) {
-    if(releasemode) {
-      err("Cannot edit code in release mode.");
-    }
-    if(!windowmode) {
-      err("Cannot edit code in full-screen mode.");
-    }
-    InitEditCode();
-  }
-#endif
-
-#ifdef ENABLE_LUA
-  LUA *lua;
-
-  if(use_lua)
-    se = lua = new LUA();
-#endif
-	
-#ifdef ALLOW_SCRIPT_COMPILATION
-  if (!releasemode)
-  {
-    DisplayCompileImage();
-#ifdef ENABLE_LUA
-    if(use_lua) {
-      lua->compileSystem();
-      CompileMaps("lua",lua);
-    } else 
-#endif
+    LoadConfig();
+    
+    for (size_t i = 1; i <= argc; i++)
     {
-      bool result = vcc->CompileAll();
-      if (!result) err(vcc->errmsg);
-      vcc->ExportSystemXVC();
-      result = CompileMaps("vc",vcc);
-      if (!result) err(vcc->errmsg);
+		char* arg = argv[i];
+		size_t arglen = strlen(arg);
+
+		constexpr size_t OPTION_ARG_PREFIX_LENGTH = 3;
+
+		if (arglen >= OPTION_ARG_PREFIX_LENGTH && arg[0] == '-' && arg[2] == ':')
+		{
+			switch (arg[1])
+			{
+				case 'c': parseCommandlineConfigOption(arg, arglen, OPTION_ARG_PREFIX_LENGTH, false); break;
+				case 'C': parseCommandlineConfigOption(arg, arglen, OPTION_ARG_PREFIX_LENGTH, true); break;
+				default: err("Argument %s not supported", arg); break;
+			}
+		}
+		else
+		{
+			if (arglen >= sizeof(mapname))
+				err("Mapname argument too long!");
+			strcpy(mapname, arg);
+		}
     }
-  }
+
+	ApplyConfig();
+
+    InitVideo();
+
+    mouse_Init();
+    InitKeyboard();
+    joy_Init();
+    InitScriptEngine();
+
+    //---cross-platform plugins initialization
+    //	extern void p_datastructs();
+    //p_datastructs();
+    //---------
+
+    gameWindow->setTitle(APPNAME);
+
+    if (sound) snd_Init(soundengine);
+
+    win_movie_init();
+    ResetSprites();
+    timer_Init(gamerate);
+
+#ifdef ALLOW_SCRIPT_COMPILATION
+    if (!releasemode)
+        vcc = new VCCompiler();
 #endif
 
-  if(!use_lua) {
-    se = vc = new VCCore();
-    if (decompile)
-      vc->Decompile();
-  }
+#ifdef ALLOW_SCRIPT_COMPILATION
+    if (editcode)
+	{
+        if (releasemode)
+		{
+            err("Cannot edit code in release mode.");
+        }
+        if (!windowmode)
+		{
+            err("Cannot edit code in full-screen mode.");
+        }
+        InitEditCode();
+    }
+#endif
+
+#ifdef ENABLE_LUA
+    LUA *lua;
+
+    if (use_lua)
+        se = lua = new LUA();
+#endif
 	
-  se->ExecAutoexec();
+#ifdef ALLOW_SCRIPT_COMPILATION
+    if (!releasemode)
+    {
+        DisplayCompileImage();
+#ifdef ENABLE_LUA
+        if (use_lua)
+		{
+            lua->compileSystem();
+            CompileMaps("lua",lua);
+        }
+		else 
+#endif
+        {
+            bool result = vcc->CompileAll();
+            if (!result) err(vcc->errmsg);
+            vcc->ExportSystemXVC();
+            result = CompileMaps("vc",vcc);
+            if (!result) err(vcc->errmsg);
+        }
+    }
+#endif
+
+    if (!use_lua)
+	{
+        se = vc = new VCCore();
+        if (decompile)
+            vc->Decompile();
+    }
+	
+    se->ExecAutoexec();
 }
 
 //---
@@ -420,7 +489,7 @@ void xmain(int argc, char *argv[])
 	_main(argc, argv);
 	while (true && strlen(mapname)) // main game loop
 	{
-	  Engine_Start(mapname);
+	  	Engine_Start(mapname);
 	}
 	err(""); // exit!
 }
@@ -428,15 +497,15 @@ void xmain(int argc, char *argv[])
 void xtestmain(int argc, char* argv[])
 {
 #ifdef __WIN32__
-  // hMainInst = hCurrentInst;
-  DesktopBPP = GetDeviceCaps(GetDC(nullptr), BITSPIXEL);
-  v3_bpp = DesktopBPP;
-  //dd_init();
-  setWindowTitle("Test Verge3");
+	// hMainInst = hCurrentInst;
+	DesktopBPP = GetDeviceCaps(GetDC(nullptr), BITSPIXEL);
+	v3_bpp = DesktopBPP;
+	//dd_init();
+	setWindowTitle("Test Verge3");
 
-  srand(timeGetTime());
-  log_Init(true);
+	srand(timeGetTime());
+	log_Init(true);
 
-  _main(argc, argv);
+	_main(argc, argv);
 #endif
 }

@@ -70,40 +70,41 @@ void DecryptHeader()
 	}
 }
 
-void MountVFile(char *fname)
+void MountVFile(const char* fname)
 {
+	std::string filename = fname;
+
 	char buffer[10];
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(__LINUX__) || defined(__EMSCRIPTEN__)
 	// swap backslashes in path for forward slashes
 	// (windows -> unix/max)
-	char * temp = fname;
+	char* temp = filename.data();
 	while(*temp) {
 		if(*temp == '\\')
 			*temp = '/';
 		temp++;
 	}
-
 #endif
 
 	if (filesmounted == 10)
 		err("Too many packfiles mounted! You know, there's no limit to the number of files you can stick in one...");
 
-	if (!(pack[filesmounted].vhandle = fopen(fname,"rb")))
-		err("*error* Unable to mount %s; file not found. \n",fname);
+	if (!(pack[filesmounted].vhandle = fopen(filename.c_str(),"rb")))
+		err("*error* Unable to mount %s; file not found. \n", filename.c_str());
 
 	// Read pack header
 	memset(&buffer, 0, 10);
 	fread(&buffer, 1, 6, pack[filesmounted].vhandle);
 	if (strcmp(buffer,headertag))
-		err("*error* %s is not a valid packfile. \n",fname);
+		err("*error* %s is not a valid packfile. \n", filename.c_str());
 
 	fread(&buffer, 1, 1, pack[filesmounted].vhandle);
 	if (buffer[0]!=1)
-		err("*error* %s is an incompatible packfile version. (ver reported: %d) \n",fname,buffer[0]);
+		err("*error* %s is an incompatible packfile version. (ver reported: %d) \n", filename.c_str(), buffer[0]);
 
 	fread(&pack[filesmounted].numfiles, 1, 4, pack[filesmounted].vhandle);
 	flip(&pack[filesmounted].numfiles, sizeof(pack[filesmounted].numfiles));
-	memcpy(pack[filesmounted].mountname, fname, strlen(fname)+1);
+	memcpy(pack[filesmounted].mountname, filename.c_str(), filename.length() + 1);
 
 	// Allocate memory for headers and read them in.
 

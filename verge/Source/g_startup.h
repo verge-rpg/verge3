@@ -29,6 +29,7 @@ extern bool releasemode;
 extern char mapname[255];
 extern int gamerate;
 extern bool vc_oldstring;
+extern bool vc_redefinelibfuncs;
 void ShowPage();
 
 void xtestmain(int argc, char* argv[]); // for doctest init
@@ -43,7 +44,7 @@ extern int wasm_scriptBusyWaitCounter;
 extern int wasm_scriptTimeoutCallCounter;
 extern double wasm_scriptTimeSinceLastFrame;
 
-extern "C" double wasm_nextFrame_();
+extern "C" void wasm_nextFrame_();
 
 void wasm_nextFrame();
 

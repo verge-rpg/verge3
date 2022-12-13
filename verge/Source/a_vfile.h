@@ -50,7 +50,7 @@ extern int filesmounted;
 bool Exist(const char *fname);
 bool VExist(const char *fname);
 VFILE *vopen(const char *fname);
-void MountVFile(char *fname);
+void MountVFile(const char *fname);
 
 void flip(void *d, int size);
 

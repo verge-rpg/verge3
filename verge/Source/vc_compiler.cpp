@@ -2320,13 +2320,13 @@ void VCCompiler::SkipCallbackDefinition()
 	}
 }
 
-void VCCompiler::CheckNameDup(char *s)
+void VCCompiler::CheckNameDup(char *s, bool is_func_name)
 {
 	int i;
 
 	if (IsKeyword(s))
 	{
-		throw va("%s(%d) : syntax error: expecting identifier; keyword not allowed here: %s", sourcefile, linenum, token);
+		throw va("%s(%d) : syntax error: expecting identifier; keyword not allowed here: %s", sourcefile, linenum, s);
 	}
 
 	// this is as good a place as any to make sure the identifier isn't too long
@@ -2334,13 +2334,15 @@ void VCCompiler::CheckNameDup(char *s)
 		throw va("%s(%d): identifier name %s is too long. (max: %d characters)", sourcefile, linenum, s, IDENTIFIER_LEN-1);
 
 	// check vs. system library functions
-	for (i=0; i<NUM_LIBFUNCS; i++)
-		if (streq(libfuncs[i].name, token))
-			throw va("%s(%d): %s is already claimed by a built-in library function. Please choose a unique name.", sourcefile, linenum, s);
+	int libfunc_index = FindLibFunc(s, false);
+	if (libfunc_index >= 0 && (!is_func_name || !vc_redefinelibfuncs))
+	{
+		throw va("%s(%d): %s is already claimed by a built-in library function. Please choose a unique name.", sourcefile, linenum, s);
+	}
 
 	// check vs. all other functions compiled so far
 	for(i=precompile_numfuncs; i<funcs[target_cimage].size(); i++)
-		if(streq(funcs[target_cimage][i]->name, token))
+		if(streq(funcs[target_cimage][i]->name, s))
 			throw va("%s(%d): %s is already claimed by a user function. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check reference core images if we're preventing duplicates
@@ -2350,34 +2352,34 @@ void VCCompiler::CheckNameDup(char *s)
 			if(cimage == target_cimage)
 				continue;
 			for(i=0; i<funcs[cimage].size(); i++)
-				if(streq(funcs[cimage][i]->name, token))
+				if(streq(funcs[cimage][i]->name, s))
 					throw va("%s(%d): %s is already claimed by a user function. Please choose a unique name.", sourcefile, linenum, s);
 		}
 	}
 
 	// check vs. HVars
 	for (i=0; i<hvars.size(); i++)
-		if (streq(hvars[i]->name, token))
+		if (streq(hvars[i]->name, s))
         	throw va("%s(%d): %s is already claimed by a built-in library variable. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. global ints
 	for (i=0; i<global_vars.size(); i++)
-		if (streq(global_vars[i]->name, token))
+		if (streq(global_vars[i]->name, s))
 			throw va("%s(%d): %s is already claimed by a global user variable. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. struct types
 	for (i=0; i<struct_defs.size(); i++)
-		if (streq(struct_defs[i]->name, token))
+		if (streq(struct_defs[i]->name, s))
 			throw va("%s(%d): %s is already claimed by a user struct definition. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. alias types
 	for (i=0; i<alias_defs.size(); i++)
-		if (streq(alias_defs[i]->name, token))
+		if (streq(alias_defs[i]->name, s))
 			throw va("%s(%d): %s is already claimed by a type alias definition. Please choose a unique name.", sourcefile, linenum, s);
 
 	// check vs. struct instances
 	for (i=0; i<struct_instances.size(); i++)
-		if (streq(struct_instances[i]->name, token))
+		if (streq(struct_instances[i]->name, s))
 			throw va("%s(%d): %s is already claimed by a user global variable. Please choose a unique name.", sourcefile, linenum, s);
 }
 
@@ -2468,7 +2470,7 @@ void VCCompiler::ParseGlobalDecl(scan_t type)
 
 		GetIdentifierToken();		// grab name of int
 		strcpy(var_name, token);
-		CheckNameDup(var_name);
+		CheckNameDup(var_name, false);
 
 		while (NextIs("["))			// it's an array
 		{
@@ -2649,7 +2651,7 @@ void VCCompiler::ParseCallbackDefinition(callback_definition** def)
 		if(!NextIs(",") && !NextIs(")"))
 		{
 			GetIdentifierToken();
-			CheckNameDup(token);
+			CheckNameDup(token, false);
 		}
 		if (argtype != t_VARARG && NextIs(","))
 		{
@@ -2724,7 +2726,12 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 	myfunc->coreimage = target_cimage;
 
 	GetIdentifierToken();
-	CheckNameDup(token);
+	CheckNameDup(token, true);
+	if (vc_redefinelibfuncs)
+	{
+		int libfunc_index = FindLibFunc(token, false);
+		redefined_libfuncs.push_back(libfunc_index);
+	}
 
 	int numargs = 0;
 	strcpy(myfunc->name, token);
@@ -2773,7 +2780,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 		myfunc->argtype[numargs] = argtype;
 		
 		GetIdentifierToken();
-		CheckNameDup(token);
+		CheckNameDup(token, false);
 
 		if (streq(myfunc->name, token))
 		{
@@ -2856,7 +2863,7 @@ void VCCompiler::ParseAliasDecl(scan_t type)
 
 	// Grab name of new type.
 	GetToken();
-	CheckNameDup(token);
+	CheckNameDup(token, false);
 	strcpy(alias->name, token);
 
 	vprint("alias type %s (for type id %d). \n", alias->name, alias->type);
@@ -2952,7 +2959,7 @@ void VCCompiler::ParseStructDecl(scan_t type)
 
 	struct_definition *mystruct = new struct_definition;
 	GetToken();
-	CheckNameDup(token);
+	CheckNameDup(token, false);
 	strcpy(mystruct->name, token);
 
 	Expect("{");
@@ -2987,7 +2994,7 @@ void VCCompiler::ParseStructInstance(scan_t type)
 	def = struct_defs[i];
 
 	GetToken();							// read in name of struct instance
-	CheckNameDup(token);
+	CheckNameDup(token, false);
 	struct_instance *inst = new struct_instance;
 	strcpy(inst->name, token);
 	inst->is = def;
@@ -3416,7 +3423,7 @@ void VCCompiler::CompileFunction(bool returns_callback)
 
 				// Name.
 				GetIdentifierToken();
-				CheckNameDup(token);
+				CheckNameDup(token, false);
 				for (int i = 0; i < in_func->numlocals; i++)
 				{
 					if (streq(token, in_func->localnames[i]))
@@ -3436,7 +3443,7 @@ void VCCompiler::CompileFunction(bool returns_callback)
 					in_func->argtype[in_func->numlocals] = argtype;
 					in_func->argext[in_func->numlocals] = argext;
 					GetIdentifierToken();
-					CheckNameDup(token);
+					CheckNameDup(token, false);
 					for (int i = 0; i < in_func->numlocals; i++)
 					{
 						if (streq(token, in_func->localnames[i]))
@@ -3465,19 +3472,37 @@ void VCCompiler::CompileFunction(bool returns_callback)
 	in_func = 0;	
 }
 
-void VCCompiler::CheckIdentifier(char *s)
+int VCCompiler::FindLibFunc(const char* s, bool skip_if_redefined)
 {
-	int i,j;
-
-	// check library functions first
-	for (i=0; i<NUM_LIBFUNCS; i++)
-		if (streq(s, libfuncs[i].name.c_str()))
+	for (int i = 0; i < NUM_LIBFUNCS; i++)
+	{
+		if (streq(s, libfuncs[i].name.c_str())
+		&& (!skip_if_redefined
+			|| std::find(redefined_libfuncs.begin(), redefined_libfuncs.end(), i) == redefined_libfuncs.end()))
 		{
 			id_type = ID_LIBFUNC;
 			id_index = i;
 			id_subtype = libfuncs[i].returnType;
-			return;
+			return i;
 		}
+	}
+
+	return -1;
+}
+
+void VCCompiler::CheckIdentifier(char *s)
+{
+	int i,j;
+
+	// check library functions first	
+	int libfunc_index = FindLibFunc(s, vc_redefinelibfuncs);
+	if (libfunc_index >= 0)
+	{
+		id_type = ID_LIBFUNC;
+		id_index = libfunc_index;
+		id_subtype = libfuncs[libfunc_index].returnType;
+		return;
+	}
 
 	// check user functions next,
 	// each core image in order of reference_cimages

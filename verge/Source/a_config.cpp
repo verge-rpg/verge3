@@ -19,214 +19,165 @@
 /***************************** data *****************************/
 
 #define KEYSIZE 25
-#define KEYSIZE_STR "25"
 #define VALUESIZE 80
-#define VALUESIZE_STR "80"
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
-char cfgfn[255];
+std::string cfg_filename;
 
-struct config_key
+struct CompareIgnoreCase
 {
-	char keyname[KEYSIZE];
-	char value[VALUESIZE];
-	config_key *next;
+	using is_transparent = void;
+
+    bool operator()(const StringRef& lhs, const StringRef& rhs) const { return strcasecmp(lhs, rhs) < 0; }
+    bool operator()(const StringRef& lhs, std::string_view rhs) const { return strcasecmp(lhs.view(), rhs) < 0; }
+    bool operator()(std::string_view lhs, const StringRef& rhs) const { return strcasecmp(lhs, rhs.view()) < 0; }
 };
 
-config_key *cf_top;
+using ConfigMap = std::map<StringRef, StringRef, CompareIgnoreCase>;
+ConfigMap cfg_dict;
 
 /***************************** code *****************************/
 
-
-void cfg_Init(char *fn)
+void cfg_Init(std::string_view fn)
 {
 	char temp[1024];
 	char line[1024];
+	char value[VALUESIZE + 1];
 
-	config_key *cf;
+	cfg_filename.reserve(255);
+
 #if defined(__APPLE__) || defined(__IPHONE__) || defined(__LINUX__) || defined(__EMSCRIPTEN__)
-	getcwd(cfgfn,255);
-	strcat(cfgfn, va("/%s", fn));
+	getcwd(temp, sizeof(temp));
+	cfg_filename += temp;
+	cfg_filename += '/';
+	cfg_filename += fn.data();
 #elif __PSP__
 	//mbg 9/5/05
 	//make the bold assumption that PWD has not been changed
 	//and never will be
 	//better handling might be required in the future
-	sprintf(cfgfn,"%s",fn);
+	cfg_filename = fn;
 #elif __WII__
 	//likewise above
-	sprintf(cfgfn,"%s",fn);
+	cfg_filename = fn;
 #else 
-	GetCurrentDirectory(255, cfgfn);
-	strcat(cfgfn, va("\\%s",fn));
+	GetCurrentDirectory(sizeof(temp), temp);
+	cfg_filename += temp;
+	cfg_filename += '/';
+	cfg_filename += fn.data();
 #endif
-	cf_top = 0;
 
-	FILE *f = fopen(cfgfn, "r");
+	FILE *f = fopen(cfg_filename.c_str(), "r");
 	if (!f) return;
 
-	cf = 0;
 	while (!feof(f))
 	{
 		fgets(line, sizeof(line), f);
 		// skip whitespace, read non-whitespace string then skip more whitespace
 		int num_read = 0;
+		temp[0] = 0;
 		sscanf(line," %s %n", temp, &num_read); // capture length read
 		if (strlen(temp) > 0) // check for blank line
 		{
-			if(temp[0] == '#' || (temp[0] == '/' && temp[1] == '/')) {
+			if(temp[0] == '#' || (temp[0] == '/' && temp[1] == '/'))
+			{
 				// comment - ignore until end of line
 				continue;
 			}
 
-			if (strlen(temp)>=KEYSIZE)
+			if (strlen(temp) >= KEYSIZE)
 				err("cfg_Init(), key too big");
-			if (!cf)
-				cf = cf_top = (config_key *) malloc(sizeof (config_key));
-			else
-			{
-				cf->next = (config_key *) malloc(sizeof (config_key));
-				cf = cf->next;
-			}
 
-			strcpy(cf->keyname, temp);
-			cf->value[0] = '\0'; // ensure null-terminated value on error
+			value[0] = 0; // ensure null-terminated value on error
 			// now read non-whitespace string after key, up to VALUESIZE
-			sscanf(line + num_read, " %" VALUESIZE_STR "s", cf->value);
-			strclean(cf->value);
-			cf->next = 0;
+			sscanf(line + num_read, " %" TOSTRING(VALUESIZE) "s", value);
+			strclean(value);
+			
+			cfg_dict[temp] = value;
 		}
 	}
+	
 	fclose(f);
 }
 
-
-bool cfg_KeyPresent(char *key)
+bool cfg_KeyPresent(std::string_view key)
 {
-	assert(strlen(key)<KEYSIZE);
-	config_key *cf = cf_top;
-	while (cf)
-	{
-		if (!strcasecmp(key, cf->keyname))
-			return true;
-		cf = cf->next;
-	}
-	return false;
+	const auto i = cfg_dict.find(key);
+	return i != cfg_dict.end();
 }
 
-
-int cfg_GetIntKeyValue(char *key)
+int cfg_GetIntKeyValue(std::string_view key)
 {
-	assert(strlen(key)<KEYSIZE);
-	config_key *cf = cf_top;
-	while (cf)
-	{
-		if (!strcasecmp(key, cf->keyname))
-			return atoi(cf->value);
-		cf = cf->next;
-	}
-	return -1;
+	const auto i = cfg_dict.find(key);
+	return i != cfg_dict.end()
+		? atoi(i->second.c_str())
+		: -1;
 }
 
-
-char *cfg_GetKeyValue(char *key)
+CStringRef cfg_GetKeyValue(std::string_view key)
 {
-	assert(strlen(key)<KEYSIZE);
-	config_key *cf = cf_top;
-	while (cf)
-	{
-		if (!strcasecmp(key, cf->keyname))
-			return cf->value;
-		cf = cf->next;
-	}
-	return NULL;
+	const auto i = cfg_dict.find(key);
+	return i != cfg_dict.end()
+		? i->second
+		: empty_string;
 }
 
-std::vector<std::string> cfg_Tokenize(char *key, char delim) {
-	char *value = cfg_GetKeyValue(key);
-	char *cp = value, *last = value;
+std::vector<std::string> cfg_Tokenize(std::string_view key, char delim)
+{
+	const auto value = cfg_GetKeyValue(key);
+	auto cp = value.c_str();
+	auto last = value.c_str();
+
 	std::vector<std::string> tokens;
-	for(;;) {
-		while(*cp && *cp != delim) cp++;
-		tokens.push_back(std::string(last,cp-last));
-		if(!*cp) return tokens;
-		cp++; last=cp;
-	}
-}
-
-void cfg_SetKeyValue(char *key, char *value)
-{
-	assert(strlen(key)<KEYSIZE);
-	assert(strlen(value)<VALUESIZE);
-
-	if (!cf_top)
+	while (true)
 	{
-		cf_top = (config_key *) malloc(sizeof (config_key));
-		strcpy(cf_top->keyname, key);
-		strcpy(cf_top->value, value);
-		cf_top->next = 0;
-		return;
-	}
-
-	config_key *cf = cf_top, *last = cf_top;
-	while (cf)
-	{
-		if (!strcasecmp(key, cf->keyname))
+		while (*cp && *cp != delim)
 		{
-			strcpy(cf->value, value);
-			return;
+			cp++;
 		}
-		last = cf;
-		cf = cf->next;
+
+		tokens.push_back(std::string(last, cp - last));
+
+		if (!*cp)
+		{
+			return tokens;
+		}
+
+		cp++;
+		last = cp;
 	}
-	last->next = (config_key *) malloc(sizeof (config_key));
-	cf = last->next;
-	strcpy(cf->keyname, key);
-	strcpy(cf->value, value);
-	cf->next = 0;
 }
 
-
-void cfg_SetDefaultKeyValue(char *key, char *value)
+void cfg_SetKeyValue(CStringRef key, CStringRef value)
 {
-	if (cfg_KeyPresent(key)) return;
+	cfg_dict[key] = value;
+}
+
+void cfg_SetDefaultKeyValue(CStringRef key, CStringRef value)
+{
+	if (cfg_KeyPresent(key.view())) return;
 	cfg_SetKeyValue(key, value);
 }
 
-
-void cfg_DeleteKey(char *key)
+void cfg_DeleteKey(std::string_view key)
 {
-	assert(strlen(key)<KEYSIZE);
-	config_key *store, *last = 0, *cf = cf_top;
-	while (cf)
+	const auto i = cfg_dict.find(key);
+	if (i != cfg_dict.end())
 	{
-		if (!strcasecmp(key, cf->keyname))
-		{
-			store = cf->next;
-			free(cf);
-			if (last) last->next = store;
-			else cf_top = store;
-			return;
-		}
-		last = cf;
-		cf = cf->next;
+		cfg_dict.erase(i);
 	}
-	return;
 }
-
 
 void cfg_WriteConfig()
 {
-	bool first = true;
-	config_key *cf = cf_top;
-	FILE *f = fopen(cfgfn, "w");
+	FILE *f = fopen(cfg_filename.c_str(), "w");
 	if (!f) err("cfg_WriteConfig(), could not open config file!");
 
-	while (cf)
+	for (const auto& i : cfg_dict)
 	{
-		if (!first) fprintf(f,"\n");
-		fprintf(f, "%s %s", cf->keyname, cf->value);
-		cf = cf->next;
-		first = false;
+		fprintf(f, "%s %s\n", i.first.c_str(), i.second.c_str());
 	}
+
 	fclose(f);
 }

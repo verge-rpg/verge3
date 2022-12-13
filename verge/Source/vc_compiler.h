@@ -12,6 +12,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <algorithm>
 #ifndef MYTYPES
   typedef unsigned int   quad;
   typedef unsigned short word;
@@ -398,13 +399,16 @@ private:
 	// errors.
 	bool permit_duplicates;
 
+	// A list of library functions that have been redefined, used when running with vc_redefinelibfuncs.
+	std::vector<int> redefined_libfuncs;
+
 	void SkipBrackets();
 	void SkipFunction();
 	void SkipDeclare();
 	void SkipArguments();
 	void SkipCallbackDefinition();
 
-	void CheckNameDup(char *s);
+	void CheckNameDup(char *s, bool is_func_name);
 	// Overkill (2006-05-06): 
 	// Elements inside structures have different naming rules.
 	void CheckStructElementNameDup (char *s, struct_definition *def);
@@ -440,6 +444,7 @@ private:
 	void SkipVariables();
 
 	function_t* FetchFunction(char *s);
+	int FindLibFunc(const char* s, bool skip_if_redefined);
 	void CheckIdentifier(char *s);
 	int CheckExpressionType(bool preventAmbiguity); // Overkill: Checks what type the next token is.
 	bool TokenIsStringExpression(bool preventAmbiguity);

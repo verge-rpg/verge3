@@ -14,15 +14,18 @@
 
 #include <string>
 #include <vector>
+#include <string_view>
 
-void cfg_Init(char *fn);
-bool cfg_KeyPresent(char *key);
-void cfg_SetKeyValue(char *key, char *value);
-void cfg_SetDefaultKeyValue(char *key, char *value);
-void cfg_DeleteKey(char *key);
+#include "a_string.h"
+
+void cfg_Init(std::string_view fn);
+bool cfg_KeyPresent(std::string_view key);
+void cfg_SetKeyValue(CStringRef key, CStringRef value);
+void cfg_SetDefaultKeyValue(CStringRef key, CStringRef value);
+void cfg_DeleteKey(std::string_view key);
 void cfg_WriteConfig();
-char *cfg_GetKeyValue(char *key);
-int cfg_GetIntKeyValue(char *key);
-std::vector<std::string> cfg_Tokenize(char *key, char delim);
+CStringRef cfg_GetKeyValue(std::string_view key);
+int cfg_GetIntKeyValue(std::string_view key);
+std::vector<std::string> cfg_Tokenize(std::string_view key, char delim);
 
 #endif

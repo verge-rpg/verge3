@@ -10,11 +10,11 @@ void tGrabRotScale(int x, int y, int width, int height, int destx, int desty, in
 }
 
 /*absolute value*/
-/*int abs(int a)
+int abs(int a)
 {
  if (a<0) return 0-a;
  else return a;
-}*/
+}
 
 /*FPS*/
 int fps_frames;

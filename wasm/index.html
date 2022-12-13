@@ -1121,10 +1121,10 @@
             //const paths = LEXICO_PATHS;
             //const folder = TCOD_FOLDER;
             //const paths = TCOD_PATHS;
-            //const folder = HEART_FOLDER;
-            //const paths = HEART_PATHS;
-            const folder = SNOWBALL_FOLDER;
-            const paths = SNOWBALL_PATHS;
+            const folder = HEART_FOLDER;
+            const paths = HEART_PATHS;
+            //const folder = SNOWBALL_FOLDER;
+            //const paths = SNOWBALL_PATHS;
             //const folder = TIMELESS_FOLDER;
             //const paths = TIMELESS_PATHS;
 
@@ -1134,7 +1134,7 @@
                 //arguments: [game + '/']
                 print: msg => console.log(msg),
                 printErr: msg => console.log(msg),
-                arguments: [],
+                arguments: ['-C:redefinelibfuncs=1'],
                 canvas: canvas,
                 preRun: function() {
                     window.Module.addRunDependency('vc_source');
