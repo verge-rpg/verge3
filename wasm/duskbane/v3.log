@@ -1,0 +1,11 @@
+VC System Compilation stats: 
+49 ints (10518 expanded), 6 strings (36 expanded), 49 functions, 1380 total lines
+
+compiled city01.map, (124 lines)  number of funcs is 19
+compiled graveyard01.map, (29 lines)  number of funcs is 3
+compiled tenements.map, (188 lines)  number of funcs is 28
+compiled tomb01.map, (132 lines)  number of funcs is 13
+console engine by overkill.
+
+verge³ build 08/01/04
+

@@ -1,0 +1,84 @@
+/**************************************************
+	Short but sweet notepad system
+		by Ragecage
+
+Useage:
+  void addItem("name", "discription");
+  void removeItem("name");
+  int chkItem("name"); //returns 1 is item is present
+  objective="Short line of text";
+  
+NOTE: max 10 items.
+*****************************************************/
+
+struct itemData{
+	string name;
+	string desc;
+}
+
+int items;
+itemData item[10]; 
+
+string objective;
+
+//menu interface
+void notepad(){
+//save screen
+	int scrn=newImage(windowGetWidth(screen),windowGetHeight(screen));
+	flashLight(light_darkness);
+	blit(0,0,screen,scrn);
+	
+	setentitiespaused(1);
+//--main loop
+	while(!key[SCAN_ENTER]){
+		blit(0,0,scrn,screen);
+		
+		setLucent(15);
+		rectFill(20,40,300,70,RGB(100,100,0),screen);
+		rectFill(20,80,300,200,RGB(100,100,0),screen);
+		setlucent(0);
+		
+		printString(25,45,screen,0,"Current objective,");
+		printString(25,55,screen,0," "+objective);
+		printString(25,85,screen,0,"Inventory");
+		
+		for(i=0;i<items;i++){
+			printString(30,98+(i*10),screen,0,str(i+1)+") "+item[i].name+": "+item[i].desc);
+		}
+
+		updatecontrols();
+		showpage();
+	}
+	setentitiespaused(0);
+}
+
+void addItem(string name, string desc){
+	if(items >= 10) return; 	
+	item[items].name=name;
+	item[items].desc=desc;
+	items++;
+}
+
+void removeItem(string name){
+	i=0;
+	while( strCmp(item[i].name,name) || i=items) i++; //find correct index
+	
+	if(!strCmp(item[i].name,name)){
+		while(i < items){	
+			item[i].name=item[i+1].name;
+			item[i].desc=item[i+1].desc;
+		
+			i++;
+		}
+		items--;
+	}
+	else return;
+}
+
+int chkItem(string name){
+	i=0;
+	while( strCmp(item[i].name,name) || i=items) i++; //find correct index
+	
+	if(!strCmp(item[i].name,name)) return 1;
+	else return 0;
+}

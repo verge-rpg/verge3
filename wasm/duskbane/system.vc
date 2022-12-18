@@ -1,0 +1,278 @@
+#include "sys-v3console.vc"
+#include "light.vc"
+#include "fps.vc"
+#include "notepad.vc"
+#include "intro.vc"
+
+int flags[100];
+int currentPlayer;
+int playerX;
+int playerY;
+string currentMap;
+
+int boxart = loadimage("textbox.png");
+int i;  //just for being a gay counter
+int crossfade_img = DuplicateImage(screen);
+int sound = loadsound("window.wav");
+int jackman;
+int deadchr;
+
+//////////////////////////////////////////////////////////////////////
+
+void autoexec(){
+	for(i = 0; i < 100; i++)
+	{
+		flags[i] = 0;
+	}
+	intro();
+	playmusic("creepyshit.it");
+	mapSwitch(24,26,"tenements.map");
+	//mapSwitch(24,26,"city01.map");
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void quit(){
+	//freeImage(_scrn);
+	//freeImage(_scrnmask);
+	//freeImage(_flashlightMask);
+	//freeImage(_selflightMask);
+	//freeImage(_xres);
+	int end;
+	lastpressed=0;
+	flashLight(light_darkness);
+	while(!end){
+		rectFill(25,100,290,130,0,screen);
+		printString(35,110,screen,0,"Press Enter to Save");
+		if(lastpressed==SCAN_ENTER) save();
+		if(lastpressed) end=1;
+		
+		showpage();
+		updatecontrols();
+	}
+	exit("");
+}
+
+void ini(){
+	currentPlayer=entitySpawn(playerx,playery,"nathan.chr");
+	setPlayer(currentPlayer);      
+	setbuttonjb(key[SCAN_CTRL], b1);
+      V3Console__Init();
+	hookRetrace("gameLoop");
+}
+
+void gameLoop(){
+	if(key[SCAN_ESC]) quit();
+	if(key[SCAN_Q]) notepad();
+	
+      //V3Console__ShowStuff();
+	flashLight(light_darkness);
+}
+
+void mapSwitch(int x, int y, string mizap){
+	playerX=x;
+	playerY=y;
+	currentMap=mizap;
+	FadeOut(30);
+	map(mizap);
+}
+
+/////////////////////////////////////////////////////////////////////
+int new;
+
+void save(){
+	int saveFile=fileOpen("dusk.sav", FILE_WRITE);
+	
+	fileWriteLn(saveFile, currentMap);
+	fileWriteLn(saveFile, str(entity.x[currentPlayer]/16));
+	fileWriteLn(saveFile, str(entity.y[currentPlayer]/16));
+	fileWriteLn(saveFile, str(items));
+	for(i=0;i<items;i++){
+		fileWriteLn(saveFile, item[i].name);
+		fileWriteLn(saveFile, item[i].desc);
+	}
+	for(i=0;i<100;i++){
+		fileWriteLn(saveFile, str(flags[i]));
+	}
+	
+	fileClose(saveFile);
+}
+
+void load(){
+	int saveFile=fileOpen("dusk.sav", FILE_READ);
+	
+	currentMap=fileReadLn(saveFile);
+	playerX=val(fileReadLn(saveFile));
+	playerY=val(fileReadLn(saveFile));
+	items=val(fileReadLn(saveFile));
+	for(i=0;i<items;i++){
+		item[i].name=fileReadLn(saveFile);
+		item[i].desc=fileReadLn(saveFile);
+	}
+	for(i=0;i<100;i++){
+		flags[i]=val(fileReadLn(saveFile));
+	}
+	new=1;
+	fileClose(saveFile);
+	key[SCAN_ENTER]=0;
+}
+
+//////////////////////////////////////////////////////////////////////
+
+void drawBox(int x, int y, int w, int h, int color, int scrn){
+	//rectFill(x,y,x+w,y+h,color,scrn);
+	tblit(x, y, boxart, scrn);
+}
+
+//TextBox
+//put a 0 for the portrait if there is none.
+//35 char/line x5
+//140 char per txt box
+string textLine[4];
+
+void text(int caller, string name, string txt){
+	int lines=3,
+	    chars=26,
+	    textDuration=10,
+	    txtHeight=10,
+	    inset=5;
+	    
+	int l, c, fin;
+	
+	int x, y;
+	
+	setentitiespaused(1);
+	
+	while(!fin){
+	//clear variables
+		for(l=1;l<=lines;l++) textLine[l]=="";
+
+	//assign variables
+		for(l=1;l<=lines;l++){
+			if(len(txt) > chars){
+				for(c=chars-1;c>0;c--){
+					if( strcmp(mid(txt, c, 1), " ") == 0){ //check for spaces
+						textLine[l]=left(txt, c);
+						txt=mid(txt, c+1, len(txt)-c);
+						c=0;
+					}
+					else if(c == 1){ //if a space is never found
+						textLine[l]=left(txt, chars);
+						txt=mid(txt, chars, len(txt)-chars);
+						c=0;	
+					}
+				}
+			}
+			else {
+				textLine[l]=txt;
+				l=lines;
+				fin=1;
+			}
+		}
+		
+		//put textbox by entity
+		x = (entity.x[caller] - xwin) / 2 + 8;
+		if(x > 170) x = 170;
+		
+		y = entity.y[caller] - 75 - ywin;
+		if(y < 0) y = 0;
+		if(y > 190) y = 190;
+		
+	//Graphics
+		drawBox(x,y,150,50,RGB(100,100,0),screen);
+		printstring(x+inset, y+inset, screen, 0, name);
+	//print formatted text
+		lastpressed=0;
+		for(l=1;l<=lines;l++){
+			if(strcmp(textLine[l], "") == 1){
+				timer=0;
+				while(timer<=textDuration && !lastpressed){
+					printString(x+inset, y+inset+(txtHeight*(l-1))+txtHeight, screen, 0, left(textLine[l], timer*len(textLine[l])/textDuration));
+					showpage();
+					updatecontrols();
+				}
+				printString(x+inset, y+inset+(txtHeight*(l-1))+txtHeight, screen, 0, textLine[l]);
+				showpage();
+			}
+		}
+		lastpressed=0;
+		while(!lastpressed)
+		{	
+			updatecontrols();
+		}
+		key[SCAN_ENTER] = 0;
+		key[SCAN_CTRL] = 0;
+		setentitiespaused(0);
+	}
+}
+
+//thx2uvecma!!1
+void FadeOut(int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+}
+
+void fuck(){
+  int ximage1 = loadimage("verevolf2.png");
+  int ximage2 = loadimage("verevolf3.png");
+  int xt;
+  int xdiff;
+
+  int xscale = 40;
+  int xlead = 80;
+  int xsustain = 50;
+  int xfadeout = 50;
+
+
+  xt = timer;
+  xdiff = 0;
+  while(xdiff<xlead){     blit(0,0,ximage1,screen); showpage(); updatecontrols(); xdiff = timer - xt; }
+
+  xt = timer;
+  xdiff = 0;
+  while(xdiff<xscale){
+    
+    rectfill(0,0,imagewidth(screen)-1,imageheight(screen)-1,0,screen);
+    setlucent(xdiff*100/xscale);
+    blit(0,0,ximage1,screen);
+    setlucent(100-(xdiff*100/xscale));
+    blit(0,0,ximage2,screen);
+
+    showpage();
+    updatecontrols();
+
+    xdiff = timer - xt;
+  }
+
+  xt = timer;
+  xdiff = 0;
+  while(xdiff<xsustain){     blit(0,0,ximage2,screen); showpage(); updatecontrols(); xdiff = timer - xt; }
+
+
+
+  xt = timer;
+  xdiff = 0;
+  while(xdiff<xfadeout){
+    rectfill(0,0,imagewidth(screen)-1,imageheight(screen)-1,0,screen);
+    setlucent(xdiff*100/xfadeout);
+    blit(0,0,ximage2,screen);
+    showpage();
+    updatecontrols();
+
+    xdiff = timer - xt;
+  }
+
+  freeimage(ximage1);
+  freeimage(ximage2);
+  setlucent(100);
+  mapswitch(100, 100, "city01.map");
+
+}

@@ -81,11 +81,9 @@ void sdl_removeWindow(sdl_Window *window)
 
 void sdl_video_init()
 {
-	sdl_handleCount = 0;
-	for (int i = 1; i <= 16; i++)
-	{
-		sdl_handles.push(++sdl_handleCount);
-	}
+    for(int i = 16; i > 0; i--)
+		sdl_handles.push(i);
+	sdl_handleCount = 16;
 
 	int winw = v3_xres;
 	int winh = v3_yres;

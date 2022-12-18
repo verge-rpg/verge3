@@ -1,0 +1,125 @@
+void start(){
+	//playerX=96;
+	//playerY=52;
+	light_darkness=200;
+	ini();
+	
+	//entity.face[currentplayer] = 1;
+	render();
+	if(!new) pan();
+	playmusic("cityshit.it");
+}
+
+void leaving_e()
+{
+	text(currentplayer,"NATHAN STEIN", "That way leads out of town. I have business here first.");
+	
+	entitymove(currentplayer, "L1");
+}
+
+void steamvent()
+{
+	text(currentplayer,"NATHAN STEIN", "It's a vent. The underworks get pretty hot, especially during the cold months.");
+}
+
+void chatty()
+{
+	int talker = event.entity % 10;	
+	
+	if(talker == 0) text(event.entity, "CITIZEN", "There are dreadful things on the prowl at night.");
+	
+	if(talker == 1) text(event.entity, "CITIZEN", "I hear there's a vargulf in town.  Good thing I bought myself a Flintlock.");
+	
+	if(talker == 2) text(event.entity, "CITIZEN", "Say son, you look a bit tired.  You should get home and get some rest.");
+	
+	if(talker == 3) text(event.entity, "CITIZEN", "The only way to keep warm these days is to stay close to the steam engines, it seems.");
+	
+	if(talker == 4) text(event.entity, "CITIZEN", "We may have advanced technology now, but vargulfs are still a threat.");
+	
+	if(talker == 5) text(event.entity, "CITIZEN", "Have you been to Sankt up north?  It's very nice there in the summer, but I can't imagine what it would be like in the winter.");
+	
+	if(talker == 6) text(event.entity, "CITIZEN", "It's been ages since I've been out of town.  I'd love to visit the temples in Tabris or Ankara.  We don't have much religion here anymore.");
+	
+	if(talker == 7) text(event.entity, "CITIZEN", "Sometimes I wish all this technology would go away.  I long for the green hills of my youth...");
+	
+	if(talker == 8) text(event.entity, "CITIZEN", "Some of these machines may look impressive, but they are in a state of constant disrepair.");
+
+	if(talker == 9) text(event.entity, "CITIZEN", "Many of these houses have long been abandoned.");
+}
+
+void doorlocked()
+{
+	text(currentplayer, "NATHAN STEIN", "It's locked. With a vargulf around, I can't blame them.");
+}
+
+void newspaper()
+{
+	text(currentplayer, "NATHAN STEIN", "It's a newspaper dispenser.");
+	text(currentplayer, "NATHAN STEIN", "It says 'Jackman killed by vargulf: Stein hot on trail'");
+	text(currentplayer, "NATHAN STEIN", "That sure got to print quickly.");
+}
+
+void furnace()
+{
+	text(currentplayer, "NATHAN STEIN", "It's very hot.");
+}
+
+void barrels()
+{
+	text(currentplayer, "NATHAN STEIN", "The way is blocked by a bunch of junk.");
+}
+
+void traffic()
+{
+	text(currentplayer, "NATHAN STEIN", "Like anybody here can afford a car.");
+}
+
+void street1()
+{
+	text(currentplayer, "SIGN", "Northing Ln.");
+}
+
+void street2()
+{
+	text(currentplayer, "SIGN", "Pharo Rd.");
+}
+
+void street3()
+{
+	text(currentplayer, "SIGN", "Baklund Ave.");
+}
+
+void street4()
+{
+	text(currentplayer, "SIGN", "Wrathelight St.");
+}
+
+void street5()
+{
+	text(currentplayer, "SIGN", "Darkmoth Dr.");
+}
+
+void woman1()
+{
+	text(currentplayer, "CITIZEN", "Vargulf, you say?  Perhaps I ought to get indoors...");
+}
+
+void woman2()
+{
+	text(currentplayer, "CITIZEN", "There's not really a vargulf about, is there?");
+}
+
+void woman3()
+{
+	text(currentplayer, "CITIZEN", "There used to be more gardens like mine in town, but eventually the smog got too thick, and they couldn't grow.");
+}
+
+void graveroad()
+{
+	mapswitch(38, 21, "graveyard01.map");
+}
+
+void tenement()
+{
+	mapswitch(24, 26, "tenements.map");
+}

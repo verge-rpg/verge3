@@ -1,0 +1,75 @@
+//Flashlight version 1.0
+//By Toen & RageCage
+//Made speedy by Tatsumi
+
+int _scrn = newimage(windowGetWidth(screen), windowGetHeight(screen));
+int _scrnmask = newimage(windowGetWidth(screen), windowGetHeight(screen));
+int _flashlightMask = loadimage("images/light.gif");
+int _selflightMask= loadimage("images/selflight.gif");
+int _windowlightmask = loadimage("images/windowlight.gif");
+int _windowmask = loadimage("images/window.gif");
+		
+int _xres=windowGetWidth(screen), _yres=windowGetHeight(screen);
+
+int light_darkness;
+
+void flashLight(int darkness)
+{	
+	rectFill(0, 0, _xres,_yres, rgb(darkness,darkness,darkness), _scrnmask);
+
+	subtractiveblit(entity.x[currentPlayer]+(entity.hotw[currentPlayer]/2) - xwin - 50, entity.y[currentplayer] -ywin -50, _selflightmask, _scrnmask);
+	subtractiveblit(mouse.x - 100, mouse.y - 100, _flashlightmask, _scrnmask);
+
+	if(!strcmp(currentMap, "city01.map")) 
+	{
+		//subtractiveblit(63*16-xwin, 41*16-ywin, _flashlightmask, _scrnmask);
+		light_fixedPosition(68, 46);
+		light_fixedPosition(86, 53);
+		light_fixedPosition(53, 45);
+		light_fixedPosition(45, 53);
+		light_fixedPosition(45, 34);
+		light_fixedPosition(45, 8);
+		light_fixedPosition(12, 45);
+		light_fixedPosition(12, 53);
+		light_fixedPosition(35, 45);
+		light_fixedPosition(35, 53);
+		light_fixedPosition(45, 73);
+		light_fixedPosition(45, 90);
+		light_fixedPosition(53, 8);
+		light_fixedPosition(53, 73);
+		light_fixedPosition(53, 90);
+		light_fixedPosition(80, 8);
+		
+		tinylight_fixedposition(54, 52);
+		
+		window_fixedposition(88, 12, 3);
+		window_fixedposition(89, 12, 3);
+		window_fixedposition(76, 47, 2);
+		window_fixedposition(87, 8, 11);
+		window_fixedposition(75, 19, 4);
+		window_fixedposition(38, 9, 2);
+		window_fixedposition(39, 9, 2);
+		window_fixedposition(26, 20, 2);
+		window_fixedposition(54, 37, 2);
+	}
+		
+
+	alphablit(0, 0, _scrn, _scrnmask, screen);
+	//fps_showrate();
+}
+
+void light_fixedPosition(int tilex, int tiley)
+{
+	subtractiveblit(tilex*16-xwin-92, tiley*16-ywin-92, _flashlightmask, _scrnmask);
+}
+
+void tinylight_fixedPosition(int tilex, int tiley)
+{
+	subtractiveblit(tilex*16-xwin-42, tiley*16-ywin-42, _selflightmask, _scrnmask);
+}
+
+void window_fixedposition(int tilex, int tiley, int tileh)
+{
+	subtractiveblit(tilex*16-xwin, tiley*16-ywin, _windowmask, _scrnmask);
+	subtractiveblit(tilex*16-xwin-17, tiley*16-ywin-17+(16*tileh), _windowlightmask, _scrnmask);
+}

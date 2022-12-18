@@ -1,0 +1,119 @@
+void intro(){
+	int 	scrn=newimage(windowGetWidth(screen),windowGetHeight(screen)), 
+		fadeScrn=newimage(windowGetWidth(screen),windowGetHeight(screen)),
+		omfgames=loadImage("images/omfgames.png"),
+		omfgames2=loadimage("images/omfgames2.png"),
+		title=loadimage("images/title.png"); 
+		
+	
+///////////////
+	rectFill(0,0,windowGetWidth(screen),windowGetHeight(screen),0,scrn);
+	blit(0,0,omfgames,fadeScrn);
+	
+	timer=0;
+	int duration=200;
+	lastpressed=0;
+	while(timer <= duration && !lastpressed){
+		blit(0,0,scrn,screen);
+		blitLucent(0,0,100 * (duration-timer) / duration, fadeScrn, screen);
+		showpage();
+		updatecontrols();
+	}
+///////////////
+	blit(0,0,fadeScrn,scrn);
+	blit(0,0,omfgames2,fadeScrn);
+	
+	timer=0;
+	duration=200;
+	lastpressed=0;
+	while(timer <= duration  && !lastpressed){
+		blit(0,0,scrn,screen);
+		blitLucent(0,0,100 * (duration-timer) / duration, fadeScrn, screen);
+		showpage();
+		updatecontrols();
+	}
+///////////////
+	blit(0,0,fadeScrn,scrn);
+	blit(0,0,title,fadeScrn);
+
+	timer=0;
+	duration=400;
+	lastpressed=0;
+	while(timer <= duration  && !lastpressed){
+		blit(0,0,scrn,screen);
+		blitLucent(0,0,100 * (duration-timer) / duration, fadeScrn, screen);
+		showpage();
+		updatecontrols();
+	}
+///////////////
+	int end, option;
+	lastpressed=0;
+	while(!end){
+		blit(0,0,title,screen);
+		rectFill(130,120,170,180,0,screen);
+		
+		printString(140,125,screen,0,"New");
+		printString(140,145,screen,0,"Load");
+		printString(140,165,screen,0,"Quit");
+		
+		rect(135,122+(option*20),165,137+(option*20),RGB(255,255,255),screen);
+		setLucent(75);
+		rectfill(135+1,122+1+(option*20),165-1,137-1+(option*20),RGB(0,0,255),screen);
+		setLucent(0);
+		
+		switch(lastpressed){
+			case SCAN_ESC: quit();
+			case SCAN_UP:
+				if(option>0) option--;
+			case SCAN_DOWN:
+				if(option<2) option++;
+			case SCAN_ENTER:
+				if(option==0) end=1;
+				if(option==1){
+					end=1;
+					load();
+				}
+				if(option==2) quit();
+		}
+		
+		lastpressed=0;
+		showpage();
+		updatecontrols();
+	}
+///////////////
+	freeImage(scrn);
+	freeImage(fadescrn);
+	freeImage(omfgames);
+	freeImage(omfgames2);
+	freeImage(title);
+}
+
+void pan(){
+	playmusic("citytechmix2.ogg");
+	int x=79*16, y=79*16;
+	cameraTracking=0;
+	xwin=0; ywin=0;
+	timer=0;
+	log(str(xwin));
+	while(xwin <= x && ywin <= y){
+		render();
+		if(xwin<=x) xwin = (timer*10)/54;
+		if(ywin<=y) ywin = (timer*10)/54;
+		
+		if(timer<900) printstring(100,100,screen,0,"OMFGames presents");
+		else if(timer<1800) printstring(100,100,screen,0,"Art by Hyptosis");
+		else if(timer<2700) printstring(70,100,screen,0,"Code by RageCage and Toen - Special Thanks to Tatsumi");
+		else if(timer<3600) printstring(100,100,screen,0,"Music by Troupe");
+		else if(timer<4500) printstring(100,100,screen,0,"Written and Scripted by Toen and Troupe");
+		else if(timer<5400) printstring(100,100,screen,0,"Designed by Toen, Hyptosis, and Troupe");
+		else if(timer<7000) printstring(100,100,screen,0,"DUSKBANE");
+		
+		showpage();
+		updateControls();
+	}
+	cameraTracking=1;
+	stopmusic();
+	new=1;
+	mapSwitch(11,18,"graveyard01.map");
+
+}

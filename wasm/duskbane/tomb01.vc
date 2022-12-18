@@ -1,0 +1,133 @@
+void start()
+{
+	light_darkness=200;
+	ini();
+	
+	entity.face[currentplayer] = 1;
+	render();
+}
+
+void straybook()
+{
+	text(currentplayer, "NATHAN STEIN", "Mountains of Arcadia. That's odd. Wonder what that's doing in here.");
+}
+
+void coffin()
+{
+	if(flags[10]==1) //map!
+	{
+		if(flags[11]==1) //crowbar!
+		{
+			text(currentplayer, "NATHAN STEIN", "I think I can get the coffin open with this crowbar.");
+			if(!strcmp(objective, "I need to find a way to get inside that coffin."))
+			{
+				objective = "Find information about the talisman";
+			}
+			mapswitch(9, 29, "tomb01.map");
+		}
+		else
+		{
+			text(currentplayer, "NATHAN STEIN", "There's a weird echo here. I think I need to get inside this coffin.");
+			text(currentplayer, "NATHAN STEIN", "It's shut tight.");
+			text(currentplayer, "NATHAN STEIN", "There might be something I can use in that storeroom.");
+			objective = "I need to find a way to get inside that coffin.";
+			flags[4]=1;
+		}
+	}
+	
+	else
+	{
+		text(currentplayer, "NATHAN STEIN", "I'm not going to open that thing without a damn good reason.");
+	}
+}
+
+void doorout()
+{
+	mapswitch(25, 29, "graveyard01.map");
+}
+
+void toentrance()
+{
+	if(flags[50] >= 8)
+	{
+		text(currentplayer, "TOEN", "Sup! This here's where our entry ends. Feel free to run around and explore stuff.");
+		text(currentplayer, "NATHAN STEIN", "Voice... in my... MIND...");
+		text(currentplayer, "TOEN", "Yeah, you'll get used to it.");
+		text(currentplayer, "TROUPE", "Also, it might be a good idea to quit and save your game now.");
+		text(currentplayer, "TROUPE", "Current save data will be fully compatible with DUSKBANE COMPLETE coming soon.");
+		text(currentplayer, "TROUPE", "...");
+		text(currentplayer, "TROUPE", "Unless someone looks at my flags and realizes that I do not, in fact, know how to script a game.");
+		text(currentplayer, "TROUPE", "Thanks for playing!");
+	}
+	else
+	{
+		text(currentplayer, "NATHAN STEIN", "I should make sure to finish reading these books.");
+	}
+	
+	mapswitch(39, 12, "tomb01.map");
+}
+
+void book01()
+{
+	text(currentplayer, "NATHAN STEIN", "Mons Lycaeus: Mountain in Arcadia sacred to Zeus");
+	text(currentplayer, "NATHAN STEIN", "Lycaon founded the ritual of Zeus practiced on it's summit.");
+	flags[50]++;
+}
+	
+void book02()
+	{
+		text(currentplayer, "NATHAN STEIN", "Hey, this is interesting...");
+		text(currentplayer, "NATHAN STEIN", "It seems the ritual involved a human sacrifice.");
+		text(currentplayer, "NATHAN STEIN", "A feast followed, and the man who recieved the portion of the human victim was changed into a vargulf.");
+		flags[50]++;
+	}
+	
+void book03()
+	{
+		text(currentplayer, "NATHAN STEIN", "Lycaon, first king of Arcadia. He sacrificed a child to Zeus on Mons Lycaeus.");
+		text(currentplayer, "NATHAN STEIN", "Immediately after the ritual, he was changed into a vargulf.");
+		text(currentplayer, "NATHAN STEIN", "It sounds like Zeus wasn't very happy about that.");
+		flags[50]++;
+	}
+	
+void book04()
+	{
+		text(currentplayer, "NATHAN STEIN", "It says 'Those descended by blood or by bloodshed would share Lycaon's affliction.'");
+		text(currentplayer, "NATHAN STEIN", "I guess that means anybody who is bitten by a vargulf becomes one themselves.");
+		flags[50]++;
+	}
+
+void book05()
+	{
+		text(currentplayer, "NATHAN STEIN", "These books talk about the effect of being 'afflicted' on the mind.");
+		text(currentplayer, "NATHAN STEIN", "It says that a man with the affliction will lead two lives.");
+		text(currentplayer, "NATHAN STEIN", "In one, he continue a man. In the other, he will be an unstoppable creature of evil.");
+		flags[50]++;
+	}
+	
+void book06()
+	{
+		text(currentplayer, "NATHAN STEIN", "The mind, in it's fragility, must block the memories of the creature.");
+		text(currentplayer, "NATHAN STEIN", "If one were to realize that he were afflicted and remember his deeds...");
+		text(currentplayer, "NATHAN STEIN", "...he will descend into madness, becoming the beast for the remainder of his days.");
+		flags[50]++;
+	}
+	
+void book07()
+	{
+		text(currentplayer, "NATHAN STEIN", "Ah, here's something about the talisman.");
+		text(currentplayer, "NATHAN STEIN", "It was created by Lycaon to reverse his affliction and restore his humanity.");
+		text(currentplayer, "NATHAN STEIN", "It says that the talisman worked, until he was reminded again of his deeds.");
+		text(currentplayer, "NATHAN STEIN", "He realized his other side, and his mind snapped.");
+		flags[50]++;
+	}
+	
+void book08()
+	{
+		text(currentplayer, "NATHAN STEIN", "All vargulf, in their madness, instinctually seek to end their suffering.");
+		text(currentplayer, "NATHAN STEIN", "They will seek the talisman at any cost. Therefore, it is to remain in this chamber...");
+		text(currentplayer, "NATHAN STEIN", "...so that no harm will come to the people.");
+		text(currentplayer, "NATHAN STEIN", "So, the murdered man took this talisman, and a vargulf hunted him down and killed him for it.");
+		text(currentplayer, "NATHAN STEIN", "A graverobbing treasure hunter, killed by his prize.");
+		flags[50]++;
+	}

@@ -1,0 +1,811 @@
+// V3 console code by Overkill.
+// Mimics DOS v2's debugging menu.
+
+#define V3CONSOLE_LINES 10
+struct console_type
+{
+ string text[V3CONSOLE_LINES];
+ int curline;
+ int activated;
+ int fader;
+ int showobs, showzones, showhots;
+}
+
+console_type console;
+int console_image=LoadImage("console.png"); // Zip: Change this back to whatever
+int player; //This helps with certain player entity functions.
+
+void V3Console__Init()
+{
+ if(!console.curline)
+ {
+  V3Console__Log("console engine by overkill.");
+  V3Console__Log("");
+  V3Console__Log(_version);
+  V3Console__Log("");
+ }
+ HookKey(SCAN_BSLASH,"V3Console__Summon");
+}
+
+void V3Console__Summon()
+{
+ if(!console.activated)
+ {
+  V3Console__GetPlayer();
+  console.activated=1;
+  console.fader=timer+100;
+  key[SCAN_BSLASH]=0;
+  V3Console__Process();
+ }
+}
+
+void V3Console__GetPlayer() // Zip: Added some player detection
+{
+ int e;
+ for (e = 0; e < entities; e++)
+ {
+  // Zip: This if works for p7, but might not with different shaped entites
+  if (entity.x[e]+entity.hotx[e] == xwin+(ImageWidth(screen)/2) && entity.y[e]+entity.hotx[e] == ywin+(ImageHeight(screen)/2))
+  {
+   player = e;
+   V3Console__Log("Player succesfully detected as "+str(e));
+   e = entities;
+  }
+  //V3Console__Log("E:"+str(entity.x[e]+entity.hotx[e])+","+str(entity.y[e]+entity.hotx[e])+": "+str(xwin+(ImageWidth(screen)/2))+","+str(ywin+(ImageHeight(screen)/2)));
+ }
+}
+
+void V3Console__Log(string s)
+{
+ int k;
+ if(console.curline<(V3CONSOLE_LINES-1))
+ {
+  k=console.curline+1;
+  console.curline++;
+ }
+ else
+ {
+  for(k=1; k<V3CONSOLE_LINES; k++)
+  {
+    console.text[k-1]=console.text[k];
+  }
+ }
+ console.text[k-1]=s;
+ log(s);
+}
+
+void V3Console__Render()
+{
+ int k;
+ if(console.fader>timer+20) SetLucent(console.fader-timer); // Zip: Remains slightly lucent
+ else SetLucent(20); // Zip: And sticks
+ Blit(0,0,console_image,screen);
+ for(k=0; k<V3CONSOLE_LINES; k++)
+ {
+  PrintString(5+(2*9),5+(k*9),screen,0,console.text[k]);
+ }
+ //Render Obstructions!
+ if(console.showobs)
+ {
+  ShowObs();
+ }
+ if(console.showzones)
+ {
+  ShowZones();
+ }
+ if(console.showhots)
+ {
+  ShowHots();
+ }
+ SetLucent(0);
+}
+
+void ShowObs() // Zip: Fixed this section
+{
+ int k, j;
+ SetLucent(50);
+ for(k=0-(xwin%16); k<ImageWidth(screen); k+=16) // Zip: Changed
+ {
+  for(j=0-(ywin%16); j<ImageHeight(screen); j+=16) // Zip: Changed
+  {
+   if(GetObs(k+xwin/16,j+ywin/16)) RectFill(k, j, k+15, j+15, RGB(255,255,255), screen); // Zip: Changed
+  }
+ }
+ SetLucent(0);
+}
+
+void ShowZones() // Zip: Extras
+{
+ int k, j;
+ SetLucent(50);
+ for(k=0-(xwin%16); k<ImageWidth(screen); k+=16)
+ {
+  for(j=0-(ywin%16); j<ImageHeight(screen); j+=16)
+  {
+   if(GetZone(k+xwin/16,j+ywin/16))
+   {
+    RectFill(k, j, k+15, j+15, RGB(255,$99,0), screen);
+    PrintString(k,j,screen,0,str(GetZone(k+xwin/16,j+ywin/16)));
+   }
+  }
+ }
+ SetLucent(0);
+}
+
+
+//Hotspottage
+void ShowHots()
+{
+ int k;
+ SetLucent(50);
+ for(k=0; k<entities; k++)
+ {
+  if(entity.x[k]>xwin && entity.y[k]>ywin &&
+     entity.x[k]<xwin+ImageWidth(screen) &&
+     entity.y[k]<ywin+ImageHeight(screen))
+  {
+   //Blue = OBSTRUCTS ONLY
+   //Red = OBSTRUCTABLE ONLY
+   //Purple = BOTH
+   //Green = NEITHER
+   if(entity.obstruct[k] && !entity.obstructable[k]) RectFill(entity.x[k]-xwin,entity.y[k]-ywin,entity.x[k]+entity.hotw[k]-xwin-1,entity.y[k]+entity.hoth[k]-ywin-1,RGB(0,0,255),screen);
+   else if(!entity.obstruct[k] && entity.obstructable[k]) RectFill(entity.x[k]-xwin,entity.y[k]-ywin,entity.x[k]+entity.hotw[k]-xwin-1,entity.y[k]+entity.hoth[k]-ywin-1,RGB(255,0,0),screen);
+   else if(entity.obstruct[k] && entity.obstructable[k]) RectFill(entity.x[k]-xwin,entity.y[k]-ywin,entity.x[k]+entity.hotw[k]-xwin-1,entity.y[k]+entity.hoth[k]-ywin-1,RGB(255,0,255),screen);
+   else RectFill(entity.x[k]-xwin,entity.y[k]-ywin,entity.x[k]+entity.hotw[k]-xwin-1,entity.y[k]+entity.hoth[k]-ywin-1,RGB(0,255,0),screen);
+   PrintString(entity.x[k]-xwin,entity.y[k]-ywin,screen,0,str(k));
+  }
+ }
+  SetLucent(0);
+}
+
+void ShowOZ() // Zip: Extras
+{
+ ShowObs();
+ ShowZones();
+}
+
+void ShowHOZ() // Zip: Extras
+{
+ ShowHots();
+ ShowObs();
+ ShowZones();
+}
+
+void V3Console__Process()
+{
+ string s, l;
+ int done;
+ while(console.activated) // Zip: Moved the whole loop in here
+ {
+  l = s;
+  s = "";
+  lastpressed=0;
+  done = 0;
+  while(!done)
+  {
+   UpdateControls();
+   Render();
+   V3Console__Render();
+   PrintString(5,5+(V3CONSOLE_LINES*9),screen,0,"> "+s+"<");
+   ShowPage();
+   if(key[SCAN_UP]) { s = l; } // Zip: Backtracking for errors
+   if(key[SCAN_DOWN]) { s = ""; } // Zip: Easy clear
+   if(key[SCAN_ENTER])
+   {
+    lastpressed=0;
+    key[SCAN_ENTER]=0;
+    V3Console__ParsePrompt(s);
+    done=1;
+   }
+   if(key[SCAN_ALT])
+   {
+    key[SCAN_ALT]=0;
+    console.activated=0;
+    done=1;
+   }
+   else if(key[SCAN_BACKSP])
+   {
+    lastpressed=0;
+    key[SCAN_BACKSP]=0;
+    s=left(s, (len(s)-1));
+   }
+   else
+   {
+    if(lastpressed&&len(s)<100)
+    {
+     if (key[SCAN_LSHIFT] || key[SCAN_RSHIFT]) s=s + ToUpper(chr(lastkey)); // Zip: Uppercase support
+     else  s=s + chr(lastkey);
+    }
+    //key[lastpressed]=0; // Zip: Bad this
+    lastpressed=0;
+   }
+  }
+ }
+}
+
+
+void V3Console__Warp(int x, int y)
+{
+ entity.x[player]=x*16;
+ entity.y[player]=y*16;
+}
+
+// Zip: k've given this a fair bash, should still work :)
+//Messy, messy, messy...
+//Executes the various console prompt commands
+void V3Console__ParsePrompt(string a)
+{
+ int k;
+ //Make the command word parseable.
+ string s=ToLower(GetToken(a," ",0));
+ a = mid(a,len(s)+1,len(a)); // Zip: Get rid of first word from string
+ //EXIT VERGE
+ if(!strcmp(s,"exit") || !strcmp(s,"quit") )
+ {
+  exit(a);
+ }
+ //GET THE VERSION
+ else if(!strcmp(s,"version"))
+ {
+  V3Console__Log(_version);
+ }
+ //GET INT VALUE
+ else if(!strcmp(s,"getint"))
+ {
+  V3Console__Log(a+" returned:");
+  V3Console__Log( str( GetInt(a)));
+ }
+ //SET INT VALUE
+ else if(!strcmp(s,"setint"))
+ {
+  V3Console__Log(GetToken(a," ",0)+" assigned:");
+  SetInt(GetToken(a," ",0), val(GetToken(a," ",1)) );
+  V3Console__Log(str(val(GetToken(a," ",0) ) ) );
+ }
+ //GET INT ARRAY VALUE
+ else if(!strcmp(s,"getintarr"))
+ {
+  V3Console__Log(GetToken(a," ",0)+" index "+GetToken(a," ",1)+" returned:");
+  V3Console__Log( str( GetIntArray(GetToken(a," ",0),val(GetToken(a," ",1)) ) ) );
+ }
+ //SET INT ARRAY VALUE
+ else if(!strcmp(s,"setintarr"))
+ {
+  V3Console__Log(GetToken(a," ",0)+" index "+GetToken(a," ",1)+" assigned:");
+  SetIntArray(GetToken(a," ",0), val(GetToken(a," ",1)),val(GetToken(a," ",2)) );
+  V3Console__Log(str(val(GetToken(a," ",2) ) ) );
+ }
+ //GET STRING VALUE
+ else if(!strcmp(s,"getstr"))
+  {
+   V3Console__Log(a+" returned:");
+   V3Console__Log(GetString(a));
+  }
+ //SET STRING VALUE
+ else if(!strcmp(s,"setstr"))
+  {
+   V3Console__Log(GetToken(a," ",0)+" assigned:");
+   SetString(GetToken(a," ",0), mid(a,len(GetToken(a," ",0))+1,len(a)));
+   V3Console__Log(mid(a,len(GetToken(a," ",0))+1,len(a)));
+ }
+  //GET STRING ARRAY VALUE
+  else if(!strcmp(s,"getstrarr"))
+  {
+   V3Console__Log(GetToken(a," ",0)+" index "+GetToken(a," ",1)+" returned:");
+   V3Console__Log(GetStringArray(GetToken(a," ",0),val(GetToken(a," ",1) ) ) );
+  }
+  //SET STRING ARRAY VALUE
+  else if(!strcmp(s,"setstrarr"))
+  {
+   V3Console__Log(GetToken(a," ",0)+" index "+GetToken(a," ",1)+" assigned:");
+   SetStringArray(GetToken(a," ",0), val(GetToken(a," ",1)),mid(a,len(GetToken(a," ",0))+len(GetToken(a," ",1))+2,len(a)));
+   V3Console__Log(mid(a,len(GetToken(a," ",0))+len(GetToken(a," ",1))+2,len(a)));
+ }
+ //SET PLAYER INDEX
+ else if(!strcmp(s,"player"))
+ {
+  player=val(a);
+  SetPlayer(player);
+  V3Console__Log("Player entity is now entity #"+str(player));
+ }
+ //CHANGE CHARACTER IMAGE
+ else if(!strcmp(s,"changechr"))
+ {
+  ChangeCHR(val(GetToken(a," ",0)),GetToken(a," ",1));
+  V3Console__Log("Entity #"+GetToken(a," ",0)+" now uses: "+GetToken(a," ",1));
+ }
+ //SWITCH RESOLUTION
+ else if(!strcmp(s,"res"))
+ {
+  SetResolution(val(GetToken(a," ",0)),val(GetToken(a," ",1)));
+  V3Console__Log("Resolution switched to:"+GetToken(a," ",0)+"x"+GetToken(a," ",1));
+ }
+ //SWITCH MAP
+ else if(!strcmp(s,"map"))
+ {
+  V3Console__Log("Switching to map: "+a);
+  Map(a);
+ }
+ //WARP
+ else if(!strcmp(s,"warp"))
+ {
+  V3Console__Log("Warping to new location: ("+GetToken(a," ",0)+","+GetToken(a," ",1)+")");
+  V3Console__Warp(val(GetToken(a," ",0)),val(GetToken(a," ",1)));
+ }
+ //PLAY MUSIC!
+ else if(!strcmp(s,"music"))
+ {
+  V3Console__Log("Now playing: "+a);
+  PlayMusic(a);
+ }
+ //CALL A FUNCTION
+ else if(!strcmp(s,"callfunc"))
+ {
+  V3Console__Log("Attempting to execute "+a+"");
+  callfunction(a);
+ }
+ //SEE IF A FUNCTION EXISTS
+  else if(!strcmp(s,"existfunc"))
+  {
+   if(FunctionExists(a)) V3Console__Log(a+" exists.");
+   else V3Console__Log(a+" is not a function.");
+ }
+ else if(!strcmp(s,"showobs"))
+ {
+  if(console.showobs) console.showobs=0;
+  else console.showobs=1;
+  V3Console__Log("Show Obstructions = "+str(console.showobs));
+ }
+  //RENDER ZONES
+ else if(!strcmp(s,"showzones"))
+ {
+  if(console.showzones) console.showzones=0;
+  else console.showzones=1;
+  V3Console__Log("Show Zones: "+str(console.showzones));
+ }
+ //SET PLAYER SPEED
+ else if(!strcmp(s,"playerspeed"))
+ {
+  entity.speed[player]=val(a);
+  V3Console__Log("Player speed set to:"+a);
+ }
+ //CAMERATRACKING 0/1/2
+ else if(!strcmp(s,"cameratracking"))
+ {
+  cameratracking=(cameratracking+1)%3;
+  V3Console__Log("Camera now tracking: "+str(cameratracking));
+  V3Console__Log("0 - manual 1 - player 2 - cameratracker");
+ }
+ //APPNAME
+ else if(!strcmp(s,"appname"))
+ {
+  SetAppName(a);
+  V3Console__Log("Application title is now: "+a);
+ }
+ //CONSOLE BG IMAGE
+ else if(!strcmp(s,"consolebg"))
+ {
+  FreeImage(console_image);
+  console_image=LoadImage(a);
+  V3Console__Log("Background is now: "+a);
+ }
+ //HOOKRETRACE
+ else if(!strcmp(s,"hookretrace"))
+ {
+  V3Console__Log("Attempting to HookRetrace() "+a+"");
+  HookRetrace(a);
+ }
+ //RENDER STRING
+ else if(!strcmp(s,"rstring"))
+ {
+  if(len(a))
+  {
+   V3Console__Log("Setting render string to: "+a+"");
+   curmap.rstring=a;
+  }
+  else
+  {
+   V3Console__Log("Render string: "+curmap.rstring);
+  }
+ }
+ //SHOW HOTSPOTS AND ENT NUMBERS
+ else if(!strcmp(s,"showhots"))
+ {
+  if(console.showhots) console.showhots=0;
+  else console.showhots=1;
+  V3Console__Log("Show Hotspots: "+str(console.showhots));
+ }
+ //SEKRIT!!1
+ else if(!strcmp(s,"columns"))
+  {
+   V3Console__Columns();
+ }
+ //IF NONE OF THE ABOVE, LOG THE TEXT
+ else
+ {
+  if(len(a)) a=" "+a;
+  V3Console__Log("UNKNOWN: "+s+a);
+ }
+}
+
+/*
+
+  COLUMNS! (Based on MapEd2's addictive game)
+
+ */
+
+struct columns_type
+{
+ //12 rows, 6 columns
+ int field[5184], destruct[5184];
+
+ int startofs;
+ int turnlength, turnctr;
+ int destructed, difficulty;
+ int blocks, score, scoremultiplier;
+ int level;
+
+ //Current Piece Falling
+ int piece[3];
+ int xpos, ypos, ypofs;
+ int newpiece;
+ int nextpiece[3];
+};
+
+columns_type columns;
+
+void V3Console__Columns__BlitPlayField()
+{
+ int k, j;
+ int c;
+ for (k=0; k<12; k++)
+ {
+  for(j=0; j<6; j++)
+  {
+   c=columns.field[(k*6)+j];
+   if(c) V3Console__Columns__Piece(128+(j*16), columns.startofs+4+(k*16),c);   
+  }
+ }
+}
+
+void V3Console__Columns__BlitPlayFieldwDestruct()
+{
+ int k, j;
+ int c;
+ for (k=0; k<12; k++)
+ {
+  for(j=0; j<6; j++)
+  {
+   c=columns.field[(k*6)+j];
+   if(columns.destruct[(k*6)+j]>timer) SetLucent(100-(columns.destruct[(k*6)+j]-timer));
+   if(c) V3Console__Columns__Piece(128+(j*16), columns.startofs+4+(k*16),c);   
+   SetLucent(0);
+  }
+ }
+}
+
+void V3Console__Columns__BlitPiece()
+{
+ columns.ypofs=((100 * columns.turnctr) / columns.turnlength) * 16 / 100;
+ 
+ V3Console__Columns__Piece(128+(columns.xpos*16), columns.startofs+4+(columns.ypos*16)+columns.ypofs,columns.piece[0]);
+ V3Console__Columns__Piece(128+(columns.xpos*16), columns.startofs+20+(columns.ypos*16)+columns.ypofs,columns.piece[1]);
+ V3Console__Columns__Piece(128+(columns.xpos*16), columns.startofs+36+(columns.ypos*16)+columns.ypofs,columns.piece[2]);
+ 
+ V3Console__Columns__Piece(276, columns.startofs+70,columns.nextpiece[0]);
+ V3Console__Columns__Piece(276, columns.startofs+90,columns.nextpiece[1]);
+ V3Console__Columns__Piece(276, columns.startofs+110,columns.nextpiece[2]);
+}
+
+void V3Console__Columns__Piece(int x, int y, int c)
+{
+ int k;
+ int r,g,b;
+ switch(c)
+ {
+  case 1: r=255; g=0; b=0;
+  case 2: r=0; g=255; b=0;
+  case 3: r=0; g=0; b=255;
+ }
+ Rect(x,y,x+16,y+16,rgb(0,0,0),screen);
+ for(k=1; k<7; k++)
+ {
+  Rect(x+k,y+k,x+16-k,y+16-k,RGB(r,g,b),screen);
+  if(r>9) r-=10;
+  if(g>9) g-=10;
+  if(b>9) b-=10;
+ }
+ SetPixel(x+8,y+8,RGB(r,g,b),screen);
+}
+
+void V3Console__Columns__GenerateNewPiece()
+{
+  columns.newpiece=0;
+  columns.xpos=2;
+  columns.ypos=0;
+  if (columns.field[2])  key[SCAN_ESC]=1;
+  if (columns.field[8])  key[SCAN_ESC]=1;
+  if (columns.field[14]) key[SCAN_ESC]=1;
+  if (columns.field[20]) key[SCAN_ESC]=1;
+
+  if (key[SCAN_ESC])
+  {
+    if (columns.difficulty==4 && columns.blocks<240) V3Console__Log("You really suck at columns, man.");
+    if (columns.difficulty==5 && columns.blocks<80)  V3Console__Log("You really suck at columns, man.");
+    if (columns.score>3200 && columns.score<=6400) V3Console__Log("Not bad.");
+    if (columns.score>6400) V3Console__Log("Behold, the Columns God walks among us.");
+    console.fader=timer+100;
+  }
+  
+  columns.piece[0]=columns.nextpiece[0];
+  columns.piece[1]=columns.nextpiece[1];
+  columns.piece[2]=columns.nextpiece[2];
+  
+  columns.nextpiece[0]=random(1,3);
+  columns.nextpiece[1]=random(1,3);
+  columns.nextpiece[2]=random(1,3);
+}
+
+void V3Console__Columns__DestroyBlock(int x, int y)
+{
+  int k;
+
+  for (k=y; k>0; k--)
+  {
+    columns.field[(k*6)+x]=columns.field[((k-1)*6)+x];
+    columns.destruct[(k*6)+x]=0;
+  }
+  columns.blocks++;
+  columns.score+=columns.scoremultiplier;
+}
+
+void V3Console__Columns__ClearConsecutiveColumns()
+{
+  int x, y;
+  int c;
+  int destructtimer;
+
+  // Scan for things to destroy, but don't destroy them, just mark
+  // them in the Destroy field.
+
+  columns.destructed=0;
+
+  for (y=0; y<12; y++)
+    for (x=0; x<6; x++)
+    {
+      c=columns.field[(y*6)+x];
+
+      // Test vertical match
+      if (y<10)
+      {
+        if (columns.field[((y+1)*6)+x]==c && columns.field[((y+2)*6)+x]==c && c)
+        {
+          // vertical match. Set destruct field.
+          columns.destruct[((y+0)*6)+x]=timer+100;
+          columns.destruct[((y+1)*6)+x]=timer+100;
+          columns.destruct[((y+2)*6)+x]=timer+100;
+          columns.destructed=1;
+        }
+      }
+      // Test horizontal match
+      if (x<4)
+      {
+        if (columns.field[(y*6)+x+1]==c && columns.field[(y*6)+x+2]==c && c)
+        {
+          // horizontal match. Set destruct field.
+          columns.destruct[(y*6)+x+0]=timer+100;
+          columns.destruct[(y*6)+x+1]=timer+100;
+          columns.destruct[(y*6)+x+2]=timer+100;
+          columns.destructed=1;
+        }
+      }
+      // Test negative diagonal match
+      if (x<4 && y<10)
+      {
+         if (columns.field[((y+1)*6)+x+1]==c && columns.field[((y+2)*6)+x+2]==c && c)
+         {
+           // negative diagonal match. set destruct field.
+           columns.destruct[((y+0)*6)+x+0]=timer+100;
+           columns.destruct[((y+1)*6)+x+1]=timer+100;
+           columns.destruct[((y+2)*6)+x+2]=timer+100;
+           columns.destructed=1;
+         }
+      }
+      // Test positive diagonal match
+      if (x>=2 && y<10)
+      {
+         if (columns.field[((y+1)*6)+x-1]==c && columns.field[((y+2)*6)+x-2]==c && c)
+         {
+           // positive diagonal match. set destruct field.
+           columns.destruct[((y+0)*6)+x-0]=timer+100;
+           columns.destruct[((y+1)*6)+x-1]=timer+100;
+           columns.destruct[((y+2)*6)+x-2]=timer+100;
+           columns.destructed=1;
+         }
+      }
+    }
+
+  // Show which tiles are being destroyed before clearing out for increase
+  // visual coolishness.
+
+  if (columns.destructed)
+  {
+    timer=0;
+    while (timer<100)
+    {
+      RectFill(0,0,ImageWidth(screen),ImageHeight(screen),RGB(0,$33,$66),screen);
+      Render();  
+      //CopySprite(16,16,320,200,background);
+      V3Console__Columns__BlitPlayFieldwDestruct();
+      //TCopySprite(276, startofs+70, 16, 16, sprites+((nextpiece[0]+1)*256));
+      //TCopySprite(276, startofs+90, 16, 16, sprites+((nextpiece[1]+1)*256));
+      //TCopySprite(276, startofs+110, 16, 16, sprites+((nextpiece[2]+1)*256));
+      V3Console__Columns__Piece(276, columns.startofs+70,columns.nextpiece[0]);
+      V3Console__Columns__Piece(276, columns.startofs+90,columns.nextpiece[1]);
+      V3Console__Columns__Piece(276, columns.startofs+110,columns.nextpiece[2]);
+/*GotoXY(55,130);
+sprintf(strbuf,"Blocks: %d", blocks);
+printstring(strbuf);
+GotoXY(55,140);
+sprintf(strbuf,"Score: %d", score);
+printstring(strbuf);
+GotoXY(55,150);
+sprintf(strbuf,"Level: %d", level);
+printstring(strbuf);*/
+      PrintString(55,130,screen,0,"Blocks: "+str(columns.blocks));
+      PrintString(55,140,screen,0,"Score: "+str(columns.score));
+      PrintString(55,150,screen,0,"Level: "+str(columns.level));
+      ShowPage();
+    }
+  }
+
+  // Apply destruct-o patch to the field.
+
+  for (y=0; y<12; y++)
+    for (x=0; x<6; x++)
+      if (columns.destruct[(y*6)+x]) V3Console__Columns__DestroyBlock(x,y);
+}
+
+void V3Console__Columns__NextTurn()
+{
+  columns.ypos++;
+  if (columns.field[((columns.ypos+3)*6)+columns.xpos] || columns.ypos>8)
+  {
+    if (columns.ypos<3) key[SCAN_ESC]=1;
+    
+    // Hit something; set piece here.
+    columns.field[(columns.ypos*6)+columns.xpos]=columns.piece[0];
+    columns.field[((columns.ypos+1)*6)+columns.xpos]=columns.piece[1];
+    columns.field[((columns.ypos+2)*6)+columns.xpos]=columns.piece[2];
+    columns.newpiece=1;
+    columns.destructed=1;
+    // Scan for consecutive things to delete.
+    while(columns.destructed)
+    {
+      V3Console__Columns__ClearConsecutiveColumns();
+      columns.scoremultiplier=columns.scoremultiplier*2;
+    }
+  }
+}
+
+int V3Console__Columns__CanGoLeft()
+{
+  if (!columns.xpos) return 0;
+  if (columns.field[((columns.ypos+1)*6)+columns.xpos-1]) return 0;
+  if (columns.field[((columns.ypos+2)*6)+columns.xpos-1]) return 0;
+  if (columns.field[((columns.ypos+3)*6)+columns.xpos-1]) return 0;
+  return 1;
+}
+
+int V3Console__Columns__CanGoRight()
+{
+  if (columns.xpos==5) return 0;
+  if (columns.field[((columns.ypos+1)*6)+columns.xpos+1]) return 0;
+  if (columns.field[((columns.ypos+2)*6)+columns.xpos+1]) return 0;
+  if (columns.field[((columns.ypos+3)*6)+columns.xpos+1]) return 0;
+  return 1;
+}
+
+void V3Console__Columns__RotatePiece()
+{
+  int tempspot;
+  tempspot=columns.piece[0];
+  columns.piece[0]=columns.piece[1];
+  columns.piece[1]=columns.piece[2];
+  columns.piece[2]=tempspot;
+}
+
+void V3Console__Columns__ProcessLevels()
+{
+  if (columns.blocks>80)  { columns.level=2; columns.turnlength=90; }
+  if (columns.blocks>160) { columns.level=3; columns.turnlength=80; }
+  if (columns.blocks>240) { columns.level=4; columns.turnlength=70; }
+  if (columns.blocks>320) { columns.level=5; columns.turnlength=60; }
+  if (columns.blocks>400) { columns.level=6; columns.turnlength=50; }
+  if (columns.blocks>480) { columns.level=7; columns.turnlength=40; }
+  if (columns.blocks>560) { columns.level=8; columns.turnlength=30; }
+  if (columns.blocks>640) { columns.level=9; columns.turnlength=20; }
+}
+
+void V3Console__Columns()
+{
+ int k;
+ for(k=0; k<5184; k++)
+ {
+  columns.field[k]=0;
+  columns.destruct[k]=0;
+ }
+ for(k=0; k<3; k++)
+ {
+  columns.piece[k]=0;
+  columns.nextpiece[k]=0;
+ }
+ columns.startofs=16;
+ key[SCAN_ESC]=0;
+ if(!columns.difficulty) columns.difficulty=1;
+ columns.newpiece=1;
+ columns.turnlength=100;
+ columns.turnctr=0;
+ columns.blocks=0;
+ columns.score=0;
+ columns.level=1;
+ V3Console__Columns__GenerateNewPiece();
+ V3Console__Columns__GenerateNewPiece();
+ timer=0;
+ while(!key[SCAN_ESC])
+ {
+	RectFill(0,0,ImageWidth(screen),ImageHeight(screen),RGB(0,$33,$66),screen);
+        Render();
+	if (key[SCAN_LEFT])
+	{
+	if (columns.xpos && V3Console__Columns__CanGoLeft()) columns.xpos--;
+	key[SCAN_LEFT]=0;
+	}
+	if (key[SCAN_RIGHT])
+	{
+	if (columns.xpos<5 && V3Console__Columns__CanGoRight()) columns.xpos++;
+	key[SCAN_RIGHT]=0;
+	}
+	if (key[SCAN_DOWN])
+	{
+	timer=timer*5;
+	}
+	if (key[SCAN_UP])
+	{
+	V3Console__Columns__RotatePiece();
+	key[SCAN_UP]=0;
+	}
+	V3Console__Columns__ProcessLevels();
+	columns.turnctr+=timer;
+	timer=0;
+	switch (columns.difficulty)
+	{
+	case 4: columns.scoremultiplier=5;
+	case 5: columns.scoremultiplier=10;
+	case 6: columns.scoremultiplier=15;
+	}
+	if (columns.turnctr>=columns.turnlength)
+	{
+	V3Console__Columns__NextTurn();
+	columns.turnctr-=columns.turnlength;
+	}
+	if (columns.newpiece) V3Console__Columns__GenerateNewPiece();
+	V3Console__Columns__BlitPlayField();
+	V3Console__Columns__BlitPiece();
+
+	/*GotoXY(55,130);
+	sprintf(strbuf,"Blocks: %d", blocks);
+	printstring(strbuf);
+	GotoXY(55,140);
+	sprintf(strbuf,"Score: %d", score);
+	printstring(strbuf);
+	GotoXY(55,150);
+	sprintf(strbuf,"Level: %d", level);
+	printstring(strbuf);*/
+        PrintString(55,130,screen,0,"Blocks: "+str(columns.blocks));
+        PrintString(55,140,screen,0,"Score: "+str(columns.score));
+        PrintString(55,150,screen,0,"Level: "+str(columns.level));
+	ShowPage();
+ }
+ key[SCAN_ESC]=0;
+}

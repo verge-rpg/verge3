@@ -1,0 +1,189 @@
+void start(){
+	light_darkness=200;
+	ini();
+
+	
+
+	if (flags[0] == 0) {
+		deadchr = entityspawn(52, 42, "dead.chr");
+		jackman = entityspawn(25, 26, "man4.chr");
+		EntityStalk(jackman, currentplayer);
+	}	
+	//entity.face[currentplayer] = 1;
+	render();
+	
+	if (flags[0] == 0) { //tenement event
+		objective = "I'm investigating a vargulf sighting.";
+		if (flags[3] == 0) { //intro event
+			text(currentplayer, "NATHAN STEIN", "It was spotted here?");
+			text(currentplayer, "MORGAN JACKMAN", "Fifth floor.");
+			text(currentplayer, "NATHAN STEIN", "What could be HERE that would attract a vargulf?");
+			text(currentplayer, "MORGAN JACKMAN", "We'll have to look around.");
+			//fadeout(30);
+			flags[3]=1;
+		}
+	}
+}
+
+void leave() {
+	if (flags[0] == 0) 
+	{ //beginning event has taken place
+		text(currentplayer, "NATHAN STEIN", "I have to investigate what has happened here first."); 
+	} 
+	else {
+		mapSwitch(24,41,"city01.map");
+	}
+}
+
+void warning() {
+	if(flags[0]==0) text(currentplayer, "CITIZEN", "Are you going up to catch the vargulf?  Be careful.");
+	if(flags[0]==1) text(currentplayer, "CITIZEN", "Sorry to hear about your partner.");
+}
+
+void stairsup1() {
+	mapswitch(52,26,"tenements.map");
+}
+
+void stairsup2() {
+	mapswitch(82,26,"tenements.map");
+}
+
+void stairsup3() {
+	mapswitch(21,44,"tenements.map");
+}
+
+void stairsup4() {
+	playmusic("scaryshit.it");
+	mapswitch(49,46,"tenements.map");
+}
+
+void stairsdown2() {
+	mapswitch(27,24,"tenements.map");
+}
+
+void stairsdown3() {
+	mapswitch(52,24,"tenements.map");
+}
+
+void stairsdown4() {
+	mapswitch(69,24,"tenements.map");
+}
+
+void stairsdown5() {
+	playmusic("creepyshit.it");
+	mapswitch(24,42,"tenements.map");
+}
+
+void door2() {
+	mapswitch(72,44,"tenements.map");
+}
+
+void door31() {
+	mapswitch(24,63,"tenements.map");
+}
+
+void door32() {
+	mapswitch(49,63,"tenements.map");
+}
+
+void door4() {
+	mapswitch(72,63,"tenements.map");
+}
+
+void room2() {
+	mapswitch(48,24,"tenements.map");
+}
+
+void room31() {
+	mapswitch(75,24,"tenements.map");
+}
+
+void room32() {
+	mapswitch(72,24,"tenements.map");
+}
+
+void room4() {
+	mapswitch(26,42,"tenements.map");
+}
+
+void storage() {
+	if (flags[1] == 0) { //foodroom
+	text(currentplayer, "NATHAN STEIN", "Looks like the vargulf got into the foodstores here.");
+	flags[1]=1;
+	}
+	if (flags[0] == 1 && flags[6] == 0 && flags[4]==1) { //tenement event
+	text(currentplayer, "NATHAN STEIN", "There should be a crowbar around here somewhere.");
+	flags[6]=1;
+	}
+}
+
+void ho1() {
+	if(flags[0]==0) text(currentplayer, "CITIZEN", "Goodness!  I thought you were the vargulf!");
+	if(flags[0]==1) text(currentplayer, "CITIZEN", "Glad things have quieted down around here.");
+}
+
+void ho2() {
+	if(flags[0]==0) text(currentplayer, "CITIZEN", "My husband and I heard noises outside.  What's going on?");
+	if(flags[0]==1) text(currentplayer, "CITIZEN", "My husband kept me safe from the vargulf.");
+}
+
+void guy1() {
+	if(flags[0]==0) text(event.entity, "CITIZEN", "I'll protect my wife at all costs.");
+	if(flags[0]==1) text(event.entity, "CITIZEN", "That vargulf didn't lay a hand on my wife.");
+}
+
+void guy2() {
+	if(flags[0]==0) text(event.entity, "CITIZEN", "Going after the vargulf, eh?  You're a brave man.");
+	if(flags[0]==1) text(event.entity, "CITIZEN", "I knew you couldn't beat the vargulf, but I'm impressed that you tried.");
+}
+
+void crowbar() {
+	if(flags[0]==1 && flags[11]==0 && flags[4]==1){ //tenement and crowbar
+		text(currentplayer, "NATHAN STEIN", "It looks like this crowbar should work.");
+		additem("Crowbar","Might be useful for opening things.");
+		objective = "Let's see if this crowbar will do the trick.";
+		flags[11]=1;
+	}
+}
+
+void deadguy() {
+	if(flags[0]==0){
+	text(currentplayer, "MORGAN JACKMAN", "He's been bitten.");
+	text(currentplayer, "NATHAN STEIN", "He'll become on of them soon.");
+	text(currentplayer, "MORGAN JACKMAN", "We'll have to hand him over to the guards.");
+	text(currentplayer, "NATHAN STEIN", "Let's look around some more first.");
+	if (flags[2]==0) text(currentplayer, "NATHAN STEIN", "There's probably something around here that will shed some light on what happened."); //talisman not found
+	}
+}
+
+void talisman() {
+	if(flags[0]==0){ //tenement event
+	text(currentplayer, "MORGAN JACKMAN", "Look at this talisman, I recognize these symbols.");
+	text(currentplayer, "NATHAN STEIN", "Cult of Lycaeus.");
+	text(currentplayer, "MORGAN JACKMAN", "Interesting...  This requires context.  Let's look around a bit more.");
+	flags[2]=1; //talisman found
+	}
+	if(flags[0]==1 && flags[10]==0){ //tenement and map not found
+		text(currentplayer, "NATHAN STEIN", "Hey, a map.");
+		text(currentplayer, "NATHAN STEIN", "...");
+		text(currentplayer, "NATHAN STEIN", "There appears to be a crypt circled.");
+		additem("Map","A crypt in the graveyard is circled...");
+		objective = "I should check the crypt that's circled on this map.";
+		flags[10]=1;
+	}
+}
+
+void window() {
+	if(flags[2]==0 && flags[0]==0) text(currentplayer, "MORGAN JACKMAN", "It went up the fire escape.");
+	if(flags[2]==1 && flags[0]==0) {
+		text(currentplayer, "The talisman shines.", "");
+		text(currentplayer, "NATHAN STEIN", "What was that?");
+		text(currentplayer, "MORGAN JACKMAN", "The moonlight struck it...");
+		text(currentplayer, "NATHAN STEIN", "Characteristic.");
+		text(currentplayer, "NATHAN STEIN", "...");
+		text(currentplayer, "NATHAN STEIN", "Do you think it saw it?");
+		flags[0]=1;
+		stopmusic();
+		playsound(sound,100);
+		fuck();
+}

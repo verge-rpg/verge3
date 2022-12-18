@@ -1,0 +1,29 @@
+void start(){
+	//playerx = 38;
+	//playery = 21;
+	light_darkness=200;
+	ini();
+	
+	render();
+	playmusic("creepyshit.it");
+	
+	if(flags[5]==0){
+		objective = "I need to go back to that building and find some answers.";
+		entity.face[currentplayer] = 1;
+		render();
+		text(currentplayer,"NATHAN STEIN","It killed him. Terrible way to go, really, but when you’re in this line of work you get desensitized. I told the guards that the vargulf must have come in through the opposite window in the hall and attacked us while our backs were to it. I managed to hang on to the talisman, but the bitten man was gone. He must have been taken. I need some answers, and the only place I know to look for them is in that damned building. I’m going back.");
+		text(currentplayer,"NATHAN STEIN", "If I remember right, it was the building with three doors just north of the entrance to the graveyard.");
+		flags[5]=1;
+	}
+}
+
+void totomb()
+{
+	mapswitch(40, 23, "tomb01.map");
+}
+
+void totown()
+{
+	mapswitch(1, 52, "city01.map");
+}
+

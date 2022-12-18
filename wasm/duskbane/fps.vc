@@ -1,0 +1,18 @@
+//framerate counter
+//by toen
+
+int fps_fps;
+int fps_frames;
+int fps_lasttimer = timer;
+
+void fps_showrate()
+{
+	fps_frames ++;
+	if(timer - fps_lasttimer >= 100)
+	{
+		fps_fps = fps_frames;
+		fps_frames = 0;
+		fps_lasttimer = timer;
+	}
+	printstring(0, 0, screen, 0, str(fps_fps));
+}
