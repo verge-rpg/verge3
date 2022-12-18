@@ -29,6 +29,9 @@
 #include <cctype>
 #include <memory>
 
+#ifdef __EMSCRIPTEN__
+#include "wasm_filesystem.h"
+#endif
 
 int LUA::activeFunctionIndex;
 int LUA::activeFunctionStackOffset;
@@ -924,6 +927,56 @@ void LUA::bindApi()
 	);
 	// Boilerplate: Add a packfile loader.
 	if(status) ::err("Failed to load the LuaVerge packfile loader!");
+
+#ifdef __EMSCRIPTEN__
+	std::string io_open_code = std::string()
+		+ "local io_open = io.open\n"
+		"local io_close = io.close\n"
+		"local io_lines = io.lines\n"
+		"local string_lower = string.lower\n"
+		"\n"
+		"local function try_open_path(filename, mode, ctx)\n"
+		"    --print('trying path ' .. filename .. ' in mode ' .. mode .. ' ' .. ctx)\n"
+		"    local f, err = io_open(filename, mode)\n"
+		"    if f then return filename, f end\n"
+		"	 return nil, nil, err\n"
+		"end\n"
+		"\n"
+		"local function try_open_wasm_game_path(filename, mode)\n"
+		"    local fn, f, _ = try_open_path(string_lower('persist/" + wasm_gameRoot + "' .. filename), mode, 'persist')\n"
+		"    if f then return fn, f end\n"
+		"    local fn, f, _ = try_open_path('persist/" + wasm_gameRoot + "' .. filename, mode, 'persist_lower')\n"
+		"    if f then return fn, f end\n"
+		"    local fn, f, _ = try_open_path(string_lower('" + wasm_gameRoot + "' .. filename), mode, 'game_lower')\n"
+		"    if f then return fn, f end\n"
+		"    return try_open_path('" + wasm_gameRoot + "' .. filename, mode, 'game')\n"
+		"end\n"
+		"\n"
+		"function io.open(filename, mode)\n"
+		"    local _, f, err = try_open_wasm_game_path(filename, mode)\n"
+		"	 if f then\n"
+		"        --print('opened ' .. filename .. ' in mode ' .. mode)\n"
+		"    	 return f\n"
+		"	 else\n"
+		"        --print('failed to open ' .. filename .. ' in mode ' .. mode .. ' ' .. tostring(err))\n"
+		"    	 return nil, err\n"
+		"	 end\n"
+		"end\n"
+		"\n"
+		"function io.lines(filename)\n"
+		"    local fn, f, _ = try_open_wasm_game_path(filename, 'r')\n"
+		"	 if f then\n"
+		"        io_close(f)\n"
+		"        --print('io.lines: found ' .. filename .. ' at ' .. tostring(fn))\n"
+		"        return io_lines(fn)\n"
+		"	 end\n"
+		"    return io_lines(filename)\n"
+		"end\n"
+		"\n";
+	status = luaL_dostring(L, io_open_code.c_str());
+	if(status) ::err("Failed to load the wasm-specific LuaVerge io.open hook!");
+#endif
+
 
 	LUA::InitGCHandleSystem(L);
 }
