@@ -6,8 +6,8 @@ coins.wav
 core.dump
 crown.pcx
 elliot.chr
-Elliots.pcx
-Green.s3m
+elliots.pcx
+green.s3m
 lock1.wav
 man.chr
 man1.chr
@@ -55,8 +55,8 @@ system/wipe.gif
 system/wipe2.gif
 system.vc
 title01.png
-TREFUS.IT
-Tropic.map
+trefus.it
+tropic.map
 tropic.vc
 tropic.vsp
 tropic_ints.txt

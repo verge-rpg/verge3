@@ -28,7 +28,7 @@ char headertag[]={ 'V','3','P','A','K',0 };
 
 // ***************************** Code *****************************
 
-#define DEBUG_VFILE
+//#define DEBUG_VFILE
 #ifdef DEBUG_VFILE
 #define VFILE_PRINTF printf
 #else

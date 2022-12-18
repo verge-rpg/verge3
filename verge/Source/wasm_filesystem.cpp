@@ -25,18 +25,18 @@ EM_JS(void, wasm_initFileSystem, (const char* c), {
         if (err) {
             console.error('wasm_initFileSystem failed!', err);
         } else {
-            console.log("wasm_initFileSystem ok");
+            //console.log("wasm_initFileSystem ok");
         }
     });
 });
 
 EM_JS(void, wasm_syncFileSystem, (), {
-    console.log("wasm_syncFileSystem");
+    //console.log("wasm_syncFileSystem");
     FS.syncfs(false, err => {
         if (err) {
             console.error("wasm_syncFileSystem failed!!", err);
         } else {
-            console.log("wasm_syncFileSystem ok");
+            //console.log("wasm_syncFileSystem ok");
         }
     });
 });
@@ -48,7 +48,7 @@ EM_JS(void, wasm_downloadAll, (const char** manifest), {
 
         function download(pathPtr) {
             const path = UTF8ToString(pathPtr);
-            console.log('fetching' + path);
+            //console.log('fetching' + path);
 
             return fetch(path).then(response => {
                 if (!response.ok) {
@@ -69,9 +69,9 @@ EM_JS(void, wasm_downloadAll, (const char** manifest), {
                     FS.mkdirTree(dir);
                 }
 
-                console.log('Writing', path.toLowerCase(), '(' + bytes.length + ' bytes)');
+                //console.log('Writing', path.toLowerCase(), '(' + bytes.length + ' bytes)');
                 FS.writeFile(path.toLowerCase(), bytes);
-                console.log('Wrote', path.toLowerCase(), '(' + bytes.length + ' bytes)');
+                //console.log('Wrote', path.toLowerCase(), '(' + bytes.length + ' bytes)');
 
                 ++count;
                 verge.setLoadingProgress((100 * count / promises.length) | 0)
@@ -115,6 +115,9 @@ EM_JS(void, wasm_fetchSync, (const char* pathPtr, size_t* size, char** data), {
             HEAP32[data >> 2] = dataPtr;
             HEAP8.set(bytes, dataPtr);
             resume();
+        }).catch(e => {
+            console.error('wasm_fetchSync failed', path, e);
+            throw('wasm_fetchSync failed: ' + path + ' ' + e);
         });
     });
 });

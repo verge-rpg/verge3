@@ -23,6 +23,10 @@
 
 #include "SDL_main.h"    
 
+#ifdef __EMSCRIPTEN__
+#include "wasm_filesystem.h"
+#endif
+
 /***************************** data *****************************/
 
 
@@ -60,182 +64,6 @@ void doMessageBox(std::string msg)
 #endif
 }
 #endif
-
-#ifdef __EMSCRIPTEN__
-#include <emscripten/fetch.h>
-
-namespace v3wasm {
-    /*std::string gameRoot = "timeless/";
-    std::vector<std::string> manifest;
-    std::string saveGameRoot;
-
-    void preload(std::string_view);
-
-    using DownloadCB = void(*)(char* filename, size_t size, char* data);
-
-    EM_JS(void, downloadAll, (const char** manifest, DownloadCB putFile), {
-        return Asyncify.handleSleep(resume => {
-            let promises = [];
-            let count = 0;
-
-            function download(pathPtr) {
-                const path = UTF8ToString(pathPtr);
-                return fetch(path).then(response => {
-                    if (!response.ok) {
-                        console.error('fetchSync failed', path);
-                        HEAP32[size >> 2] = 0;
-                        HEAP32[data >> 2] = 0;
-                        throw 'fetchSync failed';
-                    }
-                    return response.blob();
-                }).then(blob =>
-                    blob.arrayBuffer()
-                ).then(array => {
-                    const bytes = new Uint8Array(array);
-                    const dataPtr = _malloc(bytes.length);
-                    HEAP8.set(bytes, dataPtr);
-                    Module.dynCall_viii(putFile, pathPtr, bytes.length, dataPtr);
-
-                    ++count;
-                    v3wasm.setLoadingProgress((100 * count / promises.length) | 0)
-                });
-            }
-
-            while (true) {
-                let pathPtr = HEAPU32[manifest >> 2];
-                if (pathPtr == 0) {
-                    break;
-                }
-                manifest += 4;
-                promises.push(download(pathPtr));
-            }
-
-            Promise.all(promises).then(() => { resume(); });
-        });
-    });
-
-    EM_JS(void, fetchSync, (const char* pathPtr, size_t* size, char** data), {
-        return Asyncify.handleSleep(resume => {
-            const path = UTF8ToString(pathPtr);
-            // console.log('fetchSync', path);
-            return fetch(path).then(response => {
-                if (!response.ok) {
-                    console.error('fetchSync failed', path);
-                    HEAP32[size >> 2] = 0;
-                    HEAP32[data >> 2] = 0;
-                    resume();
-                    return;
-                }
-                return response.blob();
-            }).then(blob =>
-                blob.arrayBuffer()
-            ).then(array => {
-                const bytes = new Uint8Array(array);
-                HEAP32[size >> 2] = bytes.length;
-                const dataPtr = _malloc(bytes.length);
-                HEAP32[data >> 2] = dataPtr;
-                HEAP8.set(bytes, dataPtr);
-                resume();
-            });
-        });
-    });
-
-    struct FreeDelete { void operator()(char* p) { free(p); } };
-    using Deleter = std::unique_ptr<char, FreeDelete>;
-
-    void downloadGame() {
-        std::string manifestPath = gameRoot + "manifest.txt";
-        char* manifestPtr;
-        size_t manifestLength;
-        fetchSync(manifestPath.c_str(), &manifestLength, &manifestPtr);
-        Deleter hello{ manifestPtr };
-
-        std::string_view manifest{ manifestPtr, manifestLength };
-
-        std::vector<std::string> files;
-        auto append = [&](std::string_view name) {
-            if (name.empty())
-                return;
-
-            if (name[name.size() - 1] == '\r')
-                name.remove_suffix(1);
-
-            files.push_back(gameRoot + std::string{ name });
-        };
-
-        while (!manifest.empty()) {
-            auto pos = manifest.find('\n');
-            if (pos == std::string::npos) {
-                append(std::string{ manifest });
-                break;
-            }
-            append(std::string{ manifest.substr(0, pos) });
-            manifest.remove_prefix(pos + 1);
-        }
-
-        char** stuff = new char*[files.size() + 1];
-        for (int i = 0; i < files.size(); ++i) {
-            stuff[i] = (char*)files[i].c_str();
-        }
-        stuff[files.size()] = nullptr;
-
-        downloadAll((const char**)stuff, [](char* filename, size_t size, char* data) {
-            v3wasm::DataVec vec(data, data + size);
-            // filename always has gameRoot prefix.  Strip it off.
-            v3wasm::vset(std::string{ filename + gameRoot.size() }, std::move(vec));
-        });
-
-        delete[] stuff;
-
-        EM_ASM({
-            window.v3wasm.setLoadingProgress(100);
-        });
-    }
-
-    void preload(std::string_view path) {
-        std::string filename = gameRoot;
-        filename.append(path.begin(), path.end());
-
-        size_t contentLength;
-        char* content;
-        fetchSync(filename.c_str(), &contentLength, &content);
-        Deleter hello{ content };
-
-        v3wasm::DataVec vec(content, content + contentLength);
-
-        v3wasm::vset(std::string{ path }, std::move(vec));
-    }
-
-    EM_JS(void, wasm_initFileSystem, (const char* c), {
-        let sgr = UTF8ToString(c);
-        if (sgr.endsWith('/'))
-            sgr = sgr.substr(0, sgr.length - 1);
-        FS.mkdir("/persist");
-        FS.mkdir(sgr);
-        // Then mount with IDBFS type
-        FS.mount(IDBFS, {}, sgr);
-
-        // Then sync
-        FS.syncfs(true, function (err) {
-            // Error
-            if (err)
-                console.error('wasm_initFileSystem failed!', err);
-        });
-    });
-
-    void initFileSystem() {
-        saveGameRoot = "/persist/" + gameRoot;
-        wasm_initFileSystem(saveGameRoot.c_str());
-    }
-
-    EM_JS(void, setBuildDate, (const char* date), {
-        if (v3wasm.setBuildDate)
-            v3wasm.setBuildDate(UTF8ToString(date));
-    });*/
-}
-#endif
-
-
 
 void platform_ProcessConfig()
 {
@@ -467,7 +295,7 @@ int getSecond()
 // Returns a vector of filenames that match the given pattern.
 // As you can see, it uses glob to get them, so this will now
 // match any pattern intelligently.
-void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
+void listFilePattern_(std::vector<std::string> &res, const std::string& pattern)
 {
 	glob_t pglob;
 	
@@ -482,6 +310,24 @@ void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
 	}
 	
 	globfree(&pglob);
+}
+
+void listFilePattern(std::vector<std::string> &res, CStringRef pattern)
+{
+#ifdef __EMSCRIPTEN__
+    std::string s = "persist/" + wasm_gameRoot + pattern.str();
+    to_lower(s);
+    listFilePattern_(res, s);
+    s = "persist/" + wasm_gameRoot + pattern.str();
+    listFilePattern_(res, s);
+    s = wasm_gameRoot + pattern.str();
+    to_lower(s);
+    listFilePattern_(res, s);
+    s = wasm_gameRoot + pattern.str();
+    listFilePattern_(res, s);    
+#else
+    listFilePattern_(res, pattern.str());
+#endif
 }
 
 // replacement for windows string functions
