@@ -1,0 +1,82 @@
+
+int camera_timestamp;
+int camera_pan_duration;
+int camera_wait_duration;
+int camera_new_entity;
+int camera_new_x, camera_new_y;
+int camera_old_x, camera_old_y;
+
+
+void SetCameraTargetXY(int x, int y, int duration)
+{
+	camera_old_x = xwin;
+	camera_old_y = ywin;
+	camera_new_entity = -1;
+	camera_new_x = x;
+	camera_new_y = y;
+	camera_timestamp = systemtime;
+	camera_pan_duration = duration;
+	camera_wait_duration = 100;
+	cameratracking = 0;
+	
+	if (!IsUpdateString("UpdateCamera"))
+		AddUpdate("UpdateCamera");
+}
+
+void SetCameraTarget(int ent, int duration)
+{
+	camera_old_x = xwin;
+	camera_old_y = ywin;
+	camera_new_entity = ent;
+	camera_new_x = 0;
+	camera_new_y = 0;
+	camera_timestamp = systemtime;
+	camera_pan_duration = duration;
+	camera_wait_duration = 0;
+	cameratracking = 0;
+	
+	if (!IsUpdateString("UpdateCamera"))
+		AddUpdate("UpdateCamera");
+}
+
+void UpdateCamera()
+{
+	int new_x;
+	int new_y;
+	
+	if (camera_new_entity >= 0)
+	{
+		new_x = entity.x[camera_new_entity] - (ImageWidth(screen) / 2) + 8;
+		new_y = entity.y[camera_new_entity] - (ImageHeight(screen) / 2) + 8;
+	}
+	else
+	{
+		new_x = camera_new_x - (ImageWidth(screen) / 2) + 8;
+		new_y = camera_new_y - (ImageHeight(screen) / 2) + 8;
+	}
+	
+	if (systemtime - camera_timestamp < camera_pan_duration)
+	{
+		xwin = (camera_old_x
+			+ ((systemtime - camera_timestamp)
+			* (new_x - camera_old_x) / camera_pan_duration));
+		ywin = (camera_old_y
+			+ ((systemtime - camera_timestamp)
+			* (new_y - camera_old_y) / camera_pan_duration));
+	}
+	else if (systemtime - camera_timestamp >= camera_pan_duration + camera_wait_duration)
+	{
+
+		if (camera_new_entity >= 0)
+		{
+			cameratracking = 2;
+			cameratracker = camera_new_entity;
+			RemoveUpdateString("UpdateCamera");
+		}
+		else
+		{
+			SetCameraTarget(gPlayer, camera_pan_duration / 2);
+		}
+	}
+
+}

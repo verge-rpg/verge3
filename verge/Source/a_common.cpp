@@ -49,10 +49,12 @@ byte* ImageTo24bpp(image *img)
 
 void log_Init(bool on)
 {
+#ifndef __EMSCRIPTEN__
 #ifndef PROHIBIT_DISK_LOG
 	remove(LOGFILE);
 #endif
 	log_on = on;
+#endif	
 }
 
 
@@ -80,7 +82,7 @@ void log(const char *text, ...)
     }
 
 #ifndef PROHIBIT_DISK_LOG
-	logfile = fopen(LOGFILE,"a");
+	logfile = FileOpen(LOGFILE, "a");
 #endif
 	if (logfile)
 	{

@@ -1766,7 +1766,9 @@ void VCCore::HandleLibFunc(word c)
 
 	VcFunctionImpl ptr = dispatchTable[c];
 	if (ptr) {
+		//log("Calling libfunc %d %s()", c, libfuncs[c].name.c_str());
 		ptr();
+		//log("Exiting libfunc %d %s()", c, libfuncs[c].name.c_str());
 		return;
 	}
 
@@ -1778,6 +1780,8 @@ void VCCore::HandleLibFunc(word c)
 	{		
 		case 64: DebugBreakpoint("User breakpoint"); break;
 		default:
+			//log("could not find impl for libfunc %d %s()", c, libfuncs[c].name.c_str());
 			se->vcerr("VC Execution error: Invalid vc STDLIB index. (%d)", (int) c);
+			break;
 	}
 }

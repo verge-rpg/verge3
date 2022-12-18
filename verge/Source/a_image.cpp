@@ -33,13 +33,18 @@ corona::Image* load_image_from_packfile(const char* filename)
 
 corona::Image* load_image_from_disk_or_packfile(const char* filename)
 {
-	corona::Image* img;
+	corona::Image* img = nullptr;
+
 	//log("loading image %s", filename);
+	
+#ifndef __EMSCRIPTEN__	
 	if (Exist(filename))
 	{
 		img = corona::OpenImage(filename, corona::FF_AUTODETECT, corona::PF_DONTCARE);
 	}
-	else
+#endif
+
+	if (!img)
 	{
 		img = load_image_from_packfile(filename);
 	}

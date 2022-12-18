@@ -7,7 +7,6 @@ core.dump
 crown.pcx
 elliot.chr
 Elliots.pcx
-fmod.dll
 Green.s3m
 lock1.wav
 man.chr
@@ -55,7 +54,6 @@ system/v3font.gif
 system/wipe.gif
 system/wipe2.gif
 system.vc
-system.xvc
 title01.png
 TREFUS.IT
 Tropic.map
@@ -65,12 +63,10 @@ tropic_ints.txt
 v1_maineffects.vc
 v1_rpg.vc
 v1_weather.vc
-v3.log
 v3changes.txt
 v3vergec.txt
 vcc_verbose.txt
 verge.cfg
-verge.exe
 wind2.wav
 woman1.chr
 woman2.chr

@@ -360,10 +360,45 @@ global_var_t::~global_var_t()
 	}
 }
 
+void global_var_t::read_old_global(FILE *f, int type)
+{
+	this->type = type;
+
+	fread(name, 1, IDENTIFIER_LEN, f);
+	fread_le(&ofs, f);
+	fread_le(&len, f);
+	fread_le(&dim, f);
+	dims.resize(dim);
+	for (int i = 0; i < dim; i++)
+	{
+		int mydimsize;
+		fread_le(&mydimsize, f);
+		dims[i] = mydimsize;
+	}
+
+	//log("global %s %d %d %d", name, ofs, len, dim);
+}
+
 void global_var_t::write(FILE *f)
 {
 	fwrite(name, 1, IDENTIFIER_LEN, f);
 	fwrite(&type, 1, 1, f);
+	fwrite(&ofs, 1, 4, f);
+	fwrite(&len, 1, 4, f);
+	fwrite(&dim, 1, 4, f);
+	for (int i = 0; i < dim; i++)
+	{
+		int mydimsize = dims[i];
+		fwrite(&mydimsize, 1, 4, f);
+	}
+}
+
+void global_var_t::write_old_global(FILE *f, int type)
+{
+	if (this->type != type)
+		err("invalid old global, mismatched type. expected %d but got %d", this->type, type);
+
+	fwrite(name, 1, IDENTIFIER_LEN, f);
 	fwrite(&ofs, 1, 4, f);
 	fwrite(&len, 1, 4, f);
 	fwrite(&dim, 1, 4, f);
@@ -385,6 +420,7 @@ struct_element::struct_element()
 
 struct_element::struct_element(FILE *f)
 {
+	//log("struct element");
 	memset(&ext, 0, sizeof (ext));
 
 	fread(&type, 1, 1, f);
@@ -400,6 +436,8 @@ struct_element::struct_element(FILE *f)
 		dims[i] = mydimsize;
 	}
 	//log("Loaded %s of type '%d' type name '%s'.", name, type, type_name);
+
+	//log("struct element %s %d %s %d %d", name, type, type_name, len, dim);
 }
 
 struct_element::~struct_element()
@@ -462,6 +500,7 @@ struct_definition::struct_definition()
 
 struct_definition::struct_definition(FILE *f)
 {
+	//log("struct definition");
 	fread(name, 1, IDENTIFIER_LEN, f);
 	int element_count;
 	fread_le(&element_count, f);
@@ -470,6 +509,8 @@ struct_definition::struct_definition(FILE *f)
 	{
 		elements[i] = new struct_element(f);
 	}
+
+	//log("struct definition %s %d", name, element_count);
 }
 
 struct_definition::~struct_definition()
@@ -526,6 +567,7 @@ struct_instance::struct_instance()
 
 struct_instance::struct_instance(FILE *f)
 {
+	//log("struct instance");
 	fread(name, 1, IDENTIFIER_LEN, f);
 	fread_le(&dim,f);
 	dims.resize(dim);
@@ -535,6 +577,9 @@ struct_instance::struct_instance(FILE *f)
 		fread_le(&mydimsize, f);
 		dims[i] = mydimsize;
 	}
+
+	//log("struct instance %s (%d dims)", name, dim);
+
 	is = new struct_definition(f);
 }
 
@@ -720,7 +765,7 @@ void VCCompiler::vprint(char *message, ...)
 	vsprintf (string, message, lst);
 	va_end   (lst);
 
-	FILE *f = fopen(VCLOG, "a");
+	FILE *f = FileOpen(VCLOG, "a");
 	fputs(string, f);
 	fclose(f);
 }
@@ -813,16 +858,53 @@ void VCCompiler::ExportSystemXVC()
 	char xvc_sig[8] = "VERGE30";
 	int ver = 1, size, i;
 
-	FILE *f = fopen("system.xvc", "wb");
+	FILE *f = FileOpen("system.xvc", "wb");
 	if (!f)
 		throw "VCCompiler::ExportSystemXVC - Could not open system.xvc for writing!";
 	fwrite(xvc_sig, 1, 8, f);
 	fwrite(&ver, 1, 4, f);
 
 	size = global_vars.size();
-	fwrite(&size, 1, 4, f);
-	for (i=0; i<size; i++)
-		global_vars[i]->write(f);
+	if (vc_olduserglobals)
+	{
+		int intcount = 0;
+		int strcount = 0;
+		for (auto& global_var : global_vars)
+		{
+			if (global_var->type == t_INT)
+			{
+				intcount++;
+			}
+			else if (global_var->type == t_STRING)
+			{
+				strcount++;
+			}
+		}
+
+		fwrite(&intcount, 1, 4, f);
+		for (auto& global_var : global_vars)
+		{
+			if (global_var->type == t_INT)
+			{
+				global_var->write_old_global(f, t_INT);
+			}
+		}
+
+		fwrite(&strcount, 1, 4, f);
+		for (auto& global_var : global_vars)
+		{
+			if (global_var->type == t_STRING)
+			{
+				global_var->write_old_global(f, t_STRING);
+			}
+		}
+	}
+	else
+	{
+		fwrite(&size, 1, 4, f);
+		for (i=0; i<size; i++)
+			global_vars[i]->write(f);
+	}
 
 	size = struct_instances.size();
 	fwrite(&size, 1, 4, f);
@@ -893,7 +975,7 @@ bool VCCompiler::CompileMap(const char *f)
 		vread(buf, mapcoresize, mi);
 		vclose(mi);
 
-		FILE *mo = fopen(va("%s.map", f), "wb");
+		FILE *mo = FileOpen(va("%s.map", f), "wb");
 		if (!mo)
 			err("couldn't open map for writing");
 		fwrite(buf, 1, mapcoresize, mo);
@@ -973,7 +1055,7 @@ bool VCCompiler::CompileOther(char *f, int cimage, bool append, bool dups, std::
 
 	// write if successful
 	if(result) {
-		FILE * out = fopen(va("%s.out", f), "wb");
+		FILE * out = FileOpen(va("%s.out", f), "wb");
 		if(!out)
 			err("Couldn't open output file for temp compilation");
 
@@ -2071,7 +2153,7 @@ void VCCompiler::ScanPass(scan_t type)
 
 	bool isPrimitive;
 	bool isFunc;
-/*FILE *f = fopen("prepos.txt", "wb");  // FIXME remove
+/*FILE *f = FileOpen("prepos.txt", "wb");  // FIXME remove
 source.SaveChunk(f);
 fclose(f);*/
 	while (true)
@@ -3498,6 +3580,11 @@ void VCCompiler::CheckIdentifier(char *s)
 	int libfunc_index = FindLibFunc(s, vc_redefinelibfuncs);
 	if (libfunc_index >= 0)
 	{
+		if (vc_oldlibfuncs && libfunc_index >= 256)
+		{
+			err("cannot use library func %s with index %d >= 256 when in oldlibfuncs mode", s, libfunc_index);
+		}
+
 		id_type = ID_LIBFUNC;
 		id_index = libfunc_index;
 		id_subtype = libfuncs[libfunc_index].returnType;
@@ -4422,10 +4509,17 @@ void VCCompiler::CompileCallback(callback_definition* def)
 		}
 
 		output.EmitC(opLIBFUNC);
-		// Overkill (2006-06-07): Now functions past 255 work.
-		// Yay! We'll probably never reach the 65535 mark,
-		// so we're safe again.
-		output.EmitW(id_index);
+		if (vc_oldlibfuncs)
+		{
+			output.EmitC(id_index);
+		}
+		else
+		{
+			// Overkill (2006-06-07): Now functions past 255 work.
+			// Yay! We'll probably never reach the 65535 mark,
+			// so we're safe again.
+			output.EmitW(id_index);
+		}
         return;
     }
 	// User function
@@ -4549,7 +4643,14 @@ void VCCompiler::CompileStatement()
 			
 			CheckIdentifier("CallFunction");
 			output.EmitC(opLIBFUNC);
-			output.EmitW(id_index);
+			if (vc_oldlibfuncs)
+			{
+				output.EmitC(id_index);
+			}
+			else
+			{
+				output.EmitW(id_index);
+			}
 			CompileString();
 			Expect("(");
 			output.EmitC(opVARARG_START);
@@ -4687,13 +4788,19 @@ void VCCompiler::HandleLibraryFunc()
 		initialized = true;
 	}
 
-
 	Expect("(");
 	output.EmitC(opLIBFUNC);
-	// Overkill (2006-06-07): Now functions past 255 work.
-	// Yay! We'll probably never reach the 65535 mark,
-	// so we're safe again.
-	output.EmitW(id_index);
+	if (vc_oldlibfuncs)
+	{
+		output.EmitC(id_index);
+	}
+	else
+	{
+		// Overkill (2006-06-07): Now functions past 255 work.
+		// Yay! We'll probably never reach the 65535 mark,
+		// so we're safe again.
+		output.EmitW(id_index);
+	}
 
 	int myindex = id_index;		// id_index may be changed during the arguement reading process
 

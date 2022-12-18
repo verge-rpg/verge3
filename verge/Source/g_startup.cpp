@@ -22,6 +22,10 @@
 #include <memory>
 #include <functional>
 
+#ifdef __EMSCRIPTEN__	
+#include "wasm_filesystem.h"
+#endif
+
 /****************************** data ******************************/
 
 int v3_xres=320, v3_yres=240, v3_bpp;
@@ -42,6 +46,8 @@ int soundengine = 0;
 bool use_lua = false;
 bool vc_oldstring = false;
 bool vc_redefinelibfuncs = false;
+bool vc_oldlibfuncs = false;
+bool vc_olduserglobals = false;
 bool showpage_auto_sleep = true;
 int last_showpage = 0;
 
@@ -133,6 +139,13 @@ void ApplyConfig()
         vc_oldstring = true;
     if (cfg_KeyPresent("redefinelibfuncs"))
         vc_redefinelibfuncs = true;
+    if (cfg_KeyPresent("oldlibfuncs"))
+		vc_oldlibfuncs = true;
+    if (cfg_KeyPresent("olduserglobals"))
+		vc_olduserglobals = true;
+
+    if (cfg_KeyPresent("gameroot"))
+		wasm_gameRoot = cfg_GetKeyValue("gameroot").c_str();
 
 	if (cfg_KeyPresent("mount1"))
 		MountVFile(cfg_GetKeyValue("mount1").c_str());
@@ -262,7 +275,7 @@ void ShowPage()
 void DisplayCompileImage()
 {
 #ifndef NOSPLASHSCREEN
-	FILE *f = fopen("__temp__img$$$.gif","wb");
+	FILE *f = FileOpen("__temp__img$$$.gif","wb");
 	if (!f) return; // oh well, we tried
 	fwrite(compileimg, 1, COMPILEIMG_LEN, f);
 	fclose(f);
@@ -368,6 +381,30 @@ void parseCommandlineConfigOption(const char* arg, size_t arglen, size_t start_o
 
 void _main(int argc, char** argv)
 {
+	constexpr size_t OPTION_ARG_PREFIX_LENGTH = 3;
+
+    for (size_t i = 1; i < argc; i++)
+    {
+		char* arg = argv[i];
+		size_t arglen = strlen(arg);
+
+		//log("arg %d %s %d", i, arg, arglen);
+
+		if (arglen >= OPTION_ARG_PREFIX_LENGTH && arg[0] == '-' && arg[2] == ':')
+		{
+			switch (arg[1])
+			{
+#ifdef __EMSCRIPTEN__			
+				case 'r': wasm_gameRoot = std::string(arg).substr(OPTION_ARG_PREFIX_LENGTH); break;
+#endif
+			}
+		}
+    }
+
+#ifdef __EMSCRIPTEN__			
+	initFileSystem();
+#endif
+
     vc_initBuiltins();
     vc_initLibrary();
 
@@ -378,12 +415,10 @@ void _main(int argc, char** argv)
 
     LoadConfig();
     
-    for (size_t i = 1; i <= argc; i++)
+    for (size_t i = 1; i < argc; i++)
     {
 		char* arg = argv[i];
 		size_t arglen = strlen(arg);
-
-		constexpr size_t OPTION_ARG_PREFIX_LENGTH = 3;
 
 		if (arglen >= OPTION_ARG_PREFIX_LENGTH && arg[0] == '-' && arg[2] == ':')
 		{
@@ -391,6 +426,7 @@ void _main(int argc, char** argv)
 			{
 				case 'c': parseCommandlineConfigOption(arg, arglen, OPTION_ARG_PREFIX_LENGTH, false); break;
 				case 'C': parseCommandlineConfigOption(arg, arglen, OPTION_ARG_PREFIX_LENGTH, true); break;
+				case 'r': break;
 				default: err("Argument %s not supported", arg); break;
 			}
 		}
@@ -405,7 +441,6 @@ void _main(int argc, char** argv)
 	ApplyConfig();
 
     InitVideo();
-
     mouse_Init();
     InitKeyboard();
     joy_Init();
@@ -475,11 +510,15 @@ void _main(int argc, char** argv)
 
     if (!use_lua)
 	{
+		//log("Using VC...");
         se = vc = new VCCore();
+		//log("VC core created.");
+
         if (decompile)
             vc->Decompile();
     }
 	
+	//log("Executing autoexec...");
     se->ExecAutoexec();
 }
 

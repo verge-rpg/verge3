@@ -16,7 +16,7 @@ int skewlines[100] = { 0 };
 //	for (int i=0; i<32000; i+=100) timeless[i] = i/100;
 //	//for (int i=0; i<100; i++) skewlines[i] = -5;
 //
-//	FILE *f = fopen ("gnbgtbl.m", "w");
+//	FILE *f = FileOpen ("gnbgtbl.m", "w");
 //	for (int i=0; i<320; i++)
 //	{
 //		fprintf(f, "dw ");

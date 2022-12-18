@@ -67,7 +67,7 @@ bool LUA::CompileMap(const char *f) {
 	vread(buf, mapcoresize, mi);
 	vclose(mi);
 
-	FILE *mo = fopen(va("%s.map", f), "wb");
+	FILE *mo = ::FileOpen(va("%s.map", f), "wb");
 	if (!mo)
 		::err("couldn't open map for writing");
 	fwrite(buf, 1, mapcoresize, mo);

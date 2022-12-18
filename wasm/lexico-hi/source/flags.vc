@@ -1,0 +1,172 @@
+#define FLAG_NUMBER 255
+
+int gFlags[FLAG_NUMBER];
+int gRoomFlags;
+string gRoomList[25];
+
+///////////////////////////////
+//1-1
+///////////////////////////////
+
+#define FLAG_ROOM1_LIGHTS 0
+#define FLAG_ROOM1_LIGHTS_TRANSITION 1
+
+///////////////////////////////
+//1-2
+///////////////////////////////
+
+#define FLAG_CRATE1_X 10
+#define FLAG_CRATE1_Y 11
+#define FLAG_CRATE2_X 12
+#define FLAG_CRATE2_Y 13
+#define FLAG_CRATE3_X 14
+#define FLAG_CRATE3_Y 15
+#define FLAG_CRATE4_X 16
+#define FLAG_CRATE4_Y 17
+#define FLAG_CRATE5_X 18
+#define FLAG_CRATE5_Y 19
+#define FLAG_CRATE6_X 20
+#define FLAG_CRATE6_Y 21
+#define FLAG_CRATES_SECOND 22
+
+///////////////////////////////
+//1-4
+///////////////////////////////
+
+#define FLAG_BATTERY_USED 30
+
+///////////////////////////////
+//1-8
+///////////////////////////////
+
+#define FLAG_DATABASE_FIXED 35
+
+///////////////////////////////
+//2-2
+///////////////////////////////
+
+#define FLAG_DRILL_COMPLETED 40
+
+///////////////////////////////
+//Global
+///////////////////////////////
+
+#define FLAG_TELEPORTING 200
+
+#define FLAG_TEMPERATURE1 201
+#define FLAG_TEMPERATURE2 202
+#define FLAG_TEMPERATURE3 203
+#define FLAG_TEMPERATURE4 204
+
+#define FLAG_HAS_BATTERY 205
+
+#define FLAG_KNOWLEDGE_PRODUCTS 206
+#define FLAG_KNOWLEDGE_MANUA 207
+#define FLAG_KNOWLEDGE_MANUB 208
+#define FLAG_KNOWLEDGE_CPU 209
+
+#define FLAG_ENGINEER_LOC 210
+#define FLAG_FIXED_TEMP_DOOR 211
+
+#define FLAG_SCOTT_LOC 212
+
+#define FLAG_SPOKEN_ELDER 213
+
+#define FLAG_NEWGAME 214
+
+///////////////////////////////
+
+int gTemperatureLimits[4][3]; //0 = MIN, 1 = MAX
+
+void SetRoomFlag(string amap)
+{
+	amap = left(amap,3);
+
+	if (!DictContains(gRoomFlags, amap) && strcmp(amap,"tit"))
+	{
+		DictSetInt(gRoomFlags, amap, LoadImage("minimaps\"+amap+".png"));
+	}
+}
+
+void DefaultFlags()
+{
+    int i = 0;
+    for (i = 0; i < 255; i++)
+        gFlags[i] = 0;
+        
+	gFlags[FLAG_ROOM1_LIGHTS] = 0;
+	gFlags[FLAG_ROOM1_LIGHTS_TRANSITION] = 25;
+    
+	gFlags[FLAG_TELEPORTING] = 0;
+    
+    gDoorFlags[DOOR_02] = DOOR_CLOSED;
+	gDoorFlags[DOOR_11] = DOOR_CLOSED;
+    gDoorFlags[DOOR_14] = DOOR_CLOSED;
+	gDoorFlags[DOOR_15] = DOOR_CLOSED;
+    gDoorFlags[DOOR_22] = DOOR_CLOSED;
+    gDoorFlags[DOOR_31] = DOOR_CLOSED;
+    gDoorFlags[DOOR_33] = DOOR_CLOSED;
+    gDoorFlags[DOOR_34] = DOOR_CLOSED;
+	
+	gFlags[FLAG_TEMPERATURE1] = 40;
+	gFlags[FLAG_TEMPERATURE2] = 120;
+	gFlags[FLAG_TEMPERATURE3] = 60;
+	gFlags[FLAG_TEMPERATURE4] = 190;
+	
+    gFlags[FLAG_ENGINEER_LOC] = 16;
+    gFlags[FLAG_SCOTT_LOC] = 8;
+    
+	// 0 = coldest, 100 = middle, 200 = hottest
+	//Room 1 = HOT HOT HOT
+	gTemperatureLimits[0][0] = 160;  //Room 1 min
+	gTemperatureLimits[0][1] = 200; //Room 1 max
+	gTemperatureLimits[0][2] = FLAG_TEMPERATURE1;
+	
+	//Room 2 = COLD
+	gTemperatureLimits[1][0] = 60;  //Room 2 min
+	gTemperatureLimits[1][1] = 100; //Room 2 max
+	gTemperatureLimits[1][2] = FLAG_TEMPERATURE2;
+
+	//Room 3 = HOT HOT
+	gTemperatureLimits[2][0] = 130;  //Room 3 min
+	gTemperatureLimits[2][1] = 170; //Room 3 max
+	gTemperatureLimits[2][2] = FLAG_TEMPERATURE3;
+	
+	//Room 4 = COLD COLD
+	gTemperatureLimits[3][0] = 40; //Room 4 min
+	gTemperatureLimits[3][1] = 80; //Room 4 max
+	gTemperatureLimits[3][2] = FLAG_TEMPERATURE4;
+	
+	//Map name list
+	///////////////////////////////////////////////////////////
+	
+	gRoomList[0] = "24";
+	gRoomList[1] = "0-0";
+	gRoomList[2] = "0-1";
+	gRoomList[3] = "0-2";
+	gRoomList[4] = "0-3";
+	gRoomList[5] = "0-4";
+	gRoomList[6] = "1-1";
+	gRoomList[7] = "1-2";
+	gRoomList[8] = "1-3";
+	gRoomList[9] = "1-4";
+	gRoomList[10] = "1-5";
+	gRoomList[11] = "1-6";
+	gRoomList[12] = "1-7";
+	gRoomList[13] = "1-8";
+	gRoomList[14] = "2-1";
+	gRoomList[15] = "2-2";
+	gRoomList[16] = "2-3";
+	gRoomList[17] = "2-4";
+	gRoomList[18] = "2-5";
+	gRoomList[19] = "3-1";
+	gRoomList[20] = "3-2";
+	gRoomList[21] = "3-3";
+	gRoomList[22] = "3-4";
+	gRoomList[23] = "EEE";
+	
+	///////////////////////////////////////////////////////////
+    
+    // DEBUG //
+    //gFlags[FLAG_HAS_BATTERY] = 1;
+}

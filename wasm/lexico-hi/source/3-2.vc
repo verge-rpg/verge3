@@ -1,0 +1,21 @@
+void OnEnter()
+{
+    PlayGameMusic(song_computer);
+    
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+	
+	SpawnPlayer();
+}
+
+void VehicleComputer()
+{
+	InitCredits();
+}
+
+void WarpTo34()
+{
+    WarpTo(31,23, "3-4.map");
+}

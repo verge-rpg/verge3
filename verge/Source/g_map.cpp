@@ -301,7 +301,7 @@ void MAP::save(FILE *f)
 {
 	int i;
 	char tempfn[16] = "$$v3map.tmp";
-	FILE *out = fopen(tempfn, "wb");
+	FILE *out = FileOpen(tempfn, "wb");
 	if (!out) err("Unable to open %s for writing!", tempfn);
 	// Map signature.
 	char signature[8];

@@ -1,0 +1,148 @@
+void ManageCrates()
+{
+    int i, y;
+    int stop = 0;
+    
+    for (i=0; i<5; i++)
+    {
+        
+        if (!entity.movecode[gCrate[i]])
+        {
+            EntityMove(gCrate[i], "d30");
+        }
+        else if (entity.y[gCrate[i]] > 22*16)
+        {
+            entity.y[gCrate[i]] = 7*16;
+        }
+        
+        if (entity.speed[gDrill2] == 48)
+        
+            if (DetectCollision(entity.x[gDrill2], entity.y[gDrill2], entity.hotw[gDrill2], entity.hoth[gDrill2], entity.x[gCrate[i]], entity.y[gCrate[i]], entity.hotw[gCrate[i]], entity.hoth[gCrate[i]]))
+                stop = 1;
+    }
+    
+    if (!gFlags[FLAG_DRILL_COMPLETED])
+    {
+        if (entity.x[gDrill2] >= 58*16)
+        {
+            PlaySound(sfx_success, 50);
+            gFlags[FLAG_DRILL_COMPLETED] = 1;
+            EntityStop(gDrill2);
+            SetCameraTarget(gPlayer, 0);
+        }
+    
+        else if ((!entity.movecode[gDrill2] || stop) && entity.x[gDrill2] > 20*16)
+        {
+            PlaySound(sfx_error, 50);
+            EntityStop(gDrill2);
+            entity.speed[gDrill2] = 160;
+            EntityMove(gDrill2, "l100");
+        }
+    
+        if (entity.x[gDrill2] <= 20*16 && cameratracking == 2)
+        {
+            entity.x[gDrill2] = 20*16;
+            entity.speed[gDrill2] = 48;
+            entity.face[gDrill2] = 4;
+            SetCameraTarget(gPlayer, 0);
+        }
+    }
+}
+
+void OnEnter()
+{
+    int i = 0;
+    
+    PlayGameMusic(song_computer);
+    
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+    
+    gDoors[0].x = 64; gDoors[0].y = 16; gDoors[0].type = 2; 
+	gDoors[0].id = DOOR_22;
+    
+    if (gFlags[FLAG_DRILL_COMPLETED])
+    {
+        SetTile(17,13,1,82);
+        SetTile(18,13,1,83);
+        gDrill2 = EntitySpawn(58,16, "drill.chr");
+    }
+    else
+        gDrill2 = EntitySpawn(20,16, "drill.chr");
+        
+    entity.speed[gDrill2] = 48;
+    entity.face[gDrill2] = 4;
+    for (i=0; i<5; i++)
+    {
+        gCrate[i] = EntitySpawn(25 + (i*9),7, "crate.chr");
+        entity.speed[gCrate[i]] = 80;
+    }
+    entity.y[gCrate[1]] = 17*16;
+    entity.y[gCrate[2]] = 17*16;
+    entity.x[gCrate[4]] = 52*16;
+    entity.y[gCrate[3]] = 9*16;
+    entity.y[gCrate[4]] = 11*16;
+        
+    PlaySong(song_conveyor);
+    SetSongVolume(song_conveyor, 25);
+    
+    AddUpdate("ManageCrates");
+    
+    AddInput(0, 20, 60, 140, 10);
+    
+    AddButton(1, 245, 90, -1, "iRobotGo");
+    AddGlyph(1, 257, 113, glyph_DRILL);
+    AddGlyph(1, 257, 131, glyph_ON);
+    
+    AddRectangle(2, 245, 60, 40, 26, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(2, 257, 65, glyph_ERROR);
+    
+    AddButton(3, 100, 120, 0,"iDoorDrillOpen");
+	AddButton(3, 150, 120, 0,"iDoorDrillClose");
+	
+	AddGlyph(3,110,155, glyph_OPEN);
+	AddGlyph(3,160,155, glyph_CLOSE);
+    
+    AddRectangle(4, 100, 85, 120, 25, RGB(255,0,0), RGB(128,0,0));
+    AddGlyph(4, 125, 90, glyph_ERROR);
+    AddGlyph(4, 161, 90, glyph_NO);
+    AddGlyph(4, 179, 90, glyph_DRILL);    
+    
+	SpawnPlayer();
+}
+
+void ProgramComputer()
+{
+    if (!entity.movecode[gDrill2] && !gFlags[FLAG_DRILL_COMPLETED])
+    {
+        AddCollection(0);
+        AddCollection(1);
+        AddCollection(20);
+        AddCollection(21);
+    }
+    else
+    {
+        TBox(0, gFont, "Its purpose fulfilled, the computer has stopped responding.");
+    }
+}
+
+void DoorComputer()
+{
+    AddCollection(3);
+}
+
+void WarpTo34()
+{
+    RemoveUpdateString("ManageCrates");
+    StopSong(song_conveyor);
+    WarpTo(5,11, "3-4.map");
+}
+
+void TeleportToUUU()
+{
+    RemoveUpdateString("ManageCrates");
+    StopSong(song_conveyor);
+	TeleportTo(19,14, "0-4.map");
+}

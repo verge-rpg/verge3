@@ -539,6 +539,11 @@ void err(const char *str, ...)
 		showMessageBox(msg);
 		log("Exiting: %s", msg);
 	}
+#ifdef __EMSCRIPTEN__
+    EM_ASM({
+        throw "Exit requested.";
+    });
+#endif    
 
 	exit(strlen(msg)==0?0:-1);
 }

@@ -47,7 +47,7 @@ void cfg_Init(std::string_view fn)
 
 	cfg_filename.reserve(255);
 
-#if defined(__APPLE__) || defined(__IPHONE__) || defined(__LINUX__) || defined(__EMSCRIPTEN__)
+#if defined(__APPLE__) || defined(__IPHONE__) || defined(__LINUX__)
 	getcwd(temp, sizeof(temp));
 	cfg_filename += temp;
 	cfg_filename += '/';
@@ -61,6 +61,8 @@ void cfg_Init(std::string_view fn)
 #elif __WII__
 	//likewise above
 	cfg_filename = fn;
+#elif __EMSCRIPTEN__
+	cfg_filename = fn;
 #else 
 	GetCurrentDirectory(sizeof(temp), temp);
 	cfg_filename += temp;
@@ -68,7 +70,7 @@ void cfg_Init(std::string_view fn)
 	cfg_filename += fn.data();
 #endif
 
-	FILE *f = fopen(cfg_filename.c_str(), "r");
+	FILE *f = FileOpen(cfg_filename.c_str(), "r");
 	if (!f) return;
 
 	while (!feof(f))
@@ -171,7 +173,7 @@ void cfg_DeleteKey(std::string_view key)
 
 void cfg_WriteConfig()
 {
-	FILE *f = fopen(cfg_filename.c_str(), "w");
+	FILE *f = FileOpen(cfg_filename.c_str(), "w");
 	if (!f) err("cfg_WriteConfig(), could not open config file!");
 
 	for (const auto& i : cfg_dict)

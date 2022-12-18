@@ -49,6 +49,8 @@ VCCore::VCCore()
 {
 	userfuncMap[0] = userfuncMap[1] = userfuncMap[2] = 0;
 
+	olduserglobals_int_count = 0;
+	olduserglobals_str_count = 0;
 	int_stack_base = 0;
 	int_stack_ptr = 0;
 	str_stack_base = 0;
@@ -85,6 +87,8 @@ VCCore::~VCCore()
 
 void VCCore::ExecAutoexec()
 {
+	//log("Executing autoexec...");
+
 	ExecuteFunctionString("sysvc_global_initializers");
 	ExecuteFunctionString("autoexec");
 }
@@ -99,6 +103,8 @@ bool VCCore::ExecuteFunctionString(const StringRef &script)
 		if(found == end || found->hash != hash) continue;
 	
 		invc++;
+		//log("Executing function %s...", script.c_str());
+
 		// Overkill (2007-05-02): Argument passing introduced.
 		ExecuteUserFunc(i, found->index, true);
 		invc--;
@@ -128,6 +134,8 @@ bool VCCore::FunctionExists(const StringRef &script)
 
 void VCCore::LoadSystemXVC()
 {
+	//log("VCCore::LoadSystemXVC(): loading system.xvc");
+
 	char xvc_sig[8] = "VERGE30", buf[8];
 	VFILE *vf = vopen("system.xvc");
 
@@ -149,51 +157,86 @@ void VCCore::LoadSystemXVC()
 	if (ver != 1)
 		err("VCCore::LoadSystemXVC() - system.xvc has incorrect version marker");
 
-	// Globals.
-	global_var_t var;
-	int i, size;
-	fread_le(&size, f);
 	maxint = maxstr = maxcb = 0;
 	
-	for (int i=0; i<size; i++)
+	int i, size;
+
+	if (vc_olduserglobals)
 	{
-		// Load variable definition from file.
-		var = global_var_t(f);
-		// Current "ofs" saved was the one to used by the compiler to properly expand structs/arrays. 
-		// But we now need a offset specific to each type category.
-		// Figure out each variable's offset in the global value arrays,
-		// and calculate the max number of variables to allocate.
-		if(var.type == t_INT)
+		fread_le(&size, f);
+		olduserglobals_int_count = size;
+		for (int i = 0; i < size; i++)
 		{
+			global_var_t var;
+			var.read_old_global(f, t_INT);
 			var.ofs = maxint;
-			maxint += var.len;
-		}
-		else if(var.type == t_STRING)
-		{
-			var.ofs = maxstr;
-			maxstr += var.len;
-		}
-		else if(var.type == t_CALLBACK)
-		{
-			var.ofs = maxcb;
-			maxcb += var.len;
+			maxint += var.len;			
+			global_vars.push_back(var);
 		}
 
-		// Push back.
-		global_vars.push_back(var);
+		fread_le(&size, f);
+		olduserglobals_str_count = size;
+		for (int i = 0; i < size; i++)
+		{
+			global_var_t var;
+			var.read_old_global(f, t_STRING);
+			var.ofs = maxstr;
+			maxstr += var.len;	
+			global_vars.push_back(var);
+		}
+
+		//log("VCCore::LoadSystemXVC(): variable count %d (int count %d, str count %d)", static_cast<int>(global_vars.size()), maxint, maxstr);
 	}
+	else
+	{
+		// Globals.
+		global_var_t var;
+		fread_le(&size, f);
+		
+		//log("VCCore::LoadSystemXVC(): variable count %d", size);
+		for (int i=0; i<size; i++)
+		{
+			// Load variable definition from file.
+			var = global_var_t(f);
+			// Current "ofs" saved was the one to used by the compiler to properly expand structs/arrays. 
+			// But we now need a offset specific to each type category.
+			// Figure out each variable's offset in the global value arrays,
+			// and calculate the max number of variables to allocate.
+			if(var.type == t_INT)
+			{
+				var.ofs = maxint;
+				maxint += var.len;
+			}
+			else if(var.type == t_STRING)
+			{
+				var.ofs = maxstr;
+				maxstr += var.len;
+			}
+			else if(var.type == t_CALLBACK)
+			{
+				var.ofs = maxcb;
+				maxcb += var.len;
+			}
+
+			// Push back.
+			global_vars.push_back(var);
+		}
+
+		// Struct instances.
+		fread_le(&size, f);
+		//log("VCCore::LoadSystemXVC(): struct instance count %d", size);
+		for (i = 0; i < size; i++)
+			struct_instances.push_back(new struct_instance(f));		
+	}
+
 	// Must allocate at least size 1 so we we can index these global arrays later.
 	if(maxint == 0) maxint = 1;
 	if(maxstr == 0) maxstr = 1;
 	if(maxcb == 0) maxcb = 1;
 
-	// Struct instances.
-	fread_le(&size, f);
-	for (i=0; i<size; i++)
-		struct_instances.push_back(new struct_instance(f));
-
 	// User functions.
 	fread_le(&size, f);
+	//log("VCCore::LoadSystemXVC(): user func count %d", size);
 	userfuncMap[CIMAGE_SYSTEM] = new TUserFuncMap[size];
 	for (i=0; i<size; i++) {
 		function_t* func = new function_t(f);
@@ -212,6 +255,7 @@ void VCCore::LoadSystemXVC()
 	vccallback = new VergeCallback[maxcb];
 	memset(vcint, 0, maxint*4);
 
+	//log("VCCore::LoadSystemXVC(): loading chunk");
 	coreimages[CIMAGE_SYSTEM].LoadChunk(f);
 	vclose(vf);
 }
@@ -561,7 +605,7 @@ int VCCore::ProcessOperand()
 		}
 		case intLIBFUNC:
 			currentvc->GrabC(); // skip opLIBFUNC
-			HandleLibFunc(currentvc->GrabW());
+			HandleLibFunc(vc_oldlibfuncs ? currentvc->GrabC() : currentvc->GrabW());
 			return vcreturn;
 		case intUSERFUNC:
 			currentvc->GrabC(); // skip opUSERFUNC
@@ -639,6 +683,7 @@ StringRef VCCore::ProcessString()
 	int d;
 	byte c = currentvc->GrabC();
 	byte temp;
+	//log("process string %d", c);
 	switch (c)
 	{
 		case strLITERAL:
@@ -649,6 +694,8 @@ StringRef VCCore::ProcessString()
 		case strGLOBAL:
 		{
 			int idx = currentvc->GrabD();
+			if (vc_olduserglobals)
+				idx += olduserglobals_int_count;
 			d = global_vars[idx].ofs;
 			if (d >= 0 && d < maxstr)
 				ret = vcstring[d];
@@ -659,6 +706,8 @@ StringRef VCCore::ProcessString()
 		case strARRAY:
 		{
 			int idx = currentvc->GrabD();
+			if (vc_olduserglobals)
+				idx += olduserglobals_int_count;			
 			d = global_vars[idx].ofs;
 
 			for (int i=0; i<global_vars[idx].dim; i++)
@@ -737,8 +786,11 @@ StringRef VCCore::ProcessString()
 			return vcretstr;
 		// Callback operation (global var)
 		case cbGLOBAL:
-			d = currentvc->GrabD();
-			d = global_vars[d].ofs;
+		{
+			int idx = currentvc->GrabD();
+			if (vc_olduserglobals)
+				idx += olduserglobals_int_count + olduserglobals_str_count;
+			d = global_vars[idx].ofs;
 			if (d>=0 && d<maxcb)
 			{
 				temp = currentvc->GrabC();
@@ -755,10 +807,13 @@ StringRef VCCore::ProcessString()
 			else
 				vcerr("VCCore::ProcessString(): bad offset to vc_callbacks (var), %d", d);
 			break;
+		}
 		// Callback operation (global array)
 		case cbARRAY:
 		{
 			int idx = currentvc->GrabD();
+			if (vc_olduserglobals)
+				idx += olduserglobals_int_count + olduserglobals_str_count;			
 			d = global_vars[idx].ofs;
 			for (int i=0; i<global_vars[idx].dim; i++)
 			{
@@ -786,7 +841,7 @@ StringRef VCCore::ProcessString()
 		}
 		case strLIBFUNC:
 			currentvc->GrabC(); // skip opLIBFUNC
-			HandleLibFunc(currentvc->GrabW());
+			HandleLibFunc(vc_oldlibfuncs ? currentvc->GrabC() : currentvc->GrabW());
 			ret = vcretstr;
 			break;
 		case strUSERFUNC:
@@ -840,15 +895,23 @@ VergeCallback VCCore::ResolveCallback()
 {
 	int d, idx;
 	byte c, temp;
-	c = currentvc->GrabC();
-
 	VergeCallback cb = VergeCallback();
+
+	if (vc_olduserglobals)
+	{
+		c = t_STRING;
+	}
+	else
+	{
+		c = currentvc->GrabC();
+	}
+
 	cb.opType = c;
 	switch(c)
 	{
 		// Reference to library function.
 		case opLIBFUNC:
-			cb.functionIndex = currentvc->GrabW();
+			cb.functionIndex = vc_oldlibfuncs ? currentvc->GrabC() : currentvc->GrabW();
 			return cb;
 		// Reference to user function.
 		case opUSERFUNC:
@@ -998,7 +1061,7 @@ void VCCore::ExecuteBlock()
 			case opASSIGN:		HandleAssign(); break;
 			case opIF:			HandleIf(); break;
 			case opPLUGINFUNC:	HandlePluginFunc(currentvc->GrabD()); break;
-			case opLIBFUNC:		HandleLibFunc(currentvc->GrabW()); break;
+			case opLIBFUNC:		HandleLibFunc(vc_oldlibfuncs ? currentvc->GrabC() : currentvc->GrabW()); break;
 			case opUSERFUNC:	temp = currentvc->GrabC(); // to ensure correct order of eval
 								ExecuteUserFunc(temp, currentvc->GrabD()); break;
 			case opGOTO:		currentvc->setpos(currentvc->GrabD()); break;
@@ -1360,6 +1423,7 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 		}
 	}
 
+	//log("Calling %s() ofs = %d", func->name, func->codeofs);
 	int_stack_base = isp;
 	str_stack_base = ssp;
 	cb_stack_base = csp;
@@ -1377,6 +1441,8 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 
 	ExecuteBlock();   // execute!
 
+	//log("Returned from %s()", func->name);
+	
 	if (argument_pass)
 	{
 		ArgumentPassClear();
@@ -1516,9 +1582,12 @@ void VCCore::HandleAssign()
 	// string assignment
 	if (c == strGLOBAL)
 	{
-		offset = currentvc->GrabD();
-		offset = global_vars[offset].ofs;
+		int idx = currentvc->GrabD();
+		if (vc_olduserglobals)
+			idx += olduserglobals_int_count;
+		offset = global_vars[idx].ofs;
 		c = currentvc->GrabC();
+		//log("strGLOBAL %d %s %d", idx, global_vars[idx].name, c);
 		if (c != aSET)
 			vcerr("VC execution error: Corrupt string assignment");
 		if (offset>=0 && offset<maxstr)
@@ -1531,6 +1600,8 @@ void VCCore::HandleAssign()
 	if (c == strARRAY)
 	{
 		int idx = currentvc->GrabD();
+		if (vc_olduserglobals)
+			idx += olduserglobals_int_count;
 		base = global_vars[idx].ofs;
 		offset = 0;
 		for (int i=0; i<global_vars[idx].dim; i++)
@@ -1542,6 +1613,7 @@ void VCCore::HandleAssign()
 		}
 		base += offset;
 		c = currentvc->GrabC();
+		//log("strARRAY %d %s %d", idx, global_vars[idx].name, c);
 		if (c != aSET)
 			vcerr("VC execution error: Corrupt string assignment");
 		if (base>=0 && base<maxstr)
@@ -1593,8 +1665,10 @@ void VCCore::HandleAssign()
 	// Callback operation (global var)
 	if(c == cbGLOBAL)
 	{
-		offset = currentvc->GrabD();
-		offset = global_vars[offset].ofs;
+		int idx = currentvc->GrabD();
+		if (vc_olduserglobals)
+			idx += olduserglobals_int_count + olduserglobals_str_count;
+		offset = global_vars[idx].ofs;
 		c = currentvc->GrabC();
 		if (offset>=0 && offset<maxcb)
 		{
@@ -1619,6 +1693,8 @@ void VCCore::HandleAssign()
 	if(c == cbARRAY)
 	{
 		int idx = currentvc->GrabD();
+		if (vc_olduserglobals)
+			idx += olduserglobals_int_count + olduserglobals_str_count;		
 		offset = global_vars[idx].ofs;
 		for (int i=0; i<global_vars[idx].dim; i++)
 		{
@@ -2036,7 +2112,7 @@ CStringRef VCCore::GetStrArray(CStringRef strname, int index)
 
 void VCCore::Decompile()
 {
-	vcd = fopen("system.vcd", "w");
+	vcd = ::FileOpen("system.vcd", "w");
 	if (!vcd) err("Can't open system.vcd for writing");
 	WriteGlobalVars();
 	DecompileFunctions();
@@ -2146,12 +2222,13 @@ void VCCore::DecompileString()
 void VCCore::DecompileLibFunc()
 {
 	PrintTab();
-	byte c = currentvc->GrabC();
-	fprintf(vcd, "%s(", libfuncs[c].name.c_str());
+	word w = vc_oldlibfuncs ? currentvc->GrabC() : currentvc->GrabW();
+	auto& libfunc = libfuncs[w];
+	fprintf(vcd, "%s(", libfunc.name.c_str());
 
-	for (quad i=0; i<libfuncs[c].argumentTypes.size(); i++)
+	for (quad i=0; i<libfunc.argumentTypes.size(); i++)
 	{
-		switch (libfuncs[c].argumentTypes[i])
+		switch (libfunc.argumentTypes[i])
 		{
 			case t_INT:
 				// DecompileOperand();

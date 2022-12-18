@@ -1,0 +1,155 @@
+#define DOOR_OPEN 0
+#define DOOR_CLOSED 1
+
+#define DOOR_NUMBER 32
+
+int gDoorFlags[DOOR_NUMBER];
+
+#define DOOR_02 0
+#define DOOR_11 1
+#define DOOR_14 2
+#define DOOR_15 3
+#define DOOR_22 4
+#define DOOR_31 5
+#define DOOR_33 6
+#define DOOR_34 7
+
+struct Door
+{
+	int x;
+	int y;
+	
+	int type;
+	int status;
+	
+	int id;
+}
+
+Door gDoors[20];
+
+void ClearDoors()
+{
+	int i;
+	
+	for (i = 0; i < 20; i++)
+	{
+		gDoors[i].x = -1;
+		gDoors[i].y = -1;
+		gDoors[i].type = -1;
+		gDoors[i].status = -1;
+		gDoors[i].id = -1;
+	}
+}
+
+void UpdateDoors()
+{
+	int i;
+	
+	
+	
+	for (i = 0; i < 20; i++)
+	{
+		if (gDoors[i].x != -1)
+		{
+			gDoors[i].status = gDoorFlags[gDoors[i].id];
+		
+			if (gDoors[i].type == 0)
+			{
+				if (gDoors[i].status == DOOR_OPEN) //Open
+				{
+					SetTile(gDoors[i].x, gDoors[i].y, 1, 128);
+					SetTile(gDoors[i].x+1, gDoors[i].y, 1, 129);
+					
+					SetTile(gDoors[i].x, gDoors[i].y+1, 1, 26);
+					SetTile(gDoors[i].x+1, gDoors[i].y+1, 1, 26);			
+					
+                    SetTile(gDoors[i].x, gDoors[i].y+1, 2, 108);
+					SetTile(gDoors[i].x+1, gDoors[i].y+1, 2, 109);
+                    
+					SetTile(gDoors[i].x, gDoors[i].y+2, 1, 26);
+					SetTile(gDoors[i].x+1, gDoors[i].y+2, 1, 26);
+					
+					SetTile(gDoors[i].x, gDoors[i].y+3, 1, 26);
+					SetTile(gDoors[i].x+1, gDoors[i].y+3, 1, 26);
+                    
+                    SetTile(gDoors[i].x, gDoors[i].y+4, 2, 0);
+					SetTile(gDoors[i].x+1, gDoors[i].y+4, 2, 0);
+
+					SetObs(gDoors[i].x, gDoors[i].y+3,  0);
+					SetObs(gDoors[i].x+1, gDoors[i].y+3, 0);
+				}
+				
+				else //Closed
+				{
+					SetTile(gDoors[i].x, gDoors[i].y, 1, 48);
+					SetTile(gDoors[i].x+1, gDoors[i].y, 1, 49);
+					
+					SetTile(gDoors[i].x, gDoors[i].y+1, 1, 68);
+					SetTile(gDoors[i].x+1, gDoors[i].y+1, 1, 69);			
+                    
+                    SetTile(gDoors[i].x, gDoors[i].y+1, 2, 0);
+					SetTile(gDoors[i].x+1, gDoors[i].y+1, 2, 0);
+					
+					SetTile(gDoors[i].x, gDoors[i].y+2, 1, 68);
+					SetTile(gDoors[i].x+1, gDoors[i].y+2, 1, 69);
+					
+					SetTile(gDoors[i].x, gDoors[i].y+3, 1, 88);
+					SetTile(gDoors[i].x+1, gDoors[i].y+3, 1, 89);			
+
+                    SetTile(gDoors[i].x, gDoors[i].y+4, 2, 108);
+					SetTile(gDoors[i].x+1, gDoors[i].y+4, 2, 109);
+                    
+					SetObs(gDoors[i].x, gDoors[i].y+3,  1);
+					SetObs(gDoors[i].x+1, gDoors[i].y+3, 1);			
+				}
+			}
+			
+			else if (gDoors[i].type == 1) // <-
+			{
+				if (gDoors[i].status == DOOR_OPEN) //Open
+				{
+					SetTile(gDoors[i].x, gDoors[i].y-2, 4, 28);
+					SetTile(gDoors[i].x, gDoors[i].y-1, 4, 0);
+					SetTile(gDoors[i].x, gDoors[i].y, 4, 8);
+
+					SetObs(gDoors[i].x, gDoors[i].y+1, 0);
+					SetObs(gDoors[i].x, gDoors[i].y, 0);
+				}
+				
+				else //Closed
+				{
+					SetTile(gDoors[i].x, gDoors[i].y-2, 4, 27);
+					SetTile(gDoors[i].x, gDoors[i].y-1, 4, 27);
+					SetTile(gDoors[i].x, gDoors[i].y, 4, 27);
+
+					SetObs(gDoors[i].x, gDoors[i].y+1, 1);
+					SetObs(gDoors[i].x, gDoors[i].y, 1);		
+				}			
+			}
+
+			else if (gDoors[i].type == 2) // ->
+			{
+				if (gDoors[i].status == DOOR_OPEN) //Open
+				{
+					SetTile(gDoors[i].x, gDoors[i].y-2, 4, 29);
+					SetTile(gDoors[i].x, gDoors[i].y-1, 4, 0);
+					SetTile(gDoors[i].x, gDoors[i].y, 4, 9);
+
+					SetObs(gDoors[i].x, gDoors[i].y+1, 0);
+					SetObs(gDoors[i].x, gDoors[i].y, 0);
+				}
+				
+				else //Closed
+				{
+					SetTile(gDoors[i].x, gDoors[i].y-2, 4, 25);
+					SetTile(gDoors[i].x, gDoors[i].y-1, 4, 25);
+					SetTile(gDoors[i].x, gDoors[i].y, 4, 25);
+
+					SetObs(gDoors[i].x, gDoors[i].y+1, 1);
+					SetObs(gDoors[i].x, gDoors[i].y, 1);		
+				}			
+			}
+            
+		}
+	}
+}

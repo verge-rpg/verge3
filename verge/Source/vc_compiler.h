@@ -115,7 +115,9 @@ public:
 	global_var_t();
 	global_var_t(FILE *f);
 	~global_var_t();
+	void read_old_global(FILE *f, int type);
 	void write(FILE *f);
+	void write_old_global(FILE *f, int type);
 };
 
 class struct_element

@@ -76,11 +76,9 @@ sprites/potions.chr
 sprites/shell.chr
 sprites/townspeople.chr
 system.vc
-system.xvc
 thin.png
 TODO.txt
 town.map
 town.vc
 town.vsp
-v3.log
 verge.cfg

@@ -1,0 +1,458 @@
+//The poor quality of this code is an artistic statement about VergeC.
+
+#include "door.vc"
+#include "flags.vc"
+
+#include "gui.vc"
+#include "glyph.vc"
+#include "ui.vc"
+#include "ui2.vc"
+#include "camera.vc"
+#include "music.vc"
+#include "process.vc"
+#include "menu.vc"
+#include "save.vc"
+#include "collision.vc"
+#include "credits.vc"
+
+#include "fl_keyboard.vc"
+
+#define fontheight 	8			// The height of the in-game font. Change this to whatever yours is
+
+#define tportx		80			// X size of textbox portraits
+#define tporty		65			// Y size of textbox portraits
+
+#include "tboxaux.vc"
+#include "tbox.vc"
+
+//AA
+
+int sfx_beep = LoadSound("music/beep2.wav");
+int sfx_beep2 = LoadSound("music/beep4.wav");
+int sfx_dooropen = LoadSound("music/dooropen1.wav");
+int sfx_doorclose = LoadSound("music/doorclose.wav");
+int sfx_warp_start = LoadSound("music/warp01.wav");
+int sfx_warp_end = LoadSound("music/warp02.wav");
+int sfx_type = LoadSound("music/type.wav");
+int sfx_steps = LoadSound("music/steps.wav");
+int sfx_button_over = LoadSound("music/softclick.wav");
+int sfx_button_down = LoadSound("music/click.wav");
+int sfx_error = LoadSound("music/beep.wav");
+int sfx_success = LoadSound("music/beep3.wav");
+int sfx_screen = LoadSound("music/hiss.wav");
+int sfx_camera = LoadSound("music/camera_clicks.wav");
+
+int gFont;
+
+int gPlayer;
+int gPlayerFace = 1;
+
+int gDummy;
+
+int gDrill, gDrill2;
+
+int gCrate[5];
+
+int gNewX;
+int gNewY;
+
+int gCameraOff = 0;
+
+int gSecurityCamera = 0;
+int gSCX = 0;
+int gSCY = 0;
+
+string gMap;
+
+int gFreezeGUI;
+int gStartup;
+
+int gEngineer;
+int gVNPC;
+
+void autoexec() 
+{
+	SetButtonKey(5, SCAN_W);
+	SetButtonKey(6, SCAN_S);
+	SetButtonKey(7, SCAN_A);
+	SetButtonKey(8, SCAN_D);
+	SetButtonKey(1, SCAN_SPACE);
+	
+	gFreezeGUI = 0;
+
+	gRoomFlags = DictNew();
+
+	gGUIFade = 0;
+	gInput = 0;
+	
+	gFont = LoadFont("fonts\font0.png");
+	
+	SetupTextBox();
+	
+	DefaultFlags();
+	
+	LoadGUIImages();
+	LoadGlyphImages();
+	ClearGlyphDefinitions();
+
+	HookTimer("UpdateScript");
+	HookRetrace("RenderScript");
+	HookKey(SCAN_ESC, "UpdateMenuCheck");
+	
+	AddUpdate("UpdateGUI");
+	AddUpdate("UpdateDoors");
+	
+	AddRender("RenderGUI");
+	
+	WarpTo(0,0,"title.map");
+}
+
+void WarpTo(int x, int y, string NMap)
+{
+    
+    if (!gSecurityCamera && gStartup)
+    {
+        PlaySound(sfx_steps, 50);
+	SetRoomFlag(NMap);
+    }
+    gStartup++;
+
+    RemoveRenderString("CheckForConveyors");
+    RemoveUpdateString("UpdateGameMusic");
+    
+	if (!map_loading_atm_come_back_later)
+	{
+        if (!gSecurityCamera)
+        {
+            gPlayerFace = entity.face[gPlayer];
+		
+            SetEntitiesPaused(1);
+        }
+		FadeOut(1);
+        
+        if (!gSecurityCamera)
+            SetEntitiesPaused(0);
+	}
+    
+    RemoveRenderString("DrawScanlines");
+    
+    if (gSecurityCamera == 2)
+        gSecurityCamera = 0;
+    
+	SetLucent(0);
+		
+	if (!gSecurityCamera)
+    {
+        gNewX = x;
+        gNewY = y;
+        gMap = NMap;
+    }
+    else
+    {
+        gNewX = entity.x[gPlayer]/16;
+        gNewY = entity.y[gPlayer]/16;
+        gSCX = x*16;
+        gSCY = y*16;
+    }
+	
+	Map(NMap);
+}
+
+void TeleportTo(int x, int y, string NMap)
+{
+
+	SetRoomFlag(NMap);
+	
+	RemoveRenderString("CheckForConveyors");
+	RemoveUpdateString("UpdateGameMusic");
+    
+    PlaySound(sfx_warp_start, 50);
+	PlayerMove("z16 w5 z17 w5 z18 w5 z19 w5 z20 w10 z21 w10 z22 w10 z23 w10 z24 w10");
+
+	while (entity.movecode[gPlayer])
+	{
+		Render();
+		ShowPage();
+	}
+
+    entity.visible[gPlayer] = 0;
+    
+	SetEntitiesPaused(1);
+
+	FadeOut(1);
+
+	SetEntitiesPaused(0);
+	
+	SetLucent(0);
+		
+	gNewX = x;
+	gNewY = y;
+    
+    gFlags[FLAG_TELEPORTING] = 1;
+    gMap = NMap;
+    
+	Map (NMap);
+	
+}
+
+void SpawnPlayer()
+{
+	int pn, f;
+    
+	map_loading_atm_come_back_later = 0;
+    
+    gCamX = 0;
+    gCamY = 0;
+    
+    if (!gSecurityCamera)
+    {
+    
+        gDummy = EntitySpawn(0, 0, "dummy.chr");
+        
+        gPlayer = EntitySpawn(gNewX, gNewY, "spaceman.chr");
+        
+        if (gFlags[FLAG_TELEPORTING])
+        {
+            entity.visible[gPlayer] = 0;
+        }
+        else
+        {
+            //entity.face[gPlayer] = gPlayerFace;
+        }
+        
+        if (!gCameraOff)
+            cameratracking = 1;
+        else
+            cameratracking = 0;
+        
+        gCameraOff = 0;
+        
+        SetPlayer(gPlayer);
+        
+        SetEntitiesPaused(1);
+        
+        FadeIn(1);
+        
+        SetEntitiesPaused(0);
+        
+        if (gFlags[FLAG_TELEPORTING])
+        {
+            entity.specframe[gPlayer] = 24;
+            entity.visible[gPlayer] = 1;
+            PlaySound(sfx_warp_end, 50);
+            PlayerMove("z24 w10 z23 w10 z22 w10 z21 w10 z20 w10 z19 w5 z18 w5 z17 w5 z16 w5");
+            while (entity.movecode[gPlayer])
+            {
+                Render();
+                ShowPage();
+                UpdateControls();
+            }
+            gFlags[FLAG_TELEPORTING] = 0;
+            entity.specframe[gPlayer] = 0;
+        } 
+        
+        AddRender("CheckForConveyors");
+    }
+    else
+    {
+        cameratracking = 0;
+        xwin = gSCX;
+        ywin = gSCY;
+    
+        AddRender("DrawScanlines");
+        
+        FadeIn(1);
+        
+        AddCollection(19);
+    }
+    
+    
+    AddUpdate("UpdateGameMusic");
+
+}
+
+void FadeOut(int mapr)
+{
+	int t = 100;
+	int LastTime;
+	int blackness = CreateBlankImg();
+	int on = 1;
+	int img;
+	if (mapr == 0) { img = DuplicateImage(screen); }
+	while(on && !b1)
+		{
+			if (mapr == 1) Render();
+			else { Blit(0,0,img,screen); }
+			SetLucent(t);
+			Blit(0,0,blackness,screen);
+			//PrintString(0,0,screen,font,str(t));
+			ShowPage();
+			if (LastTime < systemtime-1 && t > 0)
+				{
+					t-=2;
+					LastTime = systemtime;
+				}
+			if (t <= 0) on = 0;
+		}
+	FreeImage(blackness);
+	if (mapr == 0) FreeImage(img);
+}
+
+void FadeIn(int mapr)
+{
+	int t = 100;
+	int LastTime;
+	int blackness = CreateBlankImg();
+	int on = 1;
+	int img;
+	if (mapr == 0) { img = DuplicateImage(screen); }
+	while(on && !b1)
+		{
+			if (mapr == 1) Render();
+			else { Blit(0,0,img,screen); }
+			SetLucent(100-t);
+			Blit(0,0,blackness,screen);
+			//PrintString(0,0,screen,font,str(t));
+			ShowPage();
+			if (LastTime < systemtime-1 && t > 0)
+				{
+					t-=2;
+					LastTime = systemtime;
+				}
+			if (t <= 0) on = 0;
+		}
+	UnPress(b1);
+	FreeImage(blackness);
+	if (mapr == 0) FreeImage(img);
+}
+
+int CreateBlankImg()
+{
+
+	int canvas = NewImage(320, 240);
+	RectFill(0, 0, ImageWidth(canvas), ImageHeight(canvas), 0, canvas);
+
+	return canvas;
+}
+
+void Wait2(int time)
+{
+	int LastTime;
+	int CurTime;
+	
+	CurTime = 0;
+	LastTime = 0;
+
+	while (CurTime < time)
+		{
+			Render();
+			ShowPage();
+			if (LastTime < timer-2)
+				{
+					CurTime++;
+					LastTime = timer;
+				}
+		}
+}
+
+void SpecificInitCrates()
+{
+    if (gFlags[FLAG_CRATES_SECOND])
+    {
+        entity.x[0] = gFlags[FLAG_CRATE1_X];
+        entity.y[0] = gFlags[FLAG_CRATE1_Y];
+        entity.x[1] = gFlags[FLAG_CRATE2_X];
+        entity.y[1] = gFlags[FLAG_CRATE2_Y];
+        entity.x[2] = gFlags[FLAG_CRATE3_X];
+        entity.y[2] = gFlags[FLAG_CRATE3_Y];
+        entity.x[3] = gFlags[FLAG_CRATE4_X];
+        entity.y[3] = gFlags[FLAG_CRATE4_Y];
+        entity.x[4] = gFlags[FLAG_CRATE5_X];
+        entity.y[4] = gFlags[FLAG_CRATE5_Y];
+        entity.x[5] = gFlags[FLAG_CRATE6_X];
+        entity.y[5] = gFlags[FLAG_CRATE6_Y];
+    }
+    
+    gFlags[FLAG_CRATES_SECOND] = 1;
+}
+
+void SpecificSetCrates()
+{
+    gFlags[FLAG_CRATE1_X] = entity.x[0];
+    gFlags[FLAG_CRATE1_Y] = entity.y[0];
+    gFlags[FLAG_CRATE2_X] = entity.x[1];
+    gFlags[FLAG_CRATE2_Y] = entity.y[1];
+    gFlags[FLAG_CRATE3_X] = entity.x[2];
+    gFlags[FLAG_CRATE3_Y] = entity.y[2];
+    gFlags[FLAG_CRATE4_X] = entity.x[3];
+    gFlags[FLAG_CRATE4_Y] = entity.y[3];
+    gFlags[FLAG_CRATE5_X] = entity.x[4];
+    gFlags[FLAG_CRATE5_Y] = entity.y[4];
+    gFlags[FLAG_CRATE6_X] = entity.x[5];
+    gFlags[FLAG_CRATE6_Y] = entity.y[5];
+}
+
+void SpecificSetDrills()
+{
+    entity.face[0] = 4;
+    entity.face[1] = 3;
+    entity.face[2] = 4;
+    entity.face[3] = 3;
+    entity.face[4] = 4;
+    entity.face[5] = 3;
+    entity.face[6] = 4;
+    entity.face[7] = 3;
+    entity.face[8] = 4;
+    entity.face[9] = 3;
+}
+
+int gLastTime = 0;
+
+void CheckForConveyors()
+{
+    int tile = 0;
+    if (gGUILength == 0 && gLastTime != systemtime)
+    {
+        tile = GetTile((entity.x[gPlayer]+(entity.hotw[gPlayer]/2))/16, (entity.y[gPlayer]+(entity.hoty[gPlayer]/2))/16, 0);
+        if (tile >= 168 && tile <= 179 && !(systemtime%2))
+            entity.y[gPlayer] += 1;
+    }
+    gLastTime = systemtime;
+}
+
+int gCamX = 0;
+int gCamY = 0;
+
+void DrawScanlines()
+{
+    int i = 1;
+    SetLucent(60);
+    RectFill(0, 0, 320, 240, RGB(128,128,128), screen);
+    if (systemtime%2)
+        for (i=1; i<240; i+=2)
+            Line(0, i, 320, i, RGB(64,64,64), screen);
+    SetLucent(0);
+    
+    if (!gCamX && !gCamY)
+    {
+        if (up) { gCamY = -48; PlaySound(sfx_camera, 50); }
+        else if (down) { gCamY = 48; PlaySound(sfx_camera, 50); }
+        else if (left) { gCamX = -48; PlaySound(sfx_camera, 50); }
+        else if (right) { gCamX = 48; PlaySound(sfx_camera, 50); }
+    }
+    
+    if (!(systemtime%4))
+    {
+        if (gCamX < 0) { gCamX += 1; xwin -= 1; }
+        else if (gCamX > 0) { gCamX -= 1; xwin += 1; }
+        else if (gCamY < 0) { gCamY += 1; ywin -= 1; }
+        else if (gCamY > 0) { gCamY -= 1; ywin += 1; }
+    }
+    
+    if (b1)
+    {
+        Unpress(b1);
+        gSecurityCamera = 2;
+        WarpTo(gNewX, gNewY, gMap);
+    }
+}

@@ -276,6 +276,8 @@ public:
 	TUserFuncMap* userfuncMap[NUM_CIMAGES];
 
 private:
+	int olduserglobals_int_count;
+	int olduserglobals_str_count;
 	std::vector<global_var_t>				global_vars;
 	std::vector<struct_instance*>		struct_instances;
 

@@ -1421,8 +1421,8 @@ int ScriptEngine::FileOpen(CStringRef fname, int filemode) {
 		case VC_WRITE:
 		case VC_WRITE_APPEND: // Overkill (2006-07-05): Append mode added.
 			if(filemode == VC_WRITE)
-				vcfiles[index].fptr = fopen(cpfname, "wb");
-			else vcfiles[index].fptr = fopen(cpfname, "ab");
+				vcfiles[index].fptr = ::FileOpen(cpfname, "wb");
+			else vcfiles[index].fptr = ::FileOpen(cpfname, "ab");
 			if (!vcfiles[index].fptr)
 			{
 				//::log("opening of %s for writing/appending failed.", cpfname);
@@ -1820,12 +1820,12 @@ StringRef ScriptEngine::SocketGetFile(int sh, CStringRef override) {
 	if (override.length())
 	{
 		retstr = override;
-		f = fopen(override.c_str(), "wb");
+		f = ::FileOpen(override.c_str(), "wb");
 	}
 	else
 	{
 		retstr = fn;
-		f = fopen(fn.c_str(), "wb");
+		f = ::FileOpen(fn.c_str(), "wb");
 	}
 	if (!f)
 		err("SocketGetFile: couldn't open file for writing!");

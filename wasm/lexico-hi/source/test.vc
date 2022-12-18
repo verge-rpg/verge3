@@ -1,0 +1,72 @@
+void OnEnter()
+{
+	curmap.rstring = "1,2,3,E,4,5,R";
+	ClearElements();
+	ClearCollections();
+	ClearDoors();
+	
+	//gDoors[0].x = 20; gDoors[0].y = 19; gDoors[0].type = 1; gDoors[0].status = DOOR_CLOSED;
+	
+	//Temperature 1
+	
+	AddGlyph(0,40+100, 160, glyph_ROOM1);
+	AddTemperature(0, 40, 180, FLAG_TEMPERATURE1);
+	
+	//Temperature checker
+	
+	AddRectangle(1, 60, 110, 80+10, 90, RGB(0,0,255), RGB(0,0,100));
+	
+	AddTemperatureChecker(1, 80, 120,0);
+	AddTemperatureChecker(1, 80, 140,1);
+	AddTemperatureChecker(1, 80, 160,2);
+	AddTemperatureChecker(1, 80, 180,3);
+	
+	AddGlyph(1,80-16, 120, glyph_ROOM1);
+	AddGlyph(1,80-16, 140, glyph_ROOM2);
+	//AddGlyph(1,80-16, 160, glyph_ROOM3);
+	//AddGlyph(1,80-16, 180, glyph_ROOM4);
+	
+	AddGlyph(1,80+20, 120, glyph_HOT);
+	AddGlyph(1,80+20+17, 120, glyph_HOT);
+	AddGlyph(1,80+20+17+17, 120, glyph_HOT);
+	
+	AddGlyph(1,80+20, 140, glyph_COLD);
+	
+	AddGlyph(1,80+20, 160, glyph_HOT);
+	AddGlyph(1,80+20+17, 160, glyph_HOT);
+	
+	AddGlyph(1,80+20, 180, glyph_COLD);
+	AddGlyph(1,80+20+17, 180, glyph_COLD);	
+	
+	SpawnPlayer();
+}
+
+void WarpTo11()
+{
+	WarpTo(21,19,"1-1.map");
+}
+
+void WarpTo12()
+{
+	WarpTo(30,16,"1-2.map");
+}
+
+void WarpTo14()
+{
+	WarpTo(17,24,"1-4.map");
+}
+
+void UseTemperature1()
+{
+	AddCollection(0);
+}
+
+void UseTemperatureCheck()
+{
+	AddCollection(1);
+}
+
+void UseDoor()
+{
+	AddCollection(2);
+}

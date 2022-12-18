@@ -51,7 +51,7 @@ def EmscriptenEnvironment():
     emscriptenCompilerOpts = []
     emscriptenLinkerOpts = [
         '-s', 'ASYNCIFY',
-        '-s', 'ASYNCIFY_IMPORTS=["fetchSync","downloadAll","wasm_nextFrame_","emscripten_sleep","wasm_initSound","wasm_loadSound","wasm_getSongPosition"]',
+        '-s', 'ASYNCIFY_IMPORTS=["wasm_fetchSync","wasm_downloadAll","wasm_nextFrame_","emscripten_sleep","wasm_initSound","wasm_loadSound","wasm_getSongPosition"]',
         '-s', 'FETCH=1',
         '-s', 'FORCE_FILESYSTEM=1',
         '-s', 'ALLOW_MEMORY_GROWTH=1',
@@ -190,6 +190,7 @@ verge_sources = [verge_dir + '/' + s for s in [
     'mac_keyboard.cpp',
     'mac_mouse.cpp',
     'mac_system.cpp',
+    'wasm_filesystem.cpp',
     'wasm_timer.cpp',
     'mac_movie.cpp',
     'xerxes.cpp',

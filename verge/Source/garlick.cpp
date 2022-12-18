@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-void *Garlick_std_open(const char *fname) { return fopen(fname,"rb"); }
+void *Garlick_std_open(const char *fname) { return FileOpen(fname,"rb"); }
 void Garlick_std_close(void *handle) { fclose((FILE*)handle); }
 size_t Garlick_std_read(void *ptr, size_t elemsize, size_t amt, void *handle) { return fread(ptr,elemsize,amt,(FILE*)handle); }
 long Garlick_std_tell(void *handle) { return ftell((FILE *)handle); }

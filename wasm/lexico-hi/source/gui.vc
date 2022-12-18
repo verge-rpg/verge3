@@ -1,0 +1,271 @@
+/*
+	GUI Types
+	
+	Button
+	Rotator
+	Glyph
+	
+	GUIs work by having a list named GUI_Elements which contains GUI_Collections.
+*/
+
+struct GUI_Element
+{
+	int x,y,w,h; //-1 w/h means use image.
+	int image;
+	int uid; //Used to identify the specific GUI ID so it knows what special things to do for its map.
+	
+	string SpecialFunction1; //Specific instance functions that vary depending on the particular GUI element
+	string SpecialFunction2;
+	string SpecialFunction3;
+	string SpecialFunction4;
+	
+	string Type;
+}
+
+int gGUI_Elements[50];
+int gGUILength;
+
+GUI_Element gGUI_Collections[25][50]; // 0 = length
+//int gCollectionLength;
+
+GUI_Element Temporary_Collection;
+
+int gCurrentElement;
+int gCurrentCollection;
+int gCurrentSubCollection;
+
+
+
+void AddCollection(int Collection)
+{
+	int closing;
+	closing = 0;
+
+	if ( IsUpdateString("CloseGUI") )
+	{
+		//Exit(str(gGUIFade));
+		gGUIFade = 100;
+		ClearElements();
+		RemoveUpdateString("CloseGUI");
+		AddUpdate("OpenGUI");
+		closing = 1;
+	}
+
+    int c = 0;
+    int add = 1;
+    for (c=0; c<gGUILength; c++)
+        if (gGUI_Elements[c] == Collection)
+            add = 0;
+    if (add)
+    {
+    	
+		if (gGUILength == 0 && closing == 0)
+		{		
+			gGUIFade = 100;		
+			AddUpdate("OpenGUI");
+		}	
+
+        gGUI_Elements[gGUILength] = Collection;
+        gGUILength++;
+    }
+}
+
+void RemoveCollection(int number)
+{
+	int i;
+	
+	for (i = number; i < gGUILength; i++)
+	{
+		if (i+1 != gGUILength)
+            gGUI_Elements[i] = gGUI_Elements[i+1];
+        else
+            gGUI_Elements[i] = -1;
+	}
+    gGUILength-=1;
+}
+
+void RemoveCollectionNum(int number)
+{
+	int i;
+	int removed = 0;
+	for (i = 0; i < gGUILength; i++)
+	{
+        if (gGUI_Elements[i] == number)
+            removed = 1;
+        if (removed)
+        {
+            if (i+1 != gGUILength)
+                gGUI_Elements[i] = gGUI_Elements[i+1];
+            else
+                gGUI_Elements[i] = -1;
+        }
+	}
+    if (removed)
+        gGUILength-=1;
+}
+
+int AddToCollection(int c, int x, int y, int w, int h, int image, int uid, string type, string f1, string f2, string f3, string f4)
+{
+	
+	gGUI_Collections[c][gGUI_Collections[c][0].x].x = x;
+	gGUI_Collections[c][gGUI_Collections[c][0].x].y = y;
+	gGUI_Collections[c][gGUI_Collections[c][0].x].w = w;
+	gGUI_Collections[c][gGUI_Collections[c][0].x].h = h;
+	gGUI_Collections[c][gGUI_Collections[c][0].x].image = image;
+	gGUI_Collections[c][gGUI_Collections[c][0].x].uid = uid;
+	
+	gGUI_Collections[c][gGUI_Collections[c][0].x].Type = type;
+	
+	gGUI_Collections[c][gGUI_Collections[c][0].x].SpecialFunction1 = f1;
+	gGUI_Collections[c][gGUI_Collections[c][0].x].SpecialFunction2 = f2;
+	gGUI_Collections[c][gGUI_Collections[c][0].x].SpecialFunction3 = f3;
+	gGUI_Collections[c][gGUI_Collections[c][0].x].SpecialFunction4 = f4;
+
+	gGUI_Collections[c][0].x++;
+	
+	return gGUI_Collections[c][0].x-1;
+}
+
+/*void RemoveFromCollection(int number)
+{
+	int i;
+	
+	for (i = number; i < gCollectionLength-1; i++)
+	{
+		gGUI_Collections[i] = gGUI_Collections[i+1];
+	}
+}*/
+
+void ClearCollections()
+{
+	int i;
+	
+	for (i = 0; i < 100; i++)
+	{
+		gGUI_Collections[i][0].x = 1;
+	}
+}
+
+void ClearCollection(int n)
+{
+	gGUI_Collections[n][0].x = 1;
+}
+
+void ClearElements()
+{
+	gGUILength = 0;
+}
+
+void RenderGUI()
+{
+	int i;
+	int i2;
+	
+	for (i = 0; i < gGUILength; i++)
+	{
+		
+		for (i2 = 1; i2 < gGUI_Collections[gGUI_Elements[i]][0].x; i2++)
+		{
+			if (FunctionExists("i" + gGUI_Collections[gGUI_Elements[i]][i2].Type + "Render"))
+			{
+				gCurrentElement = i;
+				gCurrentCollection = gGUI_Elements[i];
+				gCurrentSubCollection = i2;			
+				
+				CallFunction("i" +gGUI_Collections[gGUI_Elements[i]][i2].Type + "Render");
+			}
+		}
+	}
+	
+	for (i = 0; i < gGUILength; i++)
+	{
+		
+		for (i2 = 1; i2 < gGUI_Collections[gGUI_Elements[i]][0].x; i2++)
+		{
+			if (!strcmp(gGUI_Collections[gGUI_Elements[i]][i2].Type,"Glyph") || !strcmp(gGUI_Collections[gGUI_Elements[i]][i2].Type,"GlyphInput"))
+			{
+				gCurrentElement = i;
+				gCurrentCollection = gGUI_Elements[i];
+				gCurrentSubCollection = i2;			
+				
+				CallFunction("i" +gGUI_Collections[gGUI_Elements[i]][i2].Type + "Description");
+			}
+		}
+	}	
+}
+
+int gLastX;
+int gLastY;
+
+void UpdateGUI()
+{
+	int i;
+	int i2;
+	
+	for (i = 0; i < gGUILength; i++)
+	{
+		
+		for (i2 = 1; i2 < gGUI_Collections[gGUI_Elements[i]][0].x; i2++)
+		{
+			if (FunctionExists("i" + gGUI_Collections[gGUI_Elements[i]][i2].Type + "Update"))
+			{
+				gCurrentElement = i;
+				gCurrentCollection = gGUI_Elements[i];
+				gCurrentSubCollection = i2;			
+				
+				CallFunction("i" +gGUI_Collections[gGUI_Elements[i]][i2].Type + "Update");
+				
+			}
+		}
+	}
+	
+	if (gGUILength > 0)
+	{
+		if (entity.x[gPlayer] != gLastX || entity.y[gPlayer] != gLastY)
+		{
+			if (gGUIFade == 0 && !gFreezeGUI)
+			{
+				AddUpdate("CloseGUI");
+                //cameratracking = 1;
+                		SetCameraTarget(gPlayer, 50);
+			}
+		}
+	}
+	
+	gLastX = entity.x[gPlayer];
+	gLastY = entity.y[gPlayer];	
+}
+
+int gGUIFade;
+
+void CloseGUI()
+{
+	if (gGUIFade == 0)
+	{
+		PlaySound(sfx_beep2, 50);
+	}
+	gGUIFade++;
+		
+	if (gGUIFade == 100)
+	{
+		ClearElements();
+		RemoveUpdateString("CloseGUI");
+		gGUIFade = 0;
+	}
+}
+
+void OpenGUI()
+{
+	if (gGUIFade == 100)
+	{
+		PlaySound(sfx_beep, 50);
+	}
+	gGUIFade-=2;
+	
+	if (gGUIFade <= 0)
+	{
+		//ClearElements();
+		RemoveUpdateString("OpenGUI");
+		gGUIFade = 0;
+	}
+}

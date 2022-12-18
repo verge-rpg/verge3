@@ -16,6 +16,10 @@
 
 #include "xerxes.h"
 
+#ifdef __EMSCRIPTEN__	
+#include "wasm_filesystem.h"
+#endif
+
 // ***************************** Data *****************************
 
 mountstruct pack[10];			// packfile structs
@@ -24,27 +28,78 @@ char headertag[]={ 'V','3','P','A','K',0 };
 
 // ***************************** Code *****************************
 
+#define DEBUG_VFILE
+#ifdef DEBUG_VFILE
+#define VFILE_PRINTF printf
+#else
+template <typename ...T>
+void VFILE_PRINTF(T...) {}
+#endif
+
+FILE* FileOpen(const char* filename, const char* mode)
+{
+#ifdef __EMSCRIPTEN__	
+    std::string fn{ filename };
+    for (char& c: fn) {
+        if (c == '\\') {
+            c = '/';
+        }
+    }
+
+    std::string s = "persist/" + wasm_gameRoot + fn;
+    to_lower(s);
+    FILE* f = fopen(s.c_str(), mode);
+    if (f) {
+        VFILE_PRINTF("FileOpen %s mode %s\n", s.c_str(), mode);
+        return f;
+    }
+
+    s = "persist/" + wasm_gameRoot + fn;
+    f = fopen(s.c_str(), mode);
+    if (f) {
+        VFILE_PRINTF("FileOpen %s mode %s\n", s.c_str(), mode);
+        return f;
+    }
+
+    s = wasm_gameRoot + fn;
+    to_lower(s);
+    f = fopen(s.c_str(), mode);
+    if (f) {
+        VFILE_PRINTF("FileOpen %s mode %s\n", s.c_str(), mode);
+        return f;
+    }
+
+    s = wasm_gameRoot + fn;
+    f = fopen(s.c_str(), mode);
+    if (f) {
+        VFILE_PRINTF("FileOpen %s mode %s\n", s.c_str(), mode);
+        return f;
+    }
+
+    VFILE_PRINTF("FileOpen %s mode %s FAIL\n", fn.c_str(), mode);
+    return 0;	
+#else
+	return fopen(filename, mode);
+#endif
+}
+
 bool Exist(const char *fname)
 {
-	/*FILE *tempf;
-
-	tempf=fopen(fname,"rb");
-	if (tempf)
-	{
-		fclose(tempf);
-		return true;
-	}
-	return false;*/
-
-	// Above stuff commented out because I thought faster detection of file existance could be nice.
-	// However, not every OS supports access().
-	// Leaving the above code in case your OS doesn't support POSIX standards.
-#ifdef __WIN32__
+#if defined(__WIN32__)
 	// Check if file exists and has read permissions.
 	return _access(fname, 4) != -1;
-#else
+#elif defined(__LINUX__) || defined(__MAC__)
 	// Check if file exists and has read permissions.
 	return access(fname, R_OK) != -1;
+#else
+	FILE *f = FileOpen(fname, "rb");
+	if (f)
+	{
+		fclose(f);
+		return true;
+	}
+
+	return false;	
 #endif
 }
 
@@ -89,7 +144,7 @@ void MountVFile(const char* fname)
 	if (filesmounted == 10)
 		err("Too many packfiles mounted! You know, there's no limit to the number of files you can stick in one...");
 
-	if (!(pack[filesmounted].vhandle = fopen(filename.c_str(),"rb")))
+	if (!(pack[filesmounted].vhandle = FileOpen(filename.c_str(),"rb")))
 		err("*error* Unable to mount %s; file not found. \n", filename.c_str());
 
 	// Read pack header
@@ -141,8 +196,10 @@ void MountVFile(const char* fname)
 VFILE *vopen(const char *fname)
 {
 	VFILE *tmp;
-	char rf=0,vf=0;
-	int i, j=0;
+	FILE* rf = nullptr;
+	bool vf = 0;
+	int i = 0;
+	int j = 0;
 #ifdef __APPLE__
 	// swap backslashes in path for forward slashes
 	// (windows -> unix/max)
@@ -150,18 +207,24 @@ VFILE *vopen(const char *fname)
 	replace_all(converted, '\\', '/');
 	fname = converted.c_str();
 #endif
+
 	// All files using V* are read-only. To write a file, use regular i/o.
 	// First we'll see if a real file exists, then we'll check for one in VFiles,
 	// if we don't find one in VFile or it's overridable then a real file will
 	// be used. That's the general logic progression.
-
-	if (Exist(fname)) rf=1;
+	rf = FileOpen(fname, "rb");
 
 	// Search the VFiles.
-	for (i=filesmounted-1; i>=0; i--)
+	for (i = filesmounted - 1; i >= 0; i--)
 	{
-		for (j=0; j<pack[i].numfiles; j++)
-			if (!fncmp(fname,(char *) pack[i].files[j].fname)) { vf=1; break; }
+		for (j = 0; j < pack[i].numfiles; j++)
+		{
+			if (!fncmp(fname,(char *) pack[i].files[j].fname))
+			{
+				vf = true;
+				break;
+			}
+		}
 		if (vf) break;
 	}
 
@@ -171,24 +234,33 @@ VFILE *vopen(const char *fname)
 
 	if (vf && rf)
 	{
-		if (pack[i].files[j].override) vf=0;
-		else rf=0;
+		if (pack[i].files[j].override)
+		{
+			vf = false;
+		}
+		else
+		{
+			fclose(rf);
+			rf = nullptr;
+		}
 	}
 
 	if (vf)
 	{
-		tmp -> fp=pack[i].vhandle;
-		tmp -> s=1;
-		tmp -> v=i;
-		tmp -> i=j;
-		pack[i].files[j].curofs=0;
-		fseek(tmp -> fp, pack[i].files[j].packofs, 0);
-		pack[i].curofs=pack[i].files[j].packofs;
+		tmp->fp = pack[i].vhandle;
+		tmp->s = 1;
+		tmp->v = i;
+		tmp->i = j;
+		pack[i].files[j].curofs = 0;
+		fseek(tmp->fp, pack[i].files[j].packofs, 0);
+		pack[i].curofs = pack[i].files[j].packofs;
 		return tmp;
 	}
 
-	tmp -> fp=fopen(fname,"rb");
-	tmp -> s=0; tmp -> v=0; tmp -> i=0;
+	tmp->fp = rf;
+	tmp->s = 0;
+	tmp->v = 0;
+	tmp->i = 0;
     tmp->cachedSize = -1;
 	return tmp;
 }

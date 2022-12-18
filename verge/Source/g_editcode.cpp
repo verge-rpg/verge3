@@ -33,7 +33,7 @@ void runEval(char *code)
 
 	// write code to file, wrapped in a function
 	// added \n after code to avoid an ending // causing problems
-	FILE * f = fopen(fname, "w");
+	FILE * f = FileOpen(fname, "w");
 	fprintf(f, "void __temp_eval(){%s\n}", code);
 	fclose(f);
 

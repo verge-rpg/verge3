@@ -1,0 +1,1015 @@
+
+#define img_BUTTON 0
+#define img_MOUSE 1
+#define img_TEMPERATURE 2
+#define img_TEMPERATURE_BAR 3
+#define img_TEMPERATURE_RIGHT 4
+#define img_TEMPERATURE_WRONG 5
+#define img_BUTTON_OVER 6
+#define img_BUTTON_DOWN 7
+#define img_MOUSE_OUTLINE 8
+#define img_BUTTON2 9
+#define img_BUTTON_OVER2 10
+#define img_BUTTON_DOWN2 11
+
+int GUIImage[15];
+
+int gCraneShadow;
+int gTitleScreenImage;
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void LoadGUIImages()
+{
+	GUIImage[img_BUTTON] = LoadImage("button.png");
+	GUIImage[img_MOUSE] = LoadImage("mouse.png");
+	GUIImage[img_MOUSE_OUTLINE] = LoadImage("mouse_outline.png");	
+	GUIImage[img_TEMPERATURE] = LoadImage("temperature_button.bmp");
+	GUIImage[img_TEMPERATURE_BAR] = LoadImage("temperature_bar.png");
+	GUIImage[img_TEMPERATURE_RIGHT] = LoadImage("right.png");
+	GUIImage[img_TEMPERATURE_WRONG] = LoadImage("wrong.png");
+	GUIImage[img_BUTTON_OVER] = LoadImage("button_over.png");
+	GUIImage[img_BUTTON_DOWN] = LoadImage("button_down.png");
+	GUIImage[img_BUTTON2] = LoadImage("sbutton.png");
+	GUIImage[img_BUTTON_OVER2] = LoadImage("sbutton_over.png");
+	GUIImage[img_BUTTON_DOWN2] = LoadImage("sbutton_down.png");	
+	
+	gTitleScreenImage = LoadImage("lexico.png");
+	gCraneShadow = LoadImage("crane_shadow.png");
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void AddButton(int Collection, int x, int y, int uid,string OnPush)
+{
+	// Special Function 1 - Function to be used when the button is pushed
+	
+	AddToCollection(Collection, x, y, -1, -1, GUIImage[img_BUTTON], uid, "Button",OnPush, "", "","");
+}
+
+void iButtonUpdate()
+{
+    int collision = 0;
+    int i = 0;
+    /*PrintString(0, 0, screen, gFont, str(gGUILength));
+    for (i=0; i < gGUILength; i++)
+        PrintString(i*20, 10, screen, gFont, str(gGUI_Elements[i]));*/
+    if (DetectCollision(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x,
+			  		      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+					      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w,
+					      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h,
+					      mouse.x, mouse.y, 0, 0))
+        
+        collision = 1;
+    
+    if (gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w == -1)
+    {
+        gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w = ImageWidth(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image);
+    }
+		
+    if (gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h == -1)
+    {
+			gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h = ImageHeight(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image);
+    }
+        
+	if (mouse.l)
+	{
+    
+		if (collision && gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image != GUIImage[img_BUTTON_DOWN])
+		{
+			if (FunctionExists(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1))
+			{
+				CallFunction(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1);
+                PlaySound(sfx_button_down, 100);
+                gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image = GUIImage[img_BUTTON_DOWN];
+			}
+            
+		}
+        
+	}
+    else if (collision)
+    {
+        if (gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image == GUIImage[img_BUTTON])
+            PlaySound(sfx_button_over, 50);
+        gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image = GUIImage[img_BUTTON_OVER];
+    }
+    else
+        gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image = GUIImage[img_BUTTON];
+}
+
+void iButtonRender()
+{
+	SetLucent(gGUIFade);
+	 
+	TBlit(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x, 
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image,
+	       screen);
+	
+	SetLucent(0);
+}
+
+/////
+
+void AddButton2(int Collection, int x, int y, int uid,string OnPush)
+{
+	// Special Function 1 - Function to be used when the button is pushed
+	
+	AddToCollection(Collection, x, y, -1, -1, GUIImage[img_BUTTON2], uid, "Button2",OnPush, "", "","");
+}
+
+void iButton2Update()
+{
+    int collision = 0;
+    int i = 0;
+    /*PrintString(0, 0, screen, gFont, str(gGUILength));
+    for (i=0; i < gGUILength; i++)
+        PrintString(i*20, 10, screen, gFont, str(gGUI_Elements[i]));*/
+    if (DetectCollision(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x,
+			  		      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+					      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w,
+					      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h,
+					      mouse.x, mouse.y, 0, 0))
+        
+        collision = 1;
+    
+    if (gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w == -1)
+    {
+        gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w = ImageWidth(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image);
+    }
+		
+    if (gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h == -1)
+    {
+			gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h = ImageHeight(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image);
+    }
+        
+	if (mouse.l)
+	{
+    
+		if (collision && gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image != GUIImage[img_BUTTON_DOWN2])
+		{
+			if (FunctionExists(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1))
+			{
+				CallFunction(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1);
+                gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image = GUIImage[img_BUTTON_DOWN2];
+			}
+            
+		}
+        
+	}
+    else if (collision)
+        gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image = GUIImage[img_BUTTON_OVER2];
+    else
+        gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image = GUIImage[img_BUTTON2];
+}
+
+void iButton2Render()
+{
+	SetLucent(gGUIFade);
+	 
+	TBlit(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x, 
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image,
+	       screen);
+	
+	SetLucent(0);
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
+int gInput;
+int gInputGlyph = -1;
+
+void AddGlyph(int Collection,int x,int y, int glyph)
+{
+	AddToCollection(Collection, x, y, 16, 16, glyph,-1, "Glyph",str(glyph), "0", "","");
+}
+
+void iGlyphUpdate()
+{
+	int Glyph;
+	
+	Glyph = val(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1);
+	
+	if (mouse.r && !gInput)
+	{
+		
+		if (DetectCollision(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x,
+			  		      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+					      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w,
+					      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h,
+					      mouse.x, mouse.y, 0, 0))
+					      
+		{
+			gInput = 1;
+			gInputGlyph = Glyph;
+            write = GlyphDefinition[gInputGlyph];
+            XPos = len(write);
+			
+			gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction2 = "1";
+		}
+	}	
+}
+
+void iGlyphRender()
+{
+	SetLucent(gGUIFade);
+	
+	if (!strcmp(GlyphDefinition[val(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1)] ,""))
+	{
+		TBlit(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x, 
+		       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+		       GetGlyphImage(GlyphImage[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image]+".png"),
+		       screen);		
+	}
+	
+	else
+	{
+		TBlit(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x, 
+		       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+		       GetGlyphImage(GlyphImage[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image]+"g.png"),
+		       screen);	
+	}
+
+	
+	if (DetectCollision(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x,
+				 gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+				 gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w,
+				 gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h,
+				 mouse.x, mouse.y, 0, 0) || ((systemtime/25)%2 && gInputGlyph == val(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1)))
+					      
+	{
+		TBlit(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x, 
+		       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+		       GetGlyphImage(GlyphImage[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image]+"y.png"),
+		       screen);			
+	}	
+	
+	SetLucent(0);
+
+	//PrintString(50,20,screen,gFont, str(gInput));	
+	
+	if (gInput && !strcmp(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction2,"1"))
+	{
+        RectFill(45,35, 256, 60, RGB(0,0,128), screen);
+        Rect(45,35, 256, 60, RGB(0,0,255), screen);
+		PrintString(50,40,screen,gFont, "Input Glyph Definition:");
+		Input(50, 50, 20, 1);
+        if (cameratracking == 1)
+            cameratracking = 0;
+        SetPlayer(gDummy);
+		if (key[SCAN_ENTER])
+		{
+			gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction2 = "0";
+			gInput = 0;
+			GlyphDefinition[gInputGlyph] = write;
+            if (!gSecurityCamera)
+            {
+                SetPlayer(gPlayer);
+                if (cameratracking == 0)
+                    cameratracking = 1;
+            }
+			write = "";
+            gInputGlyph = -1;
+            PlaySound(sfx_success, 50);
+            Unpress(b1);
+		}
+	}
+}
+
+void iGlyphDescription()
+{
+	string s = GlyphDefinition[val(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1)];
+	SetLucent(gGUIFade);
+
+	if (DetectCollision(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x,
+		gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+		gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w,
+		gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h,
+		mouse.x, mouse.y, 0, 0) )		      
+	{
+		if (len(s))
+		{
+			if (mouse.x + TextWidth(gFont, s) >= ImageWidth(screen))
+			{
+				PrintRight(mouse.x, mouse.y - 10, screen, gFont, s);
+			}
+			else
+			{
+				PrintString(mouse.x, mouse.y - 10, screen, gFont, s);
+			}
+		}		
+	}
+	
+	SetLucent(0);
+}
+
+void DefineGlyph(int glyph)
+{
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void AddRectangle(int Collection, int x, int y, int w, int h, int c1, int c2)
+{
+	
+	AddToCollection(Collection, x, y, w, h, c1, c2, "Rectangle","", "", "","");
+}
+
+void iRectangleRender()
+{
+	SetLucent(gGUIFade);
+	       
+	RectFill(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x, gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x+gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y+gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid,screen);	       
+	
+	Rect(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x+gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y+gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image, screen);	
+	
+	SetLucent(0);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void AddTemperature(int Collection, int x, int y, int uid)
+{
+	// Special Function 1 - Function to be used when the button is pushed
+	
+	AddToCollection(Collection, x, y, -1, -1, GUIImage[img_TEMPERATURE], uid, "Temperature","", "", "","");
+	AddGlyph(Collection,x-16,y, glyph_COLD);
+	AddGlyph(Collection,x+222,y, glyph_HOT);
+}
+
+void iTemperatureUpdate()
+{
+	//gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1 = x offset
+	
+	gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1 = str(gFlags[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid]);
+	
+	if (mouse.l)
+	{
+		if (gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w == -1)
+		{
+			gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w = ImageWidth(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image);
+		}
+		
+		if (gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h == -1)
+		{
+			gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h = ImageHeight(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image);
+		}
+		
+		if (DetectCollision(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x ,
+			  		      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y-1,
+					      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].w+200,
+					      gGUI_Collections[gCurrentCollection][gCurrentSubCollection].h,
+					      mouse.x, mouse.y, 0, 0))
+					      
+		{
+			iTemperatureClick();
+		}
+	}
+}
+
+void iTemperatureRender()
+{
+	SetLucent(gGUIFade);
+	
+	TBlit(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x, 
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y-1,
+	       GUIImage[img_TEMPERATURE_BAR],
+	       screen);		
+	
+	TBlit(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x+val(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].SpecialFunction1), 
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+	       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].Image,
+	       screen);
+	
+	SetLucent(0);
+}
+
+void iTemperatureClick()
+{
+	gFlags[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid] = (mouse.x-10) - gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x;
+	
+	if (gFlags[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid] > 200)
+	{
+		gFlags[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid] = 200;
+	}
+	
+	if (gFlags[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid] < 0)
+	{
+		gFlags[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid] = 0;
+	}	
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void AddTemperatureChecker(int Collection, int x, int y, int uid)
+{	
+	AddToCollection(Collection, x, y, -1, -1, -1, uid, "TemperatureChecker","", "", "","");
+}
+
+void iTemperatureCheckerRender()
+{
+	SetLucent(gGUIFade);
+	
+	int temperature, mini, maxi;
+	
+	temperature = gFlags[gTemperatureLimits[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid][2]];
+	mini = gTemperatureLimits[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid][0];
+	maxi = gTemperatureLimits[gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid][1];
+	
+	if (temperature >= mini && temperature <= maxi)
+	{
+		TBlit(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x, 
+		       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+		       GUIImage[img_TEMPERATURE_RIGHT],
+		       screen);	
+	}
+	else
+	{
+		TBlit(gGUI_Collections[gCurrentCollection][gCurrentSubCollection].x, 
+		       gGUI_Collections[gCurrentCollection][gCurrentSubCollection].y,
+		       GUIImage[img_TEMPERATURE_WRONG],
+		       screen);	
+	}
+	
+
+	
+	SetLucent(0);
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void iLightOn()
+{
+	gFlags[FLAG_ROOM1_LIGHTS] = 1;
+}
+
+void iLightOff()
+{
+	gFlags[FLAG_ROOM1_LIGHTS] = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void iDoorTemperatureOpen()
+{
+	int i,temperature,mini,maxi,okay;
+
+	okay = 1;
+
+    RemoveCollectionNum(3);
+    
+	for (i = 0; i < 3; i++)
+	{
+		temperature = gFlags[gTemperatureLimits[i][2]];
+		mini = gTemperatureLimits[i][0];
+		maxi = gTemperatureLimits[i][1];
+					
+		if (temperature >= mini && temperature <= maxi)
+		{
+					
+		}
+		else
+		{
+			okay = 0;
+		}
+	}
+				
+							
+	if (okay && gFlags[FLAG_FIXED_TEMP_DOOR])
+		iDoorOpen();
+    else
+        AddCollection(3);
+}
+
+void iDoorTemperatureClose()
+{
+    RemoveCollectionNum(3);
+    iDoorClose();
+}
+
+void iDoorOpen()
+{
+	int i = gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid;
+	if (gDoorFlags[gDoors[i].id] != DOOR_OPEN)
+	{
+		PlaySound(sfx_dooropen, 100);
+		gDoorFlags[gDoors[i].id] = DOOR_OPEN;
+		SetCameraTargetXY(gDoors[i].x * 16, gDoors[i].y * 16, 50);
+	}
+}
+
+void iDoorClose()
+{
+	int i = gGUI_Collections[gCurrentCollection][gCurrentSubCollection].uid;
+	if (gDoorFlags[gDoors[i].id] != DOOR_CLOSED)
+	{
+		PlaySound(sfx_doorclose, 100);
+		gDoorFlags[gDoors[i].id] = DOOR_CLOSED;
+		SetCameraTargetXY(gDoors[i].x * 16, gDoors[i].y * 16, 50);
+	}
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void iCraneLeft()
+{
+    int canMove = 1;
+    int i;
+    
+	if (entity.movecode[gCraneID] == 0)
+	{
+	
+		if (gCraneL < 11)
+		{
+        
+            for (i = 0; i < entities; i++)
+			{
+				if (i != gCaughtEntity && i != gCraneID)
+				{
+					if (DetectCollision(entity.x[i], entity.y[i], entity.hotw[i], entity.hoth[i], entity.x[gCaughtEntity]-15, entity.y[gCaughtEntity]+1, 15, entity.hoth[gCaughtEntity]-2))
+					{
+						canMove = 0;
+					}
+				}
+			}
+            
+            if (GetObs(entity.x[gCaughtEntity]/16 - 1, entity.y[gCaughtEntity]/16))
+            {
+                canMove = 0;
+            }
+            
+            if (gCraneState == 0)
+            {
+                EntityMove(gCraneID,"l1 w16");
+                gCraneL++;
+                
+            }
+
+			else if (canMove)
+            {
+                EntityMove(gCraneID,"l1 w16");
+                gCraneL++;
+                
+                if (gCraneState == 1)
+                {
+                    EntityMove(gCaughtEntity, "l1 w16");
+                }
+			}	
+			
+		}
+		else
+		{
+			AddCollection(1);
+			if (gCraneD >= 5)
+			{
+				gCraneL = -1;
+				gCraneD = 0;
+				entity.x[gCraneID] = 37*16;
+				entity.y[gCraneID] = 25*16;
+				SetCameraTarget(gCraneID, 30);
+                ChangeCHR(gCaughtEntity, "crate.chr");
+				gCaughtEntity = -1;
+				gCraneState = 0;	
+				if (entity.specframe[gCraneID] != 0)
+				{
+					EntityMove(gCraneID, "z2 w16 z1 w16 z0 w16");
+				}		
+
+				ClearElements();
+				AddCollection(0);				
+			}
+		}
+	}
+}
+
+void iCraneDown()
+{
+
+    int canMove = 1;
+    int i;
+    
+	if (entity.movecode[gCraneID] == 0)
+	{
+		if (gCraneD < 5)
+		{
+            
+            for (i = 0; i < entities; i++)
+			{
+				if (i != gCaughtEntity && i != gCraneID)
+				{
+					if (DetectCollision(entity.x[i], entity.y[i], entity.hotw[i], entity.hoth[i], entity.x[gCaughtEntity]+1, entity.y[gCaughtEntity]+entity.hoth[gCaughtEntity], entity.hotw[gCaughtEntity]-2, 15))
+					{
+						canMove = 0;
+					}
+				}
+			}
+            
+            if (GetObs(entity.x[gCaughtEntity]/16, entity.y[gCaughtEntity]/16 + 1))
+            {
+                canMove = 0;
+            }
+            
+            if (gCraneState == 0)
+            {
+                EntityMove(gCraneID,"d1 w16");
+                gCraneD++;
+            }
+            
+            else if (canMove)
+            {
+            
+                EntityMove(gCraneID,"d1 w16");
+                gCraneD++;
+                
+                if (gCraneState == 1)
+                {
+                    EntityMove(gCaughtEntity, "d1 w16");
+                }
+    
+            }
+		}
+		
+		else
+		{
+			AddCollection(2);
+			if (gCraneL >= 11)
+			{
+				gCraneL = 0;
+				gCraneD = -1;
+                EntityStop(gCraneID);
+				entity.x[gCraneID] = 36*16;
+				entity.y[gCraneID] = 24*16;
+				SetCameraTarget(gCraneID, 30);
+                ChangeCHR(gCaughtEntity, "crate.chr");
+				gCaughtEntity = -1;
+				gCraneState = 0;		
+				if (entity.specframe[gCraneID] != 0)
+				{
+					EntityMove(gCraneID, "z2 w16 z1 w16 z0 w16");
+				}			
+
+				ClearElements();
+				AddCollection(0);
+			}
+		}	
+	}
+}
+
+int gCaughtEntity;
+int gCraneState;
+int gCraneL;
+int gCraneD;
+int gCraneID;
+
+void iCraneUse()
+{
+	int i;
+
+	if (gCraneState == 0)
+	{
+		if (entity.movecode[gCraneID] == 0)
+		{		
+			for (i = 0; i < entities; i++)
+			{
+				if (i != gCraneID && gCraneState == 0)
+				{
+					if (DetectCollision(entity.x[i], entity.y[i], entity.hotw[i], entity.hoth[i], entity.x[gCraneID], entity.y[gCraneID], entity.hotw[gCraneID], entity.hoth[gCraneID]))
+					{
+						gCaughtEntity = i;
+                        ChangeCHR(gCaughtEntity, "crate_hi.chr");
+						gCraneState = 1;
+						
+						EntityMove(gCraneID, "z1 w16 z2 w16 z3 w16");
+					}
+				}
+			}
+		}
+	}
+	
+	else
+	{
+		if (entity.movecode[gCraneID] == 0)
+		{
+			EntityMove(gCraneID, "z2 w16 z1 w16 z0 w16");
+            ChangeCHR(gCaughtEntity, "crate.chr");
+			gCaughtEntity = -1;
+			gCraneState = 0;
+		}
+	}
+}
+
+void iCraneReset()
+{
+    ChangeCHR(gCaughtEntity, "crate.chr");
+    gCaughtEntity = -1;
+    gCraneState = 0;
+    entity.x[0] = 26*16;
+    entity.y[0] = 29*16;
+    entity.x[1] = 29*16;
+    entity.y[1] = 28*16;
+    entity.x[2] = 25*16;
+    entity.y[2] = 24*16;
+    entity.x[3] = 32*16;
+    entity.y[3] = 26*16;
+    entity.x[4] = 33*16;
+    entity.y[4] = 30*16;
+    entity.x[5] = 29*16;
+    entity.y[5] = 24*16;
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
+int gBCompActive;
+int gBComp[6];
+int gBCRCnt = 0;
+int gBCompToggle = 0;
+
+void iBCompOn()
+{
+    RemoveCollectionNum(7);
+    RemoveCollectionNum(8);
+    RemoveCollectionNum(9);
+    RemoveCollectionNum(10);
+    if (!gBComp[gBCompActive])
+    {
+        switch (gBCompActive)
+        {
+            case 0:
+                if (!gBComp[1] && gBComp[2] && gBComp[3] && !gBComp[4])
+                    iBCompTurnOn(0);
+            case 1:
+                if (gBComp[3] && gBComp[4])
+                    iBCompTurnOn(1);
+            case 2:
+                if (gBComp[1] && !gBComp[3] && !gBComp[4])
+                    iBCompTurnOn(2);
+            case 3:
+                if (!gBComp[0] && gBComp[2] && !gBComp[4])
+                    iBCompTurnOn(3);
+            case 4:
+                if (!gBComp[2] && gBComp[3])
+                    iBCompTurnOn(4);
+            case 5:
+                if (gBComp[0] && gBComp[1] && gBComp[2] && !gBComp[3] && !gBComp[4])
+                    iBCompTurnOn(5);
+        }
+        
+        if (!gBComp[gBCompActive])
+        {
+            iBCompError();
+        }
+        else
+        {
+            PlaySound(sfx_screen, 50);
+        }
+    }
+}
+
+void iBCompOff()
+{
+    RemoveCollectionNum(7);
+    RemoveCollectionNum(8);
+    RemoveCollectionNum(9);
+    RemoveCollectionNum(10);
+    iBCompTurnOff(gBCompActive);
+}
+
+void iBCompBatt1()
+{
+    RemoveCollectionNum(7);
+    RemoveCollectionNum(8);
+    RemoveCollectionNum(9);
+    RemoveCollectionNum(10);
+    if (gBComp[gBCompActive])
+    {
+        if (GetTile(31 + (gBCompActive*2), 2, 1) == 43)
+        {
+            AddCollection(9);
+            SetTile(31 + (gBCompActive*2), 2, 1, 44);
+            gFlags[FLAG_HAS_BATTERY] = 1;
+            PlaySound(sfx_success, 50);
+        }
+        else
+        {
+            PlaySound(sfx_error, 50);
+            AddCollection(8);
+        }
+    }
+    else
+    {
+        PlaySound(sfx_error, 50);
+        AddCollection(10);
+    }
+}
+
+void iBCompBatt2()
+{
+    RemoveCollectionNum(7);
+    RemoveCollectionNum(8);
+    RemoveCollectionNum(9);
+    RemoveCollectionNum(10);
+    if (gBComp[gBCompActive])
+    {
+        if (GetTile(32 + (gBCompActive*2), 2, 1) == 43)
+        {
+            if (gBCompActive == 2)
+                AddCollection(7);
+            else
+            {
+                AddCollection(9);
+                SetTile(32 + (gBCompActive*2), 2, 1, 44);
+                gFlags[FLAG_HAS_BATTERY] = 1;
+                PlaySound(sfx_success, 50);
+            }
+        }
+        else
+        {
+            PlaySound(sfx_error, 50);
+            AddCollection(8);
+        }
+    }
+    else
+    {
+        PlaySound(sfx_error, 50);
+        AddCollection(10);
+    }
+}
+
+void iBCompBatt3()
+{
+    RemoveCollectionNum(7);
+    RemoveCollectionNum(8);
+    RemoveCollectionNum(9);
+    RemoveCollectionNum(10);
+    if (gBComp[gBCompActive])
+    {
+        if (GetTile(31 + (gBCompActive*2), 3, 1) == 43)
+        {
+            AddCollection(9);
+            SetTile(31 + (gBCompActive*2), 3, 1, 44);
+            gFlags[FLAG_HAS_BATTERY] = 1;
+            PlaySound(sfx_success, 50);
+        }
+        else
+        {
+            PlaySound(sfx_error, 50);
+            AddCollection(8);
+        }
+    }
+    else
+    {
+        PlaySound(sfx_error, 50);
+        AddCollection(10);
+    }
+}
+
+void iBCompBatt4()
+{
+    RemoveCollectionNum(7);
+    RemoveCollectionNum(8);
+    RemoveCollectionNum(9);
+    RemoveCollectionNum(10);
+    if (gBComp[gBCompActive])
+    {
+        if (GetTile(32 + (gBCompActive*2), 3, 1) == 43)
+        {
+            AddCollection(9);
+            SetTile(32 + (gBCompActive*2), 3, 1, 44);
+            gFlags[FLAG_HAS_BATTERY] = 1;
+            PlaySound(sfx_success, 50);
+        }
+        else
+        {
+            PlaySound(sfx_error, 50);
+            AddCollection(8);
+        }
+    }
+    else
+    {
+        PlaySound(sfx_error, 50);
+        AddCollection(10);
+    }
+}
+
+void iBCompTurnOn(int i)
+{
+    SetTile(31 + (i*2), 4, 1, 84);
+    SetTile(32 + (i*2), 4, 1, 85);
+    gBComp[i] = 1;
+}
+
+void iBCompTurnOff(int i)
+{
+    SetTile(31 + (i*2), 4, 1, 82);
+    SetTile(32 + (i*2), 4, 1, 83);
+    gBComp[i] = 0;
+}
+
+void iBCompReset()
+{
+    int i = 0;
+    
+    if ((timer/25)%2 == gBCompToggle)
+    {
+        gBCompToggle = gBCompToggle ^ 1;
+        if (gBCompToggle)
+            PlaySound(sfx_error, 50);
+        for (i=0; i<12; i++)
+            SetTile(31 + i, 4, 1, 84 - (gBCompToggle*20) + (i%2));
+    } 
+
+    if (timer >= 200)
+    {
+        iBCompTurnOff(0);
+        iBCompTurnOff(1);
+        iBCompTurnOff(2);
+        iBCompTurnOn(3);
+        iBCompTurnOff(4);
+        iBCompTurnOff(5);
+        RemoveRenderString("iBCompReset");
+    }
+}
+
+void iBCompError()
+{  
+    gBCompToggle = 0;
+    timer = 0;
+    AddCollection(7);
+    AddRender("iBCompReset");
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+
+void iBPanelInsert()
+{
+    RemoveCollectionNum(1);
+    RemoveCollectionNum(2);
+    RemoveCollectionNum(3);
+    if (gFlags[FLAG_HAS_BATTERY])
+    {
+        if (!gFlags[FLAG_BATTERY_USED])
+        {
+            SetTile(18, 11, 1, 43);
+            SetTile(19, 11, 2, 188);
+            SetTile(20, 11, 2, 190);
+            AddCollection(3);
+            gFlags[FLAG_BATTERY_USED] = 1;
+            PlaySound(sfx_success, 50);
+        }
+        else
+        {
+            AddCollection(2);
+            PlaySound(sfx_error, 50);
+        }
+    }
+    else
+    {    
+        AddCollection(1);
+        PlaySound(sfx_error, 50);
+    }
+}
+
+void iBPanelOpen()
+{
+    RemoveCollectionNum(1);
+    RemoveCollectionNum(2);
+    RemoveCollectionNum(3);
+    if (gFlags[FLAG_BATTERY_USED])
+    {
+        iDoorOpen();
+    }
+    else
+    {
+        PlaySound(sfx_error, 50);
+        AddCollection(1);
+    }
+    
+}
+
+void iBPanelClose()
+{
+    RemoveCollectionNum(1);
+    RemoveCollectionNum(2);
+    RemoveCollectionNum(3);
+    if (gFlags[FLAG_BATTERY_USED])
+    {
+        iDoorClose();
+    }
+    else
+    {
+        PlaySound(sfx_error, 50);
+        AddCollection(1);
+    }
+    
+}

@@ -14,11 +14,6 @@
 
 #include <memory>
 
-// ovk(2022-12-03):
-// - TODO: make vopen take an open mode, and use it in place of fopen everywhere. add support for writing/append to VFILEs
-// - TODO: make Emscripten build use its own VFILE struct that replaces the FILE* with a pointer to in-memory file blob. (but still keep the other stuff, so we keep packfile support)
-// - TODO: glob-style directory scanning for ListFilePattern that works with Emscripten.
-
 struct VFILE {
     FILE *fp;                         // real file pointer.
     quad i;                           // which file index in vfile is it?
@@ -46,6 +41,8 @@ struct mountstruct {
 
 extern mountstruct pack[10];
 extern int filesmounted;
+
+FILE* FileOpen(const char* filename, const char* mode);
 
 bool Exist(const char *fname);
 bool VExist(const char *fname);

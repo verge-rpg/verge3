@@ -30,6 +30,9 @@ extern char mapname[255];
 extern int gamerate;
 extern bool vc_oldstring;
 extern bool vc_redefinelibfuncs;
+extern bool vc_oldlibfuncs;
+extern bool vc_olduserglobals;
+
 void ShowPage();
 
 void xtestmain(int argc, char* argv[]); // for doctest init

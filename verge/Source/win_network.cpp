@@ -311,7 +311,7 @@ int getUrlImage(CStringRef url)
 	}
 
 	char buf[1024];
-	FILE *f = fopen("$$urlimagetemp.$$$","wb");
+	FILE *f = FileOpen("$$urlimagetemp.$$$","wb");
 
 	BOOL b = true;
 	DWORD bytesread;
