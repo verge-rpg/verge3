@@ -1301,7 +1301,7 @@ static void SetForLucentCommon()
 	SubtractiveBlit = T_SubtractBlit<LT,false>;
 	TSubtractiveBlit= T_SubtractBlit<LT,true>;
 	Silhouette		= T_Silhouette<LT>;
-	BlitWrap		= T_BlitWrap<LT,false>;
+	BlitWrap		= T_BlitWrap<LT,true>;
 	Mosaic			= T_Mosaic;
 	MakeColor		= _MakeColor;
 	GetColor		= _GetColor;
