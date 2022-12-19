@@ -185,6 +185,7 @@ void image::alloc_alpha()
 	alpha = true;
 	alphaChannel = new byte[width*height];
 	assert(alphaChannel);
+	memset(alphaChannel, 0, width*height);
 
 	//we are going to assume that pixels are 4byte aligned.
 	assert((((int)alphaChannel) & 3) == 0);
@@ -196,6 +197,7 @@ void image::alloc_data()
 
 	data = new byte[width*height*BytesPerPixel(bpp)];
 	assert(data);
+	memset(data, 0, width*height*BytesPerPixel(bpp));
 
 	//we are going to assume that pixels are 4byte aligned.
 	assert((((int)data) & 3) == 0);
