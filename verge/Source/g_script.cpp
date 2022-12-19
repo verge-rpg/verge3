@@ -725,7 +725,10 @@ int ScriptEngine::Len(CStringRef s) { return s.length(); }
 StringRef ScriptEngine::Mid(CStringRef str, int pos, int len) { return vc_strmid(str,pos,len); }
 StringRef ScriptEngine::Right(CStringRef str, int len) { return vc_strright(str,len); }
 StringRef ScriptEngine::Str(int d) { return va("%d", d); }
-int ScriptEngine::Strcmp(CStringRef s1, CStringRef s2) { return strcmp(s1.c_str(), s2.c_str()); }
+int ScriptEngine::Strcmp(CStringRef s1, CStringRef s2) {
+	int i = strcmp(s1.c_str(), s2.c_str()); 
+	return i != 0 ? (i < 0 ? -1 : 1) : 0;
+}
 StringRef ScriptEngine::Strdup(CStringRef s, int times) {
 	std::string ret;
 	int slen = s.length();
