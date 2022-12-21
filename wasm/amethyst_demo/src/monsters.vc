@@ -77,7 +77,7 @@ void AddMon(int monNum, int mindx)
 {
 	int datfile, ptmp;
 	string tempstring;
-	/*int*/ datfile = FileOpen("Dats\monster.dat",1);
+	int datfile = FileOpen("Dats\monster.dat",1);
 	FileSeekLine(datfile,monNum);
 	tempstring = FileReadLn(datfile);	
 	mon[mindx].name = Left(tempstring,10); ptmp=0;

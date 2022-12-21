@@ -32,6 +32,8 @@ extern bool vc_oldstring;
 extern bool vc_redefinelibfuncs;
 extern bool vc_oldlibfuncs;
 extern bool vc_olduserglobals;
+extern bool vc_ignoreduplicatefuncs;
+extern bool vc_ignoreduplicatelocals;
 
 void ShowPage();
 

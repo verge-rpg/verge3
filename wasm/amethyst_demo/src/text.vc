@@ -141,7 +141,7 @@ void Text2(int ent, string l1)
 
 void TimedText(int pos, int dur, string l1)
 {
-	int s1, position, oldtime, t/*, l1*/;
+	int s1, position, oldtime, t, l1;
 	if(!pos)
 		position=181;
 	else
@@ -391,7 +391,7 @@ void Tutorial()
 	
 }
 
-/*void Banner(string msg)
+void Banner(string msg)
 {
 	int s1, length, start;
 	GenerateGradient(bgc1,bgc2);
@@ -407,4 +407,4 @@ void Tutorial()
 		ShowPage();
 	}
 	Unpress(1);
-}*/
+}

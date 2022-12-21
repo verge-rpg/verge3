@@ -2435,20 +2435,25 @@ void VCCompiler::CheckNameDup(char *s, bool can_redefine_libfunc)
 		throw va("%s(%d): %s is already claimed by a built-in library function. Please choose a unique name.", sourcefile, linenum, s);
 	}
 
-	// check vs. all other functions compiled so far
-	for(i=precompile_numfuncs; i<funcs[target_cimage].size(); i++)
-		if(streq(funcs[target_cimage][i]->name, s))
-			throw va("%s(%d): %s is already claimed by a user function. Please choose a unique name.", sourcefile, linenum, s);
+	if (!vc_ignoreduplicatefuncs)
+	{
+		// check vs. all other functions compiled so far
+		for (i=precompile_numfuncs; i<funcs[target_cimage].size(); i++)
+			if (streq(funcs[target_cimage][i]->name, s))
+				throw va("%s(%d): %s is already claimed by a user function. Please choose a unique name.", sourcefile, linenum, s);
 
-	// check reference core images if we're preventing duplicates
-	if(!permit_duplicates) {
-		for(int index = 0; index < reference_cimages.size(); index++) {
-			int cimage = reference_cimages[index];
-			if(cimage == target_cimage)
-				continue;
-			for(i=0; i<funcs[cimage].size(); i++)
-				if(streq(funcs[cimage][i]->name, s))
-					throw va("%s(%d): %s is already claimed by a user function. Please choose a unique name.", sourcefile, linenum, s);
+		// check reference core images if we're preventing duplicates
+		if(!permit_duplicates)
+		{
+			for(int index = 0; index < reference_cimages.size(); index++)
+			{
+				int cimage = reference_cimages[index];
+				if (cimage == target_cimage)
+					continue;
+				for (i=0; i<funcs[cimage].size(); i++)
+					if (streq(funcs[cimage][i]->name, s))
+						throw va("%s(%d): %s is already claimed by a user function. Please choose a unique name.", sourcefile, linenum, s);
+			}
 		}
 	}
 
@@ -2903,7 +2908,7 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 		}
 		for (int i = 0; i < numargs; i++)
 		{
-			if (streq(myfunc->localnames[i], token))
+			if (!vc_ignoreduplicatelocals && streq(myfunc->localnames[i], token))
 			{
 				throw va("%s(%d) : error: '%s' : redefinition", sourcefile, linenum, token);
 			}
@@ -3545,7 +3550,7 @@ void VCCompiler::CompileFunction(bool returns_callback)
 				HandleRedefineLibFunc();				
 				for (int i = 0; i < in_func->numlocals; i++)
 				{
-					if (streq(token, in_func->localnames[i]))
+					if (!vc_ignoreduplicatelocals && streq(token, in_func->localnames[i]))
 					{
 						throw va("%s(%d) : error: '%s' : redefinition", sourcefile, linenum, token);
 					}
@@ -3566,7 +3571,7 @@ void VCCompiler::CompileFunction(bool returns_callback)
 					HandleRedefineLibFunc();
 					for (int i = 0; i < in_func->numlocals; i++)
 					{
-						if (streq(token, in_func->localnames[i]))
+						if (!vc_ignoreduplicatelocals && streq(token, in_func->localnames[i]))
 						{
 							throw va("%s(%d) : error: '%s' : redefinition", sourcefile, linenum, token);
 						}
@@ -3632,8 +3637,6 @@ void VCCompiler::CheckIdentifier(char *s)
 		{
 			err("cannot use library func %s with index %d >= 256 when in oldlibfuncs mode", s, libfunc_index);
 		}
-
-		vprint("name=%s, libfunc_index=%d vc_redefinelibfuncs=%d, in_func=%s %d", s, libfunc_index, vc_redefinelibfuncs, in_func ? in_func->name : "<null>", in_func ? in_func->redefined_libfuncs.size() : 0);
 
 		id_type = ID_LIBFUNC;
 		id_index = libfunc_index;

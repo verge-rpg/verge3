@@ -48,6 +48,9 @@ bool vc_oldstring = false;
 bool vc_redefinelibfuncs = false;
 bool vc_oldlibfuncs = false;
 bool vc_olduserglobals = false;
+bool vc_ignoreduplicatefuncs = false;
+bool vc_ignoreduplicatelocals = false;
+
 bool showpage_auto_sleep = true;
 int last_showpage = 0;
 
@@ -143,6 +146,10 @@ void ApplyConfig()
 		vc_oldlibfuncs = true;
     if (cfg_KeyPresent("olduserglobals"))
 		vc_olduserglobals = true;
+    if (cfg_KeyPresent("ignoreduplicatefuncs"))
+        vc_ignoreduplicatefuncs = true;
+    if (cfg_KeyPresent("ignoreduplicatelocals"))
+        vc_ignoreduplicatelocals = true;
 
     if (cfg_KeyPresent("gameroot"))
 		wasm_gameRoot = cfg_GetKeyValue("gameroot").c_str();
