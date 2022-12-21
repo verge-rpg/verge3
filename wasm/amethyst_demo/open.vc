@@ -1,0 +1,75 @@
+void Start()
+{
+	int aaron, charity, i;
+ 	PanImg = LoadImage("Pics/Pan/mountain.png");
+  	Cameratracking = 0;
+  	xwin=0; ywin=0;
+  	Hooktimer("clock");
+ 	HookRetrace("DisplayPan");
+ 	if(!flags[1])
+ 	{
+ 
+ 		player = EntitySpawn(8,25,"Sprites/charity.chr");
+		setPlayer(player);
+		aaron = EntitySpawn(8,25,"Sprites/aaron.chr");
+		playMusic("music/theplan.it");
+		EntityMove(player,"W800U13");
+ 		FadeIn(500);
+		camScrollTo(0, 77, 500);
+ 		Wait(300);
+ 		Text(1,"Redalia...");
+ 		Wait(200);
+ 		Text(1,"You're too beautiful to deserve your captors.");
+ 		Wait(200);
+ 		PlayerMove("D15");
+ 		FadeOut(100);
+ 		HookRetrace("");
+ 		flags[1]++;
+ 		Map("forest1.map");
+ 	}
+ 	else
+ 	{
+ 		for(i=0; i<=10; i++)
+ 			Ents[i] = EntitySpawn(3+(1*i),25,"sprites/soldier.chr");
+ 		
+ 		Player = EntitySpawn(8,12,"sprites/sean.chr");
+ 		charity = EntitySpawn(9,12,"sprites/charity.chr");
+ 		xwin = 0; ywin=77;
+ 		setPlayer(player);
+ 		EntityMove(player,"F1");
+ 		EntityMove(charity,"F1");
+ 		WhiteIn(100);
+ 		Wait(100);
+ 		Text(1,"Sean:\That was close huh?");
+ 		Text(1,"Charity:\A little too close.");
+ 		EntityMove(charity,"F2");
+ 		Wait(50);
+ 	
+ 		Text(1,"Charity:\You asshole! What the hell are you doing here anyway?");
+		PlayerMove("F3");
+ 		Text(1,"Sean:\Good to see you too.");
+ 		Text(1,"Charity:\You can't just dissappear off the face of the earth for four years and expect me to welcome you back with open arms!");
+ 		Text(1,"Not so much as a single word...");
+ 		Text(1,"I thought you were dead....");
+ 		TimedText(1,50,"Sean:\Charity...I...");
+ 		TimedText(0,50,"There they are!");
+ 		PlayerMove("F0");
+ 		EntityMove(Charity,"F0");
+ 		For(i=3; i<=7; i++)
+ 			EntityMove(ents[i],"U10");
+ 
+ 		for(i=0; i<3; i++)
+ 			EntityMove(ents[i],"W10U9");
+	
+ 		for(i=8; i<=10; i++)
+ 			EntityMove(ents[i],"W10U9");
+
+ 		Wait(200);
+ 		Text(1,"Sean:\What have you gotton yourself into?");
+ 		FadeOut(100);
+ 		HookRetrace("");
+ 		ChapterIntro(1);
+ 		CenteredFree("4 Years ago...");
+ 		map("inshawnigan.map");
+	}
+}

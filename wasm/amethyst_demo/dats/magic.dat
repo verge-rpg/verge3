@@ -1,0 +1,33 @@
+Name           Description                                                        Ap Cost      Mp Cost
+Fire           Causes fire damage to single/multiple targets.                      20          6                               
+Thunder        Causes thunder damage to single/multiple targets.                   25          6
+Blizzard       Causes ice damage to single/multiple targets.                       25          6
+Poison         Causes poison to single/multiple targets                            35          8
+Fira           Causes medium fire damage to single/multiple targets                50          12
+Blizzara       Causes medium ice damage to single/multiple targets                 50          12
+Thundara       Causes medium thunder damage to single/multiple targets             50          12
+Osmose         Drains MP from target and transfers it to the caster                70          2
+Firaga         Causes moderate fire damage to single/multiple targets              75          24
+Thundaga       Causes moderate thunder damage to single/multiple targets           75          24
+Blizzaga       Causes moderate ice damage to single/multiple targets               85          24
+Water          Causes water damage to single/multiple targets                      55          22
+Flare          Causes moderate non-elemental damage to a single target             95          40
+Meteor         Causes moderate non-elemental damage to all enemies                 95          42
+Bio            Causes poison with non-elemental damage to single/multiple targets  95          42
+Doomsday       Causes major shadow damage to all enemies and party memebers        150         72   
+Magic Break    Reduces an target's magic power.			                   25          4 
+Charge!        Forces all near death party members to attack.                      30          10 
+Darkside       Inflicts shadow damage on enemy, reduces casters HP                 30          0 
+Armor Break    Reduces target's defense strength                                   30          4 
+Thunder Slash  Inflicts thunder damage upon an enemy                               30          24 
+Stock Break    Inflicts non-elemental damage upon all enemies                      35          26 
+Minus Strike   Inflicts damage upon enemy that is equal to casters current HP      35          8
+Iai Strike     KO’s the target                                                     40          16 
+Power Break    Reduces a target's attack power                                     40          8 
+Mental Break   Reduces a targets magic defense                                     45          8 
+Shock 	       Inflicts physical damage upon one enemy                             60          46 
+Climhazzard    Inflicts non-elemental damage upon all enemies                      70          32 
+
+
+
+	

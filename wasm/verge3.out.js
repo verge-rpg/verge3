@@ -1216,32 +1216,33 @@ var tempI64;
 // === Body ===
 
 var ASM_CONSTS = {
-  312888: ($0) => { console.log(UTF8ToString($0)); },  
- 312923: () => { return performance.now(); },  
- 312953: () => { return performance.now(); },  
- 312983: () => { window.onWindowResize(); },  
- 313008: () => { window.onWindowResize(); },  
- 313033: ($0) => { alert(UTF8ToString($0)); },  
- 313062: () => { throw "Exit requested."; },  
- 313091: () => { window.verge.setLoadingProgress(100); },  
- 313133: () => { if (typeof(AudioContext) !== 'undefined') { return true; } else if (typeof(webkitAudioContext) !== 'undefined') { return true; } return false; },  
- 313280: () => { if ((typeof(navigator.mediaDevices) !== 'undefined') && (typeof(navigator.mediaDevices.getUserMedia) !== 'undefined')) { return true; } else if (typeof(navigator.webkitGetUserMedia) !== 'undefined') { return true; } return false; },  
- 313514: ($0) => { if(typeof(Module['SDL2']) === 'undefined') { Module['SDL2'] = {}; } var SDL2 = Module['SDL2']; if (!$0) { SDL2.audio = {}; } else { SDL2.capture = {}; } if (!SDL2.audioContext) { if (typeof(AudioContext) !== 'undefined') { SDL2.audioContext = new AudioContext(); } else if (typeof(webkitAudioContext) !== 'undefined') { SDL2.audioContext = new webkitAudioContext(); } if (SDL2.audioContext) { autoResumeAudioContext(SDL2.audioContext); } } return SDL2.audioContext === undefined ? -1 : 0; },  
- 314007: () => { var SDL2 = Module['SDL2']; return SDL2.audioContext.sampleRate; },  
- 314075: ($0, $1, $2, $3) => { var SDL2 = Module['SDL2']; var have_microphone = function(stream) { if (SDL2.capture.silenceTimer !== undefined) { clearTimeout(SDL2.capture.silenceTimer); SDL2.capture.silenceTimer = undefined; } SDL2.capture.mediaStreamNode = SDL2.audioContext.createMediaStreamSource(stream); SDL2.capture.scriptProcessorNode = SDL2.audioContext.createScriptProcessor($1, $0, 1); SDL2.capture.scriptProcessorNode.onaudioprocess = function(audioProcessingEvent) { if ((SDL2 === undefined) || (SDL2.capture === undefined)) { return; } audioProcessingEvent.outputBuffer.getChannelData(0).fill(0.0); SDL2.capture.currentCaptureBuffer = audioProcessingEvent.inputBuffer; dynCall('vi', $2, [$3]); }; SDL2.capture.mediaStreamNode.connect(SDL2.capture.scriptProcessorNode); SDL2.capture.scriptProcessorNode.connect(SDL2.audioContext.destination); SDL2.capture.stream = stream; }; var no_microphone = function(error) { }; SDL2.capture.silenceBuffer = SDL2.audioContext.createBuffer($0, $1, SDL2.audioContext.sampleRate); SDL2.capture.silenceBuffer.getChannelData(0).fill(0.0); var silence_callback = function() { SDL2.capture.currentCaptureBuffer = SDL2.capture.silenceBuffer; dynCall('vi', $2, [$3]); }; SDL2.capture.silenceTimer = setTimeout(silence_callback, ($1 / SDL2.audioContext.sampleRate) * 1000); if ((navigator.mediaDevices !== undefined) && (navigator.mediaDevices.getUserMedia !== undefined)) { navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(have_microphone).catch(no_microphone); } else if (navigator.webkitGetUserMedia !== undefined) { navigator.webkitGetUserMedia({ audio: true, video: false }, have_microphone, no_microphone); } },  
- 315727: ($0, $1, $2, $3) => { var SDL2 = Module['SDL2']; SDL2.audio.scriptProcessorNode = SDL2.audioContext['createScriptProcessor']($1, 0, $0); SDL2.audio.scriptProcessorNode['onaudioprocess'] = function (e) { if ((SDL2 === undefined) || (SDL2.audio === undefined)) { return; } SDL2.audio.currentOutputBuffer = e['outputBuffer']; dynCall('vi', $2, [$3]); }; SDL2.audio.scriptProcessorNode['connect'](SDL2.audioContext['destination']); },  
- 316137: ($0, $1) => { var SDL2 = Module['SDL2']; var numChannels = SDL2.capture.currentCaptureBuffer.numberOfChannels; for (var c = 0; c < numChannels; ++c) { var channelData = SDL2.capture.currentCaptureBuffer.getChannelData(c); if (channelData.length != $1) { throw 'Web Audio capture buffer length mismatch! Destination size: ' + channelData.length + ' samples vs expected ' + $1 + ' samples!'; } if (numChannels == 1) { for (var j = 0; j < $1; ++j) { setValue($0 + (j * 4), channelData[j], 'float'); } } else { for (var j = 0; j < $1; ++j) { setValue($0 + (((j * numChannels) + c) * 4), channelData[j], 'float'); } } } },  
- 316742: ($0, $1) => { var SDL2 = Module['SDL2']; var numChannels = SDL2.audio.currentOutputBuffer['numberOfChannels']; for (var c = 0; c < numChannels; ++c) { var channelData = SDL2.audio.currentOutputBuffer['getChannelData'](c); if (channelData.length != $1) { throw 'Web Audio output buffer length mismatch! Destination size: ' + channelData.length + ' samples vs expected ' + $1 + ' samples!'; } for (var j = 0; j < $1; ++j) { channelData[j] = HEAPF32[$0 + ((j*numChannels + c) << 2) >> 2]; } } },  
- 317222: ($0) => { var SDL2 = Module['SDL2']; if ($0) { if (SDL2.capture.silenceTimer !== undefined) { clearTimeout(SDL2.capture.silenceTimer); } if (SDL2.capture.stream !== undefined) { var tracks = SDL2.capture.stream.getAudioTracks(); for (var i = 0; i < tracks.length; i++) { SDL2.capture.stream.removeTrack(tracks[i]); } SDL2.capture.stream = undefined; } if (SDL2.capture.scriptProcessorNode !== undefined) { SDL2.capture.scriptProcessorNode.onaudioprocess = function(audioProcessingEvent) {}; SDL2.capture.scriptProcessorNode.disconnect(); SDL2.capture.scriptProcessorNode = undefined; } if (SDL2.capture.mediaStreamNode !== undefined) { SDL2.capture.mediaStreamNode.disconnect(); SDL2.capture.mediaStreamNode = undefined; } if (SDL2.capture.silenceBuffer !== undefined) { SDL2.capture.silenceBuffer = undefined } SDL2.capture = undefined; } else { if (SDL2.audio.scriptProcessorNode != undefined) { SDL2.audio.scriptProcessorNode.disconnect(); SDL2.audio.scriptProcessorNode = undefined; } SDL2.audio = undefined; } if ((SDL2.audioContext !== undefined) && (SDL2.audio === undefined) && (SDL2.capture === undefined)) { SDL2.audioContext.close(); SDL2.audioContext = undefined; } },  
- 318394: ($0, $1, $2) => { var w = $0; var h = $1; var pixels = $2; if (!Module['SDL2']) Module['SDL2'] = {}; var SDL2 = Module['SDL2']; if (SDL2.ctxCanvas !== Module['canvas']) { SDL2.ctx = Module['createContext'](Module['canvas'], false, true); SDL2.ctxCanvas = Module['canvas']; } if (SDL2.w !== w || SDL2.h !== h || SDL2.imageCtx !== SDL2.ctx) { SDL2.image = SDL2.ctx.createImageData(w, h); SDL2.w = w; SDL2.h = h; SDL2.imageCtx = SDL2.ctx; } var data = SDL2.image.data; var src = pixels >> 2; var dst = 0; var num; if (typeof CanvasPixelArray !== 'undefined' && data instanceof CanvasPixelArray) { num = data.length; while (dst < num) { var val = HEAP32[src]; data[dst ] = val & 0xff; data[dst+1] = (val >> 8) & 0xff; data[dst+2] = (val >> 16) & 0xff; data[dst+3] = 0xff; src++; dst += 4; } } else { if (SDL2.data32Data !== data) { SDL2.data32 = new Int32Array(data.buffer); SDL2.data8 = new Uint8Array(data.buffer); SDL2.data32Data = data; } var data32 = SDL2.data32; num = data32.length; data32.set(HEAP32.subarray(src, src + num)); var data8 = SDL2.data8; var i = 3; var j = i + 4*num; if (num % 8 == 0) { while (i < j) { data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; } } else { while (i < j) { data8[i] = 0xff; i = i + 4 | 0; } } } SDL2.ctx.putImageData(SDL2.image, 0, 0); },  
- 319863: ($0, $1, $2, $3, $4) => { var w = $0; var h = $1; var hot_x = $2; var hot_y = $3; var pixels = $4; var canvas = document.createElement("canvas"); canvas.width = w; canvas.height = h; var ctx = canvas.getContext("2d"); var image = ctx.createImageData(w, h); var data = image.data; var src = pixels >> 2; var dst = 0; var num; if (typeof CanvasPixelArray !== 'undefined' && data instanceof CanvasPixelArray) { num = data.length; while (dst < num) { var val = HEAP32[src]; data[dst ] = val & 0xff; data[dst+1] = (val >> 8) & 0xff; data[dst+2] = (val >> 16) & 0xff; data[dst+3] = (val >> 24) & 0xff; src++; dst += 4; } } else { var data32 = new Int32Array(data.buffer); num = data32.length; data32.set(HEAP32.subarray(src, src + num)); } ctx.putImageData(image, 0, 0); var url = hot_x === 0 && hot_y === 0 ? "url(" + canvas.toDataURL() + "), auto" : "url(" + canvas.toDataURL() + ") " + hot_x + " " + hot_y + ", auto"; var urlBuf = _malloc(url.length + 1); stringToUTF8(url, urlBuf, url.length + 1); return urlBuf; },  
- 320852: ($0) => { if (Module['canvas']) { Module['canvas'].style['cursor'] = UTF8ToString($0); } },  
- 320935: () => { if (Module['canvas']) { Module['canvas'].style['cursor'] = 'none'; } },  
- 321004: () => { return window.innerWidth; },  
- 321034: () => { return window.innerHeight; }
+  312968: ($0) => { console.log(UTF8ToString($0)); },  
+ 313003: () => { return performance.now(); },  
+ 313033: () => { return performance.now(); },  
+ 313063: ($0) => { console.log('vcverbose', UTF8ToString($0)); },  
+ 313111: () => { window.onWindowResize(); },  
+ 313136: () => { window.onWindowResize(); },  
+ 313161: ($0) => { alert(UTF8ToString($0)); },  
+ 313190: () => { throw "Exit requested."; },  
+ 313219: () => { window.verge.setLoadingProgress(100); },  
+ 313261: () => { if (typeof(AudioContext) !== 'undefined') { return true; } else if (typeof(webkitAudioContext) !== 'undefined') { return true; } return false; },  
+ 313408: () => { if ((typeof(navigator.mediaDevices) !== 'undefined') && (typeof(navigator.mediaDevices.getUserMedia) !== 'undefined')) { return true; } else if (typeof(navigator.webkitGetUserMedia) !== 'undefined') { return true; } return false; },  
+ 313642: ($0) => { if(typeof(Module['SDL2']) === 'undefined') { Module['SDL2'] = {}; } var SDL2 = Module['SDL2']; if (!$0) { SDL2.audio = {}; } else { SDL2.capture = {}; } if (!SDL2.audioContext) { if (typeof(AudioContext) !== 'undefined') { SDL2.audioContext = new AudioContext(); } else if (typeof(webkitAudioContext) !== 'undefined') { SDL2.audioContext = new webkitAudioContext(); } if (SDL2.audioContext) { autoResumeAudioContext(SDL2.audioContext); } } return SDL2.audioContext === undefined ? -1 : 0; },  
+ 314135: () => { var SDL2 = Module['SDL2']; return SDL2.audioContext.sampleRate; },  
+ 314203: ($0, $1, $2, $3) => { var SDL2 = Module['SDL2']; var have_microphone = function(stream) { if (SDL2.capture.silenceTimer !== undefined) { clearTimeout(SDL2.capture.silenceTimer); SDL2.capture.silenceTimer = undefined; } SDL2.capture.mediaStreamNode = SDL2.audioContext.createMediaStreamSource(stream); SDL2.capture.scriptProcessorNode = SDL2.audioContext.createScriptProcessor($1, $0, 1); SDL2.capture.scriptProcessorNode.onaudioprocess = function(audioProcessingEvent) { if ((SDL2 === undefined) || (SDL2.capture === undefined)) { return; } audioProcessingEvent.outputBuffer.getChannelData(0).fill(0.0); SDL2.capture.currentCaptureBuffer = audioProcessingEvent.inputBuffer; dynCall('vi', $2, [$3]); }; SDL2.capture.mediaStreamNode.connect(SDL2.capture.scriptProcessorNode); SDL2.capture.scriptProcessorNode.connect(SDL2.audioContext.destination); SDL2.capture.stream = stream; }; var no_microphone = function(error) { }; SDL2.capture.silenceBuffer = SDL2.audioContext.createBuffer($0, $1, SDL2.audioContext.sampleRate); SDL2.capture.silenceBuffer.getChannelData(0).fill(0.0); var silence_callback = function() { SDL2.capture.currentCaptureBuffer = SDL2.capture.silenceBuffer; dynCall('vi', $2, [$3]); }; SDL2.capture.silenceTimer = setTimeout(silence_callback, ($1 / SDL2.audioContext.sampleRate) * 1000); if ((navigator.mediaDevices !== undefined) && (navigator.mediaDevices.getUserMedia !== undefined)) { navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then(have_microphone).catch(no_microphone); } else if (navigator.webkitGetUserMedia !== undefined) { navigator.webkitGetUserMedia({ audio: true, video: false }, have_microphone, no_microphone); } },  
+ 315855: ($0, $1, $2, $3) => { var SDL2 = Module['SDL2']; SDL2.audio.scriptProcessorNode = SDL2.audioContext['createScriptProcessor']($1, 0, $0); SDL2.audio.scriptProcessorNode['onaudioprocess'] = function (e) { if ((SDL2 === undefined) || (SDL2.audio === undefined)) { return; } SDL2.audio.currentOutputBuffer = e['outputBuffer']; dynCall('vi', $2, [$3]); }; SDL2.audio.scriptProcessorNode['connect'](SDL2.audioContext['destination']); },  
+ 316265: ($0, $1) => { var SDL2 = Module['SDL2']; var numChannels = SDL2.capture.currentCaptureBuffer.numberOfChannels; for (var c = 0; c < numChannels; ++c) { var channelData = SDL2.capture.currentCaptureBuffer.getChannelData(c); if (channelData.length != $1) { throw 'Web Audio capture buffer length mismatch! Destination size: ' + channelData.length + ' samples vs expected ' + $1 + ' samples!'; } if (numChannels == 1) { for (var j = 0; j < $1; ++j) { setValue($0 + (j * 4), channelData[j], 'float'); } } else { for (var j = 0; j < $1; ++j) { setValue($0 + (((j * numChannels) + c) * 4), channelData[j], 'float'); } } } },  
+ 316870: ($0, $1) => { var SDL2 = Module['SDL2']; var numChannels = SDL2.audio.currentOutputBuffer['numberOfChannels']; for (var c = 0; c < numChannels; ++c) { var channelData = SDL2.audio.currentOutputBuffer['getChannelData'](c); if (channelData.length != $1) { throw 'Web Audio output buffer length mismatch! Destination size: ' + channelData.length + ' samples vs expected ' + $1 + ' samples!'; } for (var j = 0; j < $1; ++j) { channelData[j] = HEAPF32[$0 + ((j*numChannels + c) << 2) >> 2]; } } },  
+ 317350: ($0) => { var SDL2 = Module['SDL2']; if ($0) { if (SDL2.capture.silenceTimer !== undefined) { clearTimeout(SDL2.capture.silenceTimer); } if (SDL2.capture.stream !== undefined) { var tracks = SDL2.capture.stream.getAudioTracks(); for (var i = 0; i < tracks.length; i++) { SDL2.capture.stream.removeTrack(tracks[i]); } SDL2.capture.stream = undefined; } if (SDL2.capture.scriptProcessorNode !== undefined) { SDL2.capture.scriptProcessorNode.onaudioprocess = function(audioProcessingEvent) {}; SDL2.capture.scriptProcessorNode.disconnect(); SDL2.capture.scriptProcessorNode = undefined; } if (SDL2.capture.mediaStreamNode !== undefined) { SDL2.capture.mediaStreamNode.disconnect(); SDL2.capture.mediaStreamNode = undefined; } if (SDL2.capture.silenceBuffer !== undefined) { SDL2.capture.silenceBuffer = undefined } SDL2.capture = undefined; } else { if (SDL2.audio.scriptProcessorNode != undefined) { SDL2.audio.scriptProcessorNode.disconnect(); SDL2.audio.scriptProcessorNode = undefined; } SDL2.audio = undefined; } if ((SDL2.audioContext !== undefined) && (SDL2.audio === undefined) && (SDL2.capture === undefined)) { SDL2.audioContext.close(); SDL2.audioContext = undefined; } },  
+ 318522: ($0, $1, $2) => { var w = $0; var h = $1; var pixels = $2; if (!Module['SDL2']) Module['SDL2'] = {}; var SDL2 = Module['SDL2']; if (SDL2.ctxCanvas !== Module['canvas']) { SDL2.ctx = Module['createContext'](Module['canvas'], false, true); SDL2.ctxCanvas = Module['canvas']; } if (SDL2.w !== w || SDL2.h !== h || SDL2.imageCtx !== SDL2.ctx) { SDL2.image = SDL2.ctx.createImageData(w, h); SDL2.w = w; SDL2.h = h; SDL2.imageCtx = SDL2.ctx; } var data = SDL2.image.data; var src = pixels >> 2; var dst = 0; var num; if (typeof CanvasPixelArray !== 'undefined' && data instanceof CanvasPixelArray) { num = data.length; while (dst < num) { var val = HEAP32[src]; data[dst ] = val & 0xff; data[dst+1] = (val >> 8) & 0xff; data[dst+2] = (val >> 16) & 0xff; data[dst+3] = 0xff; src++; dst += 4; } } else { if (SDL2.data32Data !== data) { SDL2.data32 = new Int32Array(data.buffer); SDL2.data8 = new Uint8Array(data.buffer); SDL2.data32Data = data; } var data32 = SDL2.data32; num = data32.length; data32.set(HEAP32.subarray(src, src + num)); var data8 = SDL2.data8; var i = 3; var j = i + 4*num; if (num % 8 == 0) { while (i < j) { data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; data8[i] = 0xff; i = i + 4 | 0; } } else { while (i < j) { data8[i] = 0xff; i = i + 4 | 0; } } } SDL2.ctx.putImageData(SDL2.image, 0, 0); },  
+ 319991: ($0, $1, $2, $3, $4) => { var w = $0; var h = $1; var hot_x = $2; var hot_y = $3; var pixels = $4; var canvas = document.createElement("canvas"); canvas.width = w; canvas.height = h; var ctx = canvas.getContext("2d"); var image = ctx.createImageData(w, h); var data = image.data; var src = pixels >> 2; var dst = 0; var num; if (typeof CanvasPixelArray !== 'undefined' && data instanceof CanvasPixelArray) { num = data.length; while (dst < num) { var val = HEAP32[src]; data[dst ] = val & 0xff; data[dst+1] = (val >> 8) & 0xff; data[dst+2] = (val >> 16) & 0xff; data[dst+3] = (val >> 24) & 0xff; src++; dst += 4; } } else { var data32 = new Int32Array(data.buffer); num = data32.length; data32.set(HEAP32.subarray(src, src + num)); } ctx.putImageData(image, 0, 0); var url = hot_x === 0 && hot_y === 0 ? "url(" + canvas.toDataURL() + "), auto" : "url(" + canvas.toDataURL() + ") " + hot_x + " " + hot_y + ", auto"; var urlBuf = _malloc(url.length + 1); stringToUTF8(url, urlBuf, url.length + 1); return urlBuf; },  
+ 320980: ($0) => { if (Module['canvas']) { Module['canvas'].style['cursor'] = UTF8ToString($0); } },  
+ 321063: () => { if (Module['canvas']) { Module['canvas'].style['cursor'] = 'none'; } },  
+ 321132: () => { return window.innerWidth; },  
+ 321162: () => { return window.innerHeight; }
 };
 function wasm_nextFrame_() { return Asyncify.handleSleep(requestAnimationFrame); }
-function wasm_initSound() { if (typeof(window.verge.initMpt) === 'undefined') { window.verge.audioContext = new AudioContext(); window.verge.mainSong = null; window.verge.songs = {}; window.verge.songDatas = {}; window.verge.songRefs = {}; window.verge.sounds = {}; window.verge.soundRefs = {}; window.verge.soundChannels = {}; window.verge.soundChannelNextID = 1; window.verge.mptLoaded = false; window.verge.initSoundError = ""; window.verge.initMpt = () => { const ctx = window.verge.audioContext; if (ctx.audioWorklet) { console.log("initializing mpt-worklet.js module"); window.verge.mptInited = ctx.audioWorklet.addModule('mpt-worklet.js').then(() => { console.log("mpt-worklet.js module finished initializing!"); window.verge.mainSong = window.verge.createSong(); window.verge.mptLoaded = true; }).catch(err => { console.warn("mpt-worklet.js failed!", err); window.verge.initSoundError = err.toString(); }); } else { window.verge.initSoundError = 'AudioWorklet is not supported in this browser. No music. Sorry!'; window.verge.mptInited = Promise.resolve(); } }; window.verge.createMptNode = () => { const ctx = window.verge.audioContext; return new AudioWorkletNode(ctx, 'libopenmpt-processor', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2], }); }; window.verge.createSong = () => { const ctx = window.verge.audioContext; const gainNode = ctx.createGain(); gainNode.connect(ctx.destination); const streamAudio = new Audio(); const streamNode = ctx.createMediaElementSource(streamAudio); streamNode.connect(gainNode); const mptNode = window.verge.createMptNode(); mptNode.connect(gainNode); return { gainNode: gainNode, streamAudio: streamAudio, streamNode: streamNode, mptNode: mptNode, activeSourceNode: null, lastGetPosition: 0, } }; window.verge.freeSong = (song) => { song.streamNode.disconnect(); song.mptNode.disconnect(); }; window.verge.playSong = (song, filename, songData) => { window.verge.stopSong(song); console.log('window.verge.playSong: playing ', filename, songData); if (!song || !filename || !songData) { return; } let mediaMimetype = ""; if (filename.endsWith('mp3')) { mediaMimetype = 'audio/mp3'; } else if (filename.endsWith('ogg')) { mediaMimetype = 'audio/ogg'; } else if (filename.endsWith('wav')) { mediaMimetype = 'audio/x-wav'; } if (mediaMimetype != "") { let songDataString = ""; for (let i = 0; i < songData.length; i++) { songDataString += String.fromCharCode(songData[i]); } const songDataURL = "data:" + mediaMimetype + ";base64," + btoa(songDataString); console.log('window.verge.playSong: streaming', filename, songDataURL); song.activeSourceNode = song.streamNode; song.streamAudio.src = songDataURL; song.streamAudio.loop = true; song.streamAudio.addEventListener('canplaythrough', () => song.streamAudio.play()); } else { console.log('window.verge.playSong: sequenced', filename); song.mptNode.port.postMessage({ songData: songData, setRepeatCount: -1 }); song.activeSourceNode = song.mptNode; } }; window.verge.stopSong = (song) => { console.log('window.verge.stopSong'); if (song.activeSourceNode == song.streamAudio) { song.streamAudio.pause(); song.streamAudio.currentTime = 0; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ songData: new ArrayBuffer(0) }); } song.activeSourceNode = null; }; window.verge.getSongPositionAsync = (song) => { if (song.activeSourceNode == song.streamAudio) { return Promise.resolve({position: song.streamAudio.currentTime}); } else if (song.activeSourceNode == song.mptNode) { return song.mptNode.port.postMessage({ getPosition: true, }); } else { return 0; } }; window.verge.setSongPosition = (song, position) => { if (song.activeSourceNode == song.streamAudio) { song.streamAudio.currentTime = position; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ setPosition: position }); } }; window.verge.setSongPaused = (song, paused) => { if (song.activeSourceNode == song.streamAudio) { song.streamAudio.paused = paused; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ setPaused: paused }); } }; window.verge.getSongVolume = (song) => song.gainNode.gain.value * 100; window.verge.setSongVolume = (song, volume) => { song.gainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime); }; } return Asyncify.handleSleep(wakeUp => { window.verge.initMpt(); window.verge.mptInited.then(() => { wakeUp(window.verge.mptLoaded); }); }); }
+function wasm_initSound() { if (typeof(window.verge.initMpt) === 'undefined') { window.verge.audioContext = new AudioContext(); window.verge.mainSong = null; window.verge.songs = {}; window.verge.songDatas = {}; window.verge.songRefs = {}; window.verge.sounds = {}; window.verge.soundRefs = {}; window.verge.soundChannels = {}; window.verge.soundChannelNextID = 1; window.verge.mptLoaded = false; window.verge.initSoundError = ""; window.verge.initMpt = () => { const ctx = window.verge.audioContext; if (ctx.audioWorklet) { console.log("initializing mpt-worklet.js module"); window.verge.mptInited = ctx.audioWorklet.addModule('mpt-worklet.js').then(() => { console.log("mpt-worklet.js module finished initializing!"); window.verge.mainSong = window.verge.createSong(); window.verge.mptLoaded = true; }).catch(err => { console.warn("mpt-worklet.js failed!", err); window.verge.initSoundError = err.toString(); }); } else { window.verge.initSoundError = 'AudioWorklet is not supported in this browser. No music. Sorry!'; window.verge.mptInited = Promise.resolve(); } }; window.verge.createMptNode = () => { const ctx = window.verge.audioContext; return new AudioWorkletNode(ctx, 'libopenmpt-processor', { numberOfInputs: 0, numberOfOutputs: 1, outputChannelCount: [2], }); }; window.verge.createSong = () => { const ctx = window.verge.audioContext; const gainNode = ctx.createGain(); gainNode.connect(ctx.destination); const streamAudio = new Audio(); const streamNode = ctx.createMediaElementSource(streamAudio); streamNode.connect(gainNode); const mptNode = window.verge.createMptNode(); mptNode.connect(gainNode); return { gainNode: gainNode, streamAudio: streamAudio, streamNode: streamNode, streamStopped: false, streamStarted: false, mptNode: mptNode, activeSourceNode: null, lastGetPosition: 0, } }; window.verge.freeSong = (song) => { song.streamNode.disconnect(); song.mptNode.disconnect(); }; window.verge.playSong = (song, filename, songData) => { window.verge.stopSong(song); console.log('window.verge.playSong: playing ', filename, songData); if (!song || !filename || !songData) { return; } let mediaMimetype = ""; if (filename.endsWith('mp3')) { mediaMimetype = 'audio/mp3'; } else if (filename.endsWith('ogg')) { mediaMimetype = 'audio/ogg'; } else if (filename.endsWith('wav')) { mediaMimetype = 'audio/x-wav'; } if (song == window.verge.mainSong) { song.gainNode.gain.value = 1.0; } if (mediaMimetype != "") { let songDataString = ""; for (let i = 0; i < songData.length; i++) { songDataString += String.fromCharCode(songData[i]); } const songDataURL = "data:" + mediaMimetype + ";base64," + btoa(songDataString); console.log('window.verge.playSong: streaming', filename, songDataURL); song.activeSourceNode = song.streamNode; song.streamAudio.src = songDataURL; song.streamAudio.loop = true; song.streamStopped = false; song.streamStarted = false; song.streamAudio.addEventListener('canplaythrough', () => { if (!song.streamStopped && !song.streamStarted) { song.streamAudio.play(); song.streamStarted = true; } }); } else { console.log('window.verge.playSong: sequenced', filename); song.mptNode.port.postMessage({ songData: songData, setRepeatCount: -1 }); song.activeSourceNode = song.mptNode; } }; window.verge.stopSong = (song) => { console.log('window.verge.stopSong'); if (song.activeSourceNode == song.streamNode) { console.log('window.verge.stopSong: streaming'); song.streamStopped = true; if (song.streamStarted) { song.streamAudio.pause(); song.streamAudio.currentTime = 0; song.streamStarted = false; } } else if (song.activeSourceNode == song.mptNode) { console.log('window.verge.stopSong: sequenced'); song.mptNode.port.postMessage({ songData: new ArrayBuffer(0) }); } song.activeSourceNode = null; }; window.verge.getSongPositionAsync = (song) => { if (song.activeSourceNode == song.streamNode) { return Promise.resolve({position: song.streamAudio.currentTime}); } else if (song.activeSourceNode == song.mptNode) { return song.mptNode.port.postMessage({ getPosition: true, }); } else { return 0; } }; window.verge.setSongPosition = (song, position) => { if (song.activeSourceNode == song.streamNode) { song.streamAudio.currentTime = position; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ setPosition: position }); } }; window.verge.setSongPaused = (song, paused) => { if (song.activeSourceNode == song.streamNode) { song.streamAudio.paused = paused; } else if (song.activeSourceNode == song.mptNode) { song.mptNode.port.postMessage({ setPaused: paused }); } }; window.verge.getSongVolume = (song) => song.gainNode.gain.value * 100; window.verge.setSongVolume = (song, volume) => { song.gainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime); }; } return Asyncify.handleSleep(wakeUp => { window.verge.initMpt(); window.verge.mptInited.then(() => { wakeUp(window.verge.mptLoaded); }); }); }
 function wasm_getInitSoundError() { const result = Module._malloc(window.verge.initSoundError.length * 4 + 1); stringToUTF8(window.verge.initSoundError, result, window.verge.initSoundError.length + 1); return result; }
 function wasm_loadSound(filename,data,length) { const name = UTF8ToString(filename); const audioData = HEAPU8.buffer.slice(data, data + length); return Asyncify.handleSleep(wakeUp => { if (window.verge.sounds[name]) { window.verge.soundRefs[name]++; wakeUp(true); } else { window.verge.audioContext.decodeAudioData( audioData, decoded => { console.log("wasm_loadSound: Loaded sound ", name); window.verge.sounds[name] = decoded; window.verge.soundRefs[name] = (window.verge.soundRefs[name] || 0) + 1; wakeUp(true); }, () => { console.log("wasm_loadSound: Unable to load sound data for ", name); wakeUp(false); } ); } }); }
 function wasm_freeSound(filename) { const name = UTF8ToString(filename); const sound = window.verge.sounds[name]; if (!sound) { console.error("wasm_freeSound: Unknown sound ", name); return; } if (--window.verge.soundRefs[name] <= 0) { delete window.verge.sounds[name]; delete window.verge.soundRefs[name]; } }
@@ -1387,6 +1388,11 @@ function wasm_fetchSync(pathPtr,size,data) { return Asyncify.handleSleep(resume 
       abort('Assertion failed: ' + UTF8ToString(condition) + ', at: ' + [filename ? UTF8ToString(filename) : 'unknown filename', line, func ? UTF8ToString(func) : 'unknown function']);
     }
 
+  function ___cxa_allocate_exception(size) {
+      // Thrown object is prepended by exception metadata block
+      return _malloc(size + 24) + 24;
+    }
+
   var exceptionCaught =  [];
   
   function exception_addRef(info) {
@@ -1408,30 +1414,6 @@ function wasm_fetchSync(pathPtr,size,data) { return Asyncify.handleSleep(resume 
 
   var exceptionLast = 0;
   
-  function exception_decRef(info) {
-      // A rethrown exception can reach refcount 0; it must not be discarded
-      // Its next handler will clear the rethrown flag and addRef it, prior to
-      // final decRef and destruction here
-      if (info.release_ref() && !info.get_rethrown()) {
-        var destructor = info.get_destructor();
-        if (destructor) {
-          // In Wasm, destructors return 'this' as in ARM
-          ((a1) => dynCall_ii.apply(null, [destructor, a1]))(info.excPtr);
-        }
-        ___cxa_free_exception(info.excPtr);
-      }
-    }
-  function ___cxa_end_catch() {
-      // Clear state flag.
-      _setThrew(0);
-      assert(exceptionCaught.length > 0);
-      // Call destructor if one is registered then clear it.
-      var info = exceptionCaught.pop();
-  
-      exception_decRef(info);
-      exceptionLast = 0; // XXX in decRef?
-    }
-
   /** @constructor */
   function ExceptionInfo(excPtr) {
       this.excPtr = excPtr;
@@ -1522,7 +1504,37 @@ function wasm_fetchSync(pathPtr,size,data) { return Asyncify.handleSleep(resume 
         return this.excPtr;
       };
     }
+  function ___cxa_free_exception(ptr) {
+      try {
+        return _free(new ExceptionInfo(ptr).ptr);
+      } catch(e) {
+        err('exception during __cxa_free_exception: ' + e);
+      }
+    }
+  function exception_decRef(info) {
+      // A rethrown exception can reach refcount 0; it must not be discarded
+      // Its next handler will clear the rethrown flag and addRef it, prior to
+      // final decRef and destruction here
+      if (info.release_ref() && !info.get_rethrown()) {
+        var destructor = info.get_destructor();
+        if (destructor) {
+          // In Wasm, destructors return 'this' as in ARM
+          ((a1) => dynCall_ii.apply(null, [destructor, a1]))(info.excPtr);
+        }
+        ___cxa_free_exception(info.excPtr);
+      }
+    }
+  function ___cxa_end_catch() {
+      // Clear state flag.
+      _setThrew(0);
+      assert(exceptionCaught.length > 0);
+      // Call destructor if one is registered then clear it.
+      var info = exceptionCaught.pop();
   
+      exception_decRef(info);
+      exceptionLast = 0; // XXX in decRef?
+    }
+
   function ___resumeException(ptr) {
       if (!exceptionLast) { exceptionLast = ptr; }
       throw ptr;
@@ -1637,6 +1649,7 @@ function wasm_fetchSync(pathPtr,size,data) { return Asyncify.handleSleep(resume 
       setTempRet0(thrownType);
       return thrown;
     }
+
 
   function ___cxa_get_exception_ptr(ptr) {
       return new ExceptionInfo(ptr).get_exception_ptr();
@@ -4956,15 +4969,12 @@ function wasm_fetchSync(pathPtr,size,data) { return Asyncify.handleSleep(resume 
         (tempI64 = [stat.size>>>0,(tempDouble=stat.size,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(40))>>2)] = tempI64[0],HEAP32[(((buf)+(44))>>2)] = tempI64[1]);
         HEAP32[(((buf)+(48))>>2)] = 4096;
         HEAP32[(((buf)+(52))>>2)] = stat.blocks;
-        var atime = stat.atime.getTime();
-        var mtime = stat.mtime.getTime();
-        var ctime = stat.ctime.getTime();
-        (tempI64 = [Math.floor(atime / 1000)>>>0,(tempDouble=Math.floor(atime / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(56))>>2)] = tempI64[0],HEAP32[(((buf)+(60))>>2)] = tempI64[1]);
-        HEAPU32[(((buf)+(64))>>2)] = (atime % 1000) * 1000;
-        (tempI64 = [Math.floor(mtime / 1000)>>>0,(tempDouble=Math.floor(mtime / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(72))>>2)] = tempI64[0],HEAP32[(((buf)+(76))>>2)] = tempI64[1]);
-        HEAPU32[(((buf)+(80))>>2)] = (mtime % 1000) * 1000;
-        (tempI64 = [Math.floor(ctime / 1000)>>>0,(tempDouble=Math.floor(ctime / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(88))>>2)] = tempI64[0],HEAP32[(((buf)+(92))>>2)] = tempI64[1]);
-        HEAPU32[(((buf)+(96))>>2)] = (ctime % 1000) * 1000;
+        (tempI64 = [Math.floor(stat.atime.getTime() / 1000)>>>0,(tempDouble=Math.floor(stat.atime.getTime() / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(56))>>2)] = tempI64[0],HEAP32[(((buf)+(60))>>2)] = tempI64[1]);
+        HEAPU32[(((buf)+(64))>>2)] = 0;
+        (tempI64 = [Math.floor(stat.mtime.getTime() / 1000)>>>0,(tempDouble=Math.floor(stat.mtime.getTime() / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(72))>>2)] = tempI64[0],HEAP32[(((buf)+(76))>>2)] = tempI64[1]);
+        HEAPU32[(((buf)+(80))>>2)] = 0;
+        (tempI64 = [Math.floor(stat.ctime.getTime() / 1000)>>>0,(tempDouble=Math.floor(stat.ctime.getTime() / 1000),(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(88))>>2)] = tempI64[0],HEAP32[(((buf)+(92))>>2)] = tempI64[1]);
+        HEAPU32[(((buf)+(96))>>2)] = 0;
         (tempI64 = [stat.ino>>>0,(tempDouble=stat.ino,(+(Math.abs(tempDouble))) >= 1.0 ? (tempDouble > 0.0 ? ((Math.min((+(Math.floor((tempDouble)/4294967296.0))), 4294967295.0))|0)>>>0 : (~~((+(Math.ceil((tempDouble - +(((~~(tempDouble)))>>>0))/4294967296.0)))))>>>0) : 0)],HEAP32[(((buf)+(104))>>2)] = tempI64[0],HEAP32[(((buf)+(108))>>2)] = tempI64[1]);
         return 0;
       },doMsync:function(addr, stream, len, flags, offset) {
@@ -10820,11 +10830,13 @@ function checkIncomingModuleAPI() {
 }
 var asmLibraryArg = {
   "__assert_fail": ___assert_fail,
+  "__cxa_allocate_exception": ___cxa_allocate_exception,
   "__cxa_begin_catch": ___cxa_begin_catch,
   "__cxa_end_catch": ___cxa_end_catch,
   "__cxa_find_matching_catch_2": ___cxa_find_matching_catch_2,
   "__cxa_find_matching_catch_3": ___cxa_find_matching_catch_3,
   "__cxa_find_matching_catch_5": ___cxa_find_matching_catch_5,
+  "__cxa_free_exception": ___cxa_free_exception,
   "__cxa_get_exception_ptr": ___cxa_get_exception_ptr,
   "__cxa_rethrow": ___cxa_rethrow,
   "__cxa_throw": ___cxa_throw,
@@ -11152,9 +11164,6 @@ var ___wasm_call_ctors = Module["___wasm_call_ctors"] = createExportWrapper("__w
 var getTempRet0 = Module["getTempRet0"] = createExportWrapper("getTempRet0");
 
 /** @type {function(...*):?} */
-var ___cxa_free_exception = Module["___cxa_free_exception"] = createExportWrapper("__cxa_free_exception");
-
-/** @type {function(...*):?} */
 var _memcpy = Module["_memcpy"] = createExportWrapper("memcpy");
 
 /** @type {function(...*):?} */
@@ -11388,8 +11397,8 @@ var _asyncify_start_rewind = Module["_asyncify_start_rewind"] = createExportWrap
 /** @type {function(...*):?} */
 var _asyncify_stop_rewind = Module["_asyncify_stop_rewind"] = createExportWrapper("asyncify_stop_rewind");
 
-var ___start_em_js = Module['___start_em_js'] = 321065;
-var ___stop_em_js = Module['___stop_em_js'] = 332889;
+var ___start_em_js = Module['___start_em_js'] = 321193;
+var ___stop_em_js = Module['___stop_em_js'] = 333449;
 function invoke_ii(index,a1) {
   var sp = stackSave();
   try {

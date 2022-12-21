@@ -90,6 +90,8 @@ EM_JS(bool, wasm_initSound, (), {
                 gainNode: gainNode,
                 streamAudio: streamAudio,
                 streamNode: streamNode,
+                streamStopped: false,
+                streamStarted: false,
                 mptNode: mptNode,
                 activeSourceNode: null,
                 lastGetPosition: 0,
@@ -119,6 +121,10 @@ EM_JS(bool, wasm_initSound, (), {
                 mediaMimetype = 'audio/x-wav';
             }
 
+            if (song == window.verge.mainSong) {
+                song.gainNode.gain.value = 1.0;
+            }
+
             if (mediaMimetype != "") {
                 let songDataString = "";
                 for (let i = 0; i < songData.length; i++) {
@@ -131,7 +137,14 @@ EM_JS(bool, wasm_initSound, (), {
                 song.activeSourceNode = song.streamNode;
                 song.streamAudio.src = songDataURL;
                 song.streamAudio.loop = true;
-                song.streamAudio.addEventListener('canplaythrough', () => song.streamAudio.play());
+                song.streamStopped = false;
+                song.streamStarted = false;
+                song.streamAudio.addEventListener('canplaythrough', () => {
+                    if (!song.streamStopped && !song.streamStarted) {
+                        song.streamAudio.play();
+                        song.streamStarted = true;
+                    }
+                });
             } else {
                 console.log('window.verge.playSong: sequenced', filename);
 
@@ -146,10 +159,16 @@ EM_JS(bool, wasm_initSound, (), {
         window.verge.stopSong = (song) => {
             console.log('window.verge.stopSong');
 
-            if (song.activeSourceNode == song.streamAudio) {
-                song.streamAudio.pause();
-                song.streamAudio.currentTime = 0;
+            if (song.activeSourceNode == song.streamNode) {
+                console.log('window.verge.stopSong: streaming');
+                song.streamStopped = true;
+                if (song.streamStarted) {
+                    song.streamAudio.pause();
+                    song.streamAudio.currentTime = 0;
+                    song.streamStarted = false;
+                }
             } else if (song.activeSourceNode == song.mptNode) {
+                console.log('window.verge.stopSong: sequenced');
                 song.mptNode.port.postMessage({
                     songData: new ArrayBuffer(0)
                 });
@@ -161,7 +180,7 @@ EM_JS(bool, wasm_initSound, (), {
         // TODO: pause/resume (still needs to be implemented in mpt-worklet)
 
         window.verge.getSongPositionAsync = (song) => {
-            if (song.activeSourceNode == song.streamAudio) {
+            if (song.activeSourceNode == song.streamNode) {
                 return Promise.resolve({position: song.streamAudio.currentTime});
             } else if (song.activeSourceNode == song.mptNode) {
                 return song.mptNode.port.postMessage({
@@ -173,7 +192,7 @@ EM_JS(bool, wasm_initSound, (), {
         };
 
         window.verge.setSongPosition = (song, position) => {
-            if (song.activeSourceNode == song.streamAudio) {
+            if (song.activeSourceNode == song.streamNode) {
                 song.streamAudio.currentTime = position;
             } else if (song.activeSourceNode == song.mptNode) {
                 song.mptNode.port.postMessage({
@@ -183,7 +202,7 @@ EM_JS(bool, wasm_initSound, (), {
         };
 
         window.verge.setSongPaused = (song, paused) => {
-            if (song.activeSourceNode == song.streamAudio) {
+            if (song.activeSourceNode == song.streamNode) {
                 song.streamAudio.paused = paused;
             } else if (song.activeSourceNode == song.mptNode) {
                 song.mptNode.port.postMessage({
@@ -449,7 +468,7 @@ bool SoundEngine_Wasm::init() {
 void SoundEngine_Wasm::shutdown() {}
 
 void SoundEngine_Wasm::PlayMusic(const std::string& filename) {
-    log("SoundEngine_Wasm::PlayMusic: playing \"%s\"", filename.c_str());
+    log("SoundEngine_Wasm::PlayMusic: request to play \"%s\"", filename.c_str());
     if (currentMusicName == filename) {
         log("SoundEngine_Wasm::PlayMusic: music already playing");
         return;

@@ -1,0 +1,22 @@
+Name           Description                                                         Ap Cost     Mp Cost   Tar
+Fire           Causes fire damage to single/multiple targets.                      20          6         0                        
+Thunder        Causes thunder damage to single/multiple targets.                   25          6         0 
+Blizzard       Causes ice damage to single/multiple targets.                       25          6         0
+Poison         Causes poison to single/multiple targets                            35          8         0
+Fira           Causes medium fire damage to single/multiple targets                50          12        0
+Blizzara       Causes medium ice damage to single/multiple targets                 50          12        0
+Thundara       Causes medium thunder damage to single/multiple targets             50          12        0
+Osmose         Drains MP from target and transfers it to the caster                70          2         0
+Firaga         Causes moderate fire damage to single/multiple targets              75          24        0 
+Thundaga       Causes moderate thunder damage to single/multiple targets           75          24        0
+Blizzaga       Causes moderate ice damage to single/multiple targets               85          24        0
+Water          Causes water damage to single/multiple targets                      55          22        0
+Flare          Causes moderate non-elemental damage to a single target             95          40        0
+Meteor         Causes moderate non-elemental damage to all enemies                 95          42        0
+Bio            Causes poison with non-elemental damage to single/multiple targets  95          42        0
+Doomsday       Causes major shadow damage to all enemies and party memebers        150         72        0      
+
+
+
+
+	

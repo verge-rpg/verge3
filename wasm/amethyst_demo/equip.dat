@@ -1,0 +1,117 @@
+Name             STR  DEF  MAG  MGR  DOD  HIT  SPD  LUC  PI PART
+Bronze_Bangle    0    8    0    0    0    0    0    0    8  2
+Iron_Bangle      0    10   0    2    0    0    0    0    8  2
+Titan_Bangle     0    14   0    4    2    0    0    0    8  2
+Mythril_Armlet   0    18   0    4    2    0    0    0    8  2
+Fed_Belt         0    30   0    0    0    0    0    0    8  2
+Carbon_Bangle    0    27   0    3    0    0    0    0    8  2
+Platinum_Bangle  0    20   0    0    12   0    0    0    8  2
+Silver_Armlet    0    34   0    22   4    0    0    0    8  2
+Gold_Armlet      0    46   0    28   4    0    0    0    8  2
+Edincoat         0    50   0    33   0    0    0    0    8  2
+Adaman_Bangle    0    93   0    23   0    0    0    0    8  2
+Dragon_Armlet    0    58   0    47   3    0    0    0    8  2
+Gigas_Armlet     30   59   0    0    0    0    0    0    8  2
+Diamond_Bangle   0    57   0    37   6    0    0    0    8  2
+Rune_Armor       0    43   0    24   5    0    0    0    8  2
+Aurora_Armlet    0    76   0    54   8    0    0    0    8  2
+Wizard_Bracelet  0    6    20   85   3    0    0    0    8  2
+Fire_Armlet      0    74   0    55   8    0    0    0    8  2  
+Bolt_Armlet      0    72   0    52   8    0    0    0    8  2
+Crystal_Bangle   0    70   0    45   8    0    0    0    8  2
+Force_Bracelet   0    74   20   45   8    0    0    0    8  2
+Imperial_Guard   0    82   0    74   0    0    0    0    8  2
+Warrior_Bangle   20   96   0    21   0    0    0    0    8  2
+Fed_Alpha        0    77   0    34   0    0    0    0    8  2
+Ziedrich         20   100  20   98   15   0    0    0    8  2
+Minerva_Band     0    60   0    57   8    0    0    0    8  2
+Escort_Guard     0    62   0    55   0    0    0    0    8  2
+Aegis_Armlet     0    55   0    86   15   0    0    0    8  2
+Mystile          0    65   0    72   50   0    0    0    8  3
+Star_Pendant     0    0    0    0    0    0    0    0    8  3
+Fury_Ring        0    0    0    0    0    0    0    0    8  3
+Ribbon           0    0    0    0    0    0    0    0    8  3
+Talisman         0    0    0    0    0    0    0    0    8  3
+Protect_Vest     0    10   0    0    0    0    0    0    8  3
+Power_Wrist      10   0    0    0    0    0    0    0    8  3
+Silver_Glasses   0    0    0    0    0    0    0    0    8  3
+Head_Band        0    0    0    0    0    0    0    0    8  3
+White_Cape       0    0    0    0    0    0    0    0    8  3
+Fire_Ring        0    0    0    0    0    0    0    0    8  3   
+Bolt_Ring        0    0    0    0    0    0    0    0    8  3
+Fairy_Ring       0    0    0    0    0    0    0    0    8  3
+Jewel_Ring       0    0    0    0    0    0    0    0    8  3
+Peace_Ring       0    0    0    0    0    0    0    0    8  3
+Ice_Ring         0    0    0    0    0    0    0    0    8  3
+Water_Ring       0    0    0    0    0    0    0    0    8  3
+Circlet          0    0    30   0    0    0    0    0    8  3
+Safety_Bit       0    0    0    0    0    0    0    0    8  3
+Protect_Ring     0    0    0    0    0    0    0    0    8  3
+Poison_Ring      0    0    0    0    0    0    0    0    8  3
+Reflect_Ring     0    0    0    0    0    0    0    0    8  3
+Tetra_Elemental  0    0    0    0    0    0    0    0    8  3
+Amulet           0    0    0    0    0    0    0    10   8  3
+Cursed_Ring      35   15   35   0    0    0    15   10   8  3
+Champion_Belt    30   30   0    0    0    0    0    0    8  3
+Toughness_Ring   0    0    0    0    0    0    50   0    8  3
+Broad_Sword      18   0    0    0    0    96   0    0    1  1
+Mythril_Saber    23   0    4    0    0    98   0    0    1  1
+Hardedge         32   0    6    0    0    98   0    0    1  1
+Force_Stealer    36   0    7    0    0    98   0    0    1  1
+Butterfly_Edge   39   0    8    0    0    100  0    0    1  1
+Rune_Blade       40   0    9    0    0    108  0    0    1  1
+Yoshiyuki        56   0    9    0    0    100  0    0    1  1
+Murasame         51   0    12   0    0    100  0    0    1  1
+Organics         62   0    15   0    0    103  0    0    1  1
+Crystal_Sword    76   0    19   0    0    105  0    0    1  1
+Apocalypse       88   0    43   0    0    110  0    0    1  1
+Amethyst         100  0    51   0    0    110  0    0    1  1
+Bronze_Bow       12   0    4    0    0    99   0    0    3  1
+Iron_Bow         16   0    3    0    0    100  0    0    3  1
+Lode_Bow         32   0    7    0    0    100  0    0    3  1
+Robin_Bow        22   0    4    0    0    100  0    0    3  1
+Sage_Bow         28   0    6    0    0    100  0    0    3  1
+Dream_Bow        37   0    8    0    0    103  0    0    3  1
+Comet_Arrow      40   0    10   0    0    105  0    0    3  1
+Sonic_Arrow      51   0    14   0    0    110  0    0    3  1
+Siren            62   0    16   0    0    104  0    0    3  1
+Valkerye         68   0    18   0    0    100  0    0    3  1
+Mythril_Bow      75   0    30   0    0    110  0    0    3  1
+Shiva's_Arc      95   0    60   0    0    110  0    0    3  1
+Mage Staff       12   0    6    0    0    100  0    0    2  1  
+Slash_Lance      37   0    4    0    0    110  0    0    2  1
+Dragoon_Lance    33   0    8    0    0    102  0    0    2  1
+Trident          40   0    10   0    0    110  0    0    2  1
+Viper_Halberd    68   0    14   0    0    110  0    0    2  1
+Javelin          39   0    12   0    0    104  0    0    2  1
+Partisan         50   0    13   0    0    104  0    0    2  1
+Scimitar         57   0    15   0    0    104  0    0    2  1
+Flayer           60   0    15   0    0    106  0    0    2  1
+Spirit_Lance     76   0    20   0    0    108  0    0    2  1
+Venus_Gospel     93   0    31   0    0    114  0    0    2  1
+Broad_Axe        14   0    0    0    0    97   0    0    4  1
+Iron_Axe         17   0    1    0    0    98   0    0    4  1
+Dwarf_Axe        32   0    4    0    0    99   0    0    4  1
+Lode_Axe         35   0    7    0    0    100  0    0    4  1
+Hard_Axe         39   0    8    0    0    97   0    0    4  1
+Ogre_Axe         52   0    10   0    0    100  0    0    4  1
+Flint_Edge       62   0    0    0    0    110  0    0    4  1
+Aeon_Edge        63   0    13   0    0    101  0    0    4  1
+Demon_Edge       61   0    15   0    0    100  0    0    4  1
+Solid_Axe        77   0    16   0    0    103  0    0    4  1
+Elven_Edge       90   0    30   0    0    80   0    0    4  1
+Dark_Axe         95   0    34   0    0    100  0    0    4  1
+Sonic_Edge       98   0    49   0    0    108  0    0    4  1
+Leather_Glove       
+Metal_Knuckle
+Mythril_Claw
+Motor_Drive
+Grand_Glove
+Tiger_Fang
+Platinum_Fist
+Diamond_Knuckle
+Dragon_Claw
+Crystal_Grab
+God's_Hand
+Premium_Heart
+ 

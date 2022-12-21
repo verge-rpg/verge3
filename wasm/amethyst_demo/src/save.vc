@@ -1,0 +1,333 @@
+//Amethyst Save/Loading functions
+//Code by Sean "Rysen" Oyler
+
+void Load(int sav)
+{
+	int savefile, a, i;
+	string tempstring;
+	savefile = FileOpen("save"+str(sav)+".rys",1);
+	
+	
+	// General
+	tempstring = FileReadString(savefile); time.timeNum = tempstring;
+	tempstring = FileReadString(savefile); location = tempstring;
+	tempstring = FileReadString(savefile); savname[a] = tempstring;
+	tempstring = FileReadString(savefile); savelvl[a] = val(tempstring);
+	tempstring = FileReadString(savefile); curx = val(tempstring);
+	tempstring = FileReadString(savefile); cury = val(tempstring);
+	tempstring = FileReadString(savefile); currentmap = tempstring;
+	for(a=0; a<=4; a++)
+	{
+		tempstring = FileReadString(savefile); partyindex[a] = val(tempstring);
+	}
+	tempstring = FileReadString(savefile); amera = val(tempstring);
+	tempstring = FileReadString(savefile); batflag = val(tempstring);
+	tempstring = FileReadString(savefile); bossflag = val(tempstring);
+	tempstring = FileReadString(savefile); globalflag = val(tempstring);
+	
+	// Time Variables
+	tempstring = FileReadString(savefile); time.sec = val(tempstring);
+	tempstring = FileReadString(savefile); time.min = val(tempstring);
+	tempstring = FileReadString(savefile); time.ms = val(tempstring);
+	tempstring = FileReadString(savefile); time.hour = val(tempstring);
+	
+	//Party Variables
+	tempstring = FileReadString(savefile); numchars = val(tempstring);
+	for(a=0; a<=10; a++)
+	{
+		tempstring = FileReadString(savefile); party[a].CurHp = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].MaxHp = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].CurMp = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].MaxMp = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].lvl = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].magiclvl = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].str = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].def = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].mag = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].mgr = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].spd = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].hit = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].dod = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].luc = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].exp = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].nxt = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].weap = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].arm = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].acc = val(tempstring);
+		tempstring = FileReadString(savefile); party[a].learning = val(tempstring);
+	}
+	// Items
+	for(a=0; a<150; a++)
+		tempstring = FileReadString(savefile); item[a].quan = val(tempstring);
+		
+	//Chests and Flags
+	for(a=0; a<8000; a++)
+	{
+		tempstring = FileReadString(savefile); chests[a] = val(tempstring);
+		tempstring = FileReadString(savefile); flags[a] = val(tempstring);
+	}
+	
+	for(a=0; a<18; a++)
+	{
+		for(i=0; i<18; i++)
+		{
+			tempstring = FileReadString(savefile); TotalAP[a][i] = val(tempstring);
+			tempstring = FileReadString(savefile); HasBeenLearned[a][i] = val(tempstring);
+		}
+	}
+	
+	// Config
+	tempstring = FileReadString(savefile); curbg = val(tempstring);
+	tempstring = FileReadString(savefile); bgc1 = val(tempstring);
+	tempstring = FileReadString(savefile); bgc2 = val(tempstring);
+	
+	FileClose(savefile);
+}
+
+string savloc[5], savtime[5], savname[5];
+int savelvl[5], savepindx;
+
+void LoadSdat()
+{
+	int savefile, a;
+	string tempstring;
+	for(a=1; a<5; a++)
+	{
+		savefile = FileOpen("save"+str(a)+".rys",1);
+		tempstring = FileReadString(savefile); savtime[a] = tempstring;
+		tempstring = FileReadString(savefile); savloc[a] = tempstring;
+		tempstring = FileReadString(savefile); savname[a] = tempstring;
+		tempstring = FileReadString(savefile); savelvl[a] = val(tempstring);
+	}
+	FileClose(savefile);
+}
+		
+
+void SaveMenu()
+{
+	int done, py, a;
+	int pointer = LoadImage("Pics/pointer.pcx");
+	LoadSDat();
+	py=1;
+	while(!done)
+	{
+		Render();
+		Rectfill(0,0,320,240,RGB(4,4,4),screen);
+		DGW(45,0,275,20);
+		DGW(45,21,275,71);
+		DGW(45,72,275,122);
+		DGW(45,123,275,172);
+		DGW(45,173,275,223);
+		PrintCenter(ImageWidth(screen)/2,7,screen,fnt,"Save");
+		for(a=1; a<5; a++)
+		{
+			if(!strcmp(savtime[a],""))
+				PrintCenter(ImageWidth(screen)/2,(0-15)+(50*a),screen,fnt,"Empty");
+			else
+			{
+				PutText(50,(0-15)+(50*a),savname[a]);
+				PutText(50,5+(50*a),savloc[a]);
+				PutText(50,(0-5)+(50*a),"Lvl: "+str(savelvl[a]));
+				PutText(200,(0-15)+(50*a),savtime[a]);
+			}
+		}
+		TBlit(25,(0-15)+(50*py),pointer,screen);
+		ShowPage();
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(menusounds.pnt,100);
+			py--;
+			if(py<1)
+				py=4;
+		}
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(menusounds.pnt,100);
+			py++;
+			if(py>4)
+				py=1;
+		}
+		if(b1)
+		{
+			Unpress(1);
+			PlaySound(menusounds.start,100);
+			Save(py);
+			done++;
+			SaveMenu();
+		}
+		if(b2)
+		{
+			Unpress(2);
+			PlaySound(menusounds.cancel,100);
+			done++;
+		}
+	}
+	FreeImage(pointer);
+}
+		
+void LoadMenu()
+{
+	int done, py, a;
+	int pointer = LoadImage("Pics/pointer.pcx");
+	LoadSDat();
+	py=1;
+	while(!done)
+	{
+		Render();
+		Rectfill(0,0,320,240,RGB(4,4,4),screen);
+		DGW(45,0,275,20);
+		DGW(45,21,275,71);
+		DGW(45,72,275,122);
+		DGW(45,123,275,172);
+		DGW(45,173,275,223);
+		PrintCenter(ImageWidth(screen)/2,7,screen,fnt,"Load");
+		for(a=1; a<5; a++)
+		{
+			if(!strcmp(savtime[a],""))
+				PrintCenter(ImageWidth(screen)/2,(0-15)+(50*a),screen,fnt,"Empty");
+			else
+			{
+				PutText(50,(0-15)+(50*a),savname[a]);
+				PutText(50,5+(50*a),savloc[a]);
+				PutText(50,(0-5)+(50*a),"Lvl: "+str(savelvl[a]));
+				PutText(200,(0-15)+(50*a),savtime[a]);
+			}
+		}
+		TBlit(25,(0-15)+(50*py),pointer,screen);
+		ShowPage();
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(menusounds.pnt,100);
+			py--;
+			if(py<1)
+				py=4;
+		}
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(menusounds.pnt,100);
+			py++;
+			if(py>4)
+				py=1;
+		}
+		if(b1)
+		{
+			Unpress(1);
+			PlaySound(menusounds.start,100);
+			if(!strcmp(savtime[py],""))
+			{
+				ResetGame();
+				done++;
+				FadeOutImg(100);
+				MusicFade(200);
+				map("open.map");
+			}
+			Else
+			{
+				Load(py);
+				done++;
+				FadeOutImg(100);
+				MusicFade(200);
+				map(currentmap);
+			}
+		}
+		if(b2)
+		{
+			Unpress(2);
+			PlaySound(menusounds.cancel,100);
+			done++;
+			StartUp();
+		}
+	}
+	FreeImage(pointer);
+}		
+		
+void Save(int sav)
+{
+	int savefile, a, i;
+	string tempstring;
+	savefile = FileOpen("save"+str(sav)+".rys",2);
+	
+	// General
+	FileWriteString(savefile,time.timeNum);
+	FileWriteString(savefile,location);
+	FileWriteString(savefile,party[partyindex[1]].name); // For the Load Menu
+	FileWriteString(savefile,str(party[partyindex[1]].lvl)); // For the Load Menu
+	FileWriteString(savefile,str(entity.x[player]/16));
+	FileWriteString(savefile,str(entity.y[player]/16));
+	FileWriteString(savefile,currentmap);
+	for(a=0; a<=4; a++)
+		FileWriteString(savefile,str(partyindex[a]));
+	FileWriteString(savefile,str(amera));
+	FileWriteString(savefile,str(batflag));
+	FileWriteString(savefile,str(bossflag));
+	FileWriteString(savefile,str(globalflag));
+	
+	// Time Variables
+	
+	FileWriteString(savefile,str(time.sec));
+	FileWriteString(savefile,str(time.min));
+	FileWriteString(savefile,str(time.ms));
+	FileWriteString(savefile,str(time.hour));
+	
+	// Party Variables 
+	FileWriteString(savefile,str(numchars));
+	for(a=0; a<=10; a++)
+	{
+		FileWriteString(savefile,str(party[a].curHp));
+		FileWriteString(savefile,str(party[a].MaxHp));
+		FileWriteString(savefile,str(party[a].CurMp));
+		FileWriteString(savefile,str(party[a].MaxMp));
+		FileWriteString(savefile,str(party[a].lvl));
+		FileWriteString(savefile,str(party[a].magiclvl));
+		FileWriteString(savefile,str(party[a].str));
+		FileWriteString(savefile,str(party[a].def));
+		FileWriteString(savefile,str(party[a].mag));
+		FileWriteString(savefile,str(party[a].mgr));
+		FileWriteString(savefile,str(party[a].spd));
+		FileWriteString(savefile,str(party[a].hit));
+		FileWriteSTring(savefile,str(party[a].dod));
+		FileWriteString(savefile,str(party[a].luc));
+		FileWriteSTring(savefile,str(party[a].exp));
+		FileWriteString(savefile,str(party[a].nxt));
+		FileWriteString(savefile,str(party[a].weap));
+		FileWriteString(savefile,str(party[a].arm));
+		FileWriteString(savefile,str(party[a].acc));
+		FileWriteString(savefile,str(party[a].learning));
+	}
+	//Items
+	for(a=0; a<150; a++)
+	{
+		FileWriteString(savefile,str(item[a].quan));
+	}
+	
+	// Chests and Flags
+	for(a=0; a<8000; a++)
+	{
+		FileWriteString(savefile,str(chests[a]));
+		FileWriteString(savefile,str(flags[a]));
+	}
+	
+	// Magic
+	for(a=0; a<18; a++)
+	{
+		for(i=0; i<18; i++)
+		{
+			FileWriteString(savefile,str(TotalAp[a][i]));
+			FileWriteString(savefile,str(HasBeenLearned[a][i]));
+		}
+	}
+	
+	// Config
+	FileWriteString(savefile,str(curbg));
+	FileWriteString(savefile,str(bgc1));
+	FileWriteString(savefile,str(bgc2));
+	
+	FileClose(savefile);
+}
+	
+	
+		

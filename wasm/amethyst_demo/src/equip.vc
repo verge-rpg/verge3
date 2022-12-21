@@ -1,0 +1,404 @@
+/* Amethyst Equip System by Sean "Rysen" Oyler */
+
+struct EQUIPSTUFF {
+	int stre, def, mag, mgr, dod, hit, spd, luc, par, part;
+	};
+	
+int equiplist[200];
+	
+EQUIPSTUFF equip[200];
+
+void EquipStats()
+{
+	int datfile, pos;
+	string tempstring;
+	datfile = fileopen("equip.dat",1);
+	if(!datfile)
+		exit("Could not open <equip.dat>");
+	for(pos=1; pos<118; pos++)
+	{
+		FileSeekLine(datfile,pos);
+		tempstring = FileReadLn(datfile);
+		equip[pos+24].stre = val(mid(tempstring,17,3));
+		equip[pos+24].def = val(mid(tempstring,22,3));
+		equip[pos+24].mag = val(mid(tempstring,27,3));
+		equip[pos+24].mgr = val(mid(tempstring,32,3));
+		equip[pos+24].dod = val(mid(tempstring,37,3));
+		equip[pos+24].hit = val(mid(tempstring,42,3));
+		equip[pos+24].spd = val(mid(tempstring,47,3));
+		equip[pos+24].luc = val(mid(tempstring,52,3));
+		equip[pos+24].par = val(mid(tempstring,57,3));
+		equip[pos+24].part = val(mid(tempstring,60,3));
+	}
+	FileClose(datfile);
+}
+
+void EquipElist(int par, int part)
+{
+	int it, it2;
+	it2 = 1;
+	for(it=1; it<200; it++)
+	{
+		if(item[it].quan)
+		{
+			if(equip[it].part == part)
+			{
+				if(equip[it].par = par || equip[it].par = 8)
+				{
+					equiplist[it2]=it;
+					it2++;
+				}
+			}
+		}
+	}
+}
+
+void ClearEList()
+{
+	int it;
+	for(it=0; it<200; it++)
+		equiplist[it]=0;
+}
+		
+
+void ForceEquip(int par, int part, int weap)
+{
+	switch(part)
+	{
+		case 1:
+		party[par].weap = weap;
+		case 2:
+		party[par].arm = weap;
+		case 3:
+		party[par].acc = weap;
+	}
+	party[par].str+= equip[weap].stre;
+	party[par].def+= equip[weap].def;
+	party[par].mag+= equip[weap].mag;
+	party[par].mgr+= equip[weap].mgr;
+	party[par].dod+=equip[weap].dod;
+	party[par].hit+=equip[weap].hit;
+	party[par].spd+=equip[weap].spd;
+	party[par].luc+=equip[weap].luc;
+}
+
+void ForceDeEquip(int par, int part)
+{
+	switch(part)
+	{
+		case 1:
+	
+		party[par].str-= equip[party[par].weap].stre;
+		party[par].def-= equip[party[par].weap].def;
+		party[par].mag-= equip[party[par].weap].mag;
+		party[par].mgr-= equip[party[par].weap].mgr;
+		party[par].dod-=equip[party[par].weap].dod;
+		party[par].hit-=equip[party[par].weap].hit;
+		party[par].spd-=equip[party[par].weap].spd;
+		party[par].luc-=equip[party[par].weap].luc;
+		party[par].weap = 0;
+		
+		case 2:
+	
+		party[par].str-= equip[party[par].arm].stre;
+		party[par].def-= equip[party[par].arm].def;
+		party[par].mag-= equip[party[par].arm].mag;
+		party[par].mgr-= equip[party[par].arm].mgr;
+		party[par].dod-=equip[party[par].arm].dod;
+		party[par].hit-=equip[party[par].arm].hit;
+		party[par].spd-=equip[party[par].arm].spd;
+		party[par].luc-=equip[party[par].arm].luc;
+		party[par].arm = 0;
+		
+		case 3:
+	
+		party[par].str-= equip[party[par].acc].stre;
+		party[par].def-= equip[party[par].acc].def;
+		party[par].mag-= equip[party[par].acc].mag;
+		party[par].mgr-= equip[party[par].acc].mgr;
+		party[par].dod-=equip[party[par].acc].dod;
+		party[par].hit-=equip[party[par].acc].hit;
+		party[par].spd-=equip[party[par].acc].spd;
+		party[par].luc-=equip[party[par].acc].luc;
+		party[par].acc = 0;
+	}
+}
+
+void EQBG(int par)
+{
+	Rectfill(0,0,320,240,RGB(4,4,4),screen);
+	DGW(0,0,160,50);
+	DGW(160,0,319,50);
+	
+	DGW(0,51,160,200);
+	DGW(160,51,319,200);
+	DGW(0,200,320,240);
+	TBLit(2,5,party[par].pic,screen);
+	PutText(25,10,party[par].name+"  lvl."+str(party[par].lvl));
+	PutText(25,20,"HP: "+str(party[par].curhp)+"/"+str(party[par].maxhp));
+        PutText(25,30,"MP: "+str(party[par].curmp)+"/"+str(party[par].maxmp));
+        
+        PutText(170,8,"Weapon: "+Item[party[par].weap].name);
+	PutText(170,18,"Armor: "+item[party[par].arm].name);
+    	PutText(170,28,"Acc .: "+item[party[par].acc].name);
+    	
+    	PutText(5,55,"Equip");
+    	PutText(5,75,"STR: "+str(party[par].str));
+	PutText(5,85,"DEF: "+str(party[par].def));
+	PutText(5,95,"MAG: "+str(party[par].mag));
+	PutText(5,105,"MGR: "+str(party[par].mgr));
+	PutText(5,115,"DOD: "+str(party[par].dod)+"%");
+	PutText(5,125,"HIT: "+str(party[par].hit)+"%");
+	PutText(5,135,"SPD: "+str(party[par].spd));
+ 	PutText(5,145,"LUC: "+str(party[par].luc));
+}
+ 
+void Emenu(int par)
+{
+	int done, pnt, py, partyP;
+	
+	pnt = LoadImage("pics/pointer.pcx");
+	py=1;
+	while(!done)
+	{
+		Render();
+ 		EQBG(par);
+ 		TBlit(145,0-3+(10*py),pnt,screen);
+		ShowPage();
+		UpdateControls();
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(menusounds.pnt,100);
+			py--;
+		}
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(menusounds.pnt,100);
+			py++;
+		}
+		
+				
+		if(py>3)
+			py=1;
+		if(py<1)
+			py=3;
+		if(b2)
+		{
+			unpress(2);
+			PlaySound(menusounds.cancel,100);
+			done++;
+			Menu();
+		}
+		if(b1)
+		{
+			unpress(1);
+			PlaySound(menusounds.select,100);
+			FreeImage(pnt);
+			EquipUse(par,py);
+		}
+	}
+}
+
+int EquipTemp[10]; // For figuring out if a new weapon's stats raise or lower a party member
+
+void ClearEquipTemp()
+{
+	int i;
+	for(i=0; i<=9; i++)
+		EquipTemp[10]=0;
+}
+
+void EquipUse(int par, int part)
+{
+	int done, i, tmp, tmp2;
+	int pnt, py, itmp;
+	pnt = LoadImage("pics/pointer.pcx");
+	py=1; itmp=0;
+	EquipEList(par,part);
+	while(!done)
+	{
+		render();
+		EQBG(par);
+		for(i=1; i<=9; i++)
+		{
+			if(EquipList[i+itmp])
+				PutText(165,55+(10*i),Item[EquipList[i+itmp]].name);
+		}
+		TBlit(140,55+(10*py),pnt, screen);
+		if(EquipList[py])
+			PutText(5,210,item[EquipList[py+itmp]].desc);
+		
+		switch(part)
+		{
+			case 1:
+		
+			equiptemp[0] = (party[par].str - equip[party[par].weap].stre) + equip[equiplist[py+itmp]].stre;
+			equiptemp[1] = party[par].def + equip[equiplist[py+itmp]].def - equip[party[par].weap].def;
+			equiptemp[2] = party[par].mag + equip[equiplist[py+itmp]].mag - equip[party[par].weap].mag;
+			equiptemp[3] = party[par].mgr + equip[equiplist[py+itmp]].mgr - equip[party[par].weap].mgr;
+			equiptemp[4] = party[par].dod + equip[equiplist[py+itmp]].dod - equip[party[par].weap].dod;
+			equiptemp[5] = party[par].hit + equip[equiplist[py+itmp]].hit - equip[party[par].weap].hit;
+			equiptemp[6] = party[par].spd + equip[equiplist[py+itmp]].spd - equip[party[par].weap].spd;
+			equiptemp[7] = party[par].luc + equip[equiplist[py+itmp]].luc - equip[party[par].weap].luc;
+			
+			case 2:
+			equiptemp[0] = party[par].str + equip[equiplist[py+itmp]].stre - equip[party[par].arm].stre;
+			equiptemp[1] = party[par].def + equip[equiplist[py+itmp]].def - equip[party[par].arm].def;
+			equiptemp[2] = party[par].mag + equip[equiplist[py+itmp]].mag - equip[party[par].arm].mag;
+			equiptemp[3] = party[par].mgr + equip[equiplist[py+itmp]].mgr - equip[party[par].arm].mgr;
+			equiptemp[4] = party[par].dod + equip[equiplist[py+itmp]].dod - equip[party[par].arm].dod;
+			equiptemp[5] = party[par].hit + equip[equiplist[py+itmp]].hit - equip[party[par].arm].hit;
+			equiptemp[6] = party[par].spd + equip[equiplist[py+itmp]].spd - equip[party[par].arm].hit;
+			equiptemp[7] = party[par].luc + equip[equiplist[py+itmp]].luc - equip[party[par].arm].luc;
+			
+			case 3:
+			equiptemp[0] = party[par].str + equip[equiplist[py+itmp]].stre - equip[party[par].acc].stre;
+			equiptemp[1] = party[par].def + Equip[equiplist[py+itmp]].def - equip[party[par].acc].def;
+			equiptemp[2] = party[par].mag + equip[equiplist[py+itmp]].mag - equip[party[par].acc].mag;
+			equiptemp[3] = party[par].mgr + equip[equiplist[py+itmp]].mgr - equip[party[par].acc].mgr;
+			equiptemp[4] = party[par].dod + equip[equiplist[py+itmp]].dod - equip[party[par].acc].dod;
+			equiptemp[5] = party[par].hit + equip[equiplist[py+itmp]].hit - equip[party[par].acc].hit;
+			equiptemp[6] = party[par].spd + equip[equiplist[py+itmp]].spd - equip[party[par].acc].spd;
+			equiptemp[7] = party[par].luc + equip[equiplist[py+itmp]].luc - equip[party[par].acc].luc;
+		}
+		
+	
+			if(party[par].str>equiptemp[0])
+				PrintString(70,75,screen,rfnt,str(equiptemp[0]));
+			if(party[par].str<equiptemp[0])
+				PrintString(70,75,screen,gfnt,str(equiptemp[0]));
+			if(party[par].str==equiptemp[0])
+				PutText(70,75,"-");
+				
+			if(party[par].def>equiptemp[1])
+				PrintString(70,85,screen,rfnt,str(equiptemp[1]));
+			if(party[par].def<equiptemp[1])
+				PrintString(70,85,screen,gfnt,str(equiptemp[1]));
+			if(party[par].def==equiptemp[1])
+				PutText(70,85,"-");
+				
+			if(party[par].mag>equiptemp[2])
+				PrintString(70,95,screen,rfnt,str(equiptemp[2]));
+			if(party[par].mag<equiptemp[2])
+				PrintString(70,95,screen,gfnt,str(equiptemp[2]));
+			if(party[par].mag==equiptemp[2])
+				PutText(70,95,"-");
+				
+			if(party[par].mgr>equiptemp[3])
+				PrintString(70,105,screen,rfnt,str(equiptemp[3]));
+			if(party[par].mgr<equiptemp[3])
+				PrintString(70,105,screen,gfnt,str(equiptemp[3]));
+			if(party[par].mgr==equiptemp[3])
+				PutText(70,105,"-");
+				
+			if(party[par].dod>equiptemp[4])
+				PrintString(70,115,screen,rfnt,str(equiptemp[4])+"%");
+			if(party[par].dod<equiptemp[4])
+				PrintString(70,115,screen,gfnt,str(equiptemp[4])+"%");
+			if(party[par].dod == equiptemp[4])
+				PutText(70,115,"-");
+				
+			if(party[par].hit>equiptemp[5])
+				PrintString(70,125,screen,rfnt,str(equiptemp[5])+"%");
+			if(party[par].hit<equiptemp[5])
+				PrintString(70,125,screen,gfnt,str(equiptemp[5])+"%");
+			if(party[par].hit==equiptemp[5])
+				PutText(70,125,"-");
+				
+			if(party[par].spd>equiptemp[6])
+				PrintString(70,135,screen,rfnt,str(equiptemp[6]));
+			if(party[par].spd<equiptemp[6])
+				PrintString(70,135,screen,gfnt,str(equiptemp[6]));
+			if(party[par].spd==equiptemp[6])
+				PutText(70,135,"-");
+				
+			if(party[par].luc>equiptemp[7])
+				PrintString(70,145,screen,rfnt,str(equiptemp[7]));
+			if(party[par].luc<equiptemp[7])
+				PrintString(70,145,screen,gfnt,str(equiptemp[7]));
+			if(party[par].luc==equiptemp[7])
+				PutText(70,145,"-");
+		
+		
+		ShowPage();
+		updatecontrols();
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(menusounds.pnt,100);
+			py--;
+		}
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(menusounds.pnt,100);
+			py++;
+			if(py>9)
+			{
+				py=9;
+				itmp++;
+			}
+		}
+
+		if(py<1)
+		{
+			py=1;
+			itmp--;
+			if(itmp<0)
+				itmp=0;
+		}
+		
+			
+		if(b2)
+		{
+			unpress(2);
+			PlaySound(menusounds.cancel,100);
+			ClearElist();
+			ClearEquipTemp();
+			done++;
+		}
+		if(b1)
+		{
+			Unpress(1);
+			PlaySound(menusounds.select,100);
+				party[par].str = equiptemp[0];
+				party[par].def = equiptemp[1];
+				party[par].mag = equiptemp[2];
+				party[par].mgr = equiptemp[3];
+				party[par].dod = equiptemp[4];
+				party[par].hit = equiptemp[5];
+				party[par].spd = equiptemp[6];
+				party[par].luc = equiptemp[7];
+				switch(part)
+				{
+					case 1:
+					if(party[par].weap)
+					{
+						Item[party[par].weap].quan++;
+					}
+					Item[Equiplist[py+itmp]].quan--;
+					party[par].weap=equiplist[py+itmp];
+					case 2:
+					if(party[par].arm)
+					{
+						Item[party[par].arm].quan++;
+					}
+					Item[Equiplist[py+itmp]].quan--;
+					party[par].arm=equiplist[py+itmp];
+					case 3:
+					if(party[par].acc)
+					{
+						Item[party[par].acc].quan++;
+					}
+					Item[Equiplist[py+itmp]].quan--;
+					party[par].acc=equiplist[py+itmp];
+				}
+      				done++;
+      				ClearElist();
+      				ClearEquipTemp();
+      			
+      		}
+	}
+}

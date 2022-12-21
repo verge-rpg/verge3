@@ -36,7 +36,6 @@ notepad.vc
 scaryshit.it
 sys-v3console.vc
 system.vc
-system.xvc
 tenements.map
 tenements.vc
 textbox.png

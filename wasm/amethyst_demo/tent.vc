@@ -1,0 +1,30 @@
+void MapInit()
+{
+	player = EntitySpawn(15,15,"sprites/nicole.chr");
+	SetPlayer(player);
+	FadeIn(100);
+	CenteredFree("It's been two years since the Argonians attacked our town and took over Redalia.");
+	CenteredFree("In those two years I have been travelling across the world, trying to rally support for my Father and the Redalian Faction.");
+	CenteredFree("But my Father is dying, and all are afraid to go against the evil Wizard Aryon.");
+	CenteredFree("I have tried my best to keep moral high, but I lack the leadership that my Father once had.");
+	CenteredFree("The men grow disheartned, and many have lost hope.");
+	  
+	 CenteredFree("We need a leader...");
+	 CenteredFree("Someone who is brave, courageous, and strong.");
+	 CenteredFree("Someone who will take our small army and rise up against the dictatorian ways of Aryon's Argonian Empire....");
+	 CenteredFree("We need you.");
+	 CenteredFree("But...");
+	 CenteredFree("where are you?"); 
+	  
+	 CenteredFree("You left before Sora fell. Without telling anyone.");
+	 CenteredFree("Greg went searching for you, but he returned without so much as a word of your where abouts."); 
+	 CenteredFree("Weeks turned into months, months turned into a year, and still no sign.");
+	  
+	 CenteredFree("Greg went off to the other side of the world, hoping to find a quiet place to continue his studies and I joined the Redalian Faction, in hopes of one day finding you in my travels...");
+	 CenteredFree("But so far...not so much as a sign...");
+	 
+ 	CenteredFree("Sean...");
+	PlayerMove("DUR3");
+	FreeText(10,100,"Where are you?");
+	FadeOutLayer(2);
+}

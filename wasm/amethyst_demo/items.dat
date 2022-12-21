@@ -1,0 +1,141 @@
+20
+Potion          Restores_100_HP_to_1_Party_Member                 50          1  0   1
+Hi-Potion       Restores_500_HP_to_1_Party_Member                 500         1  0   1
+X-Potion        Completely_Restores_the_HP_of_1_Party_Member      5000        1  0   1
+Ether           Restores_100_MP_to_1_Party_Member                 250         1  0   2
+Turbo_Ether     Completely_Restores_the_MP_of_1_Party_Member      6000        1  0   2
+Remedy          Cures_All_Status_Conditions                       1000        4  0   3
+Pheonix_Down    Revives_1_Party_Member                            300         2  0   3
+Elixir          Completely_Restores_All_of_1_Party_Member         20000       1  0   4
+Megalixir       Completely_Restores_Both_HP/MP_For_All            0           1  0   4
+Antidote        Cures_The_Poison_status_condition                 80          4  0   3
+Soft            Cures_The_Petrify_status_condition                150         4  0   3
+Maidin's_Kiss   Cures_The_Frog_status_condition                   150         4  0   3
+Cornucopia      Cures_The_Mini_status_condition                   150         4  0   3
+Echo_Screen     Cures_Silence_status_condition                    100         4  0   3
+Eye_Drops       Cures_Darkness                                    150         4  0   3
+Tent            Completely_Restores_all_at_save_points            500         3  0   4     
+Power_Source    Adds_1_to_a_Party_Members_strength                0           4  0
+Guard_Source    Adds_1_to_a_Party_Members_defense                 0           4  0
+Magic_Source    Adds_1_to_a_Party_Members_magic                   0           4  0
+Luck_Source     Adds_1_to_a_Party_Members_luck                    0           4  0
+Jerky           Replenishes_Hunger_by_15                          50          1  0
+Cheese          Replenishes_Hunger_by_20                          300         1  0
+Sugar           Replenishes_Tiredness_by_10                       50          1  0
+Caffine         Replenishes_Tirdeness_by_20                       300         1  0
+Bronze_Bangle                                                     100         10 1
+Iron_Bangle                                                       160         10 1
+Titan_Bangle                                                      280         10 1
+Mythril_Armlet                                                    350         10 1
+Federation_Belt                                                   0           10 1
+Carbon_Bangle                                                     800         10 1
+Platinum_Bangle                                                   1800        10 1
+Silver_Armlet                                                     1300        10 1
+Gold_Armlet                                                       2000        10 1
+Edincoat                                                          8000        10 1
+Adamon_Bangle                                                     0           10 1
+Dragon_Armlet                                                     0           10 1
+Gigas_Armlet                                                      0           10 1
+Diamond_Bangle                                                    3200        10 1
+Rune_Armor                                                        3700        10 1
+Aurora_Armlet   Absorbs_Ice_Magic                                 0           10 1
+Wizard_Bracelet Strong_Against_Magic                              0           10 1
+Fire_Armlet     Absorbs_Fire_Magic                                0           10 1
+Bolt_Armlet     Absorbs_Lightning_Magic                           0           10 1
+Crystal_Bangle                                                    4800        10 1
+Force_Bracelet  Raises_Magic_Level                                0           10 1
+Imperial_Guard                                                    0           10 1
+Warrior_Bangle  Raises_Attack_Level                               0           10 1
+Fed_Alpha                                                         0           10 1
+Ziedrich        Raises_Attack_and_Magic_Levels                    0           10 1
+Minevra_Band    Protects_against_Fire_and_Ice_Magic               0           10 1
+Escort_Guard    Protects_against_Lightning_and_Poison             0           10 1
+Aegis_Armlet                                                      0           10 1
+Mystile                                                           0           10 1   
+Star_Pendant    Protects_Against_Poison                           4000        12 1
+Fury_Ring       Casts_Beserk_On_Bearer                            5000        12 1
+Ribbon          Protects_Against_All                              0           12 1
+Talisman                                                          4000        12 1
+Protect_Vest                                                      3500        12 1
+Power_Wrist                                                       7500        12 1
+Silver_Glasses  Protects_Against_Darkness                         3000        12 1
+Headband        Protects_Against_Sleep                            3000        12 1
+White_Cape      Protects_Against_Frog_And_Mini                    5000        12 1
+Fire_Ring       Absorbs_Fire_Magic                                8000        12 1
+Bolt_Ring       Absorbs_Lightning_Magic                           8000        12 1
+Fairy_Ring      Protects_Against_Poison_And_Darkenss              7000        12 1
+Jewel_Ring      Protects_Against_Petrify                          7500        12 1
+Peace_Ring      Protects_Against_Confusion                        7500        12 1
+Ice_Ring        Absorbs_Ice_Magic                                 8000        12 1
+Water_Ring      Absorbs_Water_Magic                               0           12 1
+Circlet                                                           0           12 1
+Safety_Bit      Protects_Against_Petrify_And_Death                7500        12 1
+Protect_Ring    Casts_MBarrier                                    0           12 1
+Poison_Ring     Absorbs_Poison                                    0           12 1
+Reflect_Ring    Grants_Reflect                                    0           12 1
+Tetra_Elemental Absorbs_Fire,Ice_And_Lightning_Magic              0           12 1
+Amulet                                                            0           12 1
+Cursed_Ring     ??????????                                        0           12 1
+Champion_Belt                                                     0           12 1
+Toughness_Ring                                                    0           12 1
+Broad_Sword     Equips_To_Sean                                    0           5  1
+Mythril_Saber   Equips_To_Sean                                    1000        5  1
+Hardedge        Equips_To_Sean                                    1500        5  1
+Force_Stealer   Equips_To_Sean                                    2200        5  1
+Butterfly_Edge  Equips_To_Sean                                    2800        5  1
+Rune_Blade      Equips_To_Sean                                    3800        5  1
+Yoshiyuki       Equips_To_Sean                                    0           5  1
+Murasame        Equips_To_Sean                                    6500        5  1
+Organics        Equips_To_Sean                                    12000       5  1
+Crystal_Sword   Equips_To_Sean                                    18000       5  1
+Apocalypse      Equips_To_Sean                                    0           5  1
+Amethyst        Equips_To_Sean                                    0           5  1
+Bronze_Rod                                                        0           7  1
+Iron_Bow        Equips_To_Nicole                                  1000        7  1
+Lode_Bow        Equips_To_Nicole                                  1500        7  1
+Robin_Bow       Equips_To_Nicole                                  2200        7  1
+Sage_Bow        Equips_To_Nicole                                  2800        7  1
+Dream_Bow       Equips_To_Nicole                                  3800        7  1
+Comet_Arrow     Equips_To_Nicole                                  0           7  1
+Sonic_Arrow     Equips_To_Nicole                                  6500        7  1
+Siren           Equips_To_Nicole                                  12000       7  1
+Valkerye        Equips_To_Nicole                                  18000       7  1
+Mythril_Bow     Equips_To_Nicole                                  0           7  1
+Shiva's_Arc     Equips_To_Nicole                                  0           7  1
+Mage_Staff      Equips_To_Charity                                 0           9  1
+Flame_Staff     Equips_To_Charity                                 2000        9  1
+Ice_Staff       Equips_To_Charity                                 2500        9  1
+Lightning_Staff Equips_To_Charity                                 3500        9  1
+Oak_Staff       Equips_To_Charity                                 6000        9  1
+Javelin         Equips_To_Charity                                 11000       9  1
+Partisan        Equips_To_Charity                                 14000       9  1
+Scimitar        Equips_To_Charity                                 17000       9  1
+Flayer          Equips_To_Charity                                 19000       9  1
+Spirit_Lance    Equips_To_Charity                                 0           9  1
+Grow_Lance      Equips_To_Charity                                 0           9  1
+Venus_Gospel    Equips_To_Charity                                 0           9  1
+Broad_Axe       Equips_To_Greg                                    0           6  1
+Iron_Axe        Equips_To_Greg                                    350         6  1
+Dwarf_Axe       Equips_To_Greg                                    1400        6  1
+Lode_Axe        Equips_To_Greg                                    2000        6  1
+Hard_Axe        Equips_To_Greg                                    2700        6  1
+Ogre_Axe        Equips_To_Greg                                    3300        6  1
+Flint_Edge      Equips_To_Greg                                    6300        6  1
+Aeon_Edge       Equips_To_Greg                                    3200        6  1
+Demon_Edge      Equips_To_Greg                                    12000       6  1
+Solid_Axe       Equips_To_Greg                                    16000       6  1
+Elven_Edge      Equips_To_Greg                                    18000       6  1
+Dark_Axe        Equips_To_Greg                                    0           6  1
+Sonic_Edge      Equips_To_Greg                                    0           6  1
+Leather_Glove   Equips_To_Luke                                    0           8  1
+Metal_Knuckle   Equips_To_Luke                                    320         8  1
+Mythril_Claw    Equips_To_Luke                                    750         8  1
+Motor_Drive     Equips_To_Luke                                    0           8  1
+Grand_Glove     Equips_To_Luke                                    1200        8  1
+Tiger_Fang      Equips_To_Luke                                    2500        8  1
+Platinum_Fist   Equips_To_Luke                                    2700        8  1
+Diamond_Knuckle Equips_To_Luke                                    5800        8  1
+Dragon_Claw     Equips_To_Luke                                    10000       8  1
+Crystal_Grab    Equips_To_Luke                                    16000       8  1
+God's_Hand      Equips_To_Luke                                    0           8  1
+Premium_Heart   Equips_To_Luke                                    0           8  1   

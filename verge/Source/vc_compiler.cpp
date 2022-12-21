@@ -768,6 +768,12 @@ void VCCompiler::vprint(char *message, ...)
 	FILE *f = FileOpen(VCLOG, "a");
 	fputs(string, f);
 	fclose(f);
+
+#ifdef __EMSCRIPTEN__
+    EM_ASM({
+        console.log('vcverbose', UTF8ToString($0));
+    }, string);
+#endif    
 }
 
 
@@ -1571,11 +1577,11 @@ void VCCompiler::Init_Lexical()
 	memset(sourcefile, 0, 256);
 }
 
-bool VCCompiler::streq(const std::string & lhs, const std::string & rhs) {
+bool VCCompiler::streq(const std::string & lhs, const std::string & rhs) const {
 	return streq(lhs.c_str(), rhs.c_str());
 }
 
-bool VCCompiler::streq(const char *a, const char *b)
+bool VCCompiler::streq(const char *a, const char *b) const
 {
 	while (*a)
 		if (tolower(*a++) != tolower(*b++))
@@ -1583,7 +1589,7 @@ bool VCCompiler::streq(const char *a, const char *b)
 	return !*b;
 }
 
-int VCCompiler::hextoi(char *num)
+int VCCompiler::hextoi(const char *num) const
 {
     int v, i, n, l;
 
@@ -1591,10 +1597,9 @@ int VCCompiler::hextoi(char *num)
     if (l>8)
 		throw va("%s(%d): Hex number too long, should be eight digits or less", sourcefile, linenum);
 
-    strlwr(num);
     for (n=i=0; i<l; i++)
     {
-        v = num[i]-48;
+        v = tolower(num[i])-48;
         if (v>9)
         {
 			v-=39; // v-=7 for uppercase
@@ -1936,6 +1941,13 @@ void VCCompiler::ParsePunc()
 				token[1]=0;
 				srcofs++;
 			}
+			else if (source[srcofs]=='<' || source[srcofs]=='>')
+			{
+				token[0]=source[srcofs];
+				token[1]='=';
+				token[2]=0;
+				srcofs++;
+			}
 			else
 				token[1]=0;
 			break;
@@ -2044,12 +2056,12 @@ void VCCompiler::Expect(char *a)
 	}
 }
 
-bool VCCompiler::IsEscapeSequence(char* s)
+bool VCCompiler::IsEscapeSequence(char* s) const
 {
 	return GetEscapeSequence(s) != 0;
 }
 
-escape_sequence* VCCompiler::GetEscapeSequence(char* s)
+escape_sequence* VCCompiler::GetEscapeSequence(char* s) const
 {
 	for (int i = 0; i < 10; i++)
 	{
@@ -2061,7 +2073,7 @@ escape_sequence* VCCompiler::GetEscapeSequence(char* s)
 	return 0;
 }
 
-bool VCCompiler::IsKeyword(char* s)
+bool VCCompiler::IsKeyword(char* s) const
 {
 	return !strcmp(s,"int")
 		|| !strcmp(s,"string")
@@ -2084,17 +2096,17 @@ bool VCCompiler::IsKeyword(char* s)
 		|| !strcmp(s,"typedef");
 }
 
-bool VCCompiler::IsHexEscapeSequence(char* s)
+bool VCCompiler::IsHexEscapeSequence(char* s) const
 {
 	return !memcmp("\\x", s, 2);
 }
 
-bool VCCompiler::IsNumberChar(char ch)
+bool VCCompiler::IsNumberChar(char ch) const
 {
 	return chr_table[ch] == DIGIT;
 }
 
-bool VCCompiler::IsHexNumberChar(char ch)
+bool VCCompiler::IsHexNumberChar(char ch) const
 {
 	return (chr_table[ch] == DIGIT
 		|| ch == 'A' || ch == 'a'
@@ -2111,7 +2123,7 @@ void VCCompiler::GetIdentifierToken()
 	ParseIdentifier();
 }
 
-int VCCompiler::TypenameToTypeID(char* s)
+int VCCompiler::TypenameToTypeID(char* s) const
 {
 	if(streq(s, "int"))
 	{
@@ -2402,7 +2414,7 @@ void VCCompiler::SkipCallbackDefinition()
 	}
 }
 
-void VCCompiler::CheckNameDup(char *s, bool is_func_name)
+void VCCompiler::CheckNameDup(char *s, bool can_redefine_libfunc)
 {
 	int i;
 
@@ -2417,8 +2429,9 @@ void VCCompiler::CheckNameDup(char *s, bool is_func_name)
 
 	// check vs. system library functions
 	int libfunc_index = FindLibFunc(s, false);
-	if (libfunc_index >= 0 && (!is_func_name || !vc_redefinelibfuncs))
+	if (libfunc_index >= 0 && (!vc_redefinelibfuncs || !can_redefine_libfunc))
 	{
+		log("lib_funcindex=%d, vc_redefinelibfuncs=%d, can_redefine_libfunc=%d", libfunc_index, vc_redefinelibfuncs, can_redefine_libfunc);
 		throw va("%s(%d): %s is already claimed by a built-in library function. Please choose a unique name.", sourcefile, linenum, s);
 	}
 
@@ -2463,6 +2476,25 @@ void VCCompiler::CheckNameDup(char *s, bool is_func_name)
 	for (i=0; i<struct_instances.size(); i++)
 		if (streq(struct_instances[i]->name, s))
 			throw va("%s(%d): %s is already claimed by a user global variable. Please choose a unique name.", sourcefile, linenum, s);
+}
+
+void VCCompiler::HandleRedefineLibFunc()
+{
+	if (vc_redefinelibfuncs)
+	{
+		int libfunc_index = FindLibFunc(token, false);
+		if (libfunc_index >= 0)
+		{
+			if (in_func != nullptr)
+			{
+				in_func->redefined_libfuncs.push_back(libfunc_index);
+			}
+			else
+			{
+				redefined_libfuncs.push_back(libfunc_index);
+			}
+		}
+	}
 }
 
 // Overkill (2006-05-06)
@@ -2552,7 +2584,8 @@ void VCCompiler::ParseGlobalDecl(scan_t type)
 
 		GetIdentifierToken();		// grab name of int
 		strcpy(var_name, token);
-		CheckNameDup(var_name, false);
+		CheckNameDup(var_name, true);
+		HandleRedefineLibFunc();
 
 		while (NextIs("["))			// it's an array
 		{
@@ -2809,15 +2842,14 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 
 	GetIdentifierToken();
 	CheckNameDup(token, true);
-	if (vc_redefinelibfuncs)
-	{
-		int libfunc_index = FindLibFunc(token, false);
-		redefined_libfuncs.push_back(libfunc_index);
-	}
+	HandleRedefineLibFunc();
 
 	int numargs = 0;
 	strcpy(myfunc->name, token);
 	Expect("(");
+
+	in_func = myfunc;
+
 	while (!NextIs(")"))
 	{
 		GetToken();
@@ -2862,7 +2894,8 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 		myfunc->argtype[numargs] = argtype;
 		
 		GetIdentifierToken();
-		CheckNameDup(token, false);
+		CheckNameDup(token, true);
+		HandleRedefineLibFunc();		
 
 		if (streq(myfunc->name, token))
 		{
@@ -2898,6 +2931,9 @@ void VCCompiler::ParseFuncDecl(scan_t type)
 		}
 		numargs++;
 	}
+
+	in_func = nullptr;
+
 	myfunc->numargs = numargs;
 	Expect(")");
 	Expect("{");
@@ -3505,7 +3541,8 @@ void VCCompiler::CompileFunction(bool returns_callback)
 
 				// Name.
 				GetIdentifierToken();
-				CheckNameDup(token, false);
+				CheckNameDup(token, true);
+				HandleRedefineLibFunc();				
 				for (int i = 0; i < in_func->numlocals; i++)
 				{
 					if (streq(token, in_func->localnames[i]))
@@ -3525,7 +3562,8 @@ void VCCompiler::CompileFunction(bool returns_callback)
 					in_func->argtype[in_func->numlocals] = argtype;
 					in_func->argext[in_func->numlocals] = argext;
 					GetIdentifierToken();
-					CheckNameDup(token, false);
+					CheckNameDup(token, true);
+					HandleRedefineLibFunc();
 					for (int i = 0; i < in_func->numlocals; i++)
 					{
 						if (streq(token, in_func->localnames[i]))
@@ -3554,13 +3592,23 @@ void VCCompiler::CompileFunction(bool returns_callback)
 	in_func = 0;	
 }
 
+bool VCCompiler::IsLibFuncRedefined(int libfunc_index) const
+{
+	if (vc_redefinelibfuncs)
+	{
+		return std::find(redefined_libfuncs.begin(), redefined_libfuncs.end(), libfunc_index) != redefined_libfuncs.end()
+		|| (in_func != nullptr
+			&& std::find(in_func->redefined_libfuncs.begin(), in_func->redefined_libfuncs.end(), libfunc_index) != in_func->redefined_libfuncs.end());
+	}
+	return false;
+}
+
 int VCCompiler::FindLibFunc(const char* s, bool skip_if_redefined)
 {
 	for (int i = 0; i < NUM_LIBFUNCS; i++)
 	{
 		if (streq(s, libfuncs[i].name.c_str())
-		&& (!skip_if_redefined
-			|| std::find(redefined_libfuncs.begin(), redefined_libfuncs.end(), i) == redefined_libfuncs.end()))
+		&& (!skip_if_redefined || !IsLibFuncRedefined(i)))
 		{
 			id_type = ID_LIBFUNC;
 			id_index = i;
@@ -3584,6 +3632,8 @@ void VCCompiler::CheckIdentifier(char *s)
 		{
 			err("cannot use library func %s with index %d >= 256 when in oldlibfuncs mode", s, libfunc_index);
 		}
+
+		vprint("name=%s, libfunc_index=%d vc_redefinelibfuncs=%d, in_func=%s %d", s, libfunc_index, vc_redefinelibfuncs, in_func ? in_func->name : "<null>", in_func ? in_func->redefined_libfuncs.size() : 0);
 
 		id_type = ID_LIBFUNC;
 		id_index = libfunc_index;
@@ -3975,7 +4025,7 @@ void VCCompiler::CompileTerm()
 	CompileSubTerm();
 
 	while(true) {
-		if		(NextIs("="))   { output.EmitC(ifEQUAL);          GetToken();}
+		if (NextIs("="))        { output.EmitC(ifEQUAL);          GetToken();}
 		else if (NextIs("!="))  { output.EmitC(ifNOTEQUAL);       GetToken();}
 		else if (NextIs(">"))   { output.EmitC(ifGREATER);        GetToken();}
 		else if (NextIs(">="))  { output.EmitC(ifGREATEROREQUAL); GetToken();}

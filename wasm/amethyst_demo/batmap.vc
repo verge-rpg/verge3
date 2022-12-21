@@ -1,0 +1,18 @@
+void Start()
+{
+	Switch(batArea)
+	{
+		case 1:
+		LoadMons(1);
+		case 2:
+		LoadMons(Random(1,5));
+		case 3:
+		LoadMons(6);
+	}
+	
+	SpawnEnts();
+	LoadBg();
+	HookRetrace("ShowBg");
+	whiteIn(100);
+	Battle();
+}

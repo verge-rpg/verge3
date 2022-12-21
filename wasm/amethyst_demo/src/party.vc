@@ -1,0 +1,266 @@
+// Amethyst Party System
+// Code by Sean "Rysen" Oyler
+
+
+int PartyIndex[6], numchars;
+
+struct PartyMember {
+	string name;
+	string ent;
+	string status;
+	string skill, skill2;
+	string Batent;
+	int pic;
+	int pic2;
+	int Curhp;
+	int MaxHp;
+	int Curmp;
+	int MaxMp;
+	int lvl;
+	int magiclvl;
+	// Base Stats
+	int str;
+	int mag;
+	int def;
+	int mgr;
+	int spd;
+	int hit;
+	int luc;
+	int dod;
+	int exp;
+	int tempnxt;
+	int nxt;
+	int row;
+	int weap;
+	int arm;
+	int acc;
+	int learning;
+};
+	
+#define POISON 1
+#define PETRIFY 2
+#define FROG 3
+#define MINI 4
+#define SILENCE 5
+#define DARKNESS 6
+#define SWOON 7
+
+	
+PartyMember party[15];
+
+void LoadParty()
+{
+ party[SEAN].Name = "Sean";
+ party[SEAN].pic = LoadImage("Pics/Char/smenu.png");
+ party[SEAN].CurHp = 233;
+ Party[SEAN].MaxHp = 233;
+ party[SEAN].CurMp = 30;
+ party[SEAN].MaxMp= 30;
+ party[SEAN].Magiclvl = 1;
+ party[SEAN].ent = "Sprites\Sean.chr";
+ party[SEAN].status = "";
+ party[SEAN].skill = "Cover";
+ party[SEAN].skill2 = "Swd Tech";
+ party[SEAN].batent = "Sprites/BatSean.chr";
+ party[SEAN].learning = 1;
+ GainLevel(SEAN,1);
+ 
+ 
+ party[CHARITY].Name = "Charity";
+ party[CHARITY].lvl =1;
+ party[CHARITY].pic = LoadImage("Pics/Char/cmenu.png");
+ party[CHARITY].CurHp = 225; party[2].MaxHp=200;
+ party[CHARITY].CurMp = 40; party[2].MaxMp=60;
+ party[CHARITY].status = "";
+ party[CHARITY].magiclvl = 1;
+ party[CHARITY].learning = 1;
+ party[CHARITY].skill = "Focus";
+ party[CHARITY].skill2 = "Blk Magic";
+ party[CHARITY].batent = "Sprites/batCharity.chr";
+ GainLevel(CHARITY,1);
+ 
+ party[NICOLE].name = "Nicole";
+ party[NICOLE].lvl =1;
+ party[NICOLE].pic = LoadImage("Pics/Char/nmenu.png");
+ party[NICOLE].CurHp = 230; party[3].MaxHp =250;
+ Party[NICOLE].CurMp = 25; Party[3].MaxMp=25;
+ party[NICOLE].status = "";
+ party[NICOLE].magiclvl = 1;
+ party[NICOLE].learning = 1;
+ party[NICOLE].skill = "Pray";
+ party[NICOLE].skill2 = "Wht Magic";
+ party[NICOLE].batent = "Sprites/batCharity.chr";
+ GainLevel(NICOLE,1);
+ 
+ party[LUKE].name = "Luke";
+ party[LUKE].lvl =1;
+ Party[LUKE].pic = LoadImage("Pics/Char/luke.png");
+ party[LUKE].CurHP = 300; Party[4].MaxHp = 300;
+ party[LUKE].CurMp = 25; party[4].MaxMp=25;
+ party[LUKE].status = "";
+ party[LUKE].magiclvl = 1;
+ 
+ party[GREG].name = "Greg";
+ party[GREG].lvl = 1;
+ party[GREG].pic = LoadImage("pics/char/gmenu.png");
+ party[GREG].CurHP = 300; Party[5].MaxHp = 300;
+ party[GREG].CurMP = 20; party[5].MaxMP = 20;
+ party[GREG].ent = "sprites\greg.chr";
+ party[GREG].status = "";
+ party[GREG].magiclvl = 1;
+ party[GREG].spd = 5;
+ party[GREG].skill = "Terrain";
+ party[GREG].skill2 = "Time Magic";
+ party[GREG].batent = "Sprites/batSean.chr";
+ 
+ party[AARON].name = "Aaron";
+ party[AARON].lvl = 1;
+ party[AARON].pic = LoadImage("pics/char/aaron.png");
+ party[AARON].CurHp = 200; party[AARON].MaxHp = 200;
+ party[AARON].CurMp = 20; Party[AARON].MaxMp = 20;
+ party[AARON].Status = "";
+ party[AARON].magiclvl = 1;
+ party[AARON].learning = 1;
+ party[AARON].skill = "Cover";
+ party[AARON].skill2 = "Sword Tech";
+ party[AARON].batent = "Sprites/batAaron.chr";
+ GainLevel(AARON,1);
+ 
+ party[SARA].name = "Sara";
+ party[SARA].lvl = 1;
+ party[SARA].pic = LoadImage("pics/char/sara.png");
+ party[SARA].CurHp = 175; party[SARA].MaxHp = 175;
+ party[SARA].CurMp = 50; Party[SARA].MaxMp = 50;
+ party[SARA].Status = "";
+ party[SARA].magiclvl = 1;
+ party[SARA].learning = 1;
+ party[SARA].skill = "Pray";
+ party[SARA].skill2 = "Wht Magic";
+ party[SARA].batent = "Sprites/batSara.chr";
+ GainLevel(SARA,1);
+ 
+ party[RID].name = "The Rid";
+ party[RID].lvl = 1;
+ party[RID].pic = LoadImage("pics/char/rid.png");
+ party[RID].CurHp = 320; party[RID].MaxHp = 320;
+ party[RID].CurMp = 15; Party[RID].MaxMp = 15;
+ party[RID].Status = "";
+ party[RID].magiclvl = 1;
+ party[RID].spd = 14;
+ 
+}
+
+void SetParPicBatEnt(int sit)
+{
+	switch(sit)
+	{
+		case 0:
+		party[SEAN].pic = LoadImage("Pics/Char/smenu.png");
+		party[CHARITY].pic = LoadImage("Pics/Char/cmenu.png");
+		party[GREG].pic = LoadImage("pics/char/gmenu.png");
+		case 1:
+		party[SEAN].pic = LoadImage("Pics/Char/sUnimenu.png");
+		party[CHARITY].pic = LoadImage("Pics/Char/cUnimenu.png");
+		party[GREG].pic = LoadImage("pics/char/gUnimenu.png");
+	}
+}
+
+int AddChr(int partyIndexNum)
+{
+ 	int a;
+ 	for(a=0; a<5; a++)
+ 	{
+ 		 if(partyindex[a+1]==PartyIndexNum)
+ 			 return(1);
+   	}
+  	if(numchars>5) 
+  		Return(2);
+  	if(numchars<5)
+  	{
+ 		PartyIndex[Numchars+1]=PartyIndexNum;
+   		numchars++;
+  	}
+ 	return(0);
+}
+
+void GiveStatus(int par, int stat)
+{
+	switch(stat)
+	{
+		case POISON:
+		party[par].status = "Poison";
+		case PETRIFY:
+		party[par].status = "Stone";
+		case FROG:
+		party[par].status = "Frog";
+		case MINI:
+		party[par].status = "Mini";
+		case SILENCE:
+		party[par].status = "Silence";
+		case DARKNESS:
+		party[par].status = "Blind";
+		case SWOON:
+		party[par].status = "Swoon";
+	}
+}
+
+void CheckHPMP(int par)
+{
+	if(party[par].CurHp>party[par].MaxHp)
+		party[par].CurHp=party[par].MaxHp;
+	if(party[par].CurMp>party[par].MaxMp)
+		party[par].CurMp = party[par].MaxMp;
+}
+
+void RemoveChr(int par)
+{
+	int a, b;
+	for(a=1; a<=numchars; a++)
+	{
+		if(partyindex[a]==par)
+		{
+			if(partyindex[a+1])
+			{
+				partyindex[a]=partyindex[a+1];
+				partyindex[a+1]=0;
+				if(partyindex[a+2])
+				{
+					partyindex[a+1]=partyindex[a+2];
+					partyindex[a+2]=0;
+				}
+			}
+			else
+				partyindex[a]=0;
+			
+			numchars--;
+		}
+	}
+}
+
+int IsInParty(int par)
+{
+	int a, b;
+	while(a<=numchars)
+	{
+		if(partyindex[a]==par)
+			b++;
+		a++;
+	}
+	if(b)
+		return TRUE;
+	else
+		return FALSE;
+}
+
+void HPMPRestore()
+ {
+ 	int a;
+ 	for(a=0; a<=numchars; a++)
+ 	{
+ 		if(party[partyindex[a]].curHp>0)
+ 		{
+ 			party[partyindex[a]].curHp=party[partyindex[a]].MaxHp;
+ 			party[partyindex[a]].curMp=party[partyindex[a]].MaxMp;
+ 		}
+ 	}
+ }

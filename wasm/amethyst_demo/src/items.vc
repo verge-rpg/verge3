@@ -1,0 +1,624 @@
+/* Amethyst Items System 
+   Code by Sean "Rysen" Oyler
+*/
+
+struct ItemSys {
+	string name;
+	string desc;
+	int cost;
+	int pic;
+	int quan;
+	int type;
+	};
+int ISlot[300];
+int IList[300];
+	
+ITEMSYS item[500];
+
+#define POTION 1
+#define HI_POTION 2
+#define X_POTION 3
+#define ETHER 4
+#define TURBO_ETHER 5
+#define REMEDY 6
+#define PHOENIX_DOWN 7
+#define ELIXER 8
+#define MEGALIXER 9
+#define ANTIDOTE 10
+#define SOFT 11
+#define KISS 12
+#define CORNUCOPIA 13
+#define ECHO_SCREEN 14
+#define EYE_DROPS 15
+#define TENT 16
+#define POWER_SOURCE 17
+#define GUARD_SOURCE 18
+#define MAGIC_SOURCE 19
+#define LUCK_SOURCE 20
+#define JERKY 21
+#define CHEESE 22
+#define SUGAR 23
+#define CAFFINE 24
+
+
+void LoadItems() 
+{
+ 	int datfile, itemtotal, pos, ptmp;
+ 	string tempstring;
+ 	datfile = FileOpen("items.dat",1);
+ 	For(pos=1; pos<=142; pos++)
+ 	{
+ 		 FileSeekLine(datfile,pos);
+ 		 tempstring = fileReadLn(datfile);
+ 		 item[pos].name = left(tempstring,16); ptmp=0; 
+ 		 while(!ptmp) 
+ 		 { 
+ 		 	If(!strcmp(right(item[pos].name,1)," ")) 
+ 		 		Item[pos].name = left(Item[pos].name,len(Item[pos].name)-1); 
+ 		 	Else 
+ 		 		ptmp++; 
+ 		 }
+
+ 		 item[pos].desc = mid(tempstring,16,48); ptmp=0; 
+ 		 While(!ptmp) 
+ 		 { 
+ 		 	if(!strcmp(right(item[pos].desc,1)," ")) 
+ 		 		item[pos].desc = left(item[pos].desc,len(item[pos].desc)-1); 
+ 		 	Else 
+ 		 		ptmp++;  
+ 		 }
+ 		 
+ 		 item[pos].cost = val(mid(tempstring,66,6));
+ 		 item[pos].pic = val(mid(tempstring,78,6));
+ 		 item[pos].type = val(mid(tempstring,85,3));
+ 	}
+ 	FileClose(datfile);
+}
+
+int FindSlot(int itm)
+{
+	int i, done;
+	i=1;
+	while(!done)
+	{
+		if(i==200) // Item doesn't exist
+		{
+			return 0;
+			done++;
+		}
+		else if(ISlot[i]==itm)
+		{
+			return i;
+			done++;
+		}
+		else
+			i++;
+	}
+}
+
+int FindFreeSlot()
+{
+	int i, done;
+	i=1;
+	while(!done)
+	{
+		if(i==200) // Not enough room
+		{
+			done++;
+			return 0;
+		}
+		else if(!ISlot[i])
+		{
+			return i;
+			done++;
+		}
+		else
+			i++;
+	}
+}
+
+void GiveItem(int itm, int amt)
+{
+	item[itm].quan+=amt;
+	if(item[itm].quan>99)
+		item[itm].quan==99;
+}
+
+void TakeItem(int itm, int amt)
+{
+	if(item[itm].quan>0)
+		item[itm].quan-=amt;
+	if(item[itm].quan<0)
+		item[itm].quan=0;
+}
+ 
+void ItemList()
+{
+	int it, it2;
+	for(it=0; it<142; it++)
+	{
+		if(item[it].quan>0)
+		{
+			Ilist[it2] = it;
+			it2++;
+		}
+	}
+}
+
+void ClearLists()
+{
+	int it;
+	for(it=0; it<142; it++)
+		IList[it] = 0;
+}
+
+
+void IMenu()
+{
+	int pointer, pointer2, itp, py, px;
+	int a, done, descat, itemuse;
+	int b, py2;
+	py=1; px=1;
+	py2=1;
+	pointer = LoadImage("pics/pointer.pcx");
+	pointer2 = LoadImage("pics/p2.pcx");
+	ItemList();
+	while(!done)
+	{
+		render();
+		MenuBg();
+		DGW(160,50,319,239);
+		for(a=0; a<12; a++)
+		{
+			if(IList[a+itp])
+			{
+				if(item[IList[a+itp]].quan>0)
+				{
+					PutText(180,55+(10*a),item[Ilist[a+itp]].name);
+					PutText(280,55+(10*a),str(item[IList[a+itp]].quan));
+				}
+			}
+		}
+		if(descat)
+		{
+			DGW(0,200,320,240);
+			if(item[IList[py+itp-1]].quan)
+				PutText(5,205,item[IList[py+itp-1]].desc);
+		}
+		if(!itemuse)
+			TBlit(65+(80*px),44+(10*py),pointer,screen);
+		else if(itemuse && Ilist[py+itp-1]==9 || Ilist[py+itp-1]==16)
+		{
+			for(b=1; b<numchars+1; b++)
+				TBlit(140,0-30+(50*b),pointer2,screen);
+		}
+		else if(itemuse)
+			TBlit(140,0-30+(50*py2),pointer2,screen);
+		
+		ShowPage();
+		UpdateControls();
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(menusounds.pnt,100);
+			if(!itemuse)
+				py++;
+			else
+				py2++;
+		}
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(menusounds.pnt,100);
+			if(!itemuse)
+				py--;
+			else
+				py2--;
+		}
+		
+		if(b4)
+		{
+			Unpress(4);
+			PlaySound(menusounds.select,100);
+			if(!descat)
+				descat++;
+			else
+				descat=0;
+		}
+		if(!descat)
+		{
+			if(py>12)
+			{
+				py=12;
+				itp++;
+			}
+		}
+		else if(descat)
+		{
+			if(py>10)
+			{
+				py=10;
+				itp++;
+			}
+		}
+		if(py<1)
+		{
+			py=1; 
+			itp--;
+			if(itp<0)
+				itp=0;
+		}
+		if(py2>numchars)
+			py2=1;
+		if(py2<1)
+			py2=numchars;
+		if(b2)
+		{
+			unpress(2);
+			PlaySound(menusounds.cancel,100);
+			if(!itemuse)
+			{
+				ClearLists();
+				//ClearItemp();
+				done++;
+				Menu();
+			}
+			else
+				py2=1; itemuse=0;
+		
+		}
+		if(b1)
+		{
+			unpress(1);
+			if(!itemuse)
+			{
+				PlaySound(menusounds.select,100);
+				itemuse++;
+			}
+			else
+			{
+				if(Item[IList[py+itp-1]].Quan)
+					UseItem(IList[py+itp-1],partyindex[py2]);
+				else
+					itemuse--;
+			}
+		}
+	}
+	ClearLists();
+}
+			
+void BatItemMenu()
+{
+	int a, done, itp, pointer, py, itemuse, py2;
+	pointer = LoadImage("pics/pointer.pcx");
+	py=1;
+	ItemList();
+	bat2.inMenu++;
+	while(!done)
+	{
+		Render();
+		DrawBSMain();
+		DGW(175,170,319,239);
+		for(a=0; a<=6; a++)
+		{
+			if(IList[a+itp])
+			{
+				PutText(180,175+(10*a),item[Ilist[a+itp]].name);
+				PutText(290,175+(10*a),str(item[IList[a+itp]].quan));
+			}
+		}
+		TBlit(155,165+(10*py),pointer,screen);
+		ShowPage();
+		UpdateControls();
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(bat2.pntsound,100);
+			if(!itemuse)
+				py++;
+			else
+				py2++;
+		}
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(bat2.pntsound,100);
+			if(!itemuse)
+				py--;
+			else
+				py2--;
+		}
+		
+		if(py>6)
+		{
+			py=6;
+			itp++;
+		}
+		if(py<1)
+		{
+			py=1; 
+			itp--;
+			if(itp<0)
+				itp=0;
+		}
+		if(b2)
+		{
+			Unpress(2);
+			PlaySound(bat2.cancel,100);
+			bat2.inMenu=0;
+			done++;
+		}
+		if(b1)
+		{
+			Unpress(1);
+			if(item[IList[py+itp-1]].quan>0)
+			{
+				PlaySound(bat2.select,100);
+				done++;
+				ChooseMon(1,5,bat2.turn,IList[py+itp-1]);
+			}
+		}
+	}
+	freeImage(pointer);
+	ClearLists();
+}
+					
+
+void UseItem(int itm, int par)
+{
+	switch(itm)
+	{
+		case POTION: // Potion
+		if(party[par].Curhp && party[par].CurHp<party[par].MaxHp)
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].CurHp+=100;
+			item[itm].Quan-=1;
+			CheckHPMP(par);
+		}
+		else
+			PlaySound(menusounds.buzz,100);
+		case HI_POTION: // Hi-Potion
+		if(party[par].Curhp && party[par].CurHp<party[par].MaxHp)
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].CurHp+=500;
+			item[itm].Quan-=1;
+			CheckHPMP(par);
+		}
+		else
+			PlaySound(menusounds.buzz,100);
+		case X_POTION: // X-Potion
+		if(party[par].Curhp && party[par].CurHp<party[par].Maxhp)
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].Curhp=party[par].MaxHp;
+			item[itm].Quan-=1;
+		}
+		else
+			PlaySound(menusounds.buzz,100);
+		case ETHER:
+		if(party[par].Curhp && party[par].CurMp<party[par].MaxMp)
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].CurMp+=100;
+			item[itm].Quan-=1;
+			CheckHPMP(par);
+		}
+		else
+			PlaySound(menusounds.buzz,100);
+		case TURBO_ETHER:
+		if(party[par].Curhp && party[par].CurMp<party[par].MaxMp)
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].CurMp=party[par].MaxMp;
+			item[itm].Quan-=1;
+		}
+		case REMEDY:
+		if(party[par].Curhp && strcmp(party[par].status,""))
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].status="";
+			item[itm].Quan-=1;
+		}
+		case PHOENIX_DOWN:
+		if(party[par].CurHp==0)
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].CurHp=(party[par].MaxHp)/10;
+			item[itm].Quan-=1;
+			party[par].status="";
+		}
+		else
+			PlaySound(menusounds.buzz,100);
+		case ELIXER:
+		if(party[par].Curhp && party[par].CurHp<party[par].MaxHp || party[par].CurMp<party[par].MaxMp)
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].CurHp=party[par].MaxHp;
+			party[par].CurMp=party[par].MaxMp;
+			item[itm].Quan-=1;
+		}
+		else
+			PlaySound(menusounds.buzz,100);
+		case MEGALIXER:
+		case ANTIDOTE:
+		if(party[par].Curhp && !StrCmp(party[par].status,"Poison"))
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].status="";
+			item[itm].Quan-=1;
+		}
+		case SOFT:
+		if(party[par].Curhp && !StrCmp(party[par].status,"Stone"))
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].status="";
+			item[itm].Quan-=1;
+		}
+		case KISS:
+		if(party[par].Curhp && !strCmp(party[par].status,"Frog"))
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].status="";
+			item[itm].Quan-=1;
+		}
+		case CORNUCOPIA:
+		if(party[par].Curhp && !strcmp(party[par].status,"Mini"))
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].status="";
+			item[itm].Quan-=1;
+		}
+		case ECHO_SCREEN:
+		if(party[par].Curhp && !strcmp(party[par].status,"Silence"))
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].status="";
+			item[itm].Quan-=1;
+		}
+		case EYE_DROPS:
+		if(party[par].Curhp && !strcmp(party[par].status,"Blind"))
+		{
+			PlaySound(menusounds.cure,100);
+			party[par].status="";
+			item[itm].Quan-=1;
+		}
+		case TENT:
+		case POWER_SOURCE:
+		PlaySound(menusounds.cure,100);
+		party[par].str++;
+		item[itm].quan--;
+		case GUARD_SOURCE:
+		PlaySound(menusounds.cure,100);
+		party[par].def++;
+		item[itm].quan--;
+		case MAGIC_SOURCE:
+		PlaySound(menusounds.cure,100);
+		party[par].mag++;
+		item[itm].quan--;
+		case LUCK_SOURCE:
+		PlaySound(menusounds.cure,100);
+		party[par].luc++;
+		item[itm].quan--;
+		case JERKY:
+		case CHEESE:
+		case SUGAR:
+		case CAFFINE:
+	}
+}
+
+
+void CheckSlot(int slot)
+{
+	if(!item[slot].Quan)
+		ISlot[slot]=0;
+}
+
+void UseBItem(int tar, int itm)
+{
+	int dmg, defence, strength, oldtime, t;
+	switch(itm)
+	{
+		
+			
+		case POTION: // Potion
+		bat2.sound = LoadSound("Sounds/heal.wav");
+		EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+		oldtime = timer;
+		bat2.bWait=1;
+		while(t<100)
+		{
+			t = timer-oldtime;
+			Render();
+			DGW(0,0,319,20);
+			DrawBSMain();
+			PrintCenter(ImageWidth(screen)/2,7,screen,fnt,"Potion");
+			ShowPage();
+		}
+		PlaySound(bat2.sound,100);
+		AnimateMagic(entity.x[bat[tar].ent]-10,entity.y[bat[tar].ent]-10,37,10,500,"potion.pcx");
+		BouncyNumber(bat[tar].ent,Bgfnt,str(100),100);
+		party[partyindex[tar]].CurHP+=100;
+		CheckHpMp(partyindex[tar]);
+		item[itm].quan--;
+		
+		case ETHER:
+		bat2.sound = LoadSound("Sounds/heal.wav");
+		EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+		oldtime = timer;
+		bat2.bWait=1;
+		while(t<100)
+		{
+			t = timer-oldtime;
+			Render();
+			DGW(0,0,319,20);
+			DrawBSMain();
+			PrintCenter(ImageWidth(screen)/2,7,screen,fnt,"Ether");
+			ShowPage();
+		}
+		PlaySound(bat2.sound,100);
+		AnimateMagic(entity.x[bat[tar].ent]-10,entity.y[bat[tar].ent]-10,37,10,500,"ether.pcx");
+		BouncyNumber(bat[tar].ent,pfnt,str(100),100);
+		party[partyindex[tar]].CurMP+=100;
+		CheckHpMp(partyindex[tar]);
+		item[itm].quan--;
+		
+		case PHOENIX_DOWN:
+		bat2.sound = LoadSound("Sounds/heal.wav");
+		EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+		oldtime = timer;
+		bat2.bWait=1;
+		while(t<100)
+		{
+			t = timer-oldtime;
+			Render();
+			DGW(0,0,319,20);
+			DrawBSMain();
+			PrintCenter(ImageWidth(screen)/2,7,screen,fnt,"Pheonix Down");
+			ShowPage();
+		}
+		PlaySound(bat2.sound,100);
+		AnimateMagic(entity.x[bat[tar].ent]-10,entity.y[bat[tar].ent]-10,37,10,500,"pdown.pcx");
+		if(party[partyindex[tar]].CurHp==0)
+		{
+			BouncyNumber(bat[tar].ent,Bgfnt,str((party[partyindex[bat2.turn]].maxHp*10)/100),100);
+			Party[partyindex[tar]].CurHp=(party[partyindex[tar]].maxHp*10)/100;
+			EntityMove(bat[tar].ent,"Z15");
+			party[partyindex[tar]].status="";
+		}
+		else
+			BouncyNumber(bat[tar].ent,fnt,"Miss!",100);
+		
+		item[itm].quan--;
+		
+		case EYE_DROPS:
+		bat2.sound = LoadSound("Sounds/heal.wav");
+		EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+		oldtime = timer;
+		bat2.bWait=1;
+		while(t<100)
+		{
+			t = timer-oldtime;
+			Render();
+			DGW(0,0,319,20);
+			DrawBSMain();
+			PrintCenter(ImageWidth(screen)/2,7,screen,fnt,"Eye Drops");
+			ShowPage();
+		}
+		PlaySound(bat2.sound,100);
+		AnimateMagic(entity.x[bat[tar].ent],entity.y[bat[tar].ent]-10,36,6,500,"statusremoval.pcx");
+		if(party[partyindex[tar]].Curhp && !strcmp(party[partyindex[tar]].status,"Blind"))
+			party[partyindex[tar]].status = "";
+		else
+			BouncyNumber(bat[tar].ent,fnt,"Miss!",100);
+		
+		item[itm].quan--;
+	
+	}
+	bat[bat2.turn].batTime=0;
+	bat2.inMenu=0;
+	bmain=0;
+	bat2.bWait=0;
+	bat2.turn=0;
+}

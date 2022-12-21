@@ -1,0 +1,98 @@
+Amethyst Demo
+By
+RysenSoft
+http://rysen.actionsketch.com
+
+Made With
+VERGE 3
+http://www.verge-rpg.com
+
+Director
+Rysen
+
+Programming 
+Rysen
+
+Additional Programming
+Kildorf
+McGrue
+vecna
+zaratustra
+Hatchet
+zeromus
+overkill
+
+Written By
+Rysen
+
+Music
+Rysen
+
+Character Design
+Rysen
+Jessica Yeandle-Hignel
+
+Character Sprites
+Rysen
+ASCII/Enterbrain Entertainment
+Various SNES Games
+
+RysenSoft Logo
+Coyler
+
+Amethyst Logo
+Greg Phillips
+
+Battle BackGrounds
+ASCII/Enterbrain Entertainment
+
+Magic Animations
+FireWarrior
+Rysen
+
+Tile Art
+Rysen
+ASCII/Enterbrain Entertainment
+Various SNES Games
+
+Testing
+Gannon
+Coyler
+
+Special Thanks
+Nicole Strumpfer
+Wes Shelley
+Sean Baker
+Jeff Phillips
+Greg Phillips
+Chris Oyler
+Aaron Cannon
+Anna Brounstein
+Gannon
+McGrue
+Troupe
+RageCage
+Kildorf
+Quanta
+Khross
+McPunky
+Swordsman
+Gayo
+Zip
+Omni
+OVERKILL
+TomT64
+Tatsumi
+zeromus
+loretion
+Hahn
+
+
+And of course:
+vecna
+For making the coolest 
+Engine in existence
+
+
+
+Thank you for playing!

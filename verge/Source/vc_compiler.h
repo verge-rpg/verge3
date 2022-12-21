@@ -175,6 +175,7 @@ public:
 	char argtype[60];
 	ext_definition argext[60];
 	char localnames[100][IDENTIFIER_LEN];
+	std::vector<int> redefined_libfuncs;
 	int numargs, numlocals;
 	int signature;
 	ext_definition sigext;
@@ -344,9 +345,9 @@ private:
 	quad srcofs, linenum;
 
 	void Init_Lexical();
-	bool streq(const std::string & lhs, const std::string & rhs);
-	bool streq(const char *a, const char *b);
-	int  hextoi(char *h);
+	bool streq(const std::string & lhs, const std::string & rhs) const;
+	bool streq(const char *a, const char *b) const;
+	int hextoi(const char *h) const;
 	void ParseWhitespace();
 	void ParseIdentifier();
 	void ParseNumber();
@@ -357,14 +358,14 @@ private:
 	bool NextIs(char *s);
 	bool NextIs(int n, char *s);
 	void Expect(char *s);
-	bool IsEscapeSequence(char* s);
-	escape_sequence *GetEscapeSequence(char *s);
-	bool IsKeyword(char *s);
-	bool IsHexEscapeSequence(char* s);
-	bool IsNumberChar(char ch);
-	bool IsHexNumberChar(char ch);
+	bool IsEscapeSequence(char* s) const;
+	escape_sequence *GetEscapeSequence(char *s) const;
+	bool IsKeyword(char *s) const;
+	bool IsHexEscapeSequence(char* s) const;
+	bool IsNumberChar(char ch) const;
+	bool IsHexNumberChar(char ch) const;
 	void GetIdentifierToken();
-	int TypenameToTypeID(char* s);
+	int TypenameToTypeID(char* s) const;
 
 	// scanning pass component
 	std::vector<global_var_t*>					global_vars;
@@ -414,6 +415,7 @@ private:
 	// Overkill (2006-05-06): 
 	// Elements inside structures have different naming rules.
 	void CheckStructElementNameDup (char *s, struct_definition *def);
+	void HandleRedefineLibFunc();
 
 	void ParseGlobalDecl(scan_t type);
 	void ParseCallbackDefinition(callback_definition** def);
@@ -446,6 +448,7 @@ private:
 	void SkipVariables();
 
 	function_t* FetchFunction(char *s);
+	bool IsLibFuncRedefined(int libfunc_index) const;
 	int FindLibFunc(const char* s, bool skip_if_redefined);
 	void CheckIdentifier(char *s);
 	int CheckExpressionType(bool preventAmbiguity); // Overkill: Checks what type the next token is.

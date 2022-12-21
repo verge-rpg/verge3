@@ -1,0 +1,436 @@
+/* Basic Functions used for various situations and Debugging purposes 
+   Most code by Sean "Rysen" Oyler, that which isn't has author credits as comments.*/
+
+int Grad[64], curbg, bgc1, bgc2;
+String Location;
+int amera;
+
+struct TIMESTUFF {
+	int sec, min, ms, hour;
+	string am, col, col2, TimeNum;
+};
+
+TIMESTUFF time;
+
+void ResetGame()
+{
+	int a, i;
+	time.timeNum = "";
+	location = "";
+	curx = 0;
+	cury = 0;
+	currentmap = "";
+	for(a=0; a<=4; a++)
+	{
+		partyindex[a]=0;
+	}
+	amera = 0;
+	batflag = 0;
+	bossflag = 0;
+	globalflag = 0;
+	
+	time.sec = 0;
+	time.min = 0;
+	time.ms = 0;
+	time.hour = 0;
+	
+	numchars = 0;
+	LoadParty();
+	for(a=0; a<=10; a++)
+	{
+		party[a].weap = 0;
+		party[a].arm = 0;
+		party[a].acc = 0;
+	}
+	
+	for(a=0; a<150; a++)
+		item[a].quan = 0;
+		
+	for(a=0; a<8000; a++)
+	{
+		chests[a]=0;
+		flags[a]=0;
+	}
+	
+	for(a=0; a<18; a++)
+	{
+		for(i=0; i<18; i++)
+		{
+			TotalAp[a][i] = 0;
+			HasBeenLearned[a][i]=0;
+		}
+	}
+}
+
+void ChapterIntro(int chap)
+{
+	int image;
+	image = LoadImage("Pics/chap"+str(chap)+".png");
+	FadeInImg(200,image);
+	while(!b1)
+	{
+		Render();
+		Blit(0,0,image,screen);
+		ShowPage();
+	}
+	Unpress(1);
+	FadeOutImg(200);
+	freeimage(image);
+}
+
+void MusicFade(int duration)
+{
+	timer = 0;
+	while(timer<duration)
+	{
+		SetMusicVolume((duration-timer)*100/duration);
+	}
+}
+
+void MusicFadeIn(int duration)
+{
+	timer = 0;
+	while(timer<duration)
+	{
+		Render();
+		SetMusicVolume(timer*100/duration);
+		ShowPage();
+	}
+}
+
+void RetracedMusicFadeIn()
+{
+	timer = 0;
+	while(timer<1000)
+	{
+		SetMusicVolume(timer*100/1000);
+	}
+}
+
+void FadeTImage(int _dur, string img)
+{
+	int image = LoadImage("Pics/"+img);
+	timer = 0;
+	while (timer<_dur)
+	{
+		TBlit(0, 0, image, screen);
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+	freeImage(Image);
+}
+
+void TestMagic()
+{
+	int img, t, done, oldtime;
+	img = loadimage("battle/magic/light.png");
+	oldtime = timer;
+	while(!done)
+	{
+		Render();
+		TScaleBlit(0,0,t,t,img,screen);
+		ShowPage();
+		UpdateControls();
+		t=timer-oldtime;
+		if(b1)
+		{
+			unpress(1);
+			t++;
+			if(t>ImageHeight(img))
+				done++;
+		}
+	}
+	freeImage(img);
+}
+		
+		 
+
+void FadeOutLayer(int Lay)
+{
+ 	int fade_time=timer+200;
+ 	while(timer<fade_time)
+ 	{
+ 		 Render();
+ 		 layer.lucent[lay]=100-((fade_time-timer)/2);
+ 		 ShowPage();
+ 	}
+}	
+
+void FadeInLayer(int lay)
+{
+	int fade_time=timer+200;
+	while(timer<fade_time)
+	{
+		Render();
+		layer.lucent[lay]=layer.lucent[lay]+((fade_time-timer)/2);
+		ShowPage();
+	}
+}
+
+void Warp(int x, int y, int ent)
+{
+	Entity.x[ent]=x*16;
+	entity.y[ent]=y*16;
+}
+
+
+void Wait(int delay)
+{
+	int i;
+	timer = 0; i=0;
+	while(i<delay)
+	{
+		while(timer)
+		{
+			timer--; i++;
+		}
+		UpdateControls();
+		Render();
+		ShowPage();
+	}
+	timer = 0;
+}
+
+void Wait2(int delay)
+{
+	int i;
+	timer = 0; i=0;
+	while(i<delay)
+	{
+		while(timer)
+		{
+			timer--; i++;
+		}
+		UpdateControls();
+		Render();
+		Rectfill(0,0,320,240,RGB(4,4,4),screen);
+		ShowPage();
+	}
+	timer = 0;
+}
+
+void ColourWait(int delay, int colour)
+{
+	int i;
+	timer = 0; i=0;
+	while(i<delay)
+	{
+		while(timer)
+		{
+			timer--;
+			i++;
+		}
+		UpdateControls();
+		Render();
+		Rectfill(0,0,320,240,colour,screen);
+		ShowPage();
+	}
+	timer = 0;
+}
+
+int PanImg;
+
+void DisplayPan()
+{
+	Blit(0,0,PanImg,screen);
+}
+
+void clock()
+{
+	time.ms++;
+	if(time.sec<10) { time.col=":0"; } else { time.col=":"; }
+	If(time.min<10) { time.col2=":0"; } Else { time.col2=":"; }
+	if(time.ms==100) { time.ms=0; time.sec++; }
+	if(time.sec==60) { time.sec=0; time.min++; }
+	if(time.min==60) { time.min=0; time.hour++; }
+	time.TimeNum=str(time.hour)+time.col2+str(time.min)+time.col+str(time.sec);
+}
+
+void configbg(int bg)
+{
+ 	curbg=bg;
+ 	switch(bg)
+ 	{
+ 	 	case 1: bgc1=RGB(0,0,176); bgc2=RGB(0,0,0);
+  		case 2: bgc1=RGB(188,0,0); bgc2=RGB(124,0,0);
+  		case 3: bgc1=RGB(104,104,104); bgc2=RGB(48,48,48);
+  		case 4: bgc1=RGB(0,132,0); bgc2=RGB(0,80,0);
+  		case 5: bgc1=RGB(252,84,0); bgc2=RGB(252,0,0);
+  		case 6: bgc1=RGB(228,216,0); bgc2=RGB(132,132,0);
+ 	}	
+}
+
+ /* Code by Hatchet */
+void GenerateGradient(int c1, int c2)
+{
+ 	int alpha, r, g, b, i;
+ 	for(i=0; i<64; i++)
+ 	{
+ 		 r = ((GetR(c2) * alpha) + (GetR(c1) * (256 - alpha))) / 256;
+ 		 g = ((GetG(c2) * alpha) + (GetG(c1) * (256 - alpha))) / 256;
+ 		 b = ((GetB(c2) * alpha) + (GetB(c1) * (256 - alpha))) / 256;
+ 		 Grad[i]=RGB(r,g,b);
+ 		 alpha+=4;
+ 	}
+}
+
+/* Code by Hatchet */
+void DGW(int x, int y, int x2, int y2)
+{
+ 	int i;
+ 	For(I=y; I<y2; I++)
+ 	{
+ 		 Line(x,I, x2,I, grad[(i-y)*64/(y2-y)],screen);
+ 	}
+ 
+ 	Rect(x,y,x2,y2, RGB(200,200,200),screen);
+ 	Rect(x+1,y+1, x2-1, y2-1, RGB(216, 216, 216),screen);
+ 	Rect(x+2,y+2, x2-2, y2-2, RGB(200, 200, 200),screen);
+ 	//Round off the edges a bit.
+ 	SetPixel(x,y,0,screen);
+ 	SetPixel(x2,y,0,screen);
+ 	SetPixel(x,y2,0,screen);
+ 	SetPixel(x2,y2,0,screen);
+}
+
+void del(int dy) 
+{
+	int i;
+	timer=0; i=0;
+	while (i<dy) 
+	{  
+		 while (timer)
+		 {  
+			  timer--; 
+			  i++;  
+		 } 
+	 UpdateControls(); 
+	}
+	UpdateControls();
+	timer=0;
+}
+
+void banner(string msg)
+{
+	int length, start;
+	GenerateGradient(bgc1,bgc2);
+	start = (ImageWidth(screen)/2)-(TextWidth(fnt,msg)/2);
+	while(!b1)
+	{
+		Render();
+		DGW(start,120,start+(TextWidth(fnt,msg)+20),150);
+		PutText(start+5,125,msg);
+		ShowPage();
+		UpdateControls();
+	}
+	Unpress(1);
+}
+
+int BannerPrompt(string msg, string ch1, string ch2)
+{
+	int start, py;
+	int pointer = LoadImage("pics/pointer.pcx");
+	GenerateGradient(bgc1,bgc2);
+	py = 1;
+	start = (ImageWidth(screen)/2)-(TextWidth(fnt,msg)/2);
+	while(!b1)
+	{
+		Render();
+		DGW(start,120,start+(TextWidth(fnt,msg)+20),180);
+		PutText(start+5,125,msg);
+		PutText(start+5,145,ch1);
+		PutText(start+5,165,ch2);
+		TBLit(start,125+(20*py),pointer,screen);
+		ShowPage();
+		UpdateControls();
+		if(up)
+		{
+			del(1); py--;
+			if(py<1)
+				py=2;
+		}
+		if(down)
+		{
+			del(1); py++;
+			if(py>2)
+				py=1;
+		}
+		if(b2)
+		{
+			unpress(2);
+			py=2;
+		}
+	}
+	Unpress(1);
+	freeImage(pointer);
+	return py;
+}
+	
+int testMouse = loadimage("pics/pointer.pcx");
+
+void tMouse()
+{
+	TBlit(mouse.x,mouse.y,testMouse,screen);
+	if(mouse.l)
+		SetTile(mouse.x/16, mouse.y/16, 1, 2);
+}
+
+void ShowStats()
+{
+	PutText(0,0,"WinX "+str(xwin));
+	PutText(0,10,"Ywin "+str(ywin));
+}
+
+int InRange(int num, int min, int max)
+{
+	if(num>=min && num<=max)
+		return TRUE;
+	else 
+		return FALSE;
+}
+
+void RedOut(int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(192,0,0), screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+} 
+
+void Quake(int xspan, int yspan, int tim) // Code by Zaratustra
+{
+	int t, x, y, sf;
+  	t=timer;
+  	x=xWin; y=yWin;
+  	cameratracking=0;
+  	SetLucent(1);
+  	while (timer-t<tim)
+  	{
+    		xWin=x-xspan+random(0,xspan*2);
+    		yWin=y-yspan+random(0,yspan*2);
+    		Render();
+    		ShowPage();
+   	}
+  	SetLucent(0);
+ }
+ 
+ void OpenCell(int x, int y, int l)
+ {
+ 	SetTile(x,y,l,0);
+ 	SetTile(x+1,y,l,0);
+ 	SetTile(x,y+1,l,0);
+ 	SetTile(x+1,y+1,l,0);
+ 	SetObs(x,y,0);
+ 	SetObs(x+1,y,0);
+ 	SetObs(x,y+1,0);
+ 	SetObs(x+1,y+1,0);
+ 	SetZone(x,y+1,0);
+ 	SetZone(x+1,y+1,0);
+ }

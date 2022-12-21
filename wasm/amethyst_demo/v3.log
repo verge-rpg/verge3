@@ -1,0 +1,8 @@
+system.vc(12) : warning: 'TRUE' : macro redefinition
+system.vc(13) : warning: 'FALSE' : macro redefinition
+
+VC System Compilation stats: 
+8 globals (71 expanded), 23 functions, 5666 total lines
+
+Exiting: 
+src\basic.vc(386): min is already claimed by a built-in library function. Please choose a unique name.

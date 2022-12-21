@@ -1,0 +1,199 @@
+// Monster related stats and functions
+// Code by Sean "Rysen" Oyler
+
+struct MONSTER {
+	string name;
+	int CurHp, MaxHp;
+	int CurMp, MaxMp;
+	int str, def, spd, mag, mgr, hit, dod, lvl, spr;
+	int x, y, ent, batTime;
+	int xp, ap, GP, itm, itm2, els, elw;
+	int com1, com2, com3;
+};
+
+MONSTER mon[10];
+
+string Elements[10];
+
+void defineElements()
+{
+	Elements[1] = "Fire";
+	Elements[2] = "Ice";
+	Elements[3] = "Thunder";
+	Elements[4] = "Wind";
+	Elements[5] = "Water";
+	Elements[6] = "Earth";
+	Elements[7] = "Holy";
+	Elements[8] = "Shadow";
+}
+
+void LoadMons(int group)
+{
+	int a;
+	switch(group)
+	{
+		case 1:
+		mon[1].ent = EntitySpawn(5,5,"Sprites/Monster/soldier.chr");
+		AddMon(2,1);
+		mon[2].ent = EntitySpawn(6,7,"Sprites/Monster/soldier.chr");
+		AddMon(2,2);
+		bat2.numMons=2; bat2.numMons2=2;
+		case 2:
+		mon[1].ent = EntitySpawn(5,5,"Sprites/Monster/bat.chr");
+		AddMon(1,1);
+		mon[2].ent = EntitySpawn(7,7,"Sprites/monster/bat.chr");
+		AddMon(1,2);
+		bat2.numMons=2; bat2.numMons2=2;
+		case 3:
+		mon[1].ent = EntitySpawn(5,5,"Sprites/Monster/bat.chr");
+		AddMon(1,1);
+		mon[2].ent = EntitySpawn(7,7,"Sprites/Monster/serpent.chr");
+		AddMon(3,2);
+		bat2.numMons=2; bat2.numMons2=2;
+		case 4:
+		mon[1].ent = EntitySpawn(3,5,"sprites/Monster/soldier.chr");
+		AddMon(2,1);
+		mon[2].ent = EntitySpawn(5,5,"Sprites/Monster/bat.chr");
+		AddMon(1,2);
+		mon[3].ent = EntitySpawn(7,7,"Sprites/Monster/bat.chr");
+		AddMon(1,3);
+		bat2.numMons=3; bat2.numMons2=3;
+		case 5:
+		mon[1].ent = EntitySpawn(5,5,"Sprites/monster/serpent.chr");
+		AddMon(3,1);
+		mon[2].ent = EntitySpawn(7,7,"Sprites/monster/serpent.chr");
+		AddMon(3,2);
+		bat2.numMons=2; bat2.numMons2=2;
+		case 6:
+		mon[1].ent = EntitySpawn(5,5,"Sprites/monster/bruiser.chr");
+		AddMon(4,1);
+		bat2.numMons=1; bat2.numMons2=1;
+	}
+	for(a=1; a<=bat2.numMons; a++)
+		mon[a].batTime = Random(1,350);
+}
+
+void AddMon(int monNum, int mindx)
+{
+	int datfile, ptmp;
+	string tempstring;
+	/*int*/ datfile = FileOpen("Dats\monster.dat",1);
+	FileSeekLine(datfile,monNum);
+	tempstring = FileReadLn(datfile);	
+	mon[mindx].name = Left(tempstring,10); ptmp=0;
+	while(!ptmp)
+	{
+		if(!strcmp(right(mon[mindx].name,1)," "))
+			mon[mindx].name = left(mon[mindx].name,len(mon[mindx].name)-1);
+		else
+			ptmp++;
+	}
+	mon[mindx].xp = val(Mid(tempstring,11,12));
+	mon[mindx].maxHp = val(mid(tempstring,23,8));
+	mon[mindx].maxMp = val(mid(tempstring,31,5));
+	mon[mindx].lvl = val(mid(tempstring,39,3));
+	mon[mindx].str = val(mid(tempstring,45,3));
+	mon[mindx].def = val(mid(tempstring,51,3));
+	mon[mindx].mag = val(mid(tempstring,57,3));
+	mon[mindx].mgr = val(mid(tempstring,63,3));
+	mon[mindx].spd = val(mid(tempstring,69,3));
+	mon[mindx].spr = val(mid(tempstring,75,3));
+	mon[mindx].dod = val(mid(tempstring,81,3));
+	mon[mindx].ap = val(mid(tempstring,86,3));
+	mon[mindx].itm = val(mid(tempstring,90,3));
+	mon[mindx].itm2 = val(mid(tempstring,96,3));
+	mon[mindx].els = val(mid(tempstring,103,3));
+	mon[mindx].elw = val(mid(tempstring,109,3));
+	mon[mindx].com1 = val(mid(tempstring,115,3));
+	mon[mindx].com2 = val(mid(tempstring,121,3));
+	mon[mindx].com3 = val(mid(tempstring,128,3));
+	mon[mindx].GP = val(mid(tempstring,135,8));
+	FileClose(datfile);
+	mon[mindx].CurHp = mon[mindx].MaxHp;
+	mon[mindx].CurMp = mon[mindx].MaxMp;
+}
+	
+	
+
+void MAttack(int enemy)
+{
+	int a, tarfound, strength, defence, dmg, GetCom, ComToUse;
+	int randomNum;
+	a = Random(1,numchars);
+	GetCom = Random(1,3);
+	switch(GetCom)
+	{
+		case 1:
+		ComToUse = mon[enemy].com1;
+		case 2:
+		ComToUse = mon[enemy].com2;
+		case 3:
+		ComToUse = mon[enemy].com3;
+	}
+	bat2.sound = LoadSound("Sounds/sword.wav");
+	while(!tarfound)
+	{
+		if(party[partyindex[a]].CurHp==0)
+		{
+			a++;
+			if(a>numchars)
+				a=1;
+		}
+		else
+			tarfound=a;
+			
+	}
+	switch(ComToUse)
+	{
+		case 1: // Regular Attack
+		defence = party[partyindex[tarfound]].def;
+		strength = ((mon[enemy].str*40))*mon[enemy].lvl;
+	
+		dmg = ((strength*100)/ (defence*100)) + Random(1,10);
+		if(dmg<1)
+			dmg=0;
+		
+		EntityMove(mon[enemy].ent,"Z1W10Z0W10Z2W10Z0");
+		playSound(bat2.sound,100);
+		
+	
+		if(dmg<=0)
+			BouncyNumber(bat[tarfound].ent,fnt,"Miss!",100);
+		else
+			BouncyNumber(bat[tarfound].ent,Brfnt,str(dmg),150);
+		
+		party[partyindex[tarfound]].CurHp-=dmg;
+			
+		if(party[partyindex[tarfound]].CurHp=<0)
+		{
+			party[partyindex[tarfound]].CurHp=0;
+			party[partyindex[tarfound]].status = "Swoon";
+			EntityMove(bat[tarfound].ent,"Z23");
+			bat2.livemembers--;
+			if(bat2.livemembers<=0)
+				GameOver();
+					
+		}
+		
+		case 2: // Dark Attack
+		bat2.sound = LoadSound("Sounds/darkside.wav");
+		randomNum = Random(1,50); // Change to include stats
+		PreBSpell("Dark Attack");
+		PlaySound(bat2.sound,100);
+		EntityMove(mon[enemy].ent,"Z1W10Z0W10Z2W10Z0");
+		AnimateMagic(entity.x[bat[tarfound].ent]-50,entity.y[bat[tarfound].ent],10,10,800,"darkmon.pcx");
+		if(randomNum<30 && !strcmp(party[partyindex[tarfound]].status,""))
+		{
+			party[partyindex[tarfound]].status = "Blind";
+		}
+		else
+		{
+			BouncyNumber(bat[tarfound].ent,fnt,"Miss!",100);
+		}
+		mon[enemy].curMp-=1;
+	}
+	mon[bat2.mTurn].batTime=0;
+	bat2.mTurn=0;
+	bat2.bWait=0;
+	freeSound(bat2.sound);
+}

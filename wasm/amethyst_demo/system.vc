@@ -1,0 +1,201 @@
+#define SEAN 1
+#define CHARITY 2
+#define NICOLE 3
+#define LUKE 4
+#define GREG 5
+#define JADE 6
+#define AARON 7
+#define SARA 8
+#define RID 9
+
+#define TRUE 1
+#define FALSE 0
+
+#define FOREST 1
+#define PLAINS 2
+#define DUNGEON 3
+
+#include "v3splash.vc" // V3 Splash Screen by McGrue
+#include "src\basic.vc"
+#include "src\battle.vc"
+#include "src\items.vc"
+#include "src\menu.vc"
+#include "src\party.vc"
+#include "src\equip.vc"
+#include "src\magic.vc"
+//#include "src\sys-v3console.vc" // Code by Overkill
+#include "src\v1_maineffects.vc" // Code by Vecna
+#include "src\camscroll.lib.vc" // Code by Kildorf with light mods by McGrue
+#include "src\minigames.vc"
+#include "src\credits.vc"
+#include "src\monsters.vc"
+#include "src\text.vc"
+#include "src\save.vc" 
+
+int fnt, bfnt, rfnt, gfnt, credfnt, pfnt, Bgfnt, Brfnt;
+int player, savepoint;
+int ents[20];
+int flags[8000];
+int chests[8000];
+string currentmap;
+int globalflag;
+int bossflag;
+int batFlag, curx, cury;
+int batArea, batTerrain;
+
+int charent, amient, gregent, saraent;
+
+void V3Console__Init()
+{
+
+}
+
+void AutoExec()
+{
+ int e, tmp;
+ CallFunction("v3splash");
+ fnt = LoadFont("test.bmp");
+ EnableVariableWidth(fnt);
+ bfnt = LoadFont("Blufnt.bmp");
+ EnableVariableWidth(bfnt);
+ rfnt = LoadFont("rfnt.bmp");
+ EnableVariableWidth(rfnt);
+ gfnt = LoadFont("gfnt.bmp");
+ EnableVariableWidth(gfnt);
+ Bgfnt = LoadFont("bgfnt.bmp");
+ EnableVariableWidth(Bgfnt);
+ Brfnt = LoadFont("brfnt.bmp");
+ EnableVariableWidth(Brfnt);
+ credfnt = LoadFont("credfnt.bmp");
+ pfnt = LoadFont("pfnt.bmp");
+ EnableVariableWidth(pfnt);
+ EnableVariableWidth(credfnt);
+ SetAppName("Amethyst v³ (Demo)");
+ SetUpDigitTable();
+ LoadItems();
+ EquipStats();
+ LoadParty();
+ LoadMagic(CHARITY);
+ LoadMagic(SEAN);
+ LoadMagic(NICOLE);
+ LoadMagic(SARA);
+ LoadMenuSounds();
+ DefineElements();
+ ForceEquip(CHARITY,1,104);
+ ForceEquip(CHARITY,2,25);
+ ConfigBg(1);
+ GenerateGradient(bgc1,bgc2);
+ ForceEquip(AARON,1,80);
+ ForceEquip(AARON,2,25);
+ //map("test.map");
+ cameratracking=0;
+ FadeInImg(100,LoadImage("pics/rysen.pcx"));
+ Wait(200);
+ FadeOutImg(100);
+ PlayMusic("Music/title.it");
+ StartUp();
+ 
+ 
+}
+
+
+void StartUp()
+{
+	int img = LoadImage("pics/amethyst.pcx");
+	int pnt = LoadImage("pics/pointer.pcx");
+	int py = 1;
+	FadeInImg(100,LoadImage("pics/amethyst.pcx"));
+	while(!b1)
+	{
+		render();
+		Blit(0,0,img,screen);
+		TBlit(175,160+(10*py),pnt,screen);
+		PutText(200,170,"New Game");
+		PutText(200,180,"Load");
+		PutText(200,190,"Exit");
+		ShowPage();
+		UpdateControls();
+		if(up)
+		{
+			unpress(5);
+			PlaySound(menusounds.pnt,100);
+			py--;
+			if(py<1) 
+				py = 3;
+		}
+		if(down)
+		{
+			unpress(6);
+			PlaySound(menusounds.pnt,100);
+			py++;
+			if(Py>3)
+				py=1;
+		}
+		if(b2)
+		{
+			Unpress(2);
+			PlaySound(menusounds.cancel,100);
+			py=3;
+		}
+	}
+	Unpress(1);
+	freeImage(img);
+	freeImage(pnt);
+	switch(py)
+	{
+		case 1:
+		PlaySound(menusounds.start,100);
+		FadeOutImg(100);
+		MusicFade(200);
+		map("open.map");
+		
+		case 2: // Load
+		PlaySound(menusounds.select,100);
+		LoadMenu();
+		case 3:
+		PlaySound(menusounds.select,100);
+		FadeOutImg(100);
+		MusicFade(100);
+		Exit("Thanks for playing! http://rysen.actionsketch.com");
+	}
+}
+
+void Ending()
+{
+	int x = SaveGame();
+	if(x==1)
+		SaveMenu();
+}
+
+int SaveGame()
+{
+	int pointer = LoadImage("pics/pointer.pcx");
+	int py=1;
+	while(!b1)
+	{
+		Render();
+		Rectfill(0,0,320,240,RGB(4,4,4),screen);
+		TBlit((imagewidth(screen)/2)-35,100+(10*py),pointer,screen);
+		PrintCenter(imagewidth(screen)/2,100,screen,fnt,"Save Game?");
+		PrintCenter(imagewidth(screen)/2,110,screen,fnt,"Yes");
+		PrintCenter(imagewidth(screen)/2,120,screen,fnt,"No");
+		ShowPage();
+		UpdateControls();
+		if(up)
+		{
+			Unpress(5);
+			py--;
+			if(py<1)
+				py=2;
+		}
+		if(down)
+		{
+			Unpress(6);
+			py++;
+			if(py>2)
+				py=1;
+		}
+	}
+	freeimage(pointer);
+	return py;
+}

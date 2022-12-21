@@ -73,7 +73,7 @@ void log(const char *text, ...)
 #ifdef VERGE_EMSCRIPTEN_DEBUG     
         console.log(stackTrace());
 #endif
-    }, msg);   
+    }, msg);
 
 #else
 	if (!log_on)

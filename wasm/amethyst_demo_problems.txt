@@ -1,0 +1,10 @@
+- [FIXED: redefinelibfuncs supports this now] min, max used as function arguments (basic.vc:InRange)
+- [WORKAROUND] banner defined twice (in basic.vc, in text.vc) - old vc would ignore
+- [WORKAROUND] datfile local defined twice (in monsters.vc:AddMon) - old vc would ignore
+- [FIXED: added to VC tokenizer] uses =< to mean <= (in magic.vc)
+- [WORKAROUND] l1 local defined twice (in text.vc:TimedText)
+- [WORKAROUND] rfnt.bmp, blufnt.bmp, *fnt.bmp fails to open due to unexpected pixel format. (indexed BMP)
+- intermittent LoadImage corona bombed loading sprites/fullmosiac.png. v3splash320.vpk contains this path -- the splash doesn't play when the playback doesn't crash, so maybe the vpk is failing to mount or be looked up?
+- [FIXED: need to reset music volume when playing a new song] music is silent playback requests are made, can be heard fading from full volume when switching maps at one point
+- [FIXED: was not stopping streamed audio correctly] door knocking looped forever
+- saves don't seem to be kept. the save files must already exist for the game to run, not sure if manifest files have priority over the local save when reloading the page? or are saves simply not persisted?

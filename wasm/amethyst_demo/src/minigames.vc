@@ -1,0 +1,235 @@
+// Amethyst Minigames!
+// Code by Sean "Rysen" Oyler
+
+int MiniGameBg; // Delete
+
+void BattleSpeak(string tex)
+{
+	while(!b1)
+	{
+		Render();
+		DGW(0,0,319,20);
+		PutText(5,7,tex);
+		ShowPage();
+		UpdateControls();
+	}
+	unpress(1);
+}
+
+void MiniGameHorseTrans()
+{
+	int horse, wagon, storex, storey;
+	WhiteOut(100);
+	MiniGameBg = LoadImage("Pics/pan/CloudySky.png");
+	horse = EntitySpawn(71,24,"Sprites/horse.chr");
+	wagon = EntitySpawn(60,23,"Sprites/wagon.chr");
+	SetPlayer(wagon);
+	Cameratracking=1;
+	EntityMove(wagon,"Z0W10Z1W10B");
+	timer = 0;
+	HookTimer("ControlHorseAniSpeed");
+	HookRetrace("MiniGameHorseBackground");
+	WhiteIn(200);
+	storex=xwin; storey=ywin;
+	cameratracking=0;
+	xwin=storex; ywin=storey;
+	BattleSpeak("Charity: The horses broke from their reins!");
+	Wait(200);
+	BattleSpeak("This thing ain't slowing down either.");
+	Wait(200);
+	BattleSpeak("Damn it!");
+	EntityMove(horse,"L6");
+	Wait(90);
+	EntityMove(horse,"Z0W10Z1W10Z2W10Z3W10B");
+	BattleSpeak("???: Hold on!!!!");
+	Wait(200);
+	BattleSpeak("Charity: ....Sean?!!!!");
+	Wait(200);
+	BattleSpeak("Sean..?: Worry about who I am after, look ahead!");
+	Wait(200);
+	BattleSpeak("Charity: ...A cliff!");
+	Wait(200);
+	BattleSpeak("Sean..?: ....");
+	Wait(200);
+	MiniGameHorseExpo();
+	MiniGameHorse(horse);
+	
+	
+}
+
+int MiniCounter=0;
+int TestX = 0;
+int StartX = (0-320);
+int MiniTimer=60;
+int MiniMS=0;
+int MiniGameGO = 0;
+int AniForest = LoadImage("Battle\Bg\aniForest.png");
+int RockEnt;
+
+void ControlHorseAniSpeed()
+{
+	
+	TestX+=5; StartX+=5; 
+	if(MiniGameGo)
+	{
+		MiniMs++;
+		entity.x[rockEnt]+=3;
+	}
+	if(MiniMs==100) { MiniMs==0; MiniTimer--; }
+	if(entity.x[rockEnt]>(70*16)) 
+	{ 
+		entity.x[rockEnt]=Random(40*16,50*16);
+	}
+	
+	if(TestX>320)
+		TestX=(0-300);
+	if(StartX>320)
+		StartX=(0-300);
+}
+
+void MiniGameHorseBackGround()
+{
+	
+	//int t=timer;
+  	//timer=0;
+	Blit(0,(0-100),MiniGameBg,screen);
+	//Blit(TestX,(0-100),BattleBg,screen);
+	TBlit(StartX,0,aniForest,screen);
+	TBlit(TestX,0,aniForest,screen);
+	if(miniGameGo)
+		PutText(5,5,"0:"+str(miniTimer));
+	
+}
+
+void MiniGameHorseExpo()
+{
+	while(!b1)
+	{
+		Render();
+		DGW(0,0,319,100);
+		WrapText(5,5,300,200,"Save Charity!\Repeatedly tap the [ENTER] key to speed your horse up. Avoid obsticales by pressing the [SPACE BAR] to jump.\Be Careful! You have 1 minute until the wagon reaches the cliff!");
+		ShowPage();
+		UpdateControls();
+	}
+	Unpress(1);
+}
+
+int TryAgain()
+{
+	int pointer = LoadImage("pics/pointer.pcx");
+	int py=1;
+	while(!b1)
+	{
+		Render();
+		Rectfill(0,0,320,240,RGB(4,4,4),screen);
+		TBlit((imagewidth(screen)/2)-35,100+(10*py),pointer,screen);
+		PrintCenter(imagewidth(screen)/2,100,screen,fnt,"Try Again?");
+		PrintCenter(imagewidth(screen)/2,110,screen,fnt,"Yes");
+		PrintCenter(imagewidth(screen)/2,120,screen,fnt,"No");
+		ShowPage();
+		UpdateControls();
+		if(up)
+		{
+			Unpress(5);
+			py--;
+			if(py<1)
+				py=2;
+		}
+		if(down)
+		{
+			Unpress(6);
+			py++;
+			if(py>2)
+				py=1;
+		}
+	}
+	freeimage(pointer);
+	return py;
+}
+		
+		
+
+void MiniGameHorse(int ent)
+{
+	int done, win, decision, sound;
+	sound = LoadSound("Sounds/crash.wav");
+	MiniGameGo=1;
+	RockEnt = EntitySpawn(40,27,"Sprites/rock.chr");
+	while(!done)
+	{
+		Render();
+		if(InRange(entity.x[rockent],entity.x[ent],entity.x[ent]+5) && entity.y[ent]==384)
+		{
+			Entity.x[rockent]==70;
+			entity.x[ent]+=20;
+			
+		}
+		ShowPage();
+		UpdateControls();
+		if(b1)
+		{
+			Unpress(1);
+			entity.x[ent]--;
+		}
+		if(b4)
+		{
+			Unpress(4);
+			EntityMove(ent,"Z3");
+			Entity.y[ent]-=10;
+			Wait(50);
+			Entity.y[ent]+=10;
+			EntityMove(ent,"Z0W10Z1W10Z2W10Z3W10B");
+		}
+		if(miniTimer<=0)
+		{
+			miniTimer=0;
+			win=0;
+			done++;
+		}
+		if(entity.x[ent]<=940)
+		{
+			Unpress(1);
+			win++;
+			done++;
+			entity.visible[rockent]=0;
+		}
+	}
+	if(win)
+	{
+		Wait(100);
+		miniGameGo=0;
+		BattleSpeak("Sean: Okay, jump!");
+		Wait(100);
+		BattleSpeak("Charity: Easy for you to say...");
+		Wait(100);
+		BattleSpeak("Sean: Hurry!");
+		Wait(200);
+		BattleSpeak("Charity: Here goes nothing...");
+		WhiteOut(200);
+		PlaySound(sound,100);
+		ColourWait(200,RGB(255,255,255));
+		MusicFade(100);
+		map("open.map");
+	}
+	else
+	{
+		entity.visible[rockent]=0;
+		FadeOut(200);
+		decision = TryAgain();
+		if(decision==1)
+		{
+			//MiniGameHorseTrans();
+			miniTimer = 60;
+			Warp(65,24,ent);
+			MiniGameHorse(ent);
+		
+		}
+		else
+		{
+			MiniGameGo=0;
+			HookRetrace("");
+			ResetGame();
+			StartUp();
+		}
+	}
+}

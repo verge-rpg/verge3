@@ -1,0 +1,267 @@
+void start()
+{
+	PlayMusic("Music/intense.it"); // REmove
+	player = EntitySpawn(45,39,"Sprites/seanUni.chr");
+	charent = EntitySpawn(45,40,"Sprites/charUni.chr");
+	gregent = EntitySpawn(6,7,"Sprites/greguni.chr");
+	SetPlayer(player);
+	EntityMove(player,"F3");
+	EntityMove(charent,"F3");
+	cameratracking=0;
+	xwin = 50*16; ywin=24*16;
+	//PlayerMove("F3");
+	FadeIn(100);
+	camReturnToPlayerS(player, 100);
+	Text(0,"Charity:\Oh, Sean...");
+	Text(0,"This is horrible!");
+	Text(0,"How did the Argonians get past the Castle Guard?");
+	Text(0,"Sean:\....");
+	Text(0,"We've gotta find Ami.");
+	EntityMove(charent,"L1U1F3");
+	Wait(20);
+	entity.obstructable[charent]=1;
+	EntityStalk(charent,player);
+	AddCHR(CHARITY);
+}
+
+void Warp1()
+{
+	fadeOut(50);
+	Warp(26,30,player);
+	FadeIn(50);
+}
+
+void Warp2()
+{
+	FadeOut(50);
+	Warp(6,12,player);
+	FadeIn(50);
+	if(!IsInParty(GREG))
+	{
+		Text(1,"Greg:\There you guys are!");
+		PlayerMove("U5");
+		Text(0,"Sean:\Greg, have you seen Ami?");
+		Text(1,"Greg:\No....");
+		Text(0,"Charity:\Sean, I'm sure she made it to a shelter.");
+		Text(0,"Sean:\I hope so...");
+		Text(0,"C'mon, let's go see if she did.");
+		EntityStalk(gregent,charent);
+		AddChr(GREG);
+	}
+}
+
+void Warp3()
+{
+	FadeOut(50);
+	Warp(10,30,player);
+	FadeIn(50);
+}
+
+void Warp4()
+{
+	FadeOut(50);
+	Warp(37,15,player);
+	FadeIn(50);
+}
+
+void Warp5()
+{
+	FadeOut(50);
+	if(!IsInParty(GREG))
+		Warp(64,26,player);
+	else
+	{
+		MusicFade(100);
+		EntityStalk(gregent,0-1);
+		EntityStalk(charent,0-1);
+		Warp(63,27,player);
+		warp(64,27,charent);
+		Warp(64,26,gregent);
+		amient = EntitySpawn(54,27,"sprites/ami.chr");
+		EntityMove(amient,"F2");
+		entity.speed[player]=150;
+	}
+	FadeIn(50);
+	if(IsInParty(GREG))
+	{
+		Text(0,"Sean:\Ami!");
+		EntityMove(amient,"F3");
+		Text(0,"Ami:\Sean! You're alright!");
+		Text(0,"Sean:\Yeah! Now c'mon let's get to the shelter.");
+		EntityMove(amient,"R3");
+		Wait(50);
+		Quake(10,10,50);
+		SetTile(57,25,0,163);
+		SetTile(57,26,0,163);
+		SetTile(57,27,0,163);
+		SetTile(57,28,0,163);
+		
+		SetTile(56,25,0,590);
+		SetTile(56,26,0,590);
+		SetTile(56,27,0,590);
+		SetTile(56,28,0,590);
+		
+		SetTile(58,25,0,589);
+		SetTile(58,26,0,589);
+		SetTile(58,27,0,589);
+		SetTile(58,28,0,589);
+		EntityMove(amient,"Z12D3");
+		EntityMove(player,"L5");
+		TimedText(0,100,"Sean:\Ami!!!!!!!!!!");
+		PlayMusic("Music/doa.ogg");
+		EntityMove(charent,"F1");
+		Wait(100);
+		Text(0,"Charity:\Oh no....");
+		Text(0,"Sean:\Ami, no you can't go. You can't!!!!");
+		Quake(10,10,50);
+		EntityMove(gregent,"L1D1L3");
+		Text(0,"Greg:\Sean the building's collapsing.\ We have to go!");
+		EntityMove(player,"Z15R1");
+		Text(0,"Sean:\But Ami...she's...");
+		Text(0,"Greg:\There's nothing you can do!");
+		EntityMove(charent,"L3");
+		Text(0,"Charity:\Sean...please!");
+		Text(0,"I can't lose you too!");
+		Text(0,"Sean:\But...my ...sister....");
+		EntityMove(gregent,"U1L2D1R1W50R1W50R1W50Z6D1");
+		EntityMove(charent,"U1F0W300D1L2");
+		entity.speed[player]=100;
+		EntityMove(player,"W80R1W50R1W50R1W20Z0L4W50Z20");
+		TimedText(0,200,"Ami!!!!!!!!!!!!!!!");
+		globalflag=0;
+		bossflag=0;
+		FadeOut(500);
+		MusicFade(500);
+		ColourWait(100,RGB(4,4,4));
+	 	map("dungeon.map");
+		
+		
+		
+		
+		
+	}
+}
+
+void Warp6()
+{
+	FadeOut(50);
+	Warp(7,31,player);
+	FadeIn(50);
+	if(!globalflag)
+	{
+		camZoomToEntity(14, 100);
+		Text(0,"Dean:\Hey Tin Head!");
+		EntityMove(16,"F2");
+		Text(0,"Argonian Soldier:\Who are you calling Tin Head you little brat?");
+		Text(0,"Seamus:\You Tin Head!");
+		Text(0,"Dean:\Yeah! Why don't you pick on some your own size?!");
+		TimedText(0,100,"Argonian Soldier:\Why you little!");
+		TimedText(0,100,"Seamus And Dean:\Girls! Run!");
+		EntityMove(17,"U1L7D1F3");
+		EntityMove(18,"D1L7U1F3");
+		Wait(100);
+		TimedText(0,50,"Dean:\Now!");
+		RedOut(50);
+		EntityMove(16,"Z16R1");
+		SetTile(27, 30, 2, 313);
+		SetTile(27, 31, 2, 313);
+		SetTile(27, 32, 2, 313);
+		SetTile(27, 33, 2, 313);
+		SetObs(27,30,1);
+		SetObs(27,31,1);
+		SetObs(27,32,1);
+		SetObs(27,33,2);
+		Wait(50);
+		Text(0,"Seamus:\haha! That'll teach ya!");
+		camReturnToPlayer(player, 50);
+		PlayerMove("R12");
+		Text(0,"Sean:\Seamus! Dean!");
+		EntityMove(14,"F2");
+		EntityMove(15,"F2");
+		EntityMove(17,"F2");
+		EntityMove(18,"F2");
+		Text(0,"Seamus:\Sean! Charity!");
+		Text(0,"Dean:\Greg just went into your dorm looking for you.");
+		Text(0,"Charity:\Have you guys seen Ami?");
+		Text(0,"Seamus:\Nope.");
+		Text(0,"Female Student A:\I think I saw her heading towards the shelter.");
+		Text(0,"Sean:\Great. Thanks.");
+		Text(0,"You guys get out of here.");
+		Text(0,"Seamus:\My thoughts exactly.");
+		Text(0,"Dean:\Later!");
+		EntityMove(17,"W10D2L20");
+		EntityMove(18,"D1L20");
+		EntityMove(14,"W10D2L20");
+		EntityMove(15,"D1L20");
+		Wait(200);
+		Entity.visible[17]=0;
+		Entity.visible[18]=0;
+		entity.visible[14]=0;
+		entity.visible[15]=0;
+		globalflag++;
+		
+	}
+}
+
+void Warp7()
+{
+	FadeOut(50);
+	Warp(63,12,player);
+	FadeIn(50);
+}
+
+void Warp8()
+{
+	FadeOut(50);
+	Warp(78,42,player);
+	FadeIn(50);
+}
+
+void GirlsDorm()
+{
+	Text(0,"Charity:\I'm sure Ami made it out of the girls dorm.");
+	Text(0,"Didn't she say she was meeting someone for lunch?");
+}
+
+void DeadSoldier()
+{
+	Text(0,"Sean:\He's not breathing.");
+}
+
+void NoNeed()
+{
+	Text(0,"Charity:\Sean, we should check the upstairs first.");
+	PlayerMove("U1");
+}
+
+void Chest1()
+{
+	if(!chests[1])
+	{
+		Banner("Received a Potion!");
+		GiveItem(POTION,1);
+		SetTile(2,6,1,509);
+		chests[1]++;
+	}
+	else
+	{
+		Banner("Empty");
+		SetTile(2,6,1,509);
+	}
+}
+
+void Chest2()
+{
+	if(!chests[2])
+	{
+		Banner("Received a Potion!");
+		GiveItem(POTION,1);
+		SetTile(2,8,1,509);
+		chests[2]++;
+	}
+	else
+	{
+		Banner("Empty");
+		SetTile(2,8,1,509);
+	}
+}

@@ -1,0 +1,6 @@
+Name       Exp         HP      MP      Lvl   Str   Def   Mag   Mgr   Spd   Spr   Dod  Ap  Itm   Itm2   Els   Elw   Com   Com2   Com3   GP   
+Bat        63          68      178     1     8     10    8     10    5     10    2    2   1     15     0     1     1     1      1      90
+Soldier    91          33      173     1     7     10    8     10    5     10    2    2   1     15     0     1     1     1      1      1   
+Serpent    34          74      186     2     8     10    8     8     5     10    2    1   7     0      2     1     1     1      1      118
+Bruiser    0           513     1000    2     9     10    8     8     10    10    2    5   0     0      0     1     1     2      1      399      	
+       

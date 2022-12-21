@@ -1,0 +1,59 @@
+/* All Credit Roll Related Functions */
+
+string credlines[1000];
+
+void CreditRoll()
+{
+	int t, oldtime, a;
+	oldtime=timer;
+	while(!b1 && t<1900)
+	{
+		Render();
+		t = ((timer-oldtime)*100)/500;
+		rectfill(0,0,320,240,RGB(4,4,4),screen);
+		for(a=0; a<=95; a++)
+			PrintCenter(ImageWidth(screen)/2, (240+(15*a))-(t), screen, credfnt, credlines[a]);
+			
+		showPage();
+		UpdateControls();
+	}
+	TBC();
+}
+
+void loadCredits()
+{
+	int datfile, pos;
+	string tempstring;
+	datfile = FileOpen("credits.txt",1);
+	for(pos=0; pos<=104; pos++)
+	{
+		FileSeekLine(datfile,pos);
+		tempstring = fileReadLn(datfile);
+		credlines[pos] = tempstring;
+	}
+	fileClose(datfile);
+}
+	
+void TBC()
+{
+	int t, oldtime;
+	int image = LoadImage("Pics/tbc.png");
+	FadeInImg(500,image);
+	oldtime=timer;
+	while(!b1 && t<500)
+	{
+		Render();
+		t = ((timer-oldtime)*100)/500;
+		Blit(0,0,image,screen);
+		ShowPage();
+		UpdateControls();
+	}
+	MusicFade(500);
+	FadeOutImg(500);
+	Ending();
+	SaveGame();
+	FadeOutImg(100);
+	freeImage(image);
+	PlayMusic("Music/title.it");
+	StartUp();
+}

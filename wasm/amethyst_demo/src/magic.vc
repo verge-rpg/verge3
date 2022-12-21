@@ -1,0 +1,634 @@
+// Amethyst Magic System
+// Code by Sean "Rysen" Oyler
+
+string SpellName[18][18];
+string SpellDesc[18][18];
+int SpellCost[18][18];
+int MpCost[18][18];
+int TotalAp[18][18];
+int HasBeenLearned[18][18];
+int SpellTar[18][18];
+int SpellType[18][18];
+
+void LoadMagic(int par)
+{
+	int datfile, itemtotal, pos, ptmp;
+	string tempstring;
+	switch(par)
+	{
+		case SEAN:
+		datfile = FileOpen("Dats/seanAbilities.dat",1);
+		case CHARITY:
+		datfile = FileOpen("Dats/charAbilities.dat",1);
+		case NICOLE:
+		datfile = FileOpen("Dats/nicoleAbilities.dat",1);
+		case SARA:
+		datfile = FileOpen("Dats/nicoleAbilities.dat",1);
+	}
+	for(pos=1; pos<=16; pos++)
+	{
+		FileSeekLine(datfile,pos);
+		tempstring = FileReadLn(datfile);	
+		SpellName[par][pos] = Left(tempstring,15); ptmp=0;
+		while(!ptmp)
+		{
+			if(!strcmp(right(SpellName[par][pos],1)," "))
+				SpellName[par][pos] = left(SpellName[par][pos],len(SpellName[par][pos])-1);
+			else
+				ptmp++;
+		}
+		SpellDesc[par][pos] = mid(tempstring,15,68); ptmp=0;
+		if(!ptmp)
+		{
+			if(!strcmp(right(SpellDesc[par][pos],1)," "))
+				SpellDesc[par][pos] = left(SpellDesc[par][pos],len(SpellDesc[par][pos])-1);
+			else
+				ptmp++;
+		}
+		SpellCost[par][pos] = val(mid(tempstring,83,6));
+		MpCost[par][pos] = val(mid(tempstring,95,6));
+		SpellTar[par][pos] = val(mid(tempstring,105,3));
+		SpellType[par][pos] = val(mid(tempstring,110,3));
+	}
+	FileClose(datfile);
+}
+
+void MagicMenu(int par)
+{
+	int done, a, py, py2, itp, magicUse;
+	int pointer = LoadImage("Pics/pointer.pcx");
+	int pointer2 = LoadIMage("pics/p2.pcx");
+	py=1; py2=1;
+	while(!done)
+	{
+		Render();
+		MenuBg();
+		DGW(160,50,319,239);
+		DGW(0,200,320,240);
+		if(!magicUse)
+			TBlit(145,65+(10*py),pointer,screen);
+		else
+			TBlit(140,0-30+(50*py2),pointer2,screen);
+		PutText(170,55,party[par].skill2+"   "+party[par].name);
+		PutText(275,65,"MP");
+		for(a=1; a<10; a++)
+		{
+			if(totalAp[par][a]==SpellCost[par][a] || party[par].learning==(a))
+			{
+				PutText(170,65+(a*10),SpellName[par][a]);
+				PutText(275,65+(a*10),str(MPCost[par][a]));
+			}
+		}
+		if(totalAp[par][py]==SpellCost[par][py] || party[par].learning==(py))
+			WrapText(5,205,320,230,SpellDesc[par][py]);
+			
+		ShowPage();
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(menusounds.pnt,100);
+			if(!MagicUse)
+			{
+				py--;
+				if(py<1)
+					py = 10;
+			}
+			Else
+			{
+				py2--;
+				if(py2<1)
+					py2=numchars;
+			}
+		}
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(menusounds.pnt,100);
+			if(!magicUse)
+			{
+				py++;
+				if(py>10)
+					py=1;
+			}
+			else
+			{
+				py2++;
+				if(py2>numchars)
+					py2=1;
+			}
+		}
+					
+		if(b1)
+		{
+			Unpress(1);
+			if(!magicUse)
+			{
+				PlaySound(menusounds.select,100);
+				if(SpellTar[par][py]==1)
+					MagicUse++;
+			}
+			else if(MagicUse)
+			{
+				Unpress(1);
+				if(party[par].CurMp>=MPCost[par][py])
+				{
+					UseMenuMagic(partyindex[py2],par,py);
+				}
+				else
+				{
+					PlaySound(menusounds.buzz,100);
+					MagicUse--;
+				}
+			}
+		}
+		if(b2)
+		{
+			unpress(2);
+			PlaySound(menusounds.cancel,100);
+			done++;
+		}
+	}
+	freeImage(pointer);
+	Menu();
+}
+
+void UseMenuMagic(int tar, int par, int mag)
+{
+	switch(mag)
+	{
+		case 1: // Cure
+		if(party[tar].CurHp>0 && party[tar].CurHp<party[tar].MaxHp)
+		{
+			PlaySound(menusounds.cure,100);
+			party[tar].CurHp+=(100)+party[par].mag*10;
+			party[par].CurMp-=6;
+			CheckHPMP(tar);
+		}
+		else
+			PlaySound(menusounds.buzz,100);
+		case 2: // Life
+		if(party[tar].CurHp==0)
+		{
+			PlaySound(menusounds.cure,100);
+			party[tar].CurHp+=party[par].mag*5;
+			party[par].CurMp-=8;
+			party[tar].status = "";
+		}
+		else
+			PlaySound(menusounds.buzz,100);
+	}
+}
+			
+
+void LearnMenu(int par)
+{
+	int done, a, py, itp;
+	int pointer = loadimage("Pics/pointer.pcx");
+	py = 1;
+	CheckAp(par);
+	while(!done)
+	{
+		Render();
+		MenuBg();
+		DGW(160,50,319,239);
+		DGW(0,200,320,240);
+		TBlit(145,65+(10*py),pointer,screen);
+		PutText(170,55,"Learn Lvl."+str(party[par].magiclvl)+"   "+party[par].name);
+		PutText(255,65,"AP Cost");
+		
+		for(a=1; a<=(4*party[par].magiclvl); a++)
+		{
+			if(SpellCost[par][a])
+			{
+				if(party[par].learning==a)
+				{
+					PrintString(170,65+(a*10),screen,rfnt,Spellname[par][a]);
+					PrintString(275,65+(a*10),screen,rfnt,str(totalAp[par][a])+"/"+str(SpellCost[par][a]));
+				}
+				Else
+				{
+					PutText(170,65+(a*10),SpellName[par][a]);
+					PutText(275,65+(a*10),str(totalAp[par][a])+"/"+str(SpellCost[par][a]));
+				}
+			}
+		}
+		
+		WrapText(5,205,320,230,SpellDesc[par][py]);
+		ShowPage();
+		UpdateControls();
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(menusounds.pnt,100);
+			py--;
+			if(py<1)
+				py = (party[par].magiclvl*4);
+		}
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(menusounds.pnt,100);
+			py++;
+			if(py>(party[par].magiclvl*4))
+				py=1;
+		}
+				
+		if(b1)
+		{
+			Unpress(1);
+			PlaySound(menusounds.select,100);
+			party[par].learning=py;
+		}
+		if(b2)
+		{
+			unpress(2);
+			PlaySound(menusounds.cancel,100);
+			done++;
+		}
+	}
+	freeImage(pointer);
+	Menu();
+}
+
+void BatMagicMenu(int par)
+{
+	int a, done, pointer, py, itp;
+	bat2.inMenu++;
+	pointer = LoadImage("pics/pointer.pcx");
+	py=1;
+	while(!done)
+	{
+		Render();
+		DrawBSMain();
+		DGW(175,170,319,239);
+		PutText(235,175,"MP: "+str(party[par].CurMp)+"/"+str(party[par].MaxMp));
+		for(a=1; a<=5; a++)
+		{
+			if(totalAp[par][a]==SpellCost[par][a+itp] || party[par].learning==(a+itp))
+			{
+				PutText(180,175+(10*a),SpellName[par][a+itp]);
+				PutText(285,175+(10*a),str(MpCost[par][a+itp]));
+			}
+		}
+		TBlit(155,175+(10*py),pointer,screen);
+		ShowPage();
+		UpdateControls();
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(bat2.pntsound,100);
+			py++;
+		}
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(bat2.pntsound,100);
+			py--;
+		}
+		
+		if(py>5)
+		{
+			py=5;
+			itp++;
+		}
+		if(py<1)
+		{
+			py=1; 
+			itp--;
+			if(itp<0)
+				itp=0;
+		}
+		if(b2)
+		{
+			Unpress(2);
+			PlaySound(bat2.cancel,100);
+			bat2.inMenu=0;
+			done++;
+		}
+		if(b1)
+		{
+			Unpress(1);
+			if(totalAp[par][py+itp]==SpellCost[par][py+itp] || party[par].learning==(py+itp))
+			{
+				if(party[par].CurMp>=MPCost[par][py+itp])
+				{
+					PlaySound(bat2.select,100);
+					if(!spellTar[par][py+itp])
+						ChooseMon(0,3,par,py+itp);
+					else
+						ChooseMon(1,3,par,py+itp);
+					done++;
+				}
+			}
+		}
+	}
+	freeImage(pointer);
+}
+
+void AnimateMagic(int x, int y, int height, int numframes, int dur, string filename)
+{
+	int t, oldtime, img;
+	img = LoadImage("Battle\Magic\"+filename);
+	oldtime = timer;
+	while(t<=numframes)
+	{
+		t=((timer-oldtime)*100)/dur;
+		bat2.bWait=1;
+		Render();
+		DrawBSMain();
+		TGrabRegion(0,0+(height*t),ImageWidth(img),(height-1)+(t*height),x,y,img,screen);
+		ShowPage();
+	}
+	freeImage(img);
+}
+
+void PreBSpell(string spname)
+{
+	int oldtime, t;
+	oldtime = timer;
+	bat2.bWait=1;
+	while(t<100)
+	{
+		t = timer-oldtime;
+		Render();
+		DGW(0,0,319,20);
+		DrawBSMain();
+		PrintCenter(ImageWidth(screen)/2,7,screen,fnt,spname);
+		ShowPage();
+	}
+}
+
+void UseBMagic(int par,int tar, int mag)
+{
+	int dmg, defence, strength, oldtime, t;
+	if(par==SEAN || par== AARON)
+	{
+		switch(mag)
+		{
+			case 1: // Magic Break
+			bat2.sound = LoadSound("Sounds/shatter.wav");
+			EntityMove(bat[bat2.turn].ent,"W50Z20W10Z21W10Z22W100Z15");
+			PreBSpell("Magic Break");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[mon[tar].ent],entity.y[mon[tar].ent],40,6,800,"magicbreak.pcx");
+			BouncyNumber(mon[tar].ent,Brfnt,"Mag Down",100);
+			mon[tar].mag= (mon[tar].mag*10)/50;
+			party[par].CurMp-=8;
+			
+			case 2: // Darkside
+			bat2.sound = LoadSound("Sounds/darkside.wav");
+			dmg = party[par].mag*100;
+			EntityMove(bat[bat2.turn].ent,"W50Z20W10Z21W10Z22W100Z15");
+			PreBSpell("Darkside");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[mon[tar].ent],entity.y[mon[tar].ent],44,7,800,"darkside.pcx");
+			BouncyNumber(mon[tar].ent,Brfnt,str(dmg),100);
+			BouncyNumber(bat[bat2.turn].ent,Brfnt,str(dmg),100);
+			party[partyindex[bat2.turn]].curHp-=dmg;
+			if(party[partyindex[bat2.turn]].CurHp=<0)
+			{
+				party[partyindex[bat2.turn]].CurHp=0;
+				EntityMove(bat[bat2.turn].ent,"Z23");
+				bat2.livemembers--;
+				if(bat2.livemembers<=0)
+					GameOver();
+								
+			}
+			mon[tar].CurHp-=dmg;
+			if(mon[tar].CurHp<=0)
+				KillMon(tar);
+				
+			case 3: // Armor Break
+			bat2.sound = LoadSound("Sounds/shatter.wav");
+			EntityMove(bat[bat2.turn].ent,"W50Z20W10Z21W10Z22W100Z15");
+			PreBSpell("Armor Break");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[mon[tar].ent],entity.y[mon[tar].ent],40,6,800,"armorbreak.pcx");
+			BouncyNumber(mon[tar].ent,Brfnt,"Def Down",100);
+			mon[tar].def= (mon[tar].mag*10)/50;
+			Log("Mon defense is now "+str(mon[tar].def));
+			party[par].CurMp-=4;
+			
+			case 4: // Thunder Slash
+			bat2.sound = LoadSound("Sounds/bolt.wav");
+			dmg = party[par].mag*100;
+			EntityMove(bat[bat2.turn].ent,"W50Z20W10Z21W10Z22W100Z15");
+			PreBSpell("Thunder Slash");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[mon[tar].ent]+20,entity.y[mon[tar].ent],25,10,600,"thunderslash.pcx");
+			BouncyNumber(mon[tar].ent,Brfnt,str(dmg),100);
+			mon[tar].CurHp-=dmg;
+			if(mon[tar].CurHp<=0)
+				KillMon(tar);
+				
+			party[par].CurMp-=24;
+			
+		}
+	}
+	
+	if(par==NICOLE || par==SARA)
+	{
+		switch(mag)
+		{
+			case 1: // Cure
+			strength =2*party[par].mag;
+			dmg = 100+(strength-party[partyindex[tar]].mgr);
+			dmg+=random(1,10);
+			bat2.sound = LoadSound("Sounds/curem.wav");
+			EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+			PreBSpell("Cure");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[bat[tar].ent]-10,entity.y[bat[tar].ent]-10,40,10,800,"cure.pcx");
+			BouncyNumber(bat[tar].ent,Bgfnt,str(dmg),100);
+			party[partyindex[tar]].curHp+=dmg;
+			party[par].CurMp-=6;
+			CheckHPMP(partyindex[tar]);
+		
+			case 2: // Life
+			bat2.sound = LoadSound("sounds/revive.wav");
+			dmg = party[par].mag*5;
+			EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+			PreBSpell("Life");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[bat[tar].ent]-10,entity.y[bat[tar].ent]-10,54,10,800,"life.pcx");
+			if(party[partyindex[tar]].curHp==0)
+			{
+				party[partyindex[tar]].CurHp+=dmg;
+				party[partyindex[tar]].status = "";
+				EntityMove(bat[tar].ent,"Z15");
+				BouncyNumber(bat[tar].ent,Bgfnt,str(dmg),100);
+			}
+			else
+				BouncyNumber(bat[tar].ent,fnt,"MISS!",100);
+			
+			party[par].CurMp-=8;
+			
+			case 4: // Scan
+			bat2.sound = LoadSound("sounds/scan.wav");
+			EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+			PreBSpell("Scan");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[mon[tar].ent],entity.y[mon[tar].ent],30,6,800,"scan.pcx");
+			while(!b1)
+			{
+				Render();
+				DGW(0,0,319,20);
+				DrawBSMain();
+				PrintCenter(ImageWidth(screen)/2,7,screen,fnt,mon[tar].name+"  Lvl:"+str(mon[tar].lvl));
+				ShowPage();
+			}
+			Unpress(1);
+			while(!b1)
+			{
+				Render();
+				DGW(0,0,319,20);
+				DrawBSMain();
+				PrintCenter(ImageWidth(screen)/2,7,screen,fnt,"HP: "+str(mon[tar].CurHp)+"/"+str(mon[tar].MaxHp)+" MP: "+str(mon[tar].CurMp)+"/"+str(mon[tar].MaxMP));
+				ShowPage();
+			}
+			Unpress(1);
+			if(mon[tar].els)
+			{
+				while(!b1)
+				{
+					Render();
+					DGW(0,0,319,20);
+					DrawBSMain();
+					PrintCenter(ImageWidth(screen)/2,7,screen,fnt,"Strong Against "+Elements[mon[tar].els]);
+					ShowPage();
+				}
+				Unpress(1);
+			}
+			
+			if(mon[tar].elw)
+			{
+				while(!b1)
+				{
+					Render();
+					DGW(0,0,319,20);
+					DrawBSMain();
+					PrintCenter(ImageWidth(screen)/2,7,screen,fnt,"Weak Against "+Elements[mon[tar].elw]);
+					ShowPage();
+				}
+				Unpress(1);
+			}
+
+			
+			party[par].CurMp-=4;
+			
+		
+		}
+	}
+	else if(par == CHARITY)
+	{
+		switch(mag)
+		{
+			
+			case 1: // Fire
+			strength =3*party[par].mag;
+			dmg = strength-mon[tar].mgr;
+			dmg+=random(1,10);
+			if(mon[tar].elw==1)
+				dmg = dmg*2;
+			bat2.sound = LoadSound("Sounds/fire.wav");
+			EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+			PreBSpell("Fire");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[mon[tar].ent],entity.y[mon[tar].ent],50,17,500,"fire.pcx");
+			BouncyNumber(mon[tar].ent,Brfnt,str(dmg),100);
+			mon[tar].CurHp-=dmg;
+			party[par].CurMp-=6;
+			if(mon[tar].CurHp<=0)
+				KillMon(tar);
+			
+			
+			case 2: // Thunder
+			strength =3*party[par].mag;
+			dmg = strength-mon[tar].mgr;
+			dmg+=random(1,10);
+			if(mon[tar].elw==3)
+				dmg = dmg*2;
+			bat2.sound = LoadSound("Sounds/bolt.wav");
+			EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+			PreBSpell("Thunder");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[mon[tar].ent]+20,entity.y[mon[tar].ent]-90,100,10,500,"thunder.pcx");
+			BouncyNumber(mon[tar].ent,Brfnt,str(dmg),100);
+			mon[tar].CurHp-=dmg;
+			if(mon[tar].CurHp<=0)
+				KillMon(tar);
+				
+			party[par].CurMp-=6;
+			
+			case 3: // Blizzard
+			strength =3*party[par].mag;
+			dmg = strength-mon[tar].mgr;
+			dmg+=random(1,10);
+			if(mon[tar].elw==2)
+				dmg = dmg*2;
+			bat2.sound = LoadSound("Sounds/ice.wav");
+			EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+			PreBSpell("Blizzard");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[mon[tar].ent],entity.y[mon[tar].ent]-30,50,10,500,"blizzard.pcx");
+			BouncyNumber(mon[tar].ent,Brfnt,str(dmg),100);
+			mon[tar].CurHp-=dmg;
+			if(mon[tar].CurHp<=0)
+				KillMon(tar);
+			party[par].CurMp-=6;
+
+			case 4: // Poison
+			strength = party[par].mag*10;
+			defence = mon[tar].mgr;
+			dmg = strength-defence;
+			bat2.sound = LoadSound("Sounds/poison.wav");
+			EntityMove(bat[bat2.turn].ent,"Z0L2Z15W100R2Z15");
+			PreBSpell("Poison");
+			PlaySound(bat2.sound,100);
+			AnimateMagic(entity.x[mon[tar].ent],entity.y[mon[tar].ent]-30,50,10,500,"poison.pcx");
+			BouncyNumber(mon[tar].ent,Brfnt,str(dmg),100);
+			mon[tar].CurHp-=dmg;
+			if(mon[tar].CurHp<=0)
+				KillMon(tar);
+			party[par].CurMp-=8;
+			//Status Effects
+		}
+	}
+	freeSound(bat2.sound);
+	bat[bat2.turn].batTime=0;
+	bat2.inMenu=0;
+	bmain=0;
+	bat2.bWait=0;
+	bat2.turn=0;
+	if(bat2.numMons2<=0)
+		Victory();
+}
+
+void CheckAP(int par)
+{
+  	int a;
+  	for(a=0; a<18; a++)
+  	{
+  		if(TotalAp[par][a]>SpellCost[par][a])
+  			TotalAp[par][a]==SpellCost[par][a];
+  	}
+}
+
+int FindNewSpell(int par)
+{
+	int a, done;
+	a=1;
+	while(!done)
+	{
+		if(TotalAP[par][a]==SpellCost[par][a])
+		{
+			return 0;
+			a++;
+		}
+		else
+		{
+			done++;
+			return a;
+		}
+	}
+}

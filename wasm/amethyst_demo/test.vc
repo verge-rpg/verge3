@@ -1,0 +1,45 @@
+void Start()
+{
+ int e, s, n, g, bl,bl2;
+ int test, t;
+ batArea = 2;
+ batTerrain = DUNGEON;
+ player = EntitySpawn(5,5,"Sprites/sean.chr");
+ currentmap = "test.map";
+ //bl = EntitySpawn(17,5,"sprites/blank.chr");
+ //bl2 = EntitySpawn(16,5,"sprites/blank.chr");
+ setPlayer(player);
+ ADDCHR(SEAN);
+ ADDCHR(CHARITY);
+ ADDCHR(NICOLE);
+ //entityStalk(n,e);
+ 
+ Hooktimer("clock");
+ AddMon(1,1);
+ HookKey(1,"menu");
+ V3Console__Init();
+ //EntityMove(n,"R5");
+ //Wait(200);
+ ForceEquip(SEAN,1,80);
+ //ForceEquip(SEAN,2,47);
+ //ForceEquip(SEAN,3,75);
+ GiveStatus(CHARITY,DARKNESS);
+ GiveItem(EYE_DROPS,1);
+ GiveItem(ETHER,1);
+ GiveItem(PHOENIX_DOWN,1);
+} 
+
+void TalkToGreg()
+{
+ Banner("You got a potion!");
+ }
+ 
+ void Bleh()
+ {
+ 	
+ 	StartBs(2);
+ 	//RemoveChr(SEAN);
+ 	//MiniGameHorseTrans();
+ 	//AnimateMagic(entity.x[player]-20, entity.y[player]-10, 37, 10,500, "potion.pcx");
+
+ }

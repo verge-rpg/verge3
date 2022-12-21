@@ -1,0 +1,459 @@
+void start()
+{
+	int knock, door;
+	Hooktimer("clock");
+	amient = EntitySpawn(12,67,"Sprites/ami.chr");
+	charent = EntitySpawn(11,67,"Sprites/Charuni.chr");
+	location = "Redalia Academy";
+	currentmap = "inshawnigan.map";
+	SetParPicBatEnt(1);
+	EntityMove(charent,"F1");
+	EntityMove(amient,"F1");
+	cameratracking=1;
+	if(!flags[4])
+	{
+		player = EntitySpawn(6,6,"sprites/SeanUni.chr");
+		knock = LoadSound("sounds\knock.ogg");
+		door = LoadSound("sounds\door.ogg");
+		RemoveCHR(CHARITY);
+		RemoveChr(AARON);
+		SetPlayer(player);
+		EntityMove(player,"F1");
+		FadeIn(100);
+		Wait(100);
+		PlaySound(knock,100);
+		Wait(20);
+		PlaySound(knock,100);
+		Wait(20);
+		PlaySound(knock,100);
+		PlayerMove("D1");
+		Wait(50);
+		Text(1,"Sean:\Who is it?");
+		Text(0,"???:\It's me, now please open the door.");
+		Text(1,"Sean:\Use your key.");
+		Text(0,"???:\It would appear I have misplaced it.");
+		Text(1,"Sean:\Greg, that's the fourth time this week.");
+		Text(0,"Greg:\Well I have other things to worry about!");
+		Text(0,"Now open the door!");
+		Text(1,"Sean:\Nah, I think you can ponder on it some more.");
+		PlayerMove("U1");
+		PlayMusic("sounds/knock.ogg");
+		Wait(200);
+		Text(1,"Sean:\Alright, alright!");
+		PlayerMove("D8");
+		StopMusic();
+		PlaySound(door,100);
+		PlayerMove("U1F0");
+		gregent = EntitySpawn(6,15,"sprites/greguni.chr");
+		EntityMove(gregent,"U1L1U1F3");
+		wait(60);
+		PlayerMove("F2");
+		Text(0,"Sean:\Geesh.");
+		Text(0,"Greg:\Thank you.");
+		Text(0,"You know you really shouldn't be messing around today.");
+		Text(0,"We DO have our finals in case you've forgotton.");
+		Text(0,"Sean:\I haven't forgotton.");
+		//PlayerMove("F2W100F0W50Z21W50Z0W100F2");
+		Text(0,"But you're just as bad as Charity.");
+		Text(0,"This year doesn't matter. It's the Elite Trials next year that we should be worried about.");
+		Text(0,"Greg:\Maybe to become a fighter, but I am to become a chemist! It takes far more skill and concentration.");
+		Text(0,"Sean:\I'll take my sword skills over your chemistry any day.");
+		Text(0,"Greg:\Well...");
+		Text(0,"It's a different area of expertise but still just as valuable to an Elite.");
+		Text(0,"Sean:\Yeah, yeah.");
+		Text(0,"So where is Charity anyway?");
+		Text(0,"Greg:\Studying in the library.");
+		Text(0,"She asked us to go meet her there to review some of the general stuff together.");
+		Text(0,"Sean:\Alright, let's go find her then.");
+		PlayMusic("Music/red.it");
+		EntityMove(gregent,"D1R1F0");
+		Wait(50);
+		EntityStalk(gregent,player);
+		AddChr(SEAN);
+		AddCHR(GREG);
+		Flags[4]++;
+	}
+	else
+	{
+		player = EntitySpawn(curx, cury,"Sprites/SeanUni.chr");
+		gregent = EntitySpawn(curx, cury,"Sprites/gregUni.chr");
+		SetPlayer(Player);
+		EntityStalk(gregent,player);
+		PlayMusic("Music/red.it");
+		FadeIn(100);
+	}
+	HookKey(1,"menu");
+}
+
+void Chest1()
+{
+	if(!chests[1])
+	{
+		Banner("Received a Potion!");
+		GiveItem(POTION,1);
+		SetTile(2,6,1,509);
+		chests[1]++;
+	}
+	else
+	{
+		Banner("Empty");
+		SetTile(2,6,1,509);
+	}
+}
+
+void Chest2()
+{
+	if(!chests[2])
+	{
+		Banner("Received a Potion!");
+		GiveItem(POTION,1);
+		SetTile(2,8,1,509);
+		chests[2]++;
+	}
+	else
+	{
+		Banner("Empty");
+		SetTile(2,8,1,509);
+	}
+}
+
+void Warp1()
+{
+	fadeOut(50);
+	Warp(26,30,player);
+	FadeIn(50);
+}
+
+void Warp2()
+{
+	FadeOut(50);
+	Warp(6,12,player);
+	FadeIn(50);
+}
+
+void Warp3()
+{
+	FadeOut(50);
+	Warp(10,30,player);
+	FadeIn(50);
+}
+
+void Warp4()
+{
+	FadeOut(50);
+	Warp(37,12,player);
+	FadeIn(50);
+}
+
+void Warp5()
+{
+	FadeOut(50);
+	Warp(64,26,player);
+	FadeIn(50);
+}
+
+void Warp6()
+{
+	FadeOut(50);
+	Warp(7,31,player);
+	FadeIn(50);
+}
+
+void Warp7()
+{
+	FadeOut(50);
+	Warp(63,12,player);
+	FadeIn(50);
+}
+
+void Warp8()
+{
+	FadeOut(50);
+	Warp(78,42,player);
+	FadeIn(50);
+}
+
+void Warp9()
+{
+	FadeOut(50);
+	Warp(17,30,player);
+	FadeIn(50);
+}
+
+void Warp10()
+{	
+	FadeOut(50);
+	Warp(64,39,player);
+	FadeIn(50);
+}
+
+void StressOut()
+{
+	Text(0,"Oh man, oh man, oh man.");
+	Text(0,"Press [ESC] to open your menu....");
+	Text(0,"[Arrow Keys] move your pointer....");
+	Text(0,"[ALT] cancels....");
+	Text(0,"[SPACE BAR] opens help menu...");
+	Text(0,"How am I ever to remember any of this?");
+	Text(0,"Greg:\Looks like the stress has gotton to him.");
+	Text(0,"Sean:\Poor fellow.");
+}
+
+void GirlsDorm()
+{
+	Text(0,"Greg:\Uh...that's the entrance to the girls wing.");
+	Text(0,"You trying to get us expelled?");
+	Text(0,"Sean:\Er...right. Sorry.");
+	PlayerMove("R1");
+}
+
+void Picture1()
+{
+	text(0,"Sean:\What a handsome looking fellow.");
+	Text(0,"Greg:\Who is that anyway?");
+	Text(0,"Sean:\No idea.");
+}
+
+void Books()
+{
+	Text(0,"Greg:\I'm sure Charity will be peeved if she finds we studied without her.");
+	Text(0,"Sean:\You know the first thing I learned here was to never provoke a black mage.");
+}
+
+void EmptyChests()
+{
+	EntityMove(2,"F0");
+	Text(0,"Seamus:\Hey!");
+	EntityMove(1,"F0");
+	Text(0,"Dean:\Don't go rummaging through our stuff!");
+	Text(0,"Sean:\Sorry!");
+	Entitymove(1,"F2");
+	EntityMove(2,"F3");
+	Text(0,"Dean:\You looked away!");
+	EntityMove(2,"F0");
+	Text(0,"Seamus:\Damn it Sean!");
+	EntityMove(2,"F3");
+}
+
+void Dean()
+{
+	Text(0,"Dean:\We're having a staring contest.");
+	Text(0,"Greg:\Er...shouldn't you be getting ready for the final?");
+	Text(0,"Dean:\Concentration is a key component in our training.");
+	Text(0,"Seamus:\Yeah. Technically this IS studying.");
+}
+
+void Seamus()
+{
+	Text(0,"Seamus:\We're having a staring contest.");
+	Text(0,"Sean:\So who's winning?");
+	Text(0,"Seamus:\I think I am but I can't even tell who I'm looking at anymore.");
+}
+
+void Npc1()
+{
+	Text(0,"Male Student:\This is a [Save Point].");
+	Text(0,"It's pretty neat. You stand on it and it asks you if you want to save.");
+	Text(0,"If you choose [Yes], it'll open the [Save Menu] so that you can save your current progress.");
+	Text(0,"Sean:\Fancy.");
+}
+
+void Npc2()
+{
+	Text(0,"Male Student:\To wander aimlessly forever in the ocean that is your eyes...");
+	Text(0,"Female Student:\That is my one and only desire...");
+	Text(0,"Male Student:\To be with you...");
+	Text(0,"Both:\Forever...");
+	Wait(50);
+	Text(0,"Female Student:\Hey! Not bad!");
+	Text(0,"We'll have this scene down in no time!");
+	Text(0,"Sean:\They must be practising for the year end performance.");
+	Text(0,"Greg:\Yeah. Redalia Academy never fails to put on a great show.");
+}
+
+void Npc3()
+{
+	Text(0,"Male Student:\Just once, I'd like to sneak in there.");
+	Text(0,"Just to see what it looks like....");
+	Text(0,"You know...");
+	Text(0,"For educational purposes.");
+	Text(0,"Sean:\Sure pal.");
+	Text(0,"Greg:\Moving on...");
+	EntityMove(5,"F2");
+}
+
+void Npc5()
+{
+	Text(0,"Female Student:\That guy just stands there all day waiting to get a glimpse whenever one of us girls come out of our dorms.");
+	Text(0,"It's kind of creepy.");
+	Text(0,"Sean:\So what are you doing then?");
+	Text(0,"Female Student:\Making sure he doesn't try anything funny.");
+}
+
+void NPC6()
+{
+	Text(0,"Female Studen A:\So who are you going to the year end festival with?");
+	Text(0,"Female Student B:\I haven't been asked yet...");
+	Text(0,"Female Student A:\Oh that's too bad...");
+	Text(0,"I'm sure Seamus is just trying to work up the nerve.");
+	Text(0,"Female Student B:\I sure hope so.");
+	Text(0,"Female Student A:\I'll talk to Dean about it.");
+	Text(0,"Sean:\(I wonder if Charity is expecting me to ask her...)");
+}
+
+void Student1()
+{
+	Text(0,"He's so dreamy...");
+	EntityMove(10,"F1");
+}
+
+void Student2()
+{
+	Text(0,"I know the answer Master Wayn!");
+	EntityMove(11,"F1");
+}
+
+void Student3()
+{
+	Text(0,"I'm his favourite you know.");
+	Text(0,"Well...he didn't tell me directly, but I can tell.");
+	EntityMove(12,"F1");
+}
+
+void Student4()
+{
+	Text(0,"This is by far the best class I've taken here.");
+	Text(0,"Sean:\What's he teach anyway?");
+	Text(0,"Female Student:\I have no idea.");
+	Text(0,"Sean:\...");
+	EntityMove(13,"F1");
+}
+
+void Student5()
+{
+	Text(0,"All the girls are in love with Master Wayn.");
+	Text(0,"Sean:\So why are you in his class?");
+	Text(0,"Male Student:\Are you kidding?");
+	Text(0,"A class full of girls to myself!");
+	Text(0,"Sean:\The man has a point.");
+	Text(0,"Greg:\Ahhh, hormones.");
+	EntityMove(14,"F1");
+}
+
+void Student6()
+{
+	Text(0,"I don't really care too much about Master Wayn's looks.");
+	Text(0,"I'm actually hear to learn the history of Redalia.");
+	Text(0,"Greg:\So THAT's what he teaches.");
+	Text(0,"Sean:\You learn something new every day.");
+	EntityMove(15,"F1");
+}
+
+void Wayn()
+{
+	Text(0,"Master Wayn:\Care to sit in on one of my world famous lectures boys?");
+	Text(0,"Sean:\Er...that's okay.");
+}
+
+void NoNeed()
+{
+	Text(0,"Greg:\We really should be getting to the library.");
+	Text(0,"Sean:\Right.");
+	PlayerMove("U1");
+}
+
+void ToLib()
+{
+	int gong = LoadSound("sounds/gong.wav");
+	FadeOut(50);
+	MusicFade(50);
+	Warp(21,77,player);
+	FadeIn(100);
+	PlayMusic("Music/lull.it");
+	//camScrollToS(2*16, 60*16, 100);
+	EntityStalk(gregent, 0-1);
+	camZoomToEntity(charent, 300);
+	EntityMove(charent,"F3");
+	Text(0,"Charity:\Well, this should be some good light reading until your useless brother shows up.");
+	EntityMove(amient,"F2");
+	Text(0,"Ami:\You sure do poke fun at him a lot.");
+	Text(0,"Charity:\Yeah, well, he deserves it.");
+	Text(0,"Ami:\He hasn't asked you yet has he?");
+	EntityMove(player,"L9U7L1F1");
+	EntityMove(gregent,"W10L9U7F1");
+	EntityMove(charent,"F0");
+	EntityMove(amient,"F0");
+	Text(0,"Sean:\What're you guys talking about?");
+	wait(100);
+	Text(0,"Ami:\Hey bro!");
+	Text(0,"Sean:\You know, I'm not sure I like how close you are to my sister.");
+	Text(0,"Charity:\Well, I admit it has its advantages.");
+	Text(0,"Ami:\hehehe");
+	Text(0,"I should go. I'm suppost to meet a friend for lunch.");
+	Text(0,"Sean:\Be good Ami.");
+	Text(0,"Ami:\Will do!");
+	EntityMove(amient,"F2");
+	Text(0,"Ami:\(Just tell him you want to go with him.)");
+	EntityMove(amient,"F0");
+	Text(0,"Later!");
+	EntityMove(amient,"R1D4L1D5");
+	Wait(200);
+	entity.visible[amient]=0;
+	MusicFade(50);
+	Text(0,"Greg:\Shall we?");
+	PlayMusic("Music/red.it");
+	Text(0,"Charity:\Let's find a table.");
+	EntityMove(charent,"D4L1F0");
+	EntityMove(gregent,"D3L3F1");
+	EntityMove(player,"W10R1D3L1F1");
+	Wait(100);
+	Tutorial();
+	EntityMove(gregent,"F3");
+	RemoveChr(GREG);
+	Text(1,"Greg:\Well, I've gotta run. My final starts in an hour.");
+	EntityMove(player,"F2");
+	TExt(1,"Charity:\Good luck Greg!");
+	EntityMove(gregent,"F1");
+	Text(1,"Greg:\Thanks. You too!");
+	EntityMove(gregent,"D1R3D4");
+	wait(100);
+	entity.visible[gregent]=0;
+	EntityMove(player,"R1U2F2");
+	//PlayMusic(lovetheme)
+	Wait(100);
+	EntityMove(charent,"F3");
+	Text(1,"Sean:\So uh, Charity.");
+	MusicFade(100);
+	Text(1,"Charity:\Yes...?");
+	Text(1,"Sean:\Well, you know that the uh...festival is coming up and...uh...");
+	EntityMove(charent,"R1");
+	Wait(20);
+	Text(1,"Charity:\Yes...?");
+	Text(1,"Sean:\Well, I was sort of wondering if you'd...you know...");
+	//MusicFade()
+	PlaySound(gong,100);
+	Wait(100);
+	PlayMusic("Music/intense.it");
+	Text(1,"Charity:\The warning bell...?");
+	EntityMove(player,"D2");
+	Text(1,"Charity:\Where are you going?");
+	EntityMove(player,"F1");
+	Text(1,"Sean:\To find Ami!");
+	EntityMove(charent,"R1F0");
+	Text(1,"Charity:\I'm coming with you!");
+	Text(1,"Sean:\No you get to the shelter!");
+	Text(1,"Charity:\Forget it!");
+	Text(1,"Sean:\Fine, but stay close!");
+	FadeOut(100);
+	cameratracking=1;
+	Map("redacademy2.map");
+}
+
+void SavePnt()
+{
+	PlaySound(menusounds.savpnt,100);
+	int x = Prompt("Would you like to save?","Yes","No");
+	if(!x)
+		SaveMenu();
+	
+}

@@ -1,0 +1,18 @@
+Name           Description                                                         Ap Cost     Mp Cost   Tar  Type
+Cure           Restores some HP to singe/multiple party members                    30          6         1    1
+Life           Recovers party member from KO status                                30          8         1    3
+Panacia        Cures Poison Status                                                 15          4         1    3
+Scan           Shows HP/MP and weaknesses of an enemy                              25          4         0    0
+Cura           Restores more HP to single/multiple party memebers                  50          10        1    1
+Esuna          Removes most status abnormalities                                   80          6         1    3
+Protect        Reduces damage from physical attacks                                30          6         1    3
+Shell          Reduces damage from magical attacks                                 35          6         1    3
+Curaga         Restores a lot of HP to single/multiple party members               80          22        0    1
+Dispel         Removes spell effects from a target                                 35          16        1    0                              
+Regen          Gradually restores HP                                               25          14        1    3
+Float          Causes levitation to single/multiple party members                  20          6         1    1
+Full Cure      Completely restores a party members HP                              100         36        1    1
+Full Life      Revives and completely restores a party members HP                  90          24        1    1
+Holy           Causes Holy-type damage to multiple targets                         110         36        0    0
+
+

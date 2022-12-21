@@ -1,0 +1,410 @@
+// Text functions found throughout the source
+// Most code by Sean "Rysen" Oyler. Other Authors credited in source.
+
+int Prompt(string l1, string ch1, string ch2)
+{
+	int s1, oldtime;
+	int done, py;
+	int pointer = loadimage("Pics/pointer.pcx");
+	while(!done)
+	{
+		Render();
+		DGW(0,181,320,239);
+		WrapText(5,185,350,239,left(l1,s1));
+		PutText(220,200,left(ch1,s1));
+		PutText(220,210,left(ch2,s1));
+		TBlit(195,200+(10*py),pointer,screen);
+		ShowPage();
+		UpdateControls();
+		if(s1<len(l1))
+			s1=timer-oldtime;
+		if(up)
+		{
+			Unpress(5);
+			py--;
+			if(py<0)
+				py=1;
+		}
+		
+		if(down)
+		{
+			Unpress(6);
+			py++;
+			if(py>1)
+				py=0;
+		}
+		if(b1)
+		{
+			Unpress(1);
+			done++;
+		}
+		if(b2)
+		{
+			Unpress(2);
+			py=1;
+		}
+	}
+	freeimage(pointer);
+	return py;
+}
+
+void PutText(int x, int y, string txt)
+{
+	PrintString(x,y,screen,fnt,txt);
+}
+
+void FreeText(int x, int y,string l1)
+{
+	int s1;
+	int done;
+	done = 0;
+	While(!done)
+	{
+		Render();
+		RectFill(0,0,320,240,RGB(4,4,4),screen);
+		WrapText(x,y,320,470,left(l1,s1));
+		ShowPage();
+		UpdateControls();
+		s1++;
+		del(2);
+		if(b1)
+		{
+			unpress(1);
+			if(s1<len(l1))
+				s1 = len(l1);
+			else
+				done++;
+		}
+	}
+}
+
+void FreeText2(int x, int y, int x1, int y1, string l1, string l2)
+{
+	int s1, s2;
+	int done;
+	done=0;
+	while(!done)
+	{
+		Render();
+		Rectfill(0,0,320,240,RGB(4,4,4),screen);
+		PutText(x,y,left(l1,s1));
+		PutText(x1,y1,left(l2,s2));
+		ShowPage();
+		s1++; s2++;
+		del(2);
+		if(b1)
+		{
+			Unpress(1);
+			if(s1<len(l1))
+				s1 = len(l1);
+			else
+				done++;
+		}
+	}
+}
+
+Void CenteredFree(string l1)
+{
+ 	int x1, x2, x3;
+   	int s1, s2, s3;
+   	while(!b1)
+   	{
+   	 	render();
+   	 	RectFill(0,0,320,240,RGB(4,4,4),screen);
+   	 	PrintCenter(imagewidth(screen)/2,imageheight(screen)/2,screen,fnt,l1);
+   	 	showpage();
+   	 	updatecontrols();
+   	 	//del(4,0,0,0);
+   	 }
+   	 unpress(1);
+}
+
+void Text2(int ent, string l1)
+{
+	int length, done;
+	length = textwidth(fnt,l1);
+	GenerateGradient(bgc1,bgc2);
+	while(!done)
+	{
+		Render();
+		DGW((entity.x[ent])+20,entity.y[ent]-(50),(entity.x[ent]+20)+(length+20),entity.y[ent]+30);
+		PutText(entity.x[ent]+25,entity.y[ent]-(45),l1);
+		ShowPage();
+		UpdateControls();
+		if(b1)
+		{
+			unpress(1);
+			done++;
+		}
+	}
+}
+
+void TimedText(int pos, int dur, string l1)
+{
+	int s1, position, oldtime, t/*, l1*/;
+	if(!pos)
+		position=181;
+	else
+		position=0;
+		
+	oldtime = timer;
+	
+	while(t<dur)
+	{
+		t=timer - oldtime;
+		Render();
+		DGW(0,position,320,position+58);
+		WrapText(5,position+4,350,position+58,left(l1,s1));
+		ShowPage();
+		s1=(t*100)/100;
+	}
+}
+
+void Text(int pos,string l1)
+{
+	int s1, position, oldtime, t;
+	int done,linesDone, linesDone2;
+
+	if(!pos)
+		position=181;
+	else
+		position=0;
+		
+	done=0;
+	oldtime = timer;
+	GenerateGradient(Bgc1,bgc2);
+	
+	while(!done)
+	{
+		Render();
+		t=timer - oldtime;
+		DGW(0,position,320,position+58);
+		WrapText(5,position+4,350,position+58,left(l1,s1));
+		//del(5);
+		ShowPage();
+		UpdateControls();
+		if(s1<len(l1))
+			s1=(t*100)/100;
+		if(b4)
+		{
+			Unpress(4);
+			if(!position)
+				position=181;
+			else
+				position=0;
+		}
+		if(b1) 
+		{
+			Unpress(1);
+			if(s1<len(l1))
+				s1 = len(l1);
+			else
+				done++;
+			
+		}
+		
+	}
+}
+
+/* Code by Zaratustra */
+
+int texttoobig;
+
+void WrapText(int x1, int y, int x2, int y2, string t)
+{
+ 	int l, i, j;
+ 	l=(x2-x1)/8;
+ 	i=0;
+ 	texttoobig=0;
+ 	while (i<len(t) && texttoobig=0)
+ 	{
+ 		 j=i;
+ 		 while ( strcmp(mid(t,j,1), "\")=0 || strcmp(mid(t,j,1), " ")=0 ) j++;
+ 		 i=CutStringL(t, j, j+l);
+  
+		 PrintString(x1, y, screen,fnt,mid(t,j,i-j));
+ 		 
+ 		 
+ 		 y+=fontheight(fnt)+1;
+
+ 		 if (y+9>y2) texttoobig=i;
+ 	}
+}
+
+/* Code by Zaratustra */
+
+int CutStringL(string txt, int y, int x) // cuts a string at nearest space right from y and left from x
+{
+ 	int i, j;
+ 	i=x;
+ 	if (x>len(txt)) x=len(txt);
+ 	else
+ 	{
+ 		 while ( strcmp(mid(txt,x,1), " ") && x>y ) { x--; }
+ 	}
+ 	if (x=y) x=i;
+ 	j=y;
+ 	while ( strcmp(mid(txt,j+1,1), "\") && j<x ) { j++; }
+ 	x=j;
+ 	//Log(str(x));
+ 	return x+1;
+}
+
+void Tutorial()
+{
+	int pointer, py;
+	py=1;
+	pointer = LoadImage("pics/pointer.pcx");
+	GenerateGradient(bgc1,bgc2);
+	while(!b1)
+	{
+		Render();
+		DGW(0,0,320,58);
+		DGW(140,59,319,135);
+		
+		PutText(5,5,"Charty:");
+		PutText(5,15,"So what should we review?");
+		
+		PutText(145,64,"Menu Basics");
+		PutText(145,74,"Battle Basics");
+		PutText(145,84,"Learning Abilities");
+		PutText(145,94,"Class Skills");
+		PutText(145,104,"Elements");
+		PutText(145,114,"Status Ailments");
+		PutText(145,124,"I'm ready for the exam!");
+		TBlit(120,54+(10*py),pointer,screen);
+		ShowPage();
+		UpdateControls();
+		if(up)
+		{
+			Unpress(5);
+			PlaySound(menusounds.pnt,100);
+			py--;
+			if(py<1)
+				py = 7;
+		}
+		if(down)
+		{
+			Unpress(6);
+			PlaySound(menusounds.pnt,100);
+			py++;
+			if(py>7)
+				py=1;
+		}
+		if(b2)
+		{
+			PlaySound(menusounds.cancel,100);
+			Unpress(2);
+			py=7;
+		}
+	}
+	Unpress(1);
+	PlaySound(menusounds.select,100);
+	freeimage(pointer);
+	switch(py)
+	{
+		case 1: // Menu Basics
+		Text(1,"Sean:\hah! Easy.");
+		Text(1,"Pressing [ESC] opens your menu where you have the options to organize and view your party.");
+		Text(1,"Greg:\You can also look at and use skills, set abilities to be learned, and my favourite: use items.");
+		Text(1,"Sean:\Don't forget equipment!\You can equip your party members there but, not all party members can equip the same stuff.");
+		Text(1,"Charity:\Right.");
+		Text(1,"[ENTER] will confirm your selection, [ALT] cancels, and the [ARROW KEYS] move the pointer.");
+		Text(1,"If you're ever unsure of what something does, pressing the [SPACE BAR] will open the help menu which will give you some info on where your pointer is.");
+		Text(1,"Sean:\Which makes me wonder why we have to know this stuff by heart if we'll always have something to remind us.");
+		Text(1,"Charity:\Sean!");
+		Text(1,"Sean:\Sorry!");
+		Tutorial();
+	
+		case 2: // Battle Basics
+		Text(1,"Sean:\If you ask me, battles are pretty straight forward.");
+		Text(1,"Each member has a time guage that fills up depending on their [speed stat]. When the guage is filled that means the party members is ready to use an attack.");
+		Text(1,"Charity:\But enemies also have a time guage, though we can't see it. So, if their's fills up before one of your party members they'll attack first.");
+		Text(1,"Greg:\And then, obviously, there are the options one can choose from when it is their turn.");
+		Text(1,"[ATTACK] is a strait-forward physical attack. The next 2 options are [CLASS SKILLS] which will change depending on who's turn it is.");
+		Text(1,"Charity:\Right, except that the 2nd [CLASS SKILL] is an ability, so they're similar in that respect.");
+		text(1,"Sean:\Yeah, because they will all cost [MP].");
+		Text(1,"Greg:\Next on the list is [DEFEND] which is a good strategic move to make if you're unsure of what to do.");
+		Text(1,"Charity:\Right, because defending will refill 10% of your current [MAXIMUM HP], which isn't much, but could determine the difference between life and death.");
+		Text(1,"Sean:\Then there are [ITEMS] which allow you to use the items you've collected on your quest.");
+		Text(1,"Greg:\I love items.");
+		Text(1,"Sean:\We know...");
+		Text(1,"Charity:\Worse case scenerio, you can always try and [RUN] from a fight. It might not always work, and certainly not from a boss, but descrition is the better part of valour.");
+		Text(1,"Or so they say.");
+		Tutorial();
+		
+		case 3: // Learning Abilites
+		Text(1,"Charity:\Ooh, the best part.");
+		Text(1,"So, we know that each party member will learn certain abilities depedning on their [CLASS].");
+		Text(1,"Greg:\The are four abilities a party member can choose to learn from depending on what [LEARN LEVEL] they are at.");
+		Text(1,"Each ability costs a certain amount of [AP] before it is mastered.");
+		Text(1,"Sean:\[AP] is gained at the end of a battle and will add to your [TOTAL AP] of the ability you are currently learning.");
+		Text(1,"Charity:\Unless you've all ready mastered it.");
+		Text(1,"You can only use an ability if you've mastered it or are currently learning it.");
+		Text(1,"Since you can only learn one ability at a time, it's best to try and learn them as quick as possible.");
+		Text(1,"Greg:\Once you've learned all four abilites for one [LEARNING LEVEL], four new ones appear and your [LEARNING LEVEL] goes up.");
+		Text(1,"Sean:\You can view and set abilities to [LEARN] by choosing the [LEARN] sub-option in the [MENU].");
+		Text(1,"Greg:\Hurray for learning!");
+		Tutorial();
+		
+		case 4: // Class Skills
+		Text(1,"Greg:\We've determined that each class learns different abilities, but each class also has a special skill that they can use.");
+		Text(1,"Charity:\We don't really need to go over them since we'll be examed on our own classes, but maybe it'd be a good idea just to say aloud ours.");
+		Text(1,"Sean:\Well mines pretty straight-forward. I have [COVER] which will allow me to take a blow for a party member if their HP is low.");
+		Text(1,"I have mixed feelings on that one....");
+		Text(1,"Charity:\Mine's [FOCUS] which will temporarily raise my [MAGIC STAT].");
+		Text(1,"Greg:\And I have [TERRAIN] which will use my surroundings for an attack.");
+		Tutorial();
+		
+		case 5: //Elements
+		Text(1,"Charity:\Some monsters are weak against certain elements, some absorb certain elemental attacks, and others aren't affected by them.");
+		Text(1,"Sean:\Weapons and equipment can have elemental properties as well which can be incredibly usefull, or incredibly damaging.");
+		Text(1,"Greg:\Which element to use against which is pretty straight forward. [FIRE] is strong against [ICE] and vice versa. [WATER] and [LIGHTNING], [LIGHT] and [DARK], etc.");
+		Text(1,"Charity:\Of course some spells might not necessarily have elemental properties in which case they are good against enemy.");
+		Tutorial();
+		
+		case 6: //Status Ailments
+		Text(1,"Sean:\I hate [STATUS AILMENTS].");
+		Text(1,"Greg:\Well they can be really useful!");
+		Text(1,"Charity:\At any rate...");
+		Text(1,"[STATUS AILMENTS] affect certain characteristics. The ones to watch out for are:");
+		text(1,"[POISON], [STONE], [MINI], [FROG], [SILENCE], [STONE], [BLIND] and [SLOW].");
+		Text(1,"They do exactly what they sound like the would.");
+		EntityMove(player,"F2");
+		Text(1,"Sean:\I was once turned into a newt.");
+		EntityMove(gregent,"F3");
+		Text(1,"Greg:\A newt?");
+		Text(1,"Sean:\I got better.");
+		Text(1,"Greg:\Anyway,");
+		EntityMove(player,"F1");
+		EntityMove(gregent,"F1");
+		Text(1,"There are some that help such as:");
+		Text(1,"[HASTE], [SHELL], [PROTECT] and [REGAIN].");
+		Tutorial();
+		
+		case 7:
+		Text(1,"Sean:\I think we've reviewed enough.");
+		
+		
+	}
+	
+	
+}
+
+/*void Banner(string msg)
+{
+	int s1, length, start;
+	GenerateGradient(bgc1,bgc2);
+	length=Textwidth(fnt,msg)+12;
+	start = (Imagewidth(screen)/2)-(length/2);
+	while(!b1)
+	{
+		Render();
+		DGW(start,100,start+length,130);
+		PutText(start+5,110,left(msg,s1));
+		s1++;
+		UpdateControls();
+		ShowPage();
+	}
+	Unpress(1);
+}*/

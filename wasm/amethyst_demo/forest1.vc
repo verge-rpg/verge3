@@ -1,0 +1,186 @@
+void start()
+{
+	int a, storeX, storeY;
+	int rid, sara, aaron;
+	batTerrain = FOREST;
+	batArea = 1;
+	if(!flags[2])
+	{
+		rid = EntitySpawn(24,7,"Sprites/rid.chr");
+		sara = EntitySpawn(23,6,"sprites/sara.chr");
+		aaron = EntitySpawn(23,8,"sprites/aaron.chr");
+		player = EntitySpawn(13,7,"Sprites/charity.chr");
+		AddChr(CHARITY);
+		AddCHR(AARON);
+		PlayMusic("Music/theplan.it");
+		EntityMove(aaron,"F1");
+		EntityMove(rid,"F2");
+		SetPlayer(player);
+		Cameratracking=0;
+		xwin = 225; ywin=13;
+		FadeIn(100);
+		Text(0,"Aaron:\As soon as Charity shows up, we'll go over the plan one more time.");
+		Text(0,"Sara, Rid, are you prepared?");
+		Text(0,"Rid:\What are we doing again?");
+		Text(0,"Sara:\Geeze.\Aren't you good for ANYTHING?");
+		Entitymove(rid,"F1");
+		Wait(20);
+		Text(0,"Rid:\I'm more reliable than you.");
+		Text(0,"Aaron:\Save the lovers quarrel for later, we have work to do.");
+		Text(0,"Charity:\Sorry, I'm late.");
+		EntityMove(rid,"F2");
+		EntityMove(aaron,"F2");
+		EntityMove(sara,"F2");
+		PlayerMove("R9");
+		Text(0,"Aaron:\Okay, let's begin.");
+		EntityMove(sara,"F3");
+		Wait(20);
+		Text(0,"Sara:\Rid, pay attention.");
+		EntityMove(rid,"F1");
+		Wait(20);
+		Text(0,"Rid:\Yeah, yeah.");
+		EntityMove(aaron,"F1");
+		EntityMove(rid,"F2");
+		EntityMove(sara,"F0");
+		Wait(20);
+		Text(0,"Aaron:\Okay, according to our scouts an Argonian supply wagon will be passing this location shortly.");
+		Text(0,"Basically, there isn't much to our plan as we'll be relying on numbers and the element of surprise.");
+		Text(0,"Charity:\What is it carrying?");
+		Text(0,"Sara:\We're not sure, but it's being guarded so it must be somewhat important.");
+		Text(0,"Rid:\And it's going to the front lines in Red---well, what used to be Redalia.");
+		Text(0,"Aaron:\Right, so we have to stop it at all costs.");
+		Text(0,"Even if it's just food, we can send it back to our camp. That'll boost morale...");
+		Text(0,"For just a little while.");
+		Text(0,"Charity:\Got it.");
+		Text(0,"Aaron:\Rid and Sara will position themselves on the opposite side of the road.");
+		Text(0,"Charity and I will stay here and wait for a moment to strike.");
+		Text(0,"There are six soldiers in total.");
+		Text(0,"Charity:\So, when they come through we just jump at them?");
+		Text(0,"Aaron:\Not quite.");
+		Text(0,"Sara:\Standard Argonian procedure dictates that in a moment of crisis at least two guards should remain in the event of an attack on an escort.");
+		Text(0,"Rid and I will try and get the four guards' attention so that you'll only have to worry about the two.");
+		Text(0,"Rid:\Wait.");
+		Text(0,"We have to take on four specialy trained Argonian soliders?");
+		Text(0,"Sara:\This is why you need to pay more attention.");
+		Text(0,"We're to simply make them believe that WE'RE the threat, and have them follow us.");
+		Text(0,"Aaron:\You should be used to running by now, Rid.");
+		Text(0,"Charity:\We all are....");
+		Text(0,"Aaron:\What was that?");
+		Text(0,"Charity:\Nothing...");
+		Text(0,"Go on.");
+		Text(0,"Aaron:\That's basically it. You and I will take out the two guards inside the carriage, find out what they're transporting, and figure out what to do with it after.");
+		Text(0,"Provided we have no surprises, this should be a walk in the park.");
+		Text(0,"Sara:\Alright! Move out!");
+		FadeOut(50);
+		cameratracking=1;
+		ents[1] = EntitySpawn(34,0,"Sprites/Wagon2.chr");
+		ents[2] = EntitySpawn(32,2,"Sprites/soldier.chr");
+		ents[3] = EntitySpawn(37,2,"Sprites/soldier.chr");
+		ents[4] = EntitySpawn(34,5,"Sprites/Soldier.chr");
+		ents[5] = EntitySpawn(36,5,"Sprites/Soldier.chr");
+		ents[6] = EntitySpawn(34,(0-2),"Sprites/soldier.chr");
+		ents[7] = EntitySpawn(36,(0-2),"Sprites/soldier.chr");
+		entity.speed[ents[1]]=45;
+		Warp(34,28,sara);
+		warp(35,28,rid);
+		SetPlayer(Sara);
+		EntityMove(player,"F3");
+		EntityMove(aaron,"F3");
+		EntityMove(sara,"F3");
+		EntityMove(rid,"F2");
+		//Wait2(100);
+		MusicFade(100);
+		PlayMusic("Music/morning birds.mp3");
+		Render();
+		FadeIn(100);
+		Wait(50);
+		Text(0,"Sara:\Okay, here they come.");
+		Text(0,"Rid:\How are we going to distract them?");
+		Text(0,"Sara:\Just follow my lead.");
+		Text(0,"Rid:\You're the boss.");
+		for(a=2; a<=7; a++)
+		{
+			entity.speed[ents[a]]==50;
+		}
+		
+		EntityMove(ents[1],"D10");
+		EntityMove(ents[2],"D10");
+		EntityMove(ents[3],"D10");
+		EntityMove(ents[4],"D10");
+		EntityMove(ents[5],"D10");
+		EntityMove(ents[6],"D10");
+		EntityMove(ents[7],"D10");
+		Wait(50);
+		EntityMove(rid,"W10U8");
+		PlayerMove("U10");
+		storeX=xwin; storeY=ywin;
+		cameratracking=0;
+		xwin=StoreX; ywin=StoreY;
+		Entity.speed[sara]=150;
+		Wait(100);
+		Text(0,"Sara:\Here goes nothing...");
+		EntityMove(sara,"D15");
+		TimedText(0,100,"HELP! A REDALIAN BANDIT!");
+		TimedText(1,100,"Soldier:\After him!");
+		for(a=2; a<=7; a++)
+		{
+			entity.speed[ents[a]]==150;
+		}
+		Entity.speed[rid]=150;
+		EntityMove(ents[2],"D20");
+		EntityMove(ents[3],"D20");
+		EntityMove(ents[4],"D20");
+		EntityMove(ents[5],"D20");
+		
+		EntityMove(rid,"D15");
+		TimedText(0,100,"Rid:\....crap.");
+		camScrollToS(225, 12, 100);
+		Text(0,"Aaron:\Rock 'n Roll");
+		EntityMove(aaron,"R12F0");
+		EntityMove(player,"R10");
+		CamScrollToS(430,12,300);
+		EntityMove(ents[7],"F2");
+		EntityMove(ents[6],"F2");
+		TimedText(0,100,"Soldiers:\What the--?");
+		flags[2]++;
+		currentmap = "forest1.map";
+		StartBs(1);
+	}
+	Else
+	{
+		Cameratracking=0;
+		xwin=392; ywin=29;
+		aaron = EntitySpawn(36,8,"sprites/aaron.chr");
+		player = EntitySpawn(34,8,"sprites/charity.chr");
+		ents[1] = EntitySpawn(34,11,"Sprites/wagon2.chr");
+		SetPlayer(player);
+		EntityMove(aaron,"F2");
+		PlayMusic("Music/Morning Birds.mp3");
+		FadeIn(100);
+		Wait(10); 
+		Text(0,"Aaron:\Well that was easy.");
+		Text(0,"Charity:\I hope Rid and Sara are alright.");
+		Text(0,"Aaron:\I'm sure they're fine. Let's see what's inside shall we?");
+		Text(0,"Ladies first.");
+		SetPlayer(player);
+		PlayerMove("R1D2");
+		Wait(5);
+		Warp(100,100,player);
+		EntityMove(aaron,"L1F0");
+		Text(0,"Charity:\It's kind of cramped in here...and dark...");
+		Text(0,"Aaron:\Can you make anything out?");
+		Text(0,"Charity:\Looks like it's just foo--hey Aaron?");
+		Text(0,"Aaron:\Yeah.");
+		Text(0,"Charity:\Did you just push the cart?");
+		Text(0,"Aaron:\Nope.");
+		Text(0,"Charity:\Hmm...");
+		//PlaySound
+		Entity.speed[ents[1]]=200;
+		EntityMove(ents[1],"D10");
+		EntityMove(aaron,"W20D10");
+		TimedText(0,100,"Charity:\Whoa!");
+		PlayMusic("Music/horse.ogg");
+		TimedText(1,100,"Aaron:\Charity!!!!!");
+		MiniGameHorseTrans();
+	}
+}

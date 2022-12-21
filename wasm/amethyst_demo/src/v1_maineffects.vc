@@ -1,0 +1,234 @@
+/***************************************************************************
+*                                                                          *
+*                    V1RPG VergeC Library for Verge3                       *
+*                        Copyright (C)2004 vecna                           *
+*                                                                          *
+***************************************************************************/
+
+/********************************** data **********************************/
+
+int crossfade_img = DuplicateImage(screen);
+int alpha_img = DuplicateImage(screen);
+int wipe_img;
+
+/********************************** code **********************************/
+
+/*******************************************
+ *            Transition Effects           *
+ *******************************************/
+
+
+void FadeIn(int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+void FadeOut(int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+}
+
+void WhiteIn(int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255,255,255), screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+void WhiteOut(int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255,255,255), screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+} 
+
+void CrossFade(int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(timer*100/_dur);
+		Blit(0, 0, crossfade_img, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+}
+
+void TransWipe(int _dur)
+{
+	RectFill(0, 0, 320, 240, RGB(255,255,255), alpha_img);
+
+	timer = 0;
+	int x;
+	while (timer<_dur)
+	{
+		x = (timer*370/_dur)-25;
+		Blit(x, 0, wipe_img, alpha_img);
+		RectFill(0-30, 0, x-1, 240, 0, alpha_img);
+		Render();
+		AlphaBlit(0, 0, crossfade_img, alpha_img, screen);
+		ShowPage();
+	}
+}
+
+void BoxOut(int _dur)
+{
+	timer = 0;
+	int hd, vd;
+	while (timer<_dur)
+	{
+		Render();
+		hd=timer*160/_dur;
+		vd=timer*120/_dur;
+		RectFill(0,0,hd,240,0,screen);
+		RectFill(320-hd,0,320,240,0,screen);
+		RectFill(0,0,320,vd,0,screen);
+		RectFill(0,240-vd,320,240,0,screen);
+		ShowPage();
+	}
+}
+
+void BoxIn(int _dur)
+{
+	timer = 0;
+	int hd, vd;
+	while (timer<_dur)
+	{
+		Render();
+		hd=timer*160/_dur;
+		vd=timer*120/_dur;
+		hd = 160-hd;
+		vd = 120-vd;
+		RectFill(0,0,hd,240,0,screen);
+		RectFill(320-hd,0,320,240,0,screen);
+		RectFill(0,0,320,vd,0,screen);
+		RectFill(0,240-vd,320,240,0,screen);
+		ShowPage();
+	}
+}
+
+void CircleOut(int dur)
+{
+	timer = 0;
+	while (timer<dur)
+	{
+		Render();
+		RectFill(0,0,320,240,0,crossfade_img);
+		CircleFill(160, 120, 200-(timer*200/dur), 200-(timer*200/dur), transcolor, crossfade_img);
+		TBlit(0, 0, crossfade_img, screen);
+		ShowPage();
+	}
+}
+
+void CircleIn(int dur)
+{
+	timer = 0;
+	while (timer<dur)
+	{
+		Render();
+		RectFill(0,0,320,240,0,crossfade_img);
+		CircleFill(160, 120, timer*200/dur, timer*200/dur, transcolor, crossfade_img);
+		TBlit(0, 0, crossfade_img, screen);
+		ShowPage();
+	}
+}
+
+void FadeInImg(int _dur, int _img)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+void FadeOutImg(int _dur)
+{
+	timer = 0;
+	int _img = DuplicateImage(screen);
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+	FreeImage(_img);
+}
+
+void WhiteInImg(int _dur, int _img)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255,255,255), screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+void WhiteOutImg(int _dur)
+{
+	timer = 0;
+	int _img = DuplicateImage(screen);
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255,255,255), screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+	FreeImage(_img);
+} 
+
+void CrossFadeImg(int _dur, int _img)
+{
+	timer = 0;
+	int _scr = DuplicateImage(screen);
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(timer*100/_dur);
+		Blit(0, 0, _scr, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+	FreeImage(_scr);
+}

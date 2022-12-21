@@ -1,0 +1,18 @@
+Name           Description                                                        Ap Cost      Mp Cost   Tar
+Magic Break    Reduces a target's magic strength                                   25          8         0
+Darkside       Inflicts shadow damage on enemy, reduces casters HP                 30          0         0
+Armor Break    Reduces target's defense strength                                   30          4         0
+Thunder Slash  Inflicts thunder damage upon an enemy                               30          24        0
+Charge!        Forces all near death party members to attack.                      30          10        1
+Stock Break    Inflicts non-elemental damage upon all enemies                      35          26        0  
+Minus Strike   Inflicts damage upon enemy that is equal to casters current HP      35          8         0
+Iai Strike     KO’s the target                                                     40          16        0  
+Power Break    Reduces a target's attack power                                     40          8         0 
+Mental Break   Reduces a targets magic defense                                     45          8         0 
+Shock 	       Inflicts physical damage upon one enemy                             60          46        0 
+Climhazzard    Inflicts non-elemental damage upon all enemies                      70          32        0   
+
+
+
+
+	

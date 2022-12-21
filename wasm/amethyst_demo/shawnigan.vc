@@ -1,0 +1,5 @@
+void MapInit()
+{
+	player = EntitySpawn(5,5,"Sprites/sean.chr");
+	SetPlayer(player);
+}

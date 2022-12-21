@@ -1,0 +1,669 @@
+void start()
+{
+	int storex, storey;
+	cameratracking=1;
+	batArea = 2;
+	batTerrain = DUNGEON;
+	currentmap = "dungeon.map";
+	Location = "Allowen Prison";
+	HookTimer("clock");
+	HookKey(1,"menu");
+	SetParPicBatEnt(0);
+	if(!bossflag && !batflag)
+	{
+		player = EntitySpawn(11,5,"sprites/sean.chr");
+		charent = EntitySpawn(14,8,"sprites/charity.chr");
+		saraent = EntitySpawn(64,31,"sprites/sara.chr");
+		SetPlayer(player);
+		PlayMusic("Music/left.ogg");
+		ColourWait(100,RGB(4,4,4));
+		FreeText(0,10,"That was the day you left.");
+		ForceDeEquip(CHARITY,1);
+		ForceDeEquip(CHARITY,2);
+		FreeText(0,10,"No one really knows how the Argonians broke the Redalian defence.");
+		FreeText(0,10,"With the Academy protected behind the walls of the castle it seemed impossible that we were in any danger.");
+		FreeText(0,10,"But somehow....\They broke through, and all was destroyed.");
+		
+		FreeText(0,10,"You left without telling anyone where you were going.");
+		ColourWait(100,RGB(4,4,4));
+		FreeText(0,10,"I gave up hope that you would return.");
+		ColourWait(100,RGB(4,4,4));
+		FreeText(0,10,"I thought you were dead.");
+		ColourWait(100,RGB(4,4,4));
+		FreeText(0,10,"I wished you were dead.");
+		ColourWait(100,RGB(4,4,4));
+		FreeText(0,10,"I wanted to move on with my life.");
+		ColourWait(100,RGB(4,4,4));
+		FreeText(0,10,"But here you are.");
+		ColourWait(100,RGB(4,4,4));
+		FreeText2(0,10,100,100,"You're so selfish, Sean.","....Charity?");
+		ColourWait(100,RGB(4,4,4));
+		FreeText2(0,10,100,100,"She was like a sister to me too.","Please wake up...");
+		ColourWait(100,RGB(4,4,4));
+		ChapterIntro(2);
+		//PlayMusic("Sounds/drips.ogg");
+		Entity.y[charent]+=10;
+		EntityMove(charent,"Z20");
+		FadeIn(100);
+		Wait(100);
+		EntityMove(charent,"Z0L1");
+		Text(0,"Charity:\Huh?");
+		EntityMove(Charent,"L2F1");
+		Text(0,"Where are we?");
+		EntityMove(player,"D1");
+		Text(0,"Sean:\....I don't know.");
+		Text(0,"Are you okay?");
+		Text(0,"Charity:\My head kind of hurts....");
+		Text(0,"But I'm fine.");
+		Text(0,"How long was I out?");
+		Text(0,"Sean:\A couple of hours.");
+		Text(0,"Charity:\Are we the only ones that were caught?");
+		TExt(0,"Sean:\There were others?");
+		Text(0,"Charity:\Yeah...Rid, Sara and Aaron.");
+		Text(0,"Sean:\Well, I haven't seen anyone else.");
+		Text(0,"Charity:\Oh...");
+		EntityMove(charent,"F0");
+		Wait(50);
+		EntityMove(player,"D1");
+		Text(0,"Sean:\Listen, Charity, I'm sure they're all right.");
+		Text(0,"Charity:\Yeah...");
+		EntityMove(player,"U2");
+		Wait(100);
+		EntityMove(charent,"F1");
+		Wait(50);
+		Text(0,"Charity:\Sean...");
+		Text(0,"Sean:\Yeah?");
+		Text(0,"Charity:\How could you leave like that?");
+		EntityMove(charent,"U1");
+		Text(0,"You abandoned us when we needed you the most...");
+		Text(0,"How could you?");
+		Wait(100);
+		Text(0,"Sean:\After Ami...");
+		Wait(100);
+		EntityMove(player,"F0");
+		Wait(50);
+		Text(0,"I just needed some time....\I guess.");
+		Text(0,"Charity:\I was sad too, you know.");
+		Text(0,"I'm still sad.");
+		Text(0,"I miss the way she smiled, or the way she laughed at my stupid jokes.");
+		Text(0,"The secrets we shared....");
+		Text(0,"I loved her too.");
+		EntityMove(player,"F1");
+		Wait(100);
+		Text(0,"Sean:\I know.");
+		Wait(50);
+		Text(0,"But it wasn't your job to protect her.");
+		Wait(100);
+		Text(0,"Charity:\Is that what you think?");
+		EntityMove(charent,"U1");
+		Text(0,"That you're the only one who had that right?");
+		Text(0,"She wasn't just yours.");
+		Text(0,"We all shared the burden of looking out for one another.");
+		EntityMove(charent,"D1");
+		Wait(50);
+		Text(0,"I failed her too.");
+		Wait(50);
+		EntityMove(charent,"F1");
+		Text(0,"But I accepted that there was nothing I could have done, and I moved on.");
+		Text(0,"There was nothing that you could've done either.");
+		Wait(100);
+		Text(0,"Sean:\It wasn't just her, Charity.");
+		Text(0,"It was...");
+		Wait(100);
+		EntityMove(player,"F1");
+		Text(0,"Everyone that died that day.");
+		Text(0,"And for what?");
+		Text(0,"A stupid war that had been going on for so long that no one remembered the reason it was being fought anymore.");
+		Wait(100);
+		Text(0,"I couldn't help anyone...");
+		Text(0,"I was so powerless...");
+		Wait(100);
+		Entitymove(player,"F0");
+		Text(0,"And that's why I left.");
+		Text(0,"I needed to become stronger so that I could protect the people I cared about.");
+		EntityMove(player,"F1");
+		Text(0,"Charity:\You were only 16!");
+		Text(0,"No one expected you to be some sort of hero.");
+		Text(0,"And whether or not you realise it...");
+		EntityMove(charent,"D1");
+		Wait(50);
+		Text(0,"You helped us.");
+		Wait(50);
+		Text(0,"I had never used magic in battle before.");
+		Text(0,"I was scared.");
+		Text(0,"But you're confidence, and resolve to do the right thing.... it was so inspiring.");
+		Text(0,"It gave us strength.");
+		Wait(100);
+		Text(0,"Sean:\....");
+		Wait(200);
+		Text(0,"Charity:\Think what you want, but you were a coward for running away.");
+		EntityMove(charent,"R3");
+		FadeOut(200);
+		EntityMove(charent,"F2");
+		ColourWait(200,RGB(4,4,4));
+		FreeText(0,0,"....Charity?");
+		ColourWait(200,RGB(4,4,4));
+		FreeText(100,100,"Yeah?");
+		ColourWait(200,RGB(4,4,4));
+		FreeText(0,0,"I'm sorry.");
+		ColourWait(200,RGB(4,4,4));
+		FreeText(100,100,"I know.");
+		ColourWait(10,RGB(4,4,4));
+		MusicFade(500);
+		EntityMove(player,"F0");
+		Warp(11,15,player);
+		warp(12,15,charent);
+		FadeIn(100);
+		Text(0,"Sean:\So what was in that wagon anyway?");
+		Text(0,"Charity:\Food.");
+		Text(0,"Sean:\Are you sure?");
+		Text(0,"I just spent an hour while you were sleeping, being interagated about what I saw, and what I was trying to do.");
+		Text(0,"Charity:\...Really?");
+		Text(0,"Sean:\Yeah.");
+		Text(0,"They don't seem very happy about what they lost.");
+		Text(0,"Charity:\Hmm....");
+		Text(0,"I swear. All I saw as food.");
+		Text(0,"Sean:\Well, no matter. ");
+		Text(0,"Anything to piss off the Argonians is worthwhile. Even if it was an accident.");
+		//Click
+		OpenCell(11,14,2);
+		Text(0,"Sean:\Got it.");
+		Text(0,"Charty:\Where'd you learn how to do that anyway?");
+		Text(0,"Sean:\I travelled with a theif named Wes for awhile. He showed me a few things.");
+		Text(0,"Charity:\Handy.");
+		Text(0,"Let's get out of here.");
+		PlayMusic("music/dungeon.it");
+		RemoveChr(GREG);
+		AddChr(SEAN); AddChr(CHARITY);
+		EntityStalk(charent,player);
+		HookKey(1,"menu");
+		batFlag++;
+		}
+	else if(batFlag && bossFlag)
+	{
+		LoadCredits();
+		player = EntitySpawn(76,92,"Sprites/sean.chr");
+		charent = EntitySpawn(77,92,"sprites/charity.chr");
+		saraent = EntitySpawn(78,92,"sprites/sara.chr");
+		SetPlayer(player);
+		cameratracking=0;
+		xwin = 1064; ywin = 1308;
+		EntityMove(player,"F1");
+		EntityMove(charent,"F1");
+		EntityMove(saraent,"F1");
+		FadeIn(100);
+		PlayMusic("Music/amethyst.it");
+		//PlayMusic("Music/lostbutterfly.mp3");
+		Wait(100);
+		TimedText(0,300,"Charity:\Where to now?");
+		TimedText(0,300,"Sara:\Through the Mandrum Forest\ and to Shawnigan, I guess.");
+		TimedText(0,300,"Sean:\Shawnigan?");
+		TimedText(0,300,"Charity:\Yeah...");
+		Wait(200);
+		TimedText(0,300,"Sean:\Home.");
+		Wait(200);
+		EntityMove(player,"U15");
+		EntityMove(charent,"W30U15");
+		EntityMove(saraent,"W20U15");
+		FadeOut(800);
+		CreditRoll();
+	}
+	else
+	{
+		PlayMusic("music/dungeon.it");
+		OpenCell(11,14,2);
+		if(!flags[3])
+		{
+			player = EntitySpawn(curx,cury,"Sprites/sean.chr");
+			charent = EntitySpawn(curx,cury,"Sprites/charity.chr");
+		}
+		else if(flags[3])
+		{
+			player = EntitySpawn(curx, cury,"Sprites/soldier.chr");
+			charent = EntitySpawn(curx, cury,"Sprites/soldier.chr");
+		}
+		if(!IsInParty(SARA))
+		{
+			if(!flags[3])
+				saraent = EntitySpawn(64,31,"sprites/sara.chr");
+		}
+		else
+		{
+			if(!flags[3])
+				saraent = EntitySpawn(curx, cury,"Sprites/sara.chr");
+			else
+				Saraent = EntitySpawn(curx, cury,"Sprites/soldier.chr");
+			EntityStalk(saraent,charent);
+		}
+		EntityStalk(charent,player);
+		SetPlayer(player);
+		FadeIn(100);
+	}
+		
+		
+}
+
+void Chest1()
+{
+	if(!chests[3])
+	{
+		SetTile(5,14,1,509);
+		Banner("Got Sean's Weapons!");
+		ForceEquip(SEAN,1,80);
+		ForceEquip(SEAN,2,25);
+		chests[3]++;
+	}
+	else
+		Banner("Empty!");
+}
+
+void Chest2()
+{
+	if(!chests[4])
+	{
+		SetTile(6,14,1,509);
+		Banner("Got Charity's Weapons!");
+		ForceEquip(CHARITY,1,104);
+		ForceEquip(CHARITY,2,25);
+		chests[4]++;
+	}
+	else
+		Banner("Empty!");
+}
+
+void SavePnt()
+{
+	PlaySound(menusounds.savpnt,100);
+	int x = Prompt("Would you like to save?","Yes","No");
+	if(!x)
+		SaveMenu();
+	
+}
+
+void HpRestore()
+{
+	Banner("HP/MP Restored!");
+	HPMPRestore();
+}
+
+void Door1()
+{
+	if(!GlobalFlag)
+		Text(0,"Sean:\It's locked.");
+	else
+	{
+		//PlaySound
+		Banner("Unlocked");
+		OpenCell(24,14,1);
+	}
+}
+
+void Warp1()
+{
+	if(chests[3] && chests[4])
+	{
+		FadeOut(50);
+		Warp(25,45,player);
+		FadeIn(50);
+	}
+	else
+	{
+		Text(0,"Charity:\I think there were a couple of chests by our cell that we should check out.");
+		PlayerMove("U1");
+	}
+}
+
+void Warp2()
+{
+	FadeOut(50);
+	Warp(24,23,player);
+	FadeIn(50);
+}
+
+void chest3()
+{
+	if(!chests[5])
+	{
+		Banner("Got Potion x5!");
+		GiveItem(POTION,5);
+		SetTile(21,49,1,509);
+		Chests[5]++;
+	}
+	else
+		Banner("Empty!");
+}
+
+void warp3()
+{
+	FadeOut(50);
+	Warp(44,62,player);
+	FadeIn(50);
+}
+
+void Warp4()
+{
+	FadeOut(50);
+	Warp(83,15,Player);
+	FadeIn(50);
+}
+
+void Warp5()
+{
+	FadeOut(50);
+	Warp(34,50,player);
+	FadeIn(50);
+}
+
+void Door2()
+{
+	if(!GlobalFlag)
+		Text(0,"Sean:\It's locked.");
+	else
+	{
+		//PlaySound
+		Banner("Unlocked");
+		OpenCell(51,58,1);
+	}
+}
+
+void Door3()
+{
+	if(!GlobalFlag)
+		Text(0,"Sean:\It's locked.");
+	else
+	{
+		//PlaySound
+		Banner("Unlocked");
+		OpenCell(62,58,1);
+	}
+		
+}
+
+void Door4()
+{
+	if(!GlobalFlag)
+		Text(0,"Sean:\It's locked.");
+		
+	else
+	{
+		//PlaySound
+		Banner("Unlocked");
+		OpenCell(73,58,1);
+	}
+}
+
+void Chest4()
+{
+	if(!chests[6])
+	{
+		Banner("Got Ether x2!");
+		GiveItem(ETHER,2);
+		SetTile(62,50,1,509);
+		chests[6]++;
+	}
+	else
+		Banner("Empty!");
+}
+
+void Chest5()
+{
+	if(!chests[7])
+	{
+		Banner("Found Iron Bangle!");
+		GiveItem(26,1);
+		SetTile(73,50,1,509);
+		chests[7]++;
+	}
+	else
+		Banner("Empty!");
+}
+
+void Chest6()
+{
+	if(!chests[8])
+	{
+		Banner("Found Phoenix Down!");
+		GiveItem(PHOENIX_DOWN,1);
+		SetTile(74,50,1,509);
+		Chests[8]++;
+	}
+	else
+		Banner("Empty!");
+}
+
+void Warp6()
+{
+	FadeOut(50);
+	Warp(17,59,player);
+	FadeIn(50);
+}
+
+void Door5()
+{
+	FadeOut(50);
+	Warp(79,37,player);
+	FadeIn(50);
+}
+
+void Door6() // Sara Event
+{
+	
+	FadeOut(50);
+	Warp(65,37,player);
+	if(!isInParty(SARA))
+	{
+		EntityStalk(charent,0-1);
+		EntityMove(charent,"R1F1");
+	}
+	FadeIn(50);
+	if(!isInParty(SARA))
+	{
+		ForceEquip(SARA,1,92);
+		ForceEquip(SARA,2,25);
+		Text(1,"Sara:\Charity! You're alive!");
+		Text(0,"Charty:\I could say the same!");
+		EntityMove(saraent,"D3R2F0");
+		EntityMove(charent,"U1");
+		EntityMove(player,"U1");
+		Wait(50);
+		Text(1,"Sara:\Who's that?");
+		Text(0,"Charity:\This is Sean.");
+		Text(0,"An old friend. He saved me from the cart.");
+		EntityMove(saraent,"L1F0");
+		Text(1,"Sara:\You're...Sean?");
+		EntityMove(saraent,"D1");
+		Wait(100);
+		Text(1,"THE Sean?");
+		EntityMove(player,"F3");
+		TimedText(0,100,"Sean:\What have you told her...?");
+		Text(0,"Charity:\Yes. That's Sean.");
+		EntityMove(player,"F1");
+		Text(0,"Sean:\Nice to meet...you.");
+		Wait(100);
+		Text(1,"Sara:\Something on my face?");
+		wait(50);
+		Text(0,"Sean:\Wha--er no! Sorry.");
+		Text(0,"I was just reminded of someone.");
+		Text(1,"Charity:\So where are we?");
+		EntityMove(saraent,"U1R1F0");
+		wait(50);
+		Text(1,"Sara:\Allowen.");
+		Text(0,"Charity:\That makes sense.");
+		EntityMove(player,"F3");
+		Text(0,"Sean:\Er...it's been awhile and the names have changed since I was here...");
+		EntityMove(charent,"F2");
+		Text(0,"Charity:\Allowen is kind of a midpoint between Redalia and Argonia. Remember Cobble Hill?");
+		Text(0,"Sean:\Of course.");
+		Text(0,"Charity:\It became Allowen.");
+		EntityMove(player,"F1");
+		EntityMove(charent,"F1");
+		Text(1,"Sara:\They built this jail here and it's become a holding point of sorts. In fact, we should probably get out of here before a higher up comes in.");
+		EntityMove(player,"F3");
+		EntityMove(charent,"F2");
+		Text(0,"Charity:\Basically this is where people are held until a more qualified offical can figure out what do with them.");
+		TExt(0,"Sean:\Right.");
+		Text(0,"Charity:\Which reminds me...");
+		EntityMove(charent,"F1");
+		EntityMove(player,"F1");
+		Text(0,"What are you doing here, Sara?");
+		Text(1,"Sara:\Well, after Aaron caught up with Rid and I we went to search the ruins of the wagon to see if you were alright.");
+		Text(1,"We were ambushed by a group of soldiers. Rid and Aaron managed to escape but I was caught.");
+		Text(1,"I was being interogated when all of a sudden the soldier ran out of the room...I suspect he'll be back soon, so we should probably get going.");
+		Text(0,"Sean:\They don't leave people guarded here?");
+		EntityMove(charent,"F2");
+		Text(0,"Charity:\No...once you're in Allowen prison there isn't much of a chance to get out.");
+		EntityMove(player,"F3");
+		Text(0,"Sean:\How come?");
+		Text(1,"Sara:\Big Bruiser, that's why.");
+		EntityMove(player,"F1");
+		EntityMove(charent,"F1");
+		Text(1,"Sara:\The meanest, toughest, prison guard there ever was.");
+		Text(0,"Charity:\It's said he doesn't sleep, constantly keeping an eye on who comes in and out from his tower outside.");
+		Text(0,"Sean:\So how are WE supposed to get out then?");
+		Text(1,"Sara:\Leave that to me...");
+		FadeOut(100);
+		ChangeChr(charent,"sprites/soldier.chr");
+		ChangeChr(player,"sprites/soldier.chr");
+		ChangeChr(saraent,"sprites/soldier.chr");
+		ColourWait(200,RGB(4,4,4));
+		FreeText(10,10,"Ugh.");
+		FreeText(10,10,"This is a really tight fit.");
+		FreeText(100,100,"Does he always complain this much?");
+		FreeText(10,200,"haha");
+		FreeText(10,10,"There's gotta be a bigger set...");
+		FreeText(100,100,"This is all I could find.");
+		FreeText(10,200,"Mine fits perfectly.");
+		FreeText(100,100,"Mine too.");
+		FreeText(10,10,"Well, it's the best shot we've got---what're you...NO PEEKING!");
+		FreeText2(100,100,10,200,"THE Sean huh?","Sara!");
+		FreeTExt(100,100,"Just teasing.");
+		FreeText(10,10,"Can we please go now?");
+		FadeIn(100);
+		Text(1,"Sara:\This feels....");
+		Text(0,"Charity:\Wrong.");
+		Text(0,"Sean:\Well, we want to get out of here so...");
+		EntityStalk(charent,player);
+		EntityStalk(saraent,charent);
+		AddChr(SARA);
+		flags[3]++;
+	}
+}
+
+void Warp7() // Soldier event
+{
+	FadeOut(50);
+	Warp(25,90,player);
+	FadeIn(50);
+	if(!isInParty(SARA))
+	{
+		Text(0,"Sean:\There's too many. We better lay low until their meeting is over.");
+		FadeOut(50);
+		Warp(66,17,player);
+		FadeIn(50);
+	}
+	else
+	{
+		PlayerMove("L3");
+		EntityMove(3,"F3");
+		Text(0,"Hey! You three!");
+		Text(0,"Sean:\Er....us?");
+		Text(0,"Yeah you!");
+		EntityStalk(charent,0-1);
+		EntityStalk(saraent,0-1);
+		EntityMove(charent,"D1L1");
+		EntityMove(saraent,"D2L2");
+		EntityMove(3,"R4W100D1F3W100D1F3W100U2F3");
+		Wait(500);
+		Text(0,"Soldier\Why weren't you at the meeting?");
+		Text(0,"Sean:\uh...");
+		Text(0,"Charity:\Sorry sir, we were assigned to lavatory duty sir!");
+		EntityMove(3,"D1F3");
+		Text(0,"Soldier:\It took three of you to clean the toilets?");
+		Text(0,"Sara:\Sir, yes sir.");
+		Text(0,"They were quite a mess, sir!");
+		EntityMove(3,"D1F3W200U2F3W100");
+		Wait(200);
+		Text(0,"Soldier:\Very well.\Report to the upper grounds and prepare for Commander Barnes' arrival.");
+		Text(0,"Dismissed!");
+		EntityMove(3,"L4");
+		TimedText(0,100,"Sean, Charity, Sara: \Yes Sir!");
+		FadeOut(100);
+		MusicFade(100);
+		cameratracking = 0;
+		xwin = 1064; ywin = 1360;
+		Warp(76,102,player);
+		Warp(77,98,charent);
+		Warp(78,98,saraent);
+		entityMove(saraent,"U4");
+		entityMove(charent,"U4");
+		//EntityMove(player,"F1");
+		FadeIn(100);
+		Text(1,"Charity:\Wait.");
+		EntityMove(saraent,"F2");
+		Text(1,"Sara:\What?");
+		EntityMove(charent,"F3");
+		Text(1,"Charity:\Where's Sean?");
+		ChangeChr(player,"Sprites/sean.chr");
+		EntityMove(player,"U8F3");
+		Log(str(xwin)+" "+str(ywin));
+		Wait(100);
+		Text(1,"Sean:\Man it's good to be out of that uniform");
+		EntityMove(charent,"F2");
+		Wait(100);
+		Text(1,"Charity:\.....");
+		Wait(100);
+		Text(1,"Sean:\...What?");
+		Text(1,"Sara:\The damned prison guard you moron!");
+		Text(1,"Sean:\Oh...");
+		FadeOut(10);
+		ChangeChr(charent,"sprites/charity.chr");
+		ChangeChr(saraent,"Sprites/sara.chr");
+		FadeIn(10);
+		EntityMove(charent,"F1");
+		EntityMove(player,"F1");
+		EntityMove(saraent,"F1");
+		Text(1,"Charity:\Here he comes!");
+		
+		bossflag++;
+		batArea = 3;
+		batTerrain = PLAINS;
+		StartBS(2);
+		FadeOut(100);
+		Map("dungeon.map");
+	}
+}
+
+void Warp8()
+{
+	Fadeout(50);
+	Warp(79,14,player);
+	FadeIn(50);
+}
+
+void Warp9()
+{
+	FadeOut(50);
+	Warp(73,14,player);
+	FadeIn(50);
+}
+
+void GetKey()
+{
+	if(!globalflag)
+	{
+		Banner("Found Cell Key!");
+		SetTile(80,31,3,0);
+		globalflag++;
+	}
+}
+
+
+void CallBattle()
+{
+	if(chests[3] && chests[4])
+	{	
+		BatFlag++;
+		Curx = Entity.x[player]/16; Cury = Entity.y[player]/16;
+		StartBS(1);
+	}
+}

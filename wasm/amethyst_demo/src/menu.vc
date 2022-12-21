@@ -1,0 +1,384 @@
+// Amethyst Menu System
+// Code by Sean "Rysen" Oyler
+// Most functions are dependant on functions found in: text.vc, items.vc, equip.vc, magic.vc and party.vc
+
+
+struct menuSound {
+	int pnt, select, cancel, buzz, cure, start, savpnt;
+};
+
+menusound menusounds;
+
+void LoadMenuSounds()
+{
+	menusounds.pnt = LoadSound("sounds/pnt.wav");
+	menusounds.select = LoadSound("sounds/select.wav");
+	menusounds.cancel = LoadSound("sounds/cancel.wav");
+	menusounds.buzz = LoadSound("sounds/buzz.wav");
+	menusounds.cure = LoadSound("sounds/cure.wav");
+	menusounds.start = LoadSound("sounds/ff7save.wav");
+	menusounds.savpnt = LoadSound("Sounds/savepnt.wav");
+}
+
+void freeMenuSounds()
+{
+	freeSound(menusounds.pnt);
+	freesound(menusounds.select);
+	freesound(menusounds.cancel);
+	freesound(menusounds.buzz);
+	freeSound(menusounds.cure);
+}
+
+void menuBg()
+{
+	int a;
+   	rectfill(0,0,320,240,RGB(4,4,4),screen);
+   	DGW(0,0,160,50);
+   	DGW(0,50,160,100);
+   	DGW(0,100,160,150);
+   	DGW(0,150,160,200);
+   	DGW(0,200,160,240);
+   	DGW(160,0,319,50);
+   	For(a=1; a<numchars+1; a++)
+   	{
+   		 if(partyindex[a])
+   		 {
+   			  TBLit(2,5+(a-1*50),party[partyindex[a]].pic,screen);
+   			  PutText(25,10+(a-1*50),party[partyindex[a]].name+"  lvl."+str(party[partyindex[a]].lvl));
+   			  PutText(25,20+(a-1*50),"HP: "+str(party[partyindex[a]].curhp)+"/"+str(party[partyindex[a]].maxhp));
+   			  PutText(25,30+(a-1*50),"MP: "+str(party[partyindex[a]].curmp)+"/"+str(party[partyindex[a]].maxmp));
+   		  
+   		   }
+   	  }
+   	 PutText(170,5,"Items");
+   	 PutText(170,15,"Learn");
+   	 PutText(170,25,"Magic");
+   	 PutText(170,35,"Equip");
+   	 PutText(250,5,"Status");
+   	 PutText(250,15,"Order");
+   	 PutText(250,25,"Config");
+   	 PutText(250,35,"Exit");
+   	 PutText(5,210,"Amera: "+str(amera));
+   	 PutText(5,220,"Time: "+time.TimeNum);
+ }
+ 
+ void MenuBanner()
+ {
+ 	while(!b1)
+ 	{
+ 		Render();
+ 		MenuBg();
+ 		PrintCenter(0, 20, screen, fnt, "Not in yet");
+ 		ShowPage();
+ 	}
+ 	Unpress(1);
+ }
+ 	
+ 
+ void Menu()
+ {
+  int menBg, pointer, p2, py, px, done, tmp;
+  int help;
+  py=1;
+  px=1;
+  HookKey(1,"");
+  pointer = LoadImage("Pics/pointer.pcx");
+  while(!done)
+  {
+   Render();
+   menuBg();
+   TBlit(65+(80*px),0-5+(10*py),pointer,screen); 
+   if(up) { Unpress(5); PlaySound(menusounds.pnt,100); py--; } // Add GamePad Support
+   if(down) { Unpress(6); PlaySound(menusounds.pnt,100); py++; }
+   if(left) { Unpress(7); PlaySound(menusounds.pnt,100); px++; }
+   if(right) { Unpress(8); PlaySound(menusounds.pnt,100); px--;}
+   if(px>2) { px=1; }
+   if(px<1) { px=2; }
+   if(py>4) { py=1; }
+   if(py<1) { py=4; }
+   if(help)
+   {
+   	DGW(0,200,320,240);
+   	switch(py)
+   	{
+   		case 1:
+   		if(px==1)
+   			WrapText(5, 205, 319, 239, "Use or view Items gathered during the game");
+   		else if(px==2)
+   			WrapText(5,205,319,239,"View the full status points for each area of development.");
+   		case 2:
+   		if(px==1)
+   			WrapText(5,205,319,239,"Set or view abilities that can be learned by a party member");
+   		else if(px==2)
+   			WrapText(5,205,319,239,"Change the Order your party is travelling in.");
+   		case 3:
+   		if(px==1)
+   			WrapText(5,205,319,239,"Use or view abilities learned by a party member.");
+   		else if(px==2)
+   			WrapText(5,205,319,239,"Customize colour, sound and other options. (Not Implimented Yet)");
+   		case 4:
+   		if(px==1)
+   			WrapText(5,205,319,239,"Change weapons/armor/accessories, currently worn by a party member.");
+   		if(px==2)
+   			WrapText(5,205,319,239,"Quit your current game without saving.");
+   	}
+   }
+   
+   if(b4)
+   {
+   	Unpress(4);
+   	if(help)
+   		help==0;
+   	else
+   		help++;
+   }
+   
+   if(b2)
+   {
+   	unpress(2);
+   	done++;
+   	FreeImage(pointer);
+   }
+   if(b1)
+   {
+    	Unpress(1);
+    	PlaySound(menusounds.select,100);
+    	Switch(py)
+    	{
+    		 case 1: // Items
+    		 done++;
+    		 if(px==1)
+    		 	IMenu();
+    		 else 
+    		 	ChooseChar(3); // Status
+    		 case 2: // Learn/Order
+    		 done++;
+    		 if(px==1)
+    		 	ChooseChar(2);
+    		 else
+    		 	Order();
+    		 case 3: // Magic
+    		 if(px==1)
+    		 {
+    		 	done++;
+    		 	ChooseChar(4);
+    		 }
+    		 else
+    		 	PlaySound(menusounds.buzz,100);
+    		 case 4: // Equip
+    		 done++;
+    		 if(px==1)
+    		 	ChooseChar(1);
+    		 else
+    		 	QuitPrompt();
+     	}
+    }
+   showPage();
+   UpdateControls();
+  }
+ 	HookKey(1,"Menu");
+ }
+ 
+ void QuitPrompt()
+ {
+ 	int start, py;
+ 	int pointer = LoadImage("pics/pointer.pcx");
+ 	GenerateGradient(bgc1,bgc2);
+ 	py = 1;
+ 	start = (ImageWidth(screen)/2)-(TextWidth(fnt,"Are you sure you want to quit?")/2);
+ 	while(!b1)
+ 	{
+ 		Render();
+ 		MenuBg();
+ 		DGW(start,120,start+(TextWidth(fnt,"Are you sure you want to quit?")+20),155);
+ 		PutText(start+5,125,"Are you sure you want to quit?");
+ 		PutText(start+5,135,"Yes");
+ 		PutText(start+5,145,"No");
+ 		TBLit(start-20,125+(10*py),pointer,screen);
+ 		ShowPage();
+ 		UpdateControls();
+ 		if(up)
+ 		{
+ 			Unpress(5); 
+ 			PlaySound(menusounds.pnt,100);
+ 			py--;
+ 			if(py<1)
+ 				py=2;
+ 		}
+ 		if(down)
+ 		{
+ 			Unpress(6); 
+ 			PlaySound(menusounds.pnt,100);
+ 			py++;
+ 			if(py>2)
+ 				py=1;
+ 		}
+ 		if(b2)
+ 		{
+ 			unpress(2);
+ 			PlaySound(menusounds.cancel,100);
+ 			py=2;
+ 		}
+ 	}
+ 	Unpress(1);
+ 	freeImage(pointer);
+ 	if(py==1)
+ 		Exit("Thanks for playing! http://rysen.actionsketch.com");
+ 	else if(py==2)
+ 	{
+ 		PlaySound(menusounds.cancel,100);
+ 		Menu();
+	}	
+}
+ 
+ void ChooseChar(int itm)
+ {
+ 	int pointer, py, done;
+ 	py=1;
+ 	pointer = loadimage("pics/p2.pcx");
+ 	
+ 	while(!done)
+ 	{
+ 		render();
+ 		MenuBg();
+ 		TBlit(140,0-30+(50*py),pointer,screen);
+ 		showPage();
+ 		updatecontrols();
+ 		if(up)
+ 		{
+ 			Unpress(5); 
+ 			PlaySound(menusounds.pnt,100);
+ 			py--;
+ 		}
+ 		if(down)
+ 		{
+ 			Unpress(6);
+ 			PlaySound(menusounds.pnt,100);
+ 			py++;
+ 		}
+ 		if(py<1)
+ 			py=numchars;
+ 		if(py>numchars)
+ 			py=1;
+ 		if(b2)
+ 		{
+ 			Unpress(2);
+ 			freeImage(pointer);
+ 			done++;
+ 			menu();
+ 		}
+ 		if(b1)
+ 		{
+ 			unpress(1);
+ 			PlaySound(menusounds.select,100);
+ 			done++;
+ 			freeImage(pointer);
+ 			switch(itm)
+ 			{
+ 				case 1: // EquipMenu
+ 				EMenu(partyindex[py]);
+ 				case 2:
+ 				LearnMenu(partyindex[py]);
+ 				case 3:
+ 				statusMenu(partyindex[py]);
+ 				case 4:
+ 				MagicMenu(partyindex[py]);
+ 			}
+ 		}
+ 	}
+ 	
+ }
+ 
+void Order()
+{
+	int pointer, pointer2, tmpx, tmpy, choose;
+  	int py, py2, done;
+  	py=1;
+  	pointer = loadimage("pics/p2.pcx");
+  	pointer2 = loadimage("pics/p3.pcx");
+  	
+  	while(!done)
+  	{
+  		 Render();
+  		 MenuBG();
+  		 TBlit(140,0-30+(50*py),pointer,screen);
+  		 if(choose) { TBlit(140,0-30+(50*py2),pointer2,screen); }
+  		 showpage();
+  		 updatecontrols();
+  		 if(up && !choose) { unpress(5); PlaySound(menusounds.pnt,100); py--; }
+  		 if(up && choose) { unpress(5); PlaySound(menusounds.pnt,100); py2--; }
+  		 if(down && !choose) { unpress(6); PlaySound(menusounds.pnt,100); py++; }
+  		 if(down && choose) { unpress(6); PlaySound(menusounds.pnt,100); py2++; }
+  		 if(py>numchars) { py=1; }
+  		 if(py<1) { py=numchars; }
+  		 if(py2<1) { py2=numchars; }
+  		 if(py2>numchars) { py2=1; }
+  		 if(b2) 
+  		 { 
+  			  if(choose) 
+  			  { 
+  				   choose=0; 
+  			   } 
+  			  Else 
+  			  { 
+  				   unpress(0); 
+  				   done++; 
+  				   freeimage(pointer);
+  				   freeImage(pointer2); 
+  				   menu(); 
+  			   } 
+  		  }
+  		 if(b1)
+  		 {
+  			  unpress(1);
+  			  PlaySound(menusounds.select,100);
+  			  if(!choose) { py2=py+1; tmpx=partyindex[py]; choose++; }
+  			  Else
+  			  {
+  				   tmpy=partyindex[py2];
+  				   partyindex[py]=tmpy;
+  				   partyindex[py2]=tmpx;
+  				   choose=0;
+  			   }
+  		  }
+  	 }
+  	
+  }
+  
+  void StatusMenu(int par)
+  {
+  	while(!b2)
+  	{
+  		Render();
+  		MenuBg();
+  		DGW(160,50,319,239);
+  		TBlit(160,50,party[par].pic,screen);
+  		PutText(185,55,party[par].name+" Lvl."+str(party[par].lvl));
+  		PutText(185,65,"HP: "+str(party[par].curhp)+"/"+str(party[par].MaxHp));
+  		PutText(185,75,"MP: "+str(party[par].curMp)+"/"+str(party[par].MaxMp));
+  		
+  		PutText(170,95,"STR: "+str(party[par].str));
+  		PutText(250,95,"DEF: "+str(party[par].def));
+  		PutText(170,105,"MAG: "+str(party[par].mag));
+  		PutText(250,105,"MGR: "+str(Party[par].mgr));
+  		PutText(170,115,"DOD: "+str(party[par].dod)+"%");
+  		PutText(250,115,"HIT: "+str(party[par].hit)+"%");
+  		PutText(170,125,"SPD: "+str(party[par].spd));
+  		PutText(250,125,"LUC: "+str(party[par].luc));
+  		
+  		PutText(170,145,"Skill lvl.: "+str(party[par].magiclvl));
+  		PutText(170,155,"Exp.: "+str(party[par].exp));
+  		PutText(170,165,"Next lvl.: "+str(party[par].nxt));
+  		
+  		PutText(170,185,"Weapon: "+Item[party[par].weap].name);
+  		PutText(170,195,"Armor : "+Item[party[par].arm].name);
+  		PutText(170,205,"Access: "+Item[party[par].acc].name);
+  		
+  		ShowPage();
+  		UpdateControls();
+  	}
+  	Unpress(2);
+
+  	Menu();
+  }
+  
