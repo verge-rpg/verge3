@@ -62,7 +62,7 @@ image* create_image_from_24bit_corona(corona::Image* img)
 	return ImageFrom24bpp((byte*)converted_img->getPixels(), converted_img->getWidth(), converted_img->getHeight());
 }
 
-int convert_quad_palette_to_triplets(corona::Image* img)
+int convert_rgba_palette_to_rgb(corona::Image* img)
 {
 	int transparency_index = 0;
 	unsigned char* p = (unsigned char*)img->getPalette();
@@ -80,6 +80,47 @@ int convert_quad_palette_to_triplets(corona::Image* img)
 		}
 	}
 	return transparency_index;
+}
+
+int convert_bgra_palette_to_rgb(corona::Image* img)
+{
+	int transparency_index = 0;
+	unsigned char* p = (unsigned char*)img->getPalette();
+	int c = img->getPaletteSize();
+	unsigned char* ps = p + 4;
+	unsigned char* pd = p + 3;
+	for (int i = 1; i < c; i++)
+	{
+		char b = *ps++;
+		char g = *ps++;
+		char r = *ps++;
+		char a = *ps++;		
+		*pd++ = r;
+		*pd++ = g;
+		*pd++ = b;
+		if (!a)
+		{
+			transparency_index = i;
+		}
+	}
+	return transparency_index;
+}
+
+void convert_bgr_palette_to_rgb(corona::Image* img)
+{
+	unsigned char* p = (unsigned char*)img->getPalette();
+	int c = img->getPaletteSize();
+	unsigned char* ps = p + 4;
+	unsigned char* pd = p + 3;
+	for (int i = 1; i < c; i++)
+	{
+		char b = *ps++;
+		char g = *ps++;
+		char r = *ps++;
+		*pd++ = r;
+		*pd++ = g;
+		*pd++ = b;
+	}
 }
 
 image* create_image_from_8bit_corona(corona::Image* img, int transparency_index, int tflag)
@@ -105,18 +146,21 @@ image* load_image(const char* fname, bool use_transparency_index, int tflag)
 	if (img->getFormat() == corona::PF_I8)
 	{
 		int transparency_index = 0;
-		if (img->getPaletteFormat() != corona::PF_R8G8B8)
+		switch (img->getPaletteFormat())
 		{
-			//we can convert this one. we get it with new corona 1.0.2
-			//8bpp gif loader
-			if (img->getPaletteFormat() == corona::PF_R8G8B8A8)
-			{
-				transparency_index = convert_quad_palette_to_triplets(img);
-			}
-			else
-			{
-				err("loadimage: couldnt load image %s; unexpected pixel format", fname);
-			}
+			case corona::PF_R8G8B8:
+				break;
+			case corona::PF_R8G8B8A8:
+				transparency_index = convert_rgba_palette_to_rgb(img);
+				break;
+			case corona::PF_B8G8R8A8:
+				transparency_index = convert_bgra_palette_to_rgb(img);
+				break;
+			case corona::PF_B8G8R8:
+				convert_bgr_palette_to_rgb(img);
+				break;
+			default:
+				err("loadimage: couldnt load image %s; unexpected palette format %d", fname, img->getPaletteFormat());
 		}
 
 		return create_image_from_8bit_corona(img, use_transparency_index ? transparency_index : 0, tflag);
