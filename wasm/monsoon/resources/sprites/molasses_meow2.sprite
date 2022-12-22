@@ -1,5 +1,5 @@
 [ The hero sprite sheet ]
-+ image: "molasses_meow.png"
++ image: "molasses_meow2.png"
 + frame_width: 24
 + frame_height: 24
 + frame_columns: 5
@@ -22,7 +22,7 @@
         B = Back to beginning (looping animation)
 ]
 + animations
-        * idle: f5w20b 
+        * idle: f5w50f8w50f5w50f8w50f7w15f5w35f8w50b 
         * walk: f5w15f6w15b
         * run: f5w10f6w10b
         * jump: f6w20b

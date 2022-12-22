@@ -2,9 +2,9 @@
 resource_loader = {}
 resources = nil
 
-local WINDOW_COLOR_FILL = vx.RGB(0x06, 0x40, 0x55)
+local WINDOW_COLOR_FILL = vx.RGB(0xE, 0xE, 0x12)
 local WINDOW_COLOR_FILL2 = vx.RGB(0x84, 0x38, 0x9C)
-local WINDOW_COLOR_OUTLINE = vx.RGB(0x00, 0xFF, 0xFF)
+local WINDOW_COLOR_OUTLINE = vx.RGB(0xFB, 0xD9, 0xB3)
 
 function resource_loader.Load()
     resources = {}
@@ -45,8 +45,8 @@ function resource_loader.DrawProgressGauge(message, current, total)
     vx.screen:RectFill(vx.screen.width / 2 - 50, vx.screen.height / 2 - 15, vx.screen.width / 2 - 50 + progress, vx.screen.height / 2 - 10, WINDOW_COLOR_FILL2)
     vx.screen:Rect(vx.screen.width / 2 - 50, vx.screen.height / 2 - 15, vx.screen.width / 2 - 50 + progress, vx.screen.height / 2 - 10, WINDOW_COLOR_OUTLINE)
     vx.screen:Rect(vx.screen.width / 2 - 50, vx.screen.height / 2 - 15, vx.screen.width / 2 + 50, vx.screen.height / 2 - 10, WINDOW_COLOR_OUTLINE)
-    font:PrintCenter(vx.screen.width / 2,
+    --[[font:PrintCenter(vx.screen.width / 2,
             vx.screen.height / 2,
-            message)
+            message)]]
     vx.ShowPage()
 end

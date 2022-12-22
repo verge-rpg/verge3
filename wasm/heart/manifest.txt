@@ -54,10 +54,6 @@ MapedPreferences.xml
 music/yfforest.it
 music/yftown.it
 README.txt
-save00.sav
-save01.sav
-save02.sav
-save03.sav
 sounds/bubbles.ogg
 sounds/fireball.ogg
 sounds/gasp3.ogg

@@ -7,6 +7,7 @@ vergeclass 'Entity'(Sprite) do
 		self.x_speed = 0
 		self.y_speed = 0
         self.climb_slopes = false
+        self.descending = false
 		self.grip_floor = false
         self.can_target = true
         self.hostile = false
@@ -57,13 +58,16 @@ vergeclass 'Entity'(Sprite) do
 	end
 
 	function Entity:PreventFloorClipping()
-		prevent_clip = false
+		prevent_clip = 0
 		while self:LocateGround() and self.y > 0 do
 			self.y = self.y - 1
-			prevent_clip = true
+			prevent_clip = prevent_clip + 1
 		end
-		if prevent_clip then
+		if prevent_clip > 0 then
 			self.y = self.y + 1
+            if self.grip_floor and prevent_clip > 1 and not self.descending then
+                self.x_speed = self.x_speed * 0.93
+            end
 		end
 	end
 
@@ -72,10 +76,13 @@ vergeclass 'Entity'(Sprite) do
 		if not self.grip_floor or not self.climb_slopes then
 			return
 		end
+        self.descending = false
 		if not self:LocateGround() then
 			self.y = self.y + MAXIMUM_SLOPE
 			if not self:LocateGround() then
 				self.y = self.y - MAXIMUM_SLOPE
+            else
+                self.descending = true
 			end
 		end
 	end

@@ -1,21 +1,24 @@
 vergeclass 'Player'(Entity) do
     local JUMP_MAX_HEIGHT = 64
-    local JUMP_SPEED = 2.0
+    local JUMP_START_SPEED = 2.0
+    local JUMP_END_SPEED = 0.5
+    local JUMP_DECEL = 0.005
     
     local MOVEMENT_MAX_SPEED = 1.5
     local LAND_ACCELERATION = 0.05
     local LAND_FRICTION = 0.90
-    local AIR_ACCELERATION = 0.03
+    local AIR_ACCELERATION = 0.015
     
     
     function Player:__init(...)
         super(...)
         
         self.bounce_timer = 0
+        self.invincibility_timer = 0
         
         -- Typical setup stuff
-        self.hp = 5
-        self.max_hp = 5
+        self.lives = 1
+        self.max_lives = 9
         self.moving = false
         self.can_jump = false
         self.jump = false
@@ -24,7 +27,9 @@ vergeclass 'Player'(Entity) do
         self.fall_duration = 0
         self.jump_height = 0
         
-        self.jump_speed = JUMP_SPEED
+        self.jump_speed = 0
+        self.start_jump_speed = JUMP_START_SPEED
+        self.end_jump_speed = JUMP_END_SPEED
         self.max_jump_height = JUMP_MAX_HEIGHT
         
         -- Attack related stuff
@@ -41,20 +46,50 @@ vergeclass 'Player'(Entity) do
         self.z_index = 1
     end
     
+    function Player:ResetInvincibility()
+        self.invincibility_timer = 100
+    end
+    
+    function Player:Die()
+        -- Can't be hurt if still stunned.
+        if self.invincibility_timer > 0 then
+            return false
+        end
+        
+        self.lives = self.lives - 1
+        self:ResetInvincibility()
+        
+        -- If you're out of lives, game over!
+        if self.lives <= 0 then
+        end
+        
+        return true
+    end
+    
     function Player:Update()
+        if self.invincibility_timer > 0 then
+            self.visible = math.floor(self.invincibility_timer / 5) % 2 == 0
+            self.invincibility_timer = self.invincibility_timer - 1
+            if self.invincibility_timer == 0 then
+                self.visible = true
+            end
+        end
+        
         self.stance = 'idle'
         self.moving = false
         
         self:HandleWalk()
         self:HandleAir()
 
-        -- Process interactions
-        self:HandleZone()
-        self:HandleInvestigate()
+        if not textbox_active then
+            -- Process interactions
+            self:HandleZone()
+            --self:HandleInvestigate()
 
-        -- Process weapon and attack related junk!
-        self:HandleWeapon()
-
+            -- Process weapon and attack related junk!
+            self:HandleWeapon()
+        end
+        
         -- Update the entity
         Entity.Update(self)
         
@@ -62,15 +97,18 @@ vergeclass 'Player'(Entity) do
         self:SetAnimation(self.stance)
     end
     
+    -- For restoring the update function.
+    Player.DefaultUpdate = Player.Update
+    
     function Player:HandleWalk()
         -- If we press left, walk
-        if button.Left.pressed then
+        if not textbox_active and button.Left.pressed then
             self.stance = 'walk'
             self.direction = direction.Left
             self.moving = true
             self.x_speed = math.max(self.x_speed - LAND_ACCELERATION, -MOVEMENT_MAX_SPEED)
         -- If we press right, walk
-        elseif button.Right.pressed then
+        elseif not textbox_active and button.Right.pressed then
             self.stance = 'walk'
             self.direction = direction.Right
             self.moving = true
@@ -90,7 +128,11 @@ vergeclass 'Player'(Entity) do
 
         -- Bumped the ceiling!
         if self:LocateCeiling() and self.bounce_timer < 0 and (self.jump or self.fall) then
-            resources.sounds.ceiling_bounce:Play()
+            -- Check if it was a save block.
+            if not self:HandleSaveBlock() then
+                -- Otherwise, make a bouncing sound.
+                resources.sounds.ceiling_bounce:Play()
+            end
             self.bounce_timer = 10
         end
         
@@ -112,7 +154,8 @@ vergeclass 'Player'(Entity) do
     end
     
     function Player:HandleJump()
-        if not self.can_jump then
+        if not self.can_jump or textbox_active then
+            self.jump = false
             return
         end
         
@@ -132,17 +175,24 @@ vergeclass 'Player'(Entity) do
     
     function Player:PrepareJump()
         self.jump_height = self.max_jump_height
+        self.jump_speed = self.start_jump_speed
         self.jump = true
         self.grip_floor = false
         resources.sounds.jump:Play()
     end
     
     function Player:SustainJump()
-        local jump_speed = math.min(self.jump_height, self.jump_speed)
+        if self.jump_speed > self.end_jump_speed then
+            self.jump_speed = math.max(self.jump_speed - JUMP_DECEL, self.end_jump_speed)
+        end
+    
+        --local jump_speed = math.min(self.jump_height, self.jump_speed)
+        local jump_speed = self.jump_speed
 
         self.y_speed = -jump_speed
         self.jump_height = self.jump_height - jump_speed
-        if self.jump_height == 0 or not self.jump or self:LocateCeiling() then
+        if self.jump_height <= 0 or not self.jump or self:LocateCeiling() then
+            self.jump_speed = 0
             self.jump = false
             self.fall = true
             button.Jump.pressed = false
@@ -203,25 +253,43 @@ vergeclass 'Player'(Entity) do
         end
     end
 
+    function Player:HandleSaveBlock()
+        local block = 81
+        local hotspot = self:GetHotspot('main')
+        local x = (self.x) / 16
+        local x2 = (self.x + hotspot.width) / 16
+        local y = (self.y) / 16 - 1
+        if vx.map:GetTile(x, y, 1) == block then
+            SaveBlock(x, y)
+            return true
+        elseif vx.map:GetTile(x2, y, 1) == block then
+            SaveBlock(x2, y)
+            return true
+        end
+        return false
+    end
+
     function Player:HandleZone()
-        local x = (self.x + 8) / 16
-        local y = (self.y + 8) / 16
-        local z = vx.map:GetZone(x, y)
-        if z > 0 then
-            name = vx.map.zone[z].name
-            if name:find('<') then
-                local t = {}
-                name:gsub('[^<>(),]+', function(item) table.insert(t, item) end)
-                local x, y, filename = unpack(t)
-                MapSwitch(tonumber(x), tonumber(y), filename)
-                --vx.Exit('(' .. x .. ', ' .. y .. ') in "' .. filename .. '"')
-            else
-                vx.CallFunction(vx.map.zone[z].event, {x = x, y = y, zone = z})
+        for i = 0, 1 do
+            local x = self.x / 16 + i
+            local y = (self.y + 8) / 16
+            local z = vx.map:GetZone(x, y)
+            if z > 0 then
+                name = vx.map.zone[z].name
+                if name:find('<') then
+                    local t = {}
+                    name:gsub('[^<>(),]+', function(item) table.insert(t, item) end)
+                    local x, y, filename = unpack(t)
+                    MapSwitch(tonumber(x), tonumber(y), filename)
+                    --vx.Exit('(' .. x .. ', ' .. y .. ') in "' .. filename .. '"')
+                else
+                    vx.CallFunction(vx.map.zone[z].event, {x = x, y = y, zone = z})
+                end
             end
         end
     end
     
-    function Player:HandleInvestigate()
+    --[[function Player:HandleInvestigate()
         -- If we press up, activate things
         if button.Up.pressed then
             for idx, s in ipairs(sprites) do
@@ -234,7 +302,7 @@ vergeclass 'Player'(Entity) do
             end
             button.Up.pressed = false
         end
-    end
+    end]]
 
     function Player:HandleProjectiles()
         local idx = 1

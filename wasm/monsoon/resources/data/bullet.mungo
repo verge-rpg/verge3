@@ -3,3 +3,11 @@
         - move: Simple
         - speed: 2.5
         - damage: 1
+        - particle_count: 2
+        - particle_type: 'pea_shot_particle'
+* pea_shot_particle
+        - filename: "resources/sprites/shot_particle.sprite"
+        - move: Particle
+        - speed: 2.5
+        - damage: 0
+        - lucent: 75

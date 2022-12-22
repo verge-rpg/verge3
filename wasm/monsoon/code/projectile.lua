@@ -1,3 +1,5 @@
+SHOW_PARTICLES = false
+
 vergeclass 'Bullet' do
     function Bullet:__init(name, bullet_info)
         self.name = name
@@ -8,6 +10,9 @@ vergeclass 'Bullet' do
         self.move = BulletAction[bullet_info.move]
         self.speed = tonumber(bullet_info.speed)
         self.damage = tonumber(bullet_info.damage)
+        self.particle_count = tonumber(bullet_info.particle_count)
+        self.particle_type = tostring(bullet_info.particle_type)
+        self.lucent = tonumber(bullet_info.lucent) or 0
     end
 end
 
@@ -24,6 +29,24 @@ function InitBullets()
 end
 
 BulletAction = {}
+function BulletAction.Particle(self)
+    if not self.init then
+        self.time = 500
+        self.init = true
+    end
+    
+    self.time = self.time - 1
+    if self.time == 0 then
+        if self.death_sound then
+            self.death_sound:Play()
+        end
+        self.dispose = true
+        return
+    end
+    self.x = self.x + math.cos(self.angle) * self.bullet.speed
+    self.y = self.y + math.sin(self.angle) * self.bullet.speed
+end
+
 function BulletAction.Simple(self)
     local target = self:FindTarget()
     
@@ -35,6 +58,7 @@ function BulletAction.Simple(self)
             self.death_sound:Play()
         end
         self:DestroyHeart()
+        self:DisplaceDiamond()
         self.dispose = true
         return
     end
@@ -64,6 +88,7 @@ vergeclass 'Projectile'(Sprite) do
         self.visible = false
         self.target_hostile = target_hostile
         self.bullet = bullet
+        self.lucent = bullet.lucent
         self:SetAnimation('move')
     end
     
@@ -76,27 +101,83 @@ vergeclass 'Projectile'(Sprite) do
         return vx.map:GetObsPixel(x, y) or vx.map:GetObsPixel(x, y2) or vx.map:GetObsPixel(x2, y) or vx.map:GetObsPixel(x2, y2)
     end
     
+    local HEART = 80
+    local DIAMOND = 95
     function Projectile:DestroyHeart()
-        local heart = 80
         local hotspot = self:GetHotspot('main')
-        local x = (self.x) / 16
-        local x2 = (self.x + hotspot.width) / 16
-        local y = (self.y) / 16
-        local y2 = (self.y + hotspot.height) / 16
-        if vx.map:GetTile(x, y, 1) == heart then
+        local x = math.floor(self.x / 16)
+        local x2 = math.floor((self.x + hotspot.width) / 16)
+        local y = math.floor(self.y / 16)
+        local y2 = math.floor((self.y + hotspot.height) / 16)
+        if vx.map:GetTile(x, y, 1) == HEART then
             DestroyTile(x, y)
-        elseif vx.map:GetTile(x, y2, 1) == heart then
+        elseif vx.map:GetTile(x, y2, 1) == HEART then
             DestroyTile(x, y2)
-        elseif vx.map:GetTile(x2, y, 1) == heart then
+        elseif vx.map:GetTile(x2, y, 1) == HEART then
             DestroyTile(x2, y)
-        elseif vx.map:GetTile(x2, y2, 1) == heart then
+        elseif vx.map:GetTile(x2, y2, 1) == HEART then
             DestroyTile(x2, y2)
+        end
+    end
+    
+    
+    local function near(a, b)
+        return math.abs(a - b) % (2 * math.pi) < 0.1
+    end
+    
+    local function DisplaceTile(x, y, direction)
+        if vx.map:GetTile(x, y, 1) == DIAMOND then
+            if near(direction, 0) then
+                if vx.map:GetObs(x + 1, y) == 0 then
+                    player.x = (x + 1) * 16
+                    player.y = y * 16 + 1
+                else
+                    player.x = (x - 1) * 16
+                    player.y = y * 16 + 1
+                end
+            elseif near(direction, math.pi / 2) then
+                if vx.map:GetObs(x, y - 1) == 0 then
+                    player.x = x * 16
+                    player.y = (y - 1) * 16 + 1
+                else
+                end 
+            elseif near(direction, math.pi) then
+                if vx.map:GetObs(x - 1, y) == 0 then
+                    player.x = (x - 1) * 16
+                    player.y = y * 16 + 1
+                else
+                    player.x = (x + 1) * 16
+                    player.y = y * 16 + 1
+                end
+            elseif near(direction, math.pi * 3 / 2) then
+                if vx.map:GetObs(x, y + 1) == 0 then
+                    player.x = x * 16
+                    player.y = (y + 1) * 16 + 1
+                else
+                end
+            end
+            return true
+        end
+        return false
+    end
+    
+    function Projectile:DisplaceDiamond()
+        local hotspot = self:GetHotspot('main')
+        local x = math.floor(self.x / 16)
+        local x2 = math.floor((self.x + hotspot.width) / 16)
+        local y = math.floor(self.y / 16)
+        local y2 = math.floor((self.y + hotspot.height) / 16)
+        if DisplaceTile(x, y, self.angle)
+            or DisplaceTile(x, y2, self.angle)
+            or DisplaceTile(x2, y, self.angle)
+            or DisplaceTile(x2, y2, self.angle)
+        then
         end
     end
     
     function Projectile:FindTarget()
         for i, s in ipairs(sprites) do
-            if s.can_target and s ~= self and self.target_hostile == s.hostile then
+            if s.can_target and s ~= self and self.target_hostile == s.hostile and s.visible then
                 if self:Touches(s) then
                     return s
                 end
@@ -107,13 +188,18 @@ vergeclass 'Projectile'(Sprite) do
     
     function Projectile:Update()
         self.visible = true
-        if self.x < vx.camera.x - 10
-            or self.x > vx.camera.x + vx.screen.width + 10
-            or self.y < vx.camera.y - 10
-            or self.y > vx.camera.y + vx.screen.height + 10 then
-                self.dispose = true
+        if not camera:ContainsPoint(self.x, self.y) then
+            self.dispose = true
         end
         self.bullet.move(self)
+        if self.dispose and SHOW_PARTICLES then
+            if self.bullet.particle_count then
+                for i = 1, self.bullet.particle_count do
+                    Projectile(self.x, self.y, self.angle + math.random() * 2 * math.pi, bullets[self.bullet.particle_type], 0, false)
+                end
+            end
+        end
+        
         Sprite.Update(self)
     end
 end

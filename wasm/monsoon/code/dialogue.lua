@@ -1,101 +1,128 @@
-vergeclass 'RoamingTextBox' do
+vergeclass 'DialogueBox' do
     local INITIAL_PAUSE = 50
     local LETTER_PAUSE = 3
     local PAGE_PAUSE = 150
     local PAGE_SKIP_PAUSE = 220
-    function RoamingTextBox:__init()
+    function DialogueBox:__init(param)
         self.messages = {}
         self.message_active = ''
         self.message_offset = 0
         self.wait = 0
-        self.width = 120
+        self.param = param
+        self.width = math.floor(param.width * 0.375)
         self.desired_width = self.width
+        self.width_increment = self.param.width_increment or 2
         
         self.lucency = 100
         self.desired_lucency = self.lucency
         self.message_lucency = self.lucency
+        
+        param.message_fade_in_step = param.message_fade_in_step or 1
+        param.message_fade_out_step = param.message_fade_out_step or 1
+        param.box_fade_in_step = param.box_fade_in_step or 1
+        param.box_fade_out_step = param.box_fade_out_step or 1
     end
     
-    function RoamingTextBox:AddMessage(message)
-        message = font:WrapText(message, vx.screen.width - 26)
+    function DialogueBox:AddMessage(message)
+        if not self.param.no_wrap then
+            message = font:WrapText(message, self.param.width - 16)
+        end
         table.insert(self.messages, message)
     end
     
-    function RoamingTextBox:Render()
+    function DialogueBox:SetMessage(message)
+        if not self.param.no_wrap then
+            message = font:WrapText(message, self.param.width - 16)
+        end
+        self.messages = { message }
+        self:NextMessage()
+        self.wait = 0
+    end
+    
+    function DialogueBox:Render()
         if self.lucency < 100 then
             vx.SetLucent(self.lucency)
-            box_style:DrawBox(5, 5, 5 + self.width, 5 + 16 + 3 * font.height, vx.screen)
+            box_style:DrawBox(self.param.x, self.param.y, self.param.x + self.width, self.param.y + 16 + self.param.height, vx.screen)
             vx.SetLucent(self.message_lucency)
             if self.width == self.desired_width and self.message_offset > 0 then
-                font:Print(5 + box_style.text_margin.x,
-                    5 + box_style.text_margin.y,
-                    self.message_active:sub(1, self.message_offset))
+                if self.param.center then
+                    font:PrintCenter(self.param.x + self.width / 2,
+                        self.param.y + box_style.text_margin.y,
+                        self.message_active:sub(1, self.message_offset))
+                else
+                    font:Print(self.param.x + box_style.text_margin.x,
+                        self.param.y + box_style.text_margin.y,
+                        self.message_active:sub(1, self.message_offset))
+                end
             end
             vx.SetLucent(0)
         end
     end
     
-    function RoamingTextBox:Update() 
+    function DialogueBox:NextMessage()
+        self.message_active = table.remove(self.messages, 1)
+        self.message_offset = 0
+        self.message_lucency = self.param.no_scroll and 100 or 0
+    end
+    
+    function DialogueBox:Update() 
         if self.message_active == '' then
             if #self.messages ~= 0 then
-                self.message_active = table.remove(self.messages, 1)
-                self.message_offset = 0
-                self.message_lucency = 0
+                self:NextMessage()
             else
                 self.desired_lucency = 100
-                self.desired_width = 120
+                self.desired_width = math.floor(self.param.width * 0.375)
             end
         else
             self.desired_lucency = 50
-            self.desired_width = vx.screen.width - 10
+            self.desired_width = self.param.width
         end
         
-        --[[if self.pause and (button.Attack.pressed or button.Jump.pressed or vx.key.Enter.pressed) then                
-            if not self.skipped then
-                self.message_offset = #self.message_active
-                self.wait = PAGE_SKIP_PAUSE
-                self.skipped = true
-                self.width = self.desired_width
-                self.lucency = self.desired_lucency
-
-                button.Attack.pressed = false
-                button.Jump.pressed = false
-                vx.key.Enter.pressed = false
-            else
-                self.wait = 0
-            end
-        end]]
-        
         if self.width < self.desired_width then
-            self.width = self.width + 2
+            if self.param.no_width_transition then
+                self.width = self.desired_width
+            else
+                self.width = math.min(self.width + self.width_increment, self.desired_width)
+            end
             self.message_offset = 0
-            self.wait = INITIAL_PAUSE
+            self.wait = self.param.initial_pause or INITIAL_PAUSE
         elseif self.width > self.desired_width then
-            self.width = self.width - 1
-        else            
+            if not self.param.no_width_transition then
+                self.width = math.max(self.width - 1, self.desired_width)
+            end
+        else
             if self.wait > 0 then
                 self.wait = self.wait - 1
+
+                if self.message_lucency > 0 then
+                    self.message_lucency = math.max(self.message_lucency - self.param.message_fade_in_step, 0)
+                end
             else
                 if self.message_offset <= #self.message_active then
-                    self.message_offset = self.message_offset + 1
-                    if self.message_offset == #self.message_active then
+                    if self.param.no_scroll then
+                        self.message_offset = #self.message_active + 1
+                    else
+                        self.message_offset = self.message_offset + 1
+                    end
+                    if self.message_offset >= #self.message_active then
                         self.wait = PAGE_PAUSE
                     else
                         self.wait = LETTER_PAUSE
                     end
                 else
-                    self.message_lucency = self.message_lucency + 1
-                    if self.message_lucency >= 100 then
+                    self.message_lucency = math.min(self.message_lucency + self.param.message_fade_out_step, 100)
+                    if self.message_lucency == 100 then
                         self.message_active = ''
                     end
                 end
             end
         end
+        
         if self.lucency < self.desired_lucency then
-            self.lucency = self.lucency + 1
+            self.lucency = math.min(self.lucency + self.param.box_fade_out_step, self.desired_lucency)
         end
         if self.lucency > self.desired_lucency then
-            self.lucency = self.lucency - 1
+            self.lucency = math.max(self.lucency - self.param.box_fade_in_step, self.desired_lucency)
         end
     end 
 end
@@ -111,31 +138,9 @@ vergeclass 'LocationBox' do
         self.wait = 0
     end
     
-    function LocationBox:SetText(value)
-        local location_text = v3.GetToken(value, '|', 0)
-        
-        if v3.TokenCount(value, '|') > 1 then
-            local s = v3.GetToken(value, '|', 1)
-            
-            if s == 'silent' and self.song then
-                self.song:Stop()
-            else
-                local song = _G[s]
-                if song and song ~= self.song then
-                    song:Play()
-                    if self.song then 
-                        self.song:Stop()
-                    end
-                    self.song = song
-                end                
-            end
-        end
-        
-        if self.text ~= location_text then
-            self.text = location_text
-            
-            self.wait = TEXT_WAIT
-        end
+    function LocationBox:SetMessage(value, wait)
+        self.text = value
+        self.wait = wait
     end
     
     function LocationBox:Render()
@@ -177,7 +182,8 @@ end
 
 vergeclass 'ConfinedTextBox' do
     local TEXTBOX_X = 5
-    local TEXTBOX_Y = 5
+    local TEXTBOX_Y = 10
+    
     local TEXTBOX_MINIMUM_LINES = 3
     
     local TEXTBOX_PRINT_DELAY = 2
@@ -185,14 +191,46 @@ vergeclass 'ConfinedTextBox' do
     function ConfinedTextBox:__init()
     end
 
-    function ConfinedTextBox:DisplayText(text)
+    local VOWELS = { 'A', 'E', 'I', 'O', 'U' }
+    local CONSONANTS = { 'B', 'C', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'X', 'Y', 'Z' }
+
+    function ConfinedTextBox:DisplayText(text, target)
+        if textbox_jumble then
+            local len = #text
+            local word = v3.Random(1, 10)
+            local vowel_mod = v3.Random(1, 100) <= 50 and 0 or 1
+            local t
+            text = {}
+            for i = 1, len do
+                if word == 0 then
+                    word = v3.Random(1, 10)
+                    vowel_mod = v3.Random(1, 100) <= 50 and 0 or 1
+                    text[i] = ' '
+                else
+                    word = word - 1
+                    t = (i % 2 == vowel_mod) and VOWELS or CONSONANTS
+                    text[i] = t[v3.Random(1, #t)]
+                end
+            end
+            text[1] = '"'
+            text[len] = '#'
+            text = table.concat(text, '')
+        end
+    
         -- Subtract 16 because there's a bit o' padding on both sides
         local TEXTBOX_WIDTH = vx.screen.width - 10
         text = font:WrapText(text, TEXTBOX_WIDTH - 16)
         
         textbox_active = true
         
-        local line_count = math.max(v3.TokenCount(text, '\n'), TEXTBOX_MINIMUM_LINES)
+        local _, line_count = text:gsub('\n', '\n') -- v3.TokenCount(text, '\n') wouldn't count \n\n as two tokens. So gsub it is.
+        line_count = math.max(line_count + 1, TEXTBOX_MINIMUM_LINES)
+        
+        local textbox_bottom = false
+        if target and target.y - camera.y < TEXTBOX_Y + 16 + (line_count * font.height) then
+            textbox_bottom = true
+        end
+        
         local box_time = vx.clock.systemtime + (#text * TEXTBOX_PRINT_DELAY)
         local done = false
         local mid_offset = 0
@@ -201,21 +239,34 @@ vergeclass 'ConfinedTextBox' do
         local img_arrow = resources.images.textbox_arrow
         
         button.Attack.pressed = false
+        button.Jump.pressed = false
         vx.key.Enter.pressed = false
+        
+        local tx = TEXTBOX_X
+        local ty = textbox_bottom and (vx.screen.height - 32 - TEXTBOX_Y - 16 - (line_count * font.height)) or TEXTBOX_Y
         
         while not done do
             vx.screen:RectFill(0, 0, vx.screen.width, vx.screen.height, vx.RGB(255, 0, 0))
-            vx.Render()
+            --vx.Render()
+            Render()
             
             -- Draw our textbox window.
-            box_style:DrawBox(TEXTBOX_X, TEXTBOX_Y, TEXTBOX_X + TEXTBOX_WIDTH, TEXTBOX_Y + 16 + (line_count * font.height), vx.screen)
+            old_style:DrawBox(tx, ty, tx + TEXTBOX_WIDTH, ty + 16 + (line_count * font.height), vx.screen)
             
             -- Draw a cute little text arrow.
-            img_arrow:Blit(TEXTBOX_X + TEXTBOX_WIDTH - 16, TEXTBOX_Y + (math.sin(math.rad(vx.clock.systemtime * 2)) * 4) + 6 + (line_count * font.height))
+            img_arrow:Blit(tx + TEXTBOX_WIDTH - 16, ty + (math.sin(math.rad(vx.clock.systemtime * 2)) * 4) + 6 + (line_count * font.height))
             
             -- Draw the lines of text.
-            font:Print(TEXTBOX_X + 8, TEXTBOX_Y + 8, text:sub(1, mid_offset))
+            font_pink:Print(tx + 8, ty + 8, text:sub(1, mid_offset))
             vx.ShowPage()
+            
+            vx.UpdateControls()
+            frame_limiter:Input()
+            frame_limiter:Update()
+            
+            for i = 1, frame_limiter.gap do
+                Update()
+            end
             
             -- Increment the length our text midsection.
             if mid_offset < #text then
@@ -223,7 +274,7 @@ vergeclass 'ConfinedTextBox' do
             end
             
             -- Pressing the accept button
-            if button.Attack.pressed or vx.key.Enter.pressed then
+            if button.Jump.pressed or button.Attack.pressed or vx.key.Enter.pressed then
                 -- If we're waiting for text still, causes all text to appear.
                 if mid_offset < #text then
                     mid_offset = #text				
@@ -233,6 +284,7 @@ vergeclass 'ConfinedTextBox' do
                 end
                 
                 button.Attack.pressed = false
+                button.Jump.pressed = false
                 vx.key.Enter.pressed = false
             end
         end
@@ -251,8 +303,42 @@ function dialogue.RoamingText(message)
     roaming_text_box:AddMessage(message)
 end
 
+current_location_text = ''
+current_song_name = 'silent'
+current_song = nil
 function dialogue.LocationText(message)
-    location_box:SetText(message)
+    local location_text = v3.GetToken(message, '|', 0)
+    
+    if v3.TokenCount(message, '|') > 1 then
+        local s = v3.GetToken(message, '|', 1)
+        
+        if s == 'silent' and current_song then
+            current_song:Stop()
+            current_song_name = s
+            current_song = nil
+        else
+            local song = _G[s]
+            if song ~= current_song then
+                current_song_name = s
+                if song then
+                    song:Play()
+                end
+                if current_song then 
+                    current_song:Stop()
+                end
+                current_song = song
+            end                
+        end
+    end
+    
+    if location_text ~= current_location_text then
+        current_location_text = location_text
+        location_box:SetMessage(location_text)
+    end
+end
+
+function dialogue.InfoText(message)
+    info_box:SetMessage(message)
 end
 
 function LocationZone(event)
@@ -261,14 +347,60 @@ end
 
 function dialogue.Wait(duration)
 	local timestamp = vx.clock.systemtime + duration
+    textbox_active = true
 	while timestamp > vx.clock.systemtime do
 		vx.screen:RectFill(0, 0, vx.screen.width, vx.screen.height, vx.RGB(255, 0, 0))
-		vx.Render()
-		vx.ShowPage()
+		Render()
+        vx.ShowPage()
+        
+        vx.UpdateControls()
+        frame_limiter:Input()
+        frame_limiter:Update()
+        
+        for i = 1, frame_limiter.gap do
+            Update()
+        end
 	end
+    textbox_active = false
 end
 
+roaming_text_box = DialogueBox {
+    x = 5;
+    y = 5;
+    width = vx.screen.width - 10;
+    height = font.height * 3;
+}
 
-roaming_text_box = RoamingTextBox()
+location_box = DialogueBox {
+    x = 5;
+    y = vx.screen.height / 2 - font.height / 2;
+    width = vx.screen.width - 10;
+    height = font.height;
+    center = true;
+    initial_pause = 0;
+    box_fade_in_step = 3;
+    box_fade_out_step = 1;
+    message_fade_in_step = 2;
+    message_fade_out_step = 1;
+    no_width_transition = true;
+    no_scroll = true;
+    no_wrap = true;
+}
+
+info_box = DialogueBox {
+    x = 5;
+    y = vx.screen.height - font.height - 24;
+    width = 10 + font:TextWidth('M') * 16;
+    height = font.height;
+    center = true;
+    initial_pause = 0;
+    box_fade_in_step = 2;
+    box_fade_out_step = 2;
+    message_fade_in_step = 2;
+    message_fade_out_step = 2;
+    no_width_transition = true;
+    no_scroll = true;
+    no_wrap = true;
+}
+
 confined_text_box = ConfinedTextBox()
-location_box = LocationBox()

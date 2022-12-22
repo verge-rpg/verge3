@@ -80,37 +80,37 @@ vergeclass 'File' do
 	
 	function File:Write(s)
 		if self.opened then
-			v3.Write(self.file_handle, s)
+			v3.FileWrite(self.file_handle, s)
 		end
 	end
 	
 	function File:WriteByte(n)
 		if self.opened then
-			v3.WriteByte(self.file_handle, n)
+			v3.FileWriteByte(self.file_handle, n)
 		end
 	end
 	
 	function File:WriteWord(n)
 		if self.opened then
-			v3.WriteWord(self.file_handle, n)
+			v3.FileWriteWord(self.file_handle, n)
 		end
 	end
 	
 	function File:WriteQuad(n)
 		if self.opened then
-			v3.WriteQuad(self.file_handle, n)
+			v3.FileWriteQuad(self.file_handle, n)
 		end
 	end
 	
 	function File:WriteLine(s)
 		if self.opened then
-			v3.WriteLn(self.file_handle, s)
+			v3.FileWriteLn(self.file_handle, s)
 		end
 	end	
 	
 	function File:WriteString(s)
 		if self.opened then
-			v3.WriteString(self.file_handle, s)
+			v3.FileWriteString(self.file_handle, s)
 		end
 	end	
 	

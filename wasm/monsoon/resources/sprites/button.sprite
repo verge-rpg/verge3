@@ -1,0 +1,21 @@
+[ The hero sprite sheet ]
++ image: "button.png"
++ frame_width: 16
++ frame_height: 16
++ frame_columns: 2
++ frame_padding: 1
++ hotspots
+    * main
+        - x: 0
+        - y: 0
+        - width: 16
+        - height: 16
+[
+        Animation Strands
+        Fxx = Frame
+        Wxx = Wait
+        B = Back to beginning (looping animation)
+]
++ animations
+        * idle: f0w10b
+        * hit: f1w30b

@@ -1,3 +1,5 @@
+v3.SetResolution(320, 240)
+v3.SetAppName("Molasses Monsoon")
 
 package.path = package.path .. ";code/?.lua;code/?/init.lua;code/mungo/?.lua"
 
@@ -20,6 +22,30 @@ function DistortBlit(x, y, distort, lucent, img, dest)
     vx.SetLucent(0)
 end
 
+helper = {}
+function helper.resolveName(name)
+    local a = _G
+    for key in string.gmatch(name, "([^%.]+)(%.?)") do
+        print(key)
+        if a[key] then
+            a = a[key]
+        else
+            return nil
+        end
+    end
+    return a
+end
+
+function helper.functionExists(name)
+    local f = helper.resolve()
+    if type(f) == 'function' then
+        return true
+    else
+        return false
+    end
+end
+
+
 function ParseConfig()
     local f = vx.File("verge.cfg", vx.FileMode.Read)
     while not f.eof do
@@ -41,11 +67,7 @@ function ParseConfig()
     f:Close()
 end
 
-function autoexec()
-    vx.SetResolution(320, 240)
-    vx.SetAppName("Molasses Monsoon")
-    
-    ParseConfig()
-    
+function autoexec()   
+    ParseConfig()  
     Startup()
 end

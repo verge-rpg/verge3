@@ -1,14 +1,13 @@
 [ A projectile sprite sheet ]
-~ image: "neon_heart.png"
-~ death_sound: 'hitwall'
-~ frame_width: 11
-~ frame_height: 11
+~ image: "neon_heart_small.png"
+~ frame_width: 7
+~ frame_height: 6
 ~ frame_columns: 1
 ~ frame_padding: 0
 ~ hotspot_x: 0
 ~ hotspot_y: 0
-~ hotspot_width: 11
-~ hotspot_height: 11
+~ hotspot_width: 7
+~ hotspot_height: 6
 [
         Animation Strands
         Fxx = Frame

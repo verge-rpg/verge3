@@ -3,7 +3,7 @@ vergeclass 'Button'
 		self.release = false
 		self.inputs = { ... }
 	end
-	
+    
 	Button._property('pressed',
 			function(self)
 				local pressed = false
@@ -37,15 +37,18 @@ vergeclass 'Button'
 	function Button:__tostring()
 		return 'button ' .. ObjectAttributesToString(self)
 	end
-	
+    
+-- The controls!
 button = {
-	Attack = Button(),
-	Roll = Button(),
-	Jump = Button(),
-	FastForward = Button(),
-	SlowMotion = Button(),
-	Up = Button(),
-	Down = Button(),
-	Left = Button(),
-	Right = Button()
+	Attack = Button();
+	Roll = Button();
+	Jump = Button();
+    MapToggle = Button();
+	FastForward = Button();
+	SlowMotion = Button();
+	Up = Button();
+	Down = Button();
+	Left = Button();
+	Right = Button();
+    Debug = Button(vx.key.Tab);
 }

@@ -210,7 +210,6 @@ music/warp01.wav
 music/warp02.wav
 readme.txt
 right.png
-save1.sav
 sbutton.png
 sbutton_down.png
 sbutton_over.png

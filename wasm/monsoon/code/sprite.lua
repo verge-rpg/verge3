@@ -158,7 +158,9 @@ vergeclass 'Sprite' do
 		self.direction = direction.Right
 		self.lucent = 0
         
-		
+		self.rot = 0
+        self.scale = 1
+        
 		self.investigate_action = nil
         
 		table.insert(sprites, self)
@@ -238,7 +240,11 @@ vergeclass 'Sprite' do
         end
         
         vx.SetLucent(self.lucent)
-        self.frame_buffer:Blit(x - hotspot.x, y - hotspot.y)
+        if self.rot == 0 and self.scale == 1 then
+            self.frame_buffer:Blit(x - hotspot.x, y - hotspot.y)
+        else
+            self.frame_buffer:RotScale(x - hotspot.x, y - hotspot.y, self.rot, self.scale)
+        end
         vx.SetLucent(0)
     end
 end
