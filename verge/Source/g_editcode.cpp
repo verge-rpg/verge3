@@ -35,7 +35,7 @@ void runEval(char *code)
 	// added \n after code to avoid an ending // causing problems
 	FILE * f = FileOpen(fname, "w");
 	fprintf(f, "void __temp_eval(){%s\n}", code);
-	fclose(f);
+	FileCloseAndFlush(f);
 
 	// compile against map and system, replacing temp image
 	std::vector<int> images;

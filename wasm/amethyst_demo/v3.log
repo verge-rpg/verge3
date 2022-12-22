@@ -1,8 +1,12 @@
-system.vc(12) : warning: 'TRUE' : macro redefinition
-system.vc(13) : warning: 'FALSE' : macro redefinition
-
 VC System Compilation stats: 
-8 globals (71 expanded), 23 functions, 5666 total lines
+196 ints (23912 expanded), 22 strings (2779 expanded), 161 functions, 5852 total lines
 
-Exiting: 
-src\basic.vc(386): min is already claimed by a built-in library function. Please choose a unique name.
+compiled batmap.map, (17 lines)  number of funcs is 1
+compiled dungeon.map, (668 lines)  number of funcs is 26
+compiled forest1.map, (185 lines)  number of funcs is 1
+compiled inshawnigan.map, (458 lines)  number of funcs is 35
+compiled open.map, (75 lines)  number of funcs is 1
+compiled redacademy2.map, (266 lines)  number of funcs is 14
+compiled shawnigan.map, (4 lines)  number of funcs is 1
+compiled tent.map, (30 lines)  number of funcs is 1
+compiled test.map, (44 lines)  number of funcs is 3

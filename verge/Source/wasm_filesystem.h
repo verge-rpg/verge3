@@ -7,7 +7,8 @@
 
 extern std::string wasm_gameRoot;
 
-void initFileSystem();
+void syncWasmFileSystem();
+void initWasmFileSystem();
 #endif
 
 #endif

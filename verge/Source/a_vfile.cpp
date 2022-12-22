@@ -83,6 +83,15 @@ FILE* FileOpen(const char* filename, const char* mode)
 #endif
 }
 
+void FileCloseAndFlush(FILE* f)
+{
+    fclose(f);
+    
+#ifdef __EMSCRIPTEN__
+    syncWasmFileSystem();
+#endif
+}
+
 bool Exist(const char *fname)
 {
 #if defined(__WIN32__)
@@ -494,7 +503,7 @@ void flip(void *d, int size)
 void vclose(VFILE *f)
 {
    if (!f) return;
-   if (!f -> s) fclose(f -> fp);
+   if (!f -> s) FileCloseAndFlush(f -> fp);
    f -> fp=0;
    delete f;
 }

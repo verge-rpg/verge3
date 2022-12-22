@@ -1353,7 +1353,7 @@ void ScriptEngine::FileClose(int handle) {
 			vcfiles[handle].active = false;
 			break;
 		case VC_WRITE:
-			fclose(vcfiles[handle].fptr);
+			FileCloseAndFlush(vcfiles[handle].fptr);
 			vcfiles[handle].fptr = 0;
 			vcfiles[handle].mode = 0;
 			vcfiles[handle].active = false;

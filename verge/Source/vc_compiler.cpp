@@ -761,18 +761,18 @@ void VCCompiler::vprint(char *message, ...)
 	if (!verbose)
 		return;
 
-	va_start (lst, message);
-	vsprintf (string, message, lst);
-	va_end   (lst);
-
-	FILE *f = FileOpen(VCLOG, "a");
-	fputs(string, f);
-	fclose(f);
+	va_start(lst, message);
+	vsprintf(string, message, lst);
+	va_end(lst);
 
 #ifdef __EMSCRIPTEN__
     EM_ASM({
         console.log('vcverbose', UTF8ToString($0));
     }, string);
+#else
+	FILE *f = FileOpen(VCLOG, "a");
+	fputs(string, f);
+	fclose(f);	
 #endif    
 }
 
@@ -923,7 +923,7 @@ void VCCompiler::ExportSystemXVC()
 		funcs[CIMAGE_SYSTEM][i]->write(f);
 
 	output.SaveChunk(f);
-	fclose(f);
+	FileCloseAndFlush(f);
 }
 
 
@@ -996,7 +996,7 @@ bool VCCompiler::CompileMap(const char *f)
 		int z = output.chunk.size();
 		fwrite(&z, 1, 4, mo);
 		fwrite(&output.chunk[0], 1, z, mo);
-		fclose(mo);
+		FileCloseAndFlush(mo);
 	}
 
 	// unload map functions (these are re-added
@@ -1079,7 +1079,7 @@ bool VCCompiler::CompileOther(char *f, int cimage, bool append, bool dups, std::
 		flip(&tempz);
 		fwrite(&tempz, 1, 4, out);
 		fwrite(&output.chunk[previous_size], 1, z, out);
-		fclose(out);
+		FileCloseAndFlush(out);
 	}
 
 	for (i=funcs[cimage].size()-1; i>=precompile_numfuncs; i--)

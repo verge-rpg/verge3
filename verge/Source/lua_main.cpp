@@ -617,6 +617,14 @@ static int ReadEntireFileIntoString(lua_State *L)
 	return 1;
 }
 
+#ifdef __EMSCRIPTEN__
+static int WasmSyncFileSystem(lua_State *L)
+{
+	syncWasmFileSystem();
+	return 1;
+}
+#endif
+
 void LUA::bindApi()
 {
 	int i;
@@ -630,6 +638,11 @@ void LUA::bindApi()
 
 	lua_pushcfunction(L, ReadEntireFileIntoString);
 	lua_setglobal(L, "__ReadEntireFileIntoString");
+
+#ifdef __EMSCRIPTEN__
+	lua_pushcfunction(L, WasmSyncFileSystem);
+	lua_setglobal(L, "__WasmSyncFileSystem");
+#endif
 
 	// Create an empty table!
 	lua_newtable(L);
@@ -930,24 +943,27 @@ void LUA::bindApi()
 
 #ifdef __EMSCRIPTEN__
 	std::string io_open_code = std::string()
-		+ "local io_open = io.open\n"
-		"local io_close = io.close\n"
-		"local io_lines = io.lines\n"
-		"local string_lower = string.lower\n"
+		+ "local io_open_ = io.open\n"
+		"local io_lines_ = io.lines\n"
+		"local io_close_ = io.close\n"		
+		"local io_flush_ = io.flush\n"
+		"local io_gc_\n"
+		"local io_gc\n"
+		"local string_lower_ = string.lower\n"
 		"\n"
 		"local function try_open_path(filename, mode, ctx)\n"
 		"    --print('trying path ' .. filename .. ' in mode ' .. mode .. ' ' .. ctx)\n"
-		"    local f, err = io_open(filename, mode)\n"
+		"    local f, err = io_open_(filename, mode)\n"
 		"    if f then return filename, f end\n"
 		"	 return nil, nil, err\n"
 		"end\n"
 		"\n"
 		"local function try_open_wasm_game_path(filename, mode)\n"
-		"    local fn, f, _ = try_open_path(string_lower('persist/" + wasm_gameRoot + "' .. filename), mode, 'persist')\n"
+		"    local fn, f, _ = try_open_path(string_lower_('persist/" + wasm_gameRoot + "' .. filename), mode, 'persist')\n"
 		"    if f then return fn, f end\n"
 		"    local fn, f, _ = try_open_path('persist/" + wasm_gameRoot + "' .. filename, mode, 'persist_lower')\n"
 		"    if f then return fn, f end\n"
-		"    local fn, f, _ = try_open_path(string_lower('" + wasm_gameRoot + "' .. filename), mode, 'game_lower')\n"
+		"    local fn, f, _ = try_open_path(string_lower_('" + wasm_gameRoot + "' .. filename), mode, 'game_lower')\n"
 		"    if f then return fn, f end\n"
 		"    return try_open_path('" + wasm_gameRoot + "' .. filename, mode, 'game')\n"
 		"end\n"
@@ -956,6 +972,11 @@ void LUA::bindApi()
 		"    local _, f, err = try_open_wasm_game_path(filename, mode)\n"
 		"	 if f then\n"
 		"        --print('opened ' .. filename .. ' in mode ' .. mode)\n"
+		"        local mt = debug.getmetatable(f)\n"
+		"        if not io_gc_ then\n"
+		"            io_gc_ = mt.__gc\n"
+		"            mt.__gc = io_gc\n"
+		"        end"
 		"    	 return f\n"
 		"	 else\n"
 		"        --print('failed to open ' .. filename .. ' in mode ' .. mode .. ' ' .. tostring(err))\n"
@@ -966,12 +987,27 @@ void LUA::bindApi()
 		"function io.lines(filename)\n"
 		"    local fn, f, _ = try_open_wasm_game_path(filename, 'r')\n"
 		"	 if f then\n"
-		"        io_close(f)\n"
+		"        io_close_(f)\n"
 		"        --print('io.lines: found ' .. filename .. ' at ' .. tostring(fn))\n"
-		"        return io_lines(fn)\n"
+		"        return io_lines_(fn)\n"
 		"	 end\n"
-		"    return io_lines(filename)\n"
+		"    return io_lines_(filename)\n"
 		"end\n"
+		"\n"
+		"function io.close(f)\n"
+		"    io_close_(f)\n"
+		"    __WasmSyncFileSystem()\n"
+		"end\n"
+		"\n"
+		"function io.flush(f)\n"
+		"    io_flush_(f)\n"
+		"    __WasmSyncFileSystem()\n"
+		"end\n"
+		"\n"
+		"local function io_gc(f)\n"
+		"    io_gc_(f)\n"
+		"    __WasmSyncFileSystem()\n"
+		"end\n"		
 		"\n";
 	status = luaL_dostring(L, io_open_code.c_str());
 	if(status) ::err("Failed to load the wasm-specific LuaVerge io.open hook!");

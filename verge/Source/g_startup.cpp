@@ -409,7 +409,7 @@ void _main(int argc, char** argv)
     }
 
 #ifdef __EMSCRIPTEN__			
-	initFileSystem();
+	initWasmFileSystem();
 #endif
 
     vc_initBuiltins();

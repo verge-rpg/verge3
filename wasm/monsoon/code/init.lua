@@ -153,6 +153,8 @@ function ProcessSidescrollingEngine()
     while true do       
         Render()
         ShowPage()
+
+        collectgarbage('collect')
         
         vx.UpdateControls()
         frame_limiter:Input()

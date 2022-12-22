@@ -322,7 +322,7 @@ int getUrlImage(CStringRef url)
 			break;
 		fwrite(buf, 1, bytesread, f);
 	}
-	fclose(f);
+	FileCloseAndFlush(f);
 
 	InternetCloseHandle(h);
 	InternetCloseHandle(hurl);

@@ -181,5 +181,5 @@ void cfg_WriteConfig()
 		fprintf(f, "%s %s\n", i.first.c_str(), i.second.c_str());
 	}
 
-	fclose(f);
+	FileCloseAndFlush(f);
 }

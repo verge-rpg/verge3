@@ -43,6 +43,7 @@ extern mountstruct pack[10];
 extern int filesmounted;
 
 FILE* FileOpen(const char* filename, const char* mode);
+void FileCloseAndFlush(FILE* f);
 
 bool Exist(const char *fname);
 bool VExist(const char *fname);

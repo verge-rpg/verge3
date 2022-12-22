@@ -169,9 +169,14 @@ void downloadGame() {
     });
 }
 
-void initFileSystem()
+void initWasmFileSystem()
 {
     wasm_initFileSystem(wasm_gameRoot.c_str());
 
     downloadGame();
+}
+
+void syncWasmFileSystem()
+{
+    wasm_syncFileSystem();
 }
