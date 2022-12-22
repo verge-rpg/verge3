@@ -10,6 +10,7 @@
 std::string wasm_gameRoot;
 
 EM_JS(void, wasm_initFileSystem, (const char* c), {
+
     let sgr = UTF8ToString(c);
     if (sgr.endsWith('/'))
         sgr = sgr.substr(0, sgr.length - 1);
@@ -20,7 +21,11 @@ EM_JS(void, wasm_initFileSystem, (const char* c), {
     FS.mount(IDBFS, {}, "persist/" + sgr);
 
     // Then sync
+    window.verge.syncFileSystemRequested = true;
+
     FS.syncfs(true, function (err) {
+        window.verge.syncFileSystemRequested = false;
+
         // Error
         if (err) {
             console.error('wasm_initFileSystem failed!', err);
@@ -31,8 +36,16 @@ EM_JS(void, wasm_initFileSystem, (const char* c), {
 });
 
 EM_JS(void, wasm_syncFileSystem, (), {
+    if (window.verge.syncFileSystemRequested) {
+        return;
+    }
+
     //console.log("wasm_syncFileSystem");
+    window.verge.syncFileSystemRequested = true;
+
     FS.syncfs(false, err => {
+        window.verge.syncFileSystemRequested = false;
+
         if (err) {
             console.error("wasm_syncFileSystem failed!!", err);
         } else {
@@ -48,6 +61,18 @@ EM_JS(void, wasm_downloadAll, (const char** manifest), {
 
         function download(pathPtr) {
             const path = UTF8ToString(pathPtr);
+
+            {
+                //console.log('reserving directory ' + path);
+
+                const idx = path.lastIndexOf('/');
+                if (idx == path.length - 1) {
+                    const dir = path.substr(0, idx).toLowerCase();
+                    FS.mkdirTree(dir);
+                    return;
+                }
+            }
+
             //console.log('fetching' + path);
 
             return fetch(path).then(response => {

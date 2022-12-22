@@ -177,8 +177,6 @@ EM_JS(bool, wasm_initSound, (), {
             song.activeSourceNode = null;
         };
 
-        // TODO: pause/resume (still needs to be implemented in mpt-worklet)
-
         window.verge.getSongPositionAsync = (song) => {
             if (song.activeSourceNode == song.streamNode) {
                 return Promise.resolve({position: song.streamAudio.currentTime});
@@ -282,16 +280,17 @@ EM_JS(int, wasm_playSound, (const char* filename, int volume), {
         return;
     }
 
+    //console.log("wasm_playSound: Playing sound ", name);
     const ctx = window.verge.audioContext;
     const channelID = window.verge.soundChannelNextID++;
     let destination = ctx.destination;
 
-    const gainNode = volume < 100 ? ctx.createGain() : null;
-    if (gainNode != null) {
-        gainNode.gain.value = volume / 100;
-        gainNode.connect(destination);
-        destination = gainNode;
-    }
+    const SOUND_VOLUME_SCALE = 0.7;
+
+    const gainNode = ctx.createGain();
+    gainNode.gain.value = volume / 100 * SOUND_VOLUME_SCALE;
+    gainNode.connect(destination);
+    destination = gainNode;
 
     const source = ctx.createBufferSource();
     source.connect(destination);
@@ -305,9 +304,10 @@ EM_JS(int, wasm_playSound, (const char* filename, int volume), {
     source.start(0);
 
     window.verge.soundChannels[channelID] = source;
+    return channelID;
 });
 
-EM_JS(int, wasm_stopSound, (int channelID), {
+EM_JS(void, wasm_stopSound, (int channelID), {
     const source = window.verge.soundChannels[channelID];
     if (source) {
         source.stop();

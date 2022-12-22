@@ -30,10 +30,10 @@ char headertag[]={ 'V','3','P','A','K',0 };
 
 //#define DEBUG_VFILE
 #ifdef DEBUG_VFILE
-#define VFILE_PRINTF printf
+#define VFILE_LOG log
 #else
 template <typename ...T>
-void VFILE_PRINTF(T...) {}
+void VFILE_LOG(T...) {}
 #endif
 
 FILE* FileOpen(const char* filename, const char* mode)
@@ -46,37 +46,43 @@ FILE* FileOpen(const char* filename, const char* mode)
         }
     }
 
+    VFILE_LOG("FileOpen: requesting to open %s mode %s", fn.c_str(), mode);
+
     std::string s = "persist/" + wasm_gameRoot + fn;
     to_lower(s);
     FILE* f = fopen(s.c_str(), mode);
+    VFILE_LOG("FileOpen: trying %s mode %s", s.c_str(), mode);
     if (f) {
-        VFILE_PRINTF("FileOpen %s mode %s\n", s.c_str(), mode);
+        VFILE_LOG("FOUND");
         return f;
     }
 
     s = "persist/" + wasm_gameRoot + fn;
     f = fopen(s.c_str(), mode);
+    VFILE_LOG("FileOpen: trying %s mode %s", s.c_str(), mode);
     if (f) {
-        VFILE_PRINTF("FileOpen %s mode %s\n", s.c_str(), mode);
+        VFILE_LOG("FileOpen: FOUND");
         return f;
     }
 
     s = wasm_gameRoot + fn;
     to_lower(s);
     f = fopen(s.c_str(), mode);
+    VFILE_LOG("FileOpen: trying %s mode %s", s.c_str(), mode);
     if (f) {
-        VFILE_PRINTF("FileOpen %s mode %s\n", s.c_str(), mode);
+        VFILE_LOG("FileOpen: FOUND");
         return f;
     }
 
     s = wasm_gameRoot + fn;
     f = fopen(s.c_str(), mode);
+    VFILE_LOG("FileOpen: trying %s mode %s", s.c_str(), mode);
     if (f) {
-        VFILE_PRINTF("FileOpen %s mode %s\n", s.c_str(), mode);
+        VFILE_LOG("FileOpen: FOUND");
         return f;
     }
 
-    VFILE_PRINTF("FileOpen %s mode %s FAIL\n", fn.c_str(), mode);
+    VFILE_LOG("FileOpen: FAILED");
     return 0;	
 #else
 	return fopen(filename, mode);
