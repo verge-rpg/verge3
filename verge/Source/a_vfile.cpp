@@ -29,6 +29,8 @@ char headertag[]={ 'V','3','P','A','K',0 };
 // ***************************** Code *****************************
 
 //#define DEBUG_VFILE
+//#define DEBUG_VFILE_VPK_SEARCH_VERBOSE
+
 #ifdef DEBUG_VFILE
 #define VFILE_LOG log
 #else
@@ -234,8 +236,12 @@ VFILE *vopen(const char *fname)
 	{
 		for (j = 0; j < pack[i].numfiles; j++)
 		{
+#ifdef DEBUG_VFILE_VPK_SEARCH_VERBOSE
+            VFILE_LOG("trying packfile %d item %d %s %s", i, j, pack[i].files[j].fname, fname);
+#endif            
 			if (!fncmp(fname,(char *) pack[i].files[j].fname))
 			{
+                VFILE_LOG("found %s in vpk", fname);
 				vf = true;
 				break;
 			}
@@ -245,7 +251,8 @@ VFILE *vopen(const char *fname)
 
 	if (!vf && !rf) return 0;
 
-	tmp = new VFILE;
+	tmp = new VFILE {};
+    tmp->cachedSize = -1;
 
 	if (vf && rf)
 	{
@@ -276,7 +283,6 @@ VFILE *vopen(const char *fname)
 	tmp->s = 0;
 	tmp->v = 0;
 	tmp->i = 0;
-    tmp->cachedSize = -1;
 	return tmp;
 }
 
@@ -509,30 +515,38 @@ void flip(void *d, int size)
 void vclose(VFILE *f)
 {
    if (!f) return;
-   if (!f -> s) FileCloseAndFlush(f -> fp);
-   f -> fp=0;
+   if (!f->s) fclose(f->fp);
+   f->fp = nullptr;
    delete f;
 }
 
 int _filesize(VFILE *f)
 {
-   int oldpos, tmp;
+    int oldpos, tmp;
+    // Filesize for Vfiles is real simple.
+    if (f->s)
+    {
+        auto& file = pack[f->v].files[f->i];
+        //log("_filesize: file %s (%d %d) -> %d", file.fname, f->v, f->i, file.size);
+        return file.size;
+    }
 
-   // Filesize for Vfiles is real simple.
-   if (f -> s) return pack[f -> v].files[f -> i].size;
-
-   // It's a bit more complex for external files.
-   oldpos=ftell(f -> fp);
-   fseek(f -> fp, 0, 2);
-   tmp=ftell(f -> fp);
-   fseek(f -> fp, oldpos, 0);
-   return tmp;
+    // It's a bit more complex for external files.
+    oldpos = ftell(f->fp);
+    fseek(f->fp, 0, 2);
+    tmp = ftell(f->fp);
+    fseek(f->fp, oldpos, 0);
+    return tmp;
 }
 
 int filesize(VFILE* f)
 {
     if(f->cachedSize < 0)
+    {
         f->cachedSize = _filesize(f);
+    }
+    //log("filesize: file %s (%d %d) -> %d", pack[f->v].files[f->i].fname, f->v, f->i, f->cachedSize);
+
     return f->cachedSize;
 }
 

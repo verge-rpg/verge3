@@ -645,6 +645,22 @@ function_t::function_t(FILE *f)
 	fread(name, 1, IDENTIFIER_LEN, f);
 	fread(argtype, 1, numlocals, f);
 	fread(localnames, IDENTIFIER_LEN, numlocals, f);
+
+	{
+		std::string argString = "";
+		for (int i = 0; i < numargs; i++)
+		{
+			argString += ('0' + argtype[i]);
+		}
+
+		std::string localString = "";
+		for (int i = 0; i < numlocals; i++)
+		{
+			localString += std::string(localnames[i]) + ";";
+		}		
+
+		//log("function %s %d %s %d %s %d %d %d %d", name, numargs, argString.c_str(), numlocals, localString.c_str(), signature, codeofs, codeend, coreimage);
+	}
 }
 
 function_t::~function_t()

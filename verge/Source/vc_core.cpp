@@ -132,9 +132,35 @@ bool VCCore::FunctionExists(const StringRef &script)
 
 /************************** private code **************************/
 
+#ifdef __EMSCRIPTEN__
+EM_JS(void, wasm_dumpSystemXVC, (const void* ptr, int length), {
+	const data = new Uint8Array(HEAPU8.buffer.slice(ptr, ptr + length));
+    let dataString = "";
+    for (let i = 0; i < data.length; i++) {
+        dataString += String.fromCharCode(data[i]);
+    }
+    const dataURL = "data:application/octet-stream;base64," + btoa(dataString);
+
+	console.error('system.xvc', data, dataURL);
+});
+#endif
+
 void VCCore::LoadSystemXVC()
 {
 	//log("VCCore::LoadSystemXVC(): loading system.xvc");
+
+#ifdef __EMSCRIPTEN__
+/*	
+	{
+		std::vector<byte> buf;
+		if (vreadfile("system.xvc", buf))
+		{
+			log("dumping system.vxc (size=%d)", buf.size());
+			wasm_dumpSystemXVC(buf.data(), buf.size());
+		}
+	}
+*/	
+#endif
 
 	char xvc_sig[8] = "VERGE30", buf[8];
 	VFILE *vf = vopen("system.xvc");
@@ -152,6 +178,7 @@ void VCCore::LoadSystemXVC()
 	global_vars.clear();
 	struct_instances.clear();
 
+	//log("VCCore::LoadSystemXVC(): reading version");
 	int ver;
 	fread_le(&ver, f);
 	if (ver != 1)
@@ -161,8 +188,10 @@ void VCCore::LoadSystemXVC()
 	
 	int i, size;
 
+	//log("VCCore::LoadSystemXVC(): reading globals");
 	if (vc_olduserglobals)
 	{
+		//log("VCCore::LoadSystemXVC(): reading old globals");
 		fread_le(&size, f);
 		olduserglobals_int_count = size;
 		for (int i = 0; i < size; i++)
@@ -189,6 +218,7 @@ void VCCore::LoadSystemXVC()
 	}
 	else
 	{
+		//log("VCCore::LoadSystemXVC(): reading new globals");
 		// Globals.
 		global_var_t var;
 		fread_le(&size, f);
@@ -196,6 +226,7 @@ void VCCore::LoadSystemXVC()
 		//log("VCCore::LoadSystemXVC(): variable count %d", size);
 		for (int i=0; i<size; i++)
 		{
+			//log("VCCore::LoadSystemXVC(): reading variable %d", i);
 			// Load variable definition from file.
 			var = global_var_t(f);
 			// Current "ofs" saved was the one to used by the compiler to properly expand structs/arrays. 
@@ -221,18 +252,21 @@ void VCCore::LoadSystemXVC()
 			// Push back.
 			global_vars.push_back(var);
 		}
-
-		// Struct instances.
-		fread_le(&size, f);
-		//log("VCCore::LoadSystemXVC(): struct instance count %d", size);
-		for (i = 0; i < size; i++)
-			struct_instances.push_back(new struct_instance(f));		
 	}
 
 	// Must allocate at least size 1 so we we can index these global arrays later.
 	if(maxint == 0) maxint = 1;
 	if(maxstr == 0) maxstr = 1;
 	if(maxcb == 0) maxcb = 1;
+
+	if (!vc_nostructinfo)
+	{
+		// Struct instances.
+		fread_le(&size, f);
+		//log("VCCore::LoadSystemXVC(): struct instance count %d", size);
+		for (i = 0; i < size; i++)
+			struct_instances.push_back(new struct_instance(f));
+	}
 
 	// User functions.
 	fread_le(&size, f);
