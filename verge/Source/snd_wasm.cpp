@@ -212,7 +212,7 @@ EM_JS(bool, wasm_initSound, (), {
         window.verge.getSongVolume = (song) => song.gainNode.gain.value * 100;
 
         window.verge.setSongVolume = (song, volume) => {
-            //console.log('window.verge.setSongVolume', volume);
+            console.log('window.verge.setSongVolume', volume / 100);
             song.gainNode.gain.setValueAtTime(volume / 100, window.verge.audioContext.currentTime);
         };
     }
@@ -285,7 +285,7 @@ EM_JS(int, wasm_playSound, (const char* filename, int volume), {
     const channelID = window.verge.soundChannelNextID++;
     let destination = ctx.destination;
 
-    const SOUND_VOLUME_SCALE = 0.7;
+    const SOUND_VOLUME_SCALE = 0.5;
 
     const gainNode = ctx.createGain();
     gainNode.gain.value = volume / 100 * SOUND_VOLUME_SCALE;
@@ -332,6 +332,7 @@ EM_JS(void, wasm_stopMusic, (), {
 })
 
 EM_JS(void, wasm_setMusicVolume, (int volume), {
+    console.log("wasm_setMusicVolume: Setting music volume ", volume);
     window.verge.setSongVolume(window.verge.mainSong, volume);
 });
 
@@ -448,6 +449,7 @@ EM_JS(void, wasm_setSongVolume, (const char* filename, int volume), {
         return;
     }
 
+    console.log("wasm_setSongVolume: Setting song volume ", name, volume);
     window.verge.setSongVolume(song, volume);
 })
 
