@@ -223,7 +223,6 @@ void wasm_nextFrame()
 {
 	wasm_nextFrame_();
 
-	wasm_scriptBusyWaitCounter = 0;
 	wasm_scriptTimeoutCallCounter = 0;	
 
 	double time = EM_ASM_DOUBLE(
@@ -244,7 +243,7 @@ void wasm_detectScriptTimeout_()
 
 	if (delta >= WASM_SCRIPT_TIMEOUT_TIME_LIMIT_MS)
 	{
-		log("wasm_detectScriptTimeout: script timeout hit, yielding until next frame", time, wasm_scriptTimeSinceLastFrame, delta);
+		//log("wasm_detectScriptTimeout_: script timeout hit, yielding until next frame (time = %lf, last frame = %lf, delta = %lf)", time, wasm_scriptTimeSinceLastFrame, delta);
 
 		wasm_nextFrame();
 	}

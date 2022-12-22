@@ -1,0 +1,421 @@
+#define MAX_DEBRIS_OBJECTS 20
+#define FLOOR_Y 230
+#define MAX_EXPLOSION_PARTICLES 500
+
+int ScreenX = ImageWidth(screen);
+int ScreenY = ImageHeight(screen);
+
+struct stcParticle
+{
+	int x, y;
+	int w, h;
+	int speed;
+	int angle;
+	int active;
+	int color;
+}
+
+stcParticle Player;
+stcParticle Debris[MAX_DEBRIS_OBJECTS];
+stcParticle Particle[MAX_EXPLOSION_PARTICLES];
+
+int AnalogExplosions = 1;
+
+int Level;
+int LevelDebris;
+int ActiveGame;
+
+int sfxCrash = LoadSound("arcade_explosion1.wav");
+int sfxDeath = LoadSound("explsion.wav");
+
+string sngPlay = "z00m_n_.mod";
+string sngLose = "tu_lvtor.xm";
+
+void autoexec()
+{
+	Player.w = 16; Player.h = 16;
+	Player.x = 0; Player.y = FLOOR_Y-Player.h;
+	Player.speed = 4;
+	Player.color = RGB(0,160,255);
+
+	StartGame();
+	
+	HookTimer("TimerFunction");
+	
+	while(1)
+	{
+		RectFill(0,0, ScreenX, ScreenY, RGB(0,0,0), screen);
+		
+		Line(0, FLOOR_Y, ScreenX, FLOOR_Y, RGB(128,128,128), screen);
+		
+		DrawDebris();
+		
+		DrawParticles();
+		
+		if(ActiveGame)
+		{
+			Rect(Player.x, Player.y, PlayerX2(), Player.y+Player.h-1, RGB(0,160,255), screen);
+
+			PrintString(0,0, screen, 0, "Level " + str(Level));
+			PrintRight(ScreenX,0, screen, 0, str(LevelDebris) + " Remaining");
+
+			if(timer-LevelUpNotice < 80)
+			{
+				if(Level == 1)
+					PrintCenter(ScreenX/2, ScreenY/2, screen, 0, "Start!");
+				else	PrintCenter(ScreenX/2, ScreenY/2, screen, 0, "Level Up!");
+			}
+		}
+		else
+		{
+			PrintCenter(ScreenX/2, ScreenY/2-10, screen, 0, "Game Over!");
+			PrintCenter(ScreenX/2, ScreenY/2+10, screen, 0, "B1 (Enter) to Retry");
+		}
+		
+		ShowPage();
+	}
+}
+
+void CreateExplosion(int x1, int y1, int x2, int y2, int color)
+{
+	int Area = (x2-x1/5)*(y2-y1/5)*3;
+	int x = x1+(x2-x1/2);
+	int y = y1+(y2-y1/2);
+	int Particles;
+	
+	int i;
+	
+	while(Particles < Area)
+	{
+		i = GetFreeParticleIndex();
+		if(i >= 0)
+		{
+			Particle[i].active = timer;
+			if(AnalogExplosions)
+			{
+				Particle[i].x = x+Random(-8,8)*100;
+				Particle[i].y = y+Random(-8,8)*100;
+				Particle[i].speed = Random(100,300);
+			}
+			else
+			{
+				Particle[i].x = x+Random(-8,8);
+				Particle[i].y = y+Random(-8,8);
+				Particle[i].speed = Random(1,3);
+			}
+			
+			Particle[i].angle = Random(165,375);
+			Particle[i].color = color;
+		}
+		Particles++;
+	}
+}
+
+void DrawParticles()
+{
+	int i;
+	int dx;
+	int dy;
+	
+	for(i = 0; i < MAX_EXPLOSION_PARTICLES; i++)
+	{
+		if(Particle[i].active)
+		{
+			dx = Particle[i].speed * cos (Particle[i].angle) >> 16 *(timer-Particle[i].active);
+			dy = Particle[i].speed * sin (Particle[i].angle) >> 16 *(timer-Particle[i].active);
+			
+			
+			
+			if(AnalogExplosions)
+			{
+				SetLucent(timer-Particle[i].active*2/3);
+				SetPixel(Particle[i].x+dx/100, Particle[i].y+dy/100, Particle[i].color, screen);
+			}
+			else	SetPixel(Particle[i].x+dx, Particle[i].y+dy, Particle[i].color, screen);
+		}
+	}
+	SetLucent(0);
+}
+void HandleParticles()
+{
+	int i;
+	for(i = 0; i < MAX_EXPLOSION_PARTICLES; i++)
+	{
+		if(Particle[i].active)
+		{
+			if((AnalogExplosions && timer-Particle[i].active >= 150) || (!AnalogExplosions && timer-Particle[i].active >= 100))
+				Particle[i].active = 0;
+		}
+	}
+}
+
+int GetFreeParticleIndex()
+{
+	int i;
+	for(i = 0; i < MAX_EXPLOSION_PARTICLES; i++)
+	{
+		if(!Particle[i].active) return i;
+	}
+	return -1;
+}
+
+void ClearParticles()
+{
+	int i;
+	for(i = 0; i < MAX_EXPLOSION_PARTICLES; i++)
+	{
+		Particle[i].active = 0;
+	}
+}
+
+void TimerFunction()
+{
+	CheckInput();
+	HandleDebris();
+	HandleParticles();
+}
+
+void StartGame()
+{
+	ActiveGame = 1;
+	Level = 1;
+	LevelDebris = 20;
+	ClearDebris();
+	ClearParticles();
+	Player.x = ScreenX/2-(Player.w/2);
+	LevelUpNotice = timer;
+	PlayMusic(sngPlay);
+	SetAppName("Block Dodger - Level " + str(Level));
+}
+
+void GameOver()
+{
+	ActiveGame = 0;
+	CreateExplosion(Player.x-8, Player.y-8, PlayerX2()+8, Player.y+Player.h+8, Player.color);
+	PlaySound(sfxDeath, 100);
+	PlayMusic(sngLose);
+}
+
+int LevelUpNotice;
+
+void LevelUp()
+{
+	Level++;
+	LevelDebris = Level*5+20;
+	LevelUpNotice = timer;
+	SetAppName("Block Dodger - Level " + str(Level));
+}
+
+void DrawDebris()
+{
+	int i;
+	
+	for(i = 0; i < MAX_DEBRIS_OBJECTS; i++)
+	{
+		if(Debris[i].active)
+			Rect(Debris[i].x, Debris[i].y, Debris[i].x+Debris[i].w, DebrisY2(i), Debris[i].color, screen);
+	}
+}
+
+void HandleDebris()
+{
+	int i;
+	
+	if(ActiveGame)
+	{
+		if(LevelDebris-ActiveDebrisCount() > 0)
+		{
+				if(!Random(0,80-(Level*10))) SpawnDebrisObject();
+		}
+		else
+		{
+			if(ScreenClear())
+				LevelUp();
+		}
+	}
+	
+	for(i = 0; i < MAX_DEBRIS_OBJECTS; i++)
+	{
+		if(Debris[i].active)
+		{
+			if(DebrisY2(i) >= FLOOR_Y) //hit floor -- killed
+			{
+				DetonateDebrisObject(i);
+				LevelDebris--;
+			}
+			else //move and collide
+			{
+				Debris[i].y += Debris[i].speed;
+				if(ActiveGame)
+				{
+					if(RectangleCollision(Player.x, Player.y, PlayerX2(), Player.y+Player.h, Debris[i].x, Debris[i].y, Debris[i].x+Debris[i].w, DebrisY2(i)))
+					{
+						DetonateDebrisObject(i);
+						GameOver();
+					}
+				}
+			}
+		}
+	}
+}
+
+void DetonateDebrisObject(int i)
+{
+	PlaySound(sfxCrash, 50);	
+	CreateExplosion(Debris[i].x, Debris[i].y, Debris[i].x+Debris[i].w, DebrisY2(i), Debris[i].color);
+	Debris[i].active = 0;
+}
+
+void SpawnDebrisObject()
+{
+	int i = GetFreeDebrisIndex();
+	
+	if(i >= 0)
+	{		
+		Debris[i].active = 1;
+		Debris[i].w = Random(15,30);
+		Debris[i].h = Random(15,25);
+		Debris[i].x = Random(0, ScreenX-Debris[i].w);
+		Debris[i].y = 0-Debris[i].h;
+		Debris[i].speed = Level+Random(-1,1);
+		if(AnalogExplosions)
+		{
+			switch(Level)
+			{
+				case 1: Debris[i].color = RGB(000,128,0); //green
+				case 2: Debris[i].color = RGB(255,255,0); //yellow
+				case 3: Debris[i].color = RGB(255,128,0); //orange
+				case 4: Debris[i].color = RGB(255,000,0); //red
+				case 5: Debris[i].color = RGB(160,0,192); //violet
+				case 6: Debris[i].color = RGB(128,64,64); //pink
+				case 7: Debris[i].color = RGB(64,0,128); //blue
+				case 8: Debris[i].color = RGB(128,128,128); //white
+			}
+		}
+		else Debris[i].color = RGB(255,0,0);
+
+		if(Debris[i].speed < 1) Debris[i].speed = 1;
+	}
+}
+
+int ScreenClear()
+{
+	if(ActiveDebrisCount())
+		return 0;
+	return 1;
+}
+
+int ActiveDebrisCount()
+{
+	int i, count;
+	
+	for(i = 0; i < MAX_DEBRIS_OBJECTS; i++)
+	{
+		if(Debris[i].active) count++;
+	}
+	
+	return count;
+}
+
+int ClearDebris()
+{
+	int i;
+	
+	for(i = 0; i < MAX_DEBRIS_OBJECTS; i++)
+		Debris[i].active = 0;
+}
+
+int GetFreeDebrisIndex()
+{
+	int i;
+	
+	for(i = 0; i < MAX_DEBRIS_OBJECTS; i++)
+		if(!Debris[i].active) return i;
+	
+	return -1;
+}
+
+void CheckInput()
+{
+	if(ActiveGame)
+	{
+		if(left)
+		{
+			Player.x -= Player.speed;
+			if(Player.x < 0) Player.x = 0;
+		}
+		if(right)
+		{
+			Player.x += Player.speed;
+			if(PlayerX2() > ScreenX) Player.x = ScreenX-Player.w;
+		}
+		if(b3) GameOver();
+		if(key[SCAN_E])
+		{
+			key[SCAN_E] = 0;
+			AnalogExplosions = !AnalogExplosions;
+		}
+	}
+	else
+	{
+		if(b1) StartGame();
+	}
+}
+
+
+int PlayerX2()
+{
+	return Player.x+Player.w;
+}
+
+int DebrisY2(int i)
+{
+	return Debris[i].y + Debris[i].h;
+}
+
+int RectangleCollision(int Rx1, int Ry1, int Rx2, int Ry2, int Sx1, int Sy1, int Sx2, int Sy2)
+{
+	int Small, Large;
+	
+	//sort rect points
+	if(Rx1 > Rx2)
+	{
+		Small = min(Rx1, Rx2);
+		Large = max(Rx1, Rx2);
+		Rx1 = Small; Rx2 = Large;
+	}
+	if(Ry1 > Ry2)
+	{
+		Small = min(Rx1, Rx2);
+		Large = max(Rx1, Rx2);
+		Ry1 = Small; Ry2 = Large;
+	}
+	if(Sx1 > Sx2)
+	{
+		Small = min(Sx1, Sx2);
+		Large = max(Sx1, Sx2);
+		Sx1 = Small; Sx2 = Large;
+	}
+	if(Sy1 > Sy2)
+	{
+		Small = min(Sx1, Sx2);
+		Large = max(Sx1, Sx2);
+		Sy1 = Small; Sy2 = Large;
+	}
+	
+	//check for collsion
+	return (Rx1 <= Sx2 && Rx2 >= Sx1 && Ry1 <= Sy2 && Ry2 >= Sy1);	
+}
+
+int min(int a, int b)
+{
+	if (a < b)
+		return a;
+	return b;
+}
+int max(int a, int b)
+{
+	if (a > b)
+		return a;
+	return b;
+}
