@@ -1,0 +1,8 @@
+// ----------------------------------------------------------- --- -- -
+// FLAGNAMES.VC. Some defines that replace flag numbers with names so they
+// make more sense when setting them. Useful!
+// Preceed each flagname with the word "flag," so nothing gets mixed up.
+// ----------------------------------------------------------- --- -- -
+
+// STANDARD FLAGS
+

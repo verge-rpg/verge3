@@ -1,0 +1,34 @@
+// ----------------------------------------------------------- --- -- -
+// SOUND.VC. Handles sound, naturally.
+// ----------------------------------------------------------- --- -- -
+
+int currentmusic;			// Music currently playing.
+string lasttune;			// Filename of the previous music track played
+
+// Play music. This way, we keep track of what tune is playing and won't restart a
+// tune across two map files if the tune to be loaded for the second map is the same
+// as the first.
+
+void StartMusic(string musicfile)
+	{
+	if (strcmp(musicfile, lasttune) != 0)
+		{
+		StopSong(currentmusic);
+		currentmusic = LoadSong(musicfile);
+		lasttune = musicfile;
+		PlaySong(currentmusic);
+		}
+	SetSongVolume(currentmusic, musicvol);
+	}
+
+// Fade out music
+
+void FadeMusic()
+{
+while (GetSongVolume(currentmusic)>0)
+	{
+	SetSongVolume(currentmusic, (GetSongVolume(currentmusic))-1);
+	Wait(2);
+	}
+SetSongVolume(currentmusic, 0);
+}

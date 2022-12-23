@@ -35,6 +35,8 @@ extern bool vc_olduserglobals;
 extern bool vc_ignoreduplicatefuncs;
 extern bool vc_ignoreduplicatelocals;
 extern bool vc_nostructinfo;
+extern bool vc_oldusercall;
+extern bool vc_oldif;
 
 void ShowPage();
 

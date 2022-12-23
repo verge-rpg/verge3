@@ -1,0 +1,61 @@
+// ----------------------------------------------------------- --- -- -
+// SNACKSTOP.VC. Handles the snack bars on the Mignolia and the like.
+// ----------------------------------------------------------- --- -- -
+
+void SnackStop()
+{
+int cantpay;
+if (!flag[6])
+	{
+	flag[6] = 1;
+	TBox(0, 1, 1, "Clerk", "Welcome to Snack Stop: your one stop snack shop.");
+	TBox(party[0].port, 1, 1, party[0].name, "My what what what?");	
+	TBox(0, 1, 2, "Clerk", "*Sigh*.");
+	TBox(0, 1, 3, "Clerk", "We do food, sir.");
+	TBox(party[0].port, 1, 1, party[0].name, "Great!");
+	}
+
+Choice("What do you want to do?", "Purchase a snack/Nevermind");
+
+if (lastchoice = 1)
+	{
+	Choice("What will you buy?", "Chocolate bar (2$)/Bottle of Dr Pepper (4$)/Sandwhich (6$)/Nevermind");
+	
+	if (lastchoice = 1)
+		{
+		if (partymoney >=2)
+			{
+			GiveItem(5);
+			TakeMoney(2);
+			Banner("Chocolate Bar Recieved!");
+			}
+		else { cantpay = 1; }
+		}
+
+	if (lastchoice = 2)
+		{
+		if (partymoney >=4)
+			{
+			GiveItem(6);
+			TakeMoney(4);
+			Banner("Dr Pepper Recieved!");
+			}
+		else { cantpay = 1; }
+		}
+
+	if (lastchoice = 3)
+		{
+		if (partymoney >=6)
+			{
+			GiveItem(7);
+			TakeMoney(6);
+			Banner("Sandwhich Recieved!");
+			}
+		else { cantpay = 1; }
+		}
+
+
+	if (cantpay) { TBox(0, 1, 1, "Clerk", "Sorry, Sir. You don't have enough credits to purchase that."); }
+	}
+TBox(0, 1, 1, "Clerk", "Come again!");
+}

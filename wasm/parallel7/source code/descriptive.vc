@@ -1,0 +1,207 @@
+// ----------------------------------------------------------- --- -- -
+// DESCRIPTIVE.VC. This VC file contains generally re-occuring
+// descriptions of items. This way, we save space AND time! Great, eh?
+// ----------------------------------------------------------- --- -- -
+
+void DescLight()
+{
+TBox(party[0].port, 1, 1, party[0].name, "It's some sort of art deco style light fitting.");
+}
+
+void DescChair()
+{
+TBox(party[0].port, 1, 2, party[0].name, "It's a chair.");
+TBox(party[0].port, 1, 3, party[0].name, "Generally for sitting.");
+}
+
+void DescStool()
+{
+TBox(party[0].port, 1, 1, party[0].name, "It's a bar stool.");
+}
+
+void DescDrink()
+{
+TBox(party[0].port, 1, 1, party[0].name, "Someone's left their drink here.");
+}
+
+void DescPillar()
+{
+TBox(party[0].port, 1, 1, party[0].name, "It's some sort of support pillar for holding up the ceiling.");
+}
+
+void DescPlant()
+{
+TBox(party[0].port, 1, 1, party[0].name, "A potted plant.");
+}
+
+void DescBench()
+{
+TBox(party[0].port, 1, 1, party[0].name, "It's a small wooden bench.");
+}
+
+void DescStripLight()
+{
+TBox(party[0].port, 1, 1, party[0].name, "A plain old strip light to illuminate this area.");
+}
+
+void DescBin()
+{
+TBox(party[0].port, 1, 1, party[0].name, "It's a litter bin. Seems pretty empty. Makes a change, I suppose.");
+}
+
+void DescLiftButton()
+{
+TBox(party[0].port, 1, 1, party[0].name, "I don't need to press the call button for the lift. It's already on this floor.");
+}
+
+void DescNoSmoking()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The sign reads: Strictly No Smoking.");
+}
+
+void DescFarscapePoster()
+{
+TBox(party[0].port, 1, 1, party[0].name, "It's a poster for 'Farscape,' an old sci-fi TV show from around 70 years ago. Neat.");
+}
+
+void DescFireflyPoster()
+{
+TBox(party[0].port, 1, 2, party[0].name, "Wow. This poster's a rarity: it's for an old TV show called 'Firefly.'");
+TBox(party[0].port, 1, 0, party[0].name, "Screened near the beginning of the century, it ran for just one series before it got cancelled. Shame, really. I've seen it repeated a few times on the M-Vid");
+TBox(party[0].port, 1, 0, party[0].name, "and it really was GREAT..");
+TBox(party[0].port, 1, 3, party[0].name, "I guess it's true what they say: the brightest stars burn for the shortest time.. *sigh*.");
+}
+
+void DescToilet()
+{
+TBox(party[0].port, 1, 1, party[0].name, "It's an auto-flushing, waterless toilet.");
+TBox(party[1].port, 1, 1, party[0].name, "Don't even THINK about using that while I'm stood here.");
+TBox(party[0].port, 1, 1, party[0].name, "...");
+}
+
+void DescWashBasin()
+{
+TBox(party[0].port, 1, 1, party[0].name, "It's a wash basin.");
+}
+
+void DescCrate()
+{
+TBox(party[0].port, 1, 1, party[0].name, "It's a cargo crate.");
+}
+
+void DescWeevil()
+{
+TBox(party[0].port, 1, 1, party[0].name, "Ugly.");
+}
+
+void DescLockedDoor()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The door's locked.");
+}
+
+void DescViewScreen()
+{
+TBox(party[0].port, 1, 2, party[0].name, "Hmm. It looks like a window looking out on space, but this room is nowhere near the outer hull.");
+TBox(party[0].port, 1, 3, party[0].name, "Must be some sort of viewscreen projecting an image of outside.");
+
+}
+
+void DescPlate1()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: A. Fisk, Cleaning Staff.");
+TBox(party[1].port, 1, 1, party[1].name, "This would be my room.");
+}
+
+void DescPlate2()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: G. Ramsey, Chef.");
+}
+
+void DescPlate3()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: A. Brogden, Water Recycling Systems Maintenance.");
+}
+
+void DescPlate4()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: S. Miyamoto, Entertainment Manager.");
+}
+
+void DescPlate5()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: P. Forrester, Cleaning Staff.");
+}
+
+void DescPlate6()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: J. Collinson, Snack Stop Clerk.");
+}
+
+void DescPlate7()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: M. Ciancia, Console Officer.");
+}
+
+void DescPlate8()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: C. Slade, Event Organiser.");
+}
+
+void DescPlate9()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: F. Burbidge, Navigator.");
+}
+
+void DescPlate10()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: M. Packman, Security Co-ordinator.");
+}
+
+void DescPlate5()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: J. Whedon, Bar Staff.");
+}
+
+void DescBarracksPlate()
+{
+TBox(party[0].port, 1, 1, party[0].name, "The nameplate for this room reads: Guard Barracks: No Unauthorised Entry.");
+}
+
+void DescHead()
+{
+TBox(party[0].port, 1, 1, party[0].name, "There's a severed head on the floor. Poor bastard.");
+TBox(party[1].port, 1, 1, party[1].name, "Can we move on, please? Egh-fgghh-huhh.. I think I'm gonna puke..");
+}
+
+void InfoLinkNews()
+{
+TBox(0, 1, 2, "Terminal", "Today's headlines:");
+TBox(0, 1, 0, "Terminal", "'FRIDAY THE 13TH: PART 72' BOMBS AT BOX OFFICE");
+TBox(0, 1, 0, "Terminal", "FROZEN REMAINS OF WALT DISNEY RECOVERED");
+TBox(0, 1, 0, "Terminal", "ALPHA CENTAURI SIGNS PEACE DEAL WITH SIRIUS");
+TBox(0, 1, 0, "Terminal", "EARTH'S OLDEST MAN FOUND DEAD IN YORKSHIRE HOME AGED 272");
+TBox(0, 1, 0, "Terminal", "PLANETPLUS TRANSPORT INC. DENY NEGLIGENCE ACCUSATIONS");
+TBox(0, 1, 3, "Terminal", "DUKE NUKEM FOREVER TO BE RELEASED BY CHRISTMAS. PROBABLY");
+}
+
+void DescBrokenDoor()
+{
+TBox(party[0].port, 1, 1, party[0].name, "Someone or something has ripped these doors right off their movement rails.");
+}
+
+void InfoLinkSecurity()
+{
+if (!flag[100])
+	{
+	TBox(0, 1, 1, "Terminal", "Security here, what's the problem?");
+	TBox(party[0].port, 1, 1, party[0].name, "Woops, sorry. Wrong button.");
+	TBox(0, 1, 1, "Terminal", "Sir, this is not a toy. Call us only if you have a REAL emergency.");
+	}
+else
+	{
+	TBox(party[0].port, 1, 1, party[0].name, "Er, security? Is anyone there? It's a bloodbath down here and I'd sort of appreciate some HELP.");
+	TBox(0, 1, 1, "Terminal", "Error: communications relay disconnected. Please contact your vendor.");
+	TBox(party[0].port, 1, 1, party[0].name, "Fantastic. Just fan-fucking-tastic!");
+	}
+
+}

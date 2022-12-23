@@ -1,0 +1,173 @@
+// ----------------------------------------------------------- --- -- -
+// CREDITS.VC. Buckermann's credits code, heavily modified and
+// reformatted so that it fits more comfortably with the rest of the
+// code. Also changed so it went at a sensible speed at 320x240.
+// ----------------------------------------------------------- --- -- -
+
+string C_Lines[500];
+int C_Lines_Y[500];
+int C_Lines_Y_R[500];
+int C_Lines_R[500];
+int C_Lines_I[500];
+int C_Delay;
+int C_Speed = 10;
+
+void credits(int stoponend)
+{
+string filename = "credits.txt";
+
+// Play music!
+StartMusic("music\credits.mod");
+
+int C_FontNR;	
+int C_FontHeight = TextWidth(font[0],"X")+(TextWidth(font[0],"W")/8);
+	
+int C_LinesCount = CountC_Lines(filename);
+int C_File = FileOpen(filename, 1);
+int C_Background = LoadImage(FileReadLn(C_File));
+	
+int x;
+int y;
+
+int waitcount;
+
+C_FontNR = 0;
+C_FontHeight = TextWidth(font[C_FontNR],"W");
+C_Lines_Y[0] = screeny;
+
+for (x = 1; x <= C_LinesCount; x++)
+	{
+	C_Lines[x] = FileReadLn(C_File);
+	if (!strcmp(left(C_Lines[x],3), "/pi"))
+		{
+		C_Lines_I[x] = LoadImage(right(C_Lines[x], len(C_Lines[x])-4));
+		C_Lines_Y[x] = C_Lines_Y[x-1]+ Imageheight(C_Lines_I[x])+C_FontHeight;
+		}
+		
+	if (strcmp(left(C_Lines[x],3), "/pi"))
+		{						
+		C_FontHeight = TextWidth(font[C_FontNR],"W")+(TextWidth(font[C_FontNR],"W")/8);
+		C_Lines_Y[x] = C_Lines_Y[x-1]+C_FontHeight;
+		C_FontNR = 0;
+		if (!strcmp(left(C_Lines[x],3), "/f0"))				
+			C_FontNR = 0;
+		if (!strcmp(left(C_Lines[x],3), "/f1"))				
+			C_FontNR = 1;
+		if (!strcmp(left(C_Lines[x],3), "/f2"))				
+			C_FontNR = 2;
+		if (!strcmp(left(C_Lines[x],3), "/f3"))				
+			C_FontNR = 3;
+		if (!strcmp(left(C_Lines[x],3), "/f4"))				
+			C_FontNR = 4;				
+		}			
+	C_Lines_Y_R[x] = C_Lines_Y[x];
+	}		
+FileClose(C_File);
+
+Blit (0,0, C_BackGround, screen);
+int C_X;
+int C_Y;
+int C_SX = 0;
+int C_SY = 0;
+
+int finished;
+
+lastpressed=0;
+while(!b3 && !finished)
+	{
+	Blit(C_SX,C_SY, C_BackGround, screen);		
+	For(x = 1; x <= C_LinesCount; x++)
+		{
+		if (!strcmp(left(C_Lines[x],1), "/"))
+			{
+			if (!strcmp(left(C_Lines[x],3), "/pi"))
+				{
+				C_X = (screenx/2)-(ImageWidth(C_Lines_I[x])/2);
+				C_Y = C_Lines_Y[x]-(Imageheight(C_Lines_I[x]));
+				if ((C_Lines_Y[x]+(Imageheight(C_Lines_I[x]))) > 0 && C_Y < screenx)
+					TBlit(C_X, C_Y, C_Lines_I[x], screen);
+				}
+			if (!strcmp(left(C_Lines[x],3), "/f0"))			
+				C_FontNR = 0;
+			if (!strcmp(left(C_Lines[x],3), "/f1"))				
+				C_FontNR = 1;
+			if (!strcmp(left(C_Lines[x],3), "/f2"))				
+				C_FontNR = 2;
+			if (!strcmp(left(C_Lines[x],3), "/f3"))								
+				C_FontNR = 3;					
+			if (!strcmp(left(C_Lines[x],3), "/f4"))				
+				C_FontNR = 4;										
+			}				
+			
+		if (strcmp(left(C_Lines[x],1), "/"))
+			{
+			C_FontNR = 0;
+			C_X = (screenx/2)-(TextWidth(font[C_FontNR], C_Lines[x])/2);
+			C_Y = C_Lines_Y[x];
+			if ((C_Y+TextWidth(font[C_FontNR], C_Lines[x])) > 0 && C_Y < screenx)
+				PrintString(C_X, C_Y, screen, font[C_FontNR], C_Lines[x]);
+			}				
+
+		else if (strcmp(left(C_Lines[x],3), "/pi"))
+			{
+			C_X = (screenx/2)-(TextWidth(font[C_FontNR], Right(C_Lines[x], len(C_Lines[x])-4))/2);
+			C_Y = C_Lines_Y[x];
+			if ((C_Y+TextWidth(font[C_FontNR], C_Lines[x])) > 0 && C_Y < screenx)
+				PrintString(C_X, C_Y, screen, font[C_FontNR], Right(C_Lines[x], len(C_Lines[x])-4));
+			}				
+		C_Lines_Y[x]= C_Lines_Y[x]-1;
+		waitcount++;
+		if (waitcount = 5)
+			{
+			waitcount = 0;
+			Wait(1);
+			}
+		if (C_Lines_Y[C_LinesCount] <= 0)
+			{
+			// We're done, finish the credits
+			finished = 1;
+			}
+		}
+	Showpage();
+	}		
+		
+Showpage();
+
+DramaticFadeOut();
+
+Freeimage(C_Background);
+if (stoponend > 0) { Exit(""); }
+}
+
+int CountC_Lines(string FileName)
+{	
+
+int file = FileOpen(FileName, 1);
+
+int C_LinesCounter = 0;
+
+string C_Line = FileReadln(file);
+   
+string EOF = "EOF";
+while ((strcmp(EOF, C_Line)))
+	{
+	C_LinesCounter++;
+	C_Line = FileReadLn(file);		
+	}
+FileCLose(file);
+
+C_LinesCounter--;
+return C_LinesCounter;
+}
+
+void AnyKey()
+{
+lastpressed=0;
+while(lastpressed == 0 && mouse.r == 0 && mouse.l ==0)
+
+	{
+	UpdateControls();		
+	Showpage();
+	}
+lastpressed=0;
+}

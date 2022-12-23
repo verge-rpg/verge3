@@ -1,0 +1,129 @@
+// ----------------------------------------------------------- --- -- -
+// MISC.VC. VC that doesn't really fit anywhere except under the
+// ominous header of "Miscellaneous."
+// ----------------------------------------------------------- --- -- -
+
+
+// Wait in hundredths of a second
+
+void Wait(int delay)
+{
+int t;
+t=timer; timer=0;
+while(delay)
+	{
+	if(timer)
+		{
+        	timer--;
+        	delay--;
+        	UpdateControls();
+        	}
+	}
+timer=t;
+}
+
+// Wait in hundredths of a second and update too
+
+void WaitUpdate(int delay)
+{
+int t;
+t=timer; timer=0;
+while(delay)
+	{
+	if(timer)
+		{
+        	timer--;
+        	delay--;
+        	Render();
+        	ShowPage();
+        	}
+	}
+timer=t;
+}
+
+// Wait in hundredths of a second. Skippable by holding ESC or Return
+
+void SkipWait(int delay)
+{
+int t;
+t=timer; timer=0;
+
+while(!b3 && !b1 && delay)
+	{
+	if(timer)
+		{
+		timer--;
+		delay--;
+		UpdateControls();
+		}
+	}
+timer=t;
+}
+
+// Wait for the enter key to be pressed
+
+void WaitForEnter()
+{
+Unpress(0);
+while (!b1)
+	{
+	UpdateControls();
+	Wait(1);
+	}
+}
+
+// Unpresses the directional buttons easily and conveniently.
+
+void UnpressDirectionals()
+{
+Unpress(5);
+Unpress(6);
+Unpress(7);
+Unpress(8);
+}
+
+// Shows the version of the game in the top right of the screen
+
+void ShowVersionNumber()
+{
+SetLucent(80);
+PrintString(screenx-(TextWidth(font[0], version)+10), 10, screen, font[0], version);
+SetLucent(0);
+}
+
+// Returns the time in 12 hour format
+string WhatsTheTime()
+{
+int hour;
+string ampm, min, sec, thetime;
+
+if (systime.hour >= 12)
+	{
+	hour = systime.hour - 12;
+	ampm = "pm";
+	}
+
+else	{
+	hour = systime.hour;
+	ampm = "am";
+	}
+
+if (systime.minute < 10) { min = "0"+str(systime.minute);}
+else { min = str(systime.minute); }
+
+if (systime.second < 10) { sec = "0"+str(systime.second);}
+else { sec = str(systime.second); }
+
+thetime = str(hour)+":"+min+":"+sec+" "+ampm;
+
+Return thetime;
+}
+
+// Returns a transparent rectangle (lucency of 50) that has a solid 1 pixel border
+void TransRect(int x, int y, int width, int height, int color, int destimage)
+{
+SetLucent(50);
+RectFill(x, y, x+(width-1), y+(height-1), color, destimage);
+SetLucent(0);
+Rect(x, y, x+(width-1), y+(height-1), color, destimage);
+}

@@ -1,0 +1,169 @@
+// ----------------------------------------------------------- --- -- -
+// FILEHAND.VC. Handles file i/o, saving and loading etc.
+// ----------------------------------------------------------- --- -- -
+
+// Check if a file exists
+int FileExists(string fname)
+{
+ int f;
+ f=FileOpen(fname, 1);
+ if (!f) return 0;
+ FileClose(f);
+ return 1;
+}
+
+// --------------------------------
+
+// Save game function
+
+void SaveGame(string savefile)
+{
+int loop, f;
+
+f = FileOpen(savefile+".sav", 2);
+
+FileWriteln(f, "*** "+gamename+" save file. Lay the HELL off! No editing! DO NOT TOUCH!");
+
+FileWriteln(f, str(musicvol));					// Music volume
+FileWriteln(f, str(soundvol));					// Sound volume
+
+FileWriteln(f, currentmap);					// Current Map
+FileWriteln(f, str(entity.x[party[0].ent]));			// Player X
+FileWriteln(f, str(entity.y[party[0].ent]));			// Player Y
+
+FileWriteln(f, str(partymoney));				// Party money
+
+FileWriteln(f, str(freepartyslot));				// Lowest free party slot
+
+for(loop = 0; loop < maxpartysize; loop++)			// -- PARTY DATA
+	{
+	FileWriteln(f, party[loop].name);
+	FileWriteln(f, party[loop].sex);
+	FileWriteln(f, str(party[loop].port));
+	FileWriteln(f, str(party[loop].active));
+	FileWriteln(f, party[loop].chrfile);
+	
+	FileWriteln(f, str(party[loop].hp));
+	FileWriteln(f, str(party[loop].maxhp));
+	
+	FileWriteln(f, str(party[loop].strength));
+	FileWriteln(f, str(party[loop].intelligence));
+	FileWriteln(f, str(party[loop].speed));
+	FileWriteln(f, str(party[loop].constitution));
+	
+	FileWriteln(f, str(party[loop].sklmelee));
+	FileWriteln(f, str(party[loop].sklsmallarms));
+	FileWriteln(f, str(party[loop].sklrifles));
+	FileWriteln(f, str(party[loop].sklheavyarms));
+	
+	FileWriteln(f, str(party[loop].sklengineer));
+	
+	FileWriteln(f, str(party[loop].headequip));
+	FileWriteln(f, str(party[loop].torsoequip));
+	FileWriteln(f, str(party[loop].armsequip));
+	FileWriteln(f, str(party[loop].legsequip));
+	FileWriteln(f, str(party[loop].feetequip));
+	
+	FileWriteln(f, str(party[loop].weaponequip));
+	FileWriteln(f, str(party[loop].equippedweapontype));
+	
+	FileWriteln(f, str(party[loop].xp));
+	
+	FileWriteln(f, str(party[loop].attack));
+	FileWriteln(f, str(party[loop].defense));
+	}
+
+for(loop = 0; loop < maxflags; loop++)				// -- FLAGS
+	{
+	FileWriteln(f, str(flag[loop]));
+	}
+
+for(loop = 0; loop < 300; loop++)				// Inventory Data
+	{
+	FileWriteln(f, str(inventory[loop].itemnum));
+	FileWriteln(f, str(inventory[loop].itemcount));
+	FileWriteln(f, str(inventory[loop].itemtype));
+	FileWriteln(f, str(inventory[loop].equipped));
+	}
+
+FileClose(f);
+}
+
+// --------------------------------
+
+// Load Game Function
+
+void LoadGame(string savefile)
+{
+int loop, f;
+SetEntitiesPaused(0);
+
+f = FileOpen(savefile+".sav", 1);
+
+currentmap = FileReadln(f);					// Save file header. Not needed, so dump it in the mapname string for now. It'll be overwritten anyway
+
+musicvol = val(FileReadln(f));					// Music volume
+soundvol = val(FileReadln(f));					// Sound volume
+
+currentmap = FileReadln(f);					// Current Map
+
+savedx = val(FileReadln(f));					// Player X
+savedy = val(FileReadln(f));					// Player Y
+
+partymoney = val(FileReadln(f));				// Party money
+
+freepartyslot = val(FileReadln(f));				// Lowest free party slot
+
+for(loop = 0; loop < maxpartysize; loop++)			// -- PARTY DATA
+	{
+	party[loop].name = FileReadln(f);
+	party[loop].sex = FileReadln(f);
+	party[loop].port = val(FileReadln(f));
+	party[loop].active = val(FileReadln(f));
+	party[loop].chrfile = FileReadln(f);
+	
+	party[loop].hp = val(FileReadln(f));
+	party[loop].maxhp = val(FileReadln(f));
+	
+	party[loop].strength = val(FileReadln(f));
+	party[loop].intelligence = val(FileReadln(f));
+	party[loop].speed = val(FileReadln(f));
+	party[loop].constitution = val(FileReadln(f));
+	
+	party[loop].sklmelee = val(FileReadln(f));
+	party[loop].sklsmallarms = val(FileReadln(f));
+	party[loop].sklrifles = val(FileReadln(f));
+	party[loop].sklheavyarms = val(FileReadln(f));
+	
+	party[loop].sklengineer = val(FileReadln(f));
+	
+	party[loop].headequip = val(FileReadln(f));
+	party[loop].torsoequip = val(FileReadln(f));
+	party[loop].armsequip = val(FileReadln(f));
+	party[loop].legsequip = val(FileReadln(f));
+	party[loop].feetequip = val(FileReadln(f));
+	
+	party[loop].weaponequip = val(FileReadln(f));
+	party[loop].equippedweapontype = val(FileReadln(f));
+	
+	party[loop].xp = val(FileReadln(f));
+	
+	party[loop].attack = val(FileReadln(f));
+	party[loop].defense = val(FileReadln(f));
+	}
+	
+for(loop = 0; loop < maxflags; loop++)				// -- FLAGS
+	{
+	flag[loop] = val(FileReadln(f));
+	}
+
+for(loop = 0; loop < 300; loop++)				// Inventory Data
+	{
+	inventory[loop].itemnum = val(FileReadln(f));
+	inventory[loop].itemcount = val(FileReadln(f));
+	inventory[loop].itemtype = val(FileReadln(f));
+	inventory[loop].equipped = val(FileReadln(f));
+	}
+
+FileClose(f);
+}

@@ -1,0 +1,61 @@
+// ----------------------------------------------------------- --- -- -
+// SETUP.VC. Settings, by way of variables and strings, are accessible
+// from here. Everything from the speed of text rendering to loading
+// fonts. Call the function "Setup" to actually set everything,
+// preferrably right at the start of the game.
+// ----------------------------------------------------------- --- -- -
+
+// Declare INTs / STRINGs / ARRAYs etc. here:
+
+int flag[maxflags];			// Flags, for checking whether an event has occured
+
+int gui[3];				// Stores the current images for the GUI
+int guibton[7];				// Stores the buttons on the ESC menu
+int guistyle;				// Current GUI style. CURRENTLY FUNCTIONAL BUT UNUSED!
+int guihalo;				// Stores the button halo image for the ESC menu
+int c_arrow;				// The choice cursor
+
+int screenx, screeny;			// Makes the X/Y sizes of the screen easier to handle
+
+int musicvol;				// So the player can set a custom music volume
+int soundvol;				// ... And the SFX volume.
+
+int fadespeed;				// Controls the speed of fades. The higher, the slower. Also affects the speed the textbox fades in and out
+
+int canesc;				// Determines whether you can access the ESC menu. 1 = yes, 0 = no.
+
+int tboxwait;				// The wait time for the textbox between each letter being rendered
+int textoffset;				// How much to offset the text in a textbox in pixels
+int maxlinelength;			// Current longest length in pixels a line of text in the textbox can be
+int linelengthlimit;			// The limit to the length a line of text can be in pixels
+int maxwraplines;			// Maximum number of lines WrapText should cut to
+
+string author;				// String to hold the name(s) of whoever made this game.
+					// For the credits, just incase something funky happens and I change my  name or something. It could happen.
+
+void Setup()
+{
+SetAppName(gamename);
+
+screenx = ImageWidth(screen);
+screeny = ImageHeight(screen);
+
+c_arrow = LoadImage("c_arrow.png");
+
+textoffset = 9;
+musicvol = 80;
+soundvol = 100;
+fadespeed = 1;
+canesc = 0;
+maxlinelength = 280;	// The Tbox function alters this number
+linelengthlimit = 280;	// *This* number never changes
+maxwraplines = 7;
+tboxwait = 6;
+author = "Fred Burbidge";
+
+FontLoad();
+guistyle = 1;
+LoadGUI(guistyle);
+LoadGUIButtons();
+SetupPlayer();
+}

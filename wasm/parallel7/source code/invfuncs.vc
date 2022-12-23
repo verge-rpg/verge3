@@ -1,0 +1,421 @@
+// ----------------------------------------------------------- --- -- -
+// INVFUNCS.VC. Handles the inventory. This VC file should be left
+// alone when adding inventory items. Add your items to the inventory
+// database and put additional code into ITEMFUNCS.VC to get them to do
+// stuff.
+// ----------------------------------------------------------- --- -- -
+
+// Structure for inventory slots
+struct invitem
+{
+int itemnum;	// Item index
+int itemcount;	// Number of items
+int itemtype;	// Type of item. 0 = Normal. 1 = Non-stackeable normal item. 2 = Armour.
+		// 3 = Weapon
+
+int equipped;	// If the item isn't equipped, this is 0. If it is, it will return
+		// the party index of who is using it +1, since the player is index 0 which in
+		// this case would mean no-one was using it!
+};
+
+// Inventory array
+invitem inventory[maxinvitems];
+
+// -------------------------------------------------
+
+// Money handling!
+
+// Give the party money
+void GiveMoney(int money)
+{
+partymoney = partymoney + money;
+Banner("Recieved "+str(money)+" credits");
+}
+
+// Take it back again!
+void TakeMoney(int money)
+{
+partymoney = partymoney - money;
+}
+
+// -------------------------------------------------
+
+// Check for an item. Returns the item's inventory slot
+int CheckForItem(int itemtofind)
+{
+int loop, founditem;
+
+loop = 0;
+founditem = 0;
+
+while(loop < maxinvitems && founditem != 1)
+	{
+	if (inventory[loop].itemnum = itemtofind) { founditem = 1; }
+	else { loop++; }
+	}
+if (loop = maxinvitems) { Return 9999; }	// Returns 9999 if the player doesn't have the item
+else { Return loop; }
+}
+
+// --- GIVE AND TAKE ITEMS -------------------------
+
+// Gives the player the item, specified by its index number and item type, and places it in the first empty
+// slot it finds.
+void GiveItem(int itemnum)
+{
+int destslot, itemtype;
+string fileinput;
+int f, done;
+
+destslot = CheckForItem(itemnum);
+
+// Ok, let's find out what type of item we're dealing with
+done = 0;
+f = FileOpen("inventory.vdf", 1);
+fileinput = FileReadln(f);		// Read the file header.
+while(!done)
+	{
+	fileinput = FileReadln(f);
+	if (!strcmp("EOF", fileinput)) { Exit("Item "+str(itemnum)+" not found in database! Report this as a bug!"); }
+	if (val(fileinput) = itemnum) { done = 1; }
+	itemtype = val(FileReadln(f));
+	fileinput = FileReadln(f);
+	fileinput = FileReadln(f);
+	fileinput = FileReadln(f);
+	fileinput = FileReadln(f);
+	}
+FileClose(f);
+
+if (destslot = 9999)	// Do we already have one of the items? No?
+	{
+	destslot = CheckForItem(0);	// Look for an empty slot
+	if (destslot = 9999) { Exit("An attempt was made to put item "+str(itemnum)+" in a full inventory! Report this as a bug."); }	// Inventory is full. This would constitute a bug!
+	inventory[destslot].itemnum = itemnum;
+	inventory[destslot].itemtype = itemtype;
+	inventory[destslot].itemcount = 1;
+	}
+	
+else if (inventory[destslot].itemtype != 0)	// Do we have one but it's not stackeable?
+	{
+	destslot = CheckForItem(0);	// Look for an empty slot
+	if (destslot = 9999) { Exit("An attempt was made to put item "+str(itemnum)+" in a full inventory! Report this as a bug."); }	// Inventory is full. This would constitute a bug!
+	inventory[destslot].itemnum = itemnum;
+	inventory[destslot].itemtype = itemtype;
+	inventory[destslot].itemcount = 1;
+	}
+else		// Yes?
+	{
+	inventory[destslot].itemcount++;
+	inventory[destslot].equipped = 0;
+	}
+}
+
+// Take an item from the player. CHECK for the item first, BEFORE you take it. I mean, taking
+// something that isn't there would just be daft, wouldn't it?
+// Specify the item index of the item to take, NOT the slot number.
+void TakeItem(int itemnum)
+{
+int itemtotake;
+
+itemtotake = CheckForItem(itemnum);
+
+// Bug-catching
+if (itemtotake = 9999) { Exit("Attempt to take item the player doesn't have! Item index is: "+str(itemnum)+". Report this as a bug!"); }
+
+if (inventory[itemtotake].itemcount > 1) { inventory[itemtotake].itemcount--; }
+else
+	{
+	inventory[itemtotake].itemnum = 0;
+	inventory[itemtotake].itemcount = 0;
+	inventory[itemtotake].itemtype = 0;
+	inventory[itemtotake].equipped = 0;
+	}
+}
+
+// -------------------------------------------------
+
+// This function returns the name of an item, since we refer to them in code as a number
+// and not a string.
+string NameItem(int itemindex)
+{
+string fileinput, itemname;
+int f, done;
+
+if (itemindex = 0)
+	{
+	itemname = "";
+	}
+else
+	{
+	done = 0;
+	f = FileOpen("inventory.vdf", 1);
+	fileinput = FileReadln(f);		// Read the file header.
+	while(!done)
+		{
+		fileinput = FileReadln(f);
+		if (!strcmp("EOF", fileinput)) { Exit("Item "+str(itemindex)+" not found in database! Report this as a bug!"); }
+		if (val(fileinput) = itemindex) { done = 1; }
+		fileinput = FileReadln(f);
+		fileinput = FileReadln(f);
+		itemname = FileReadln(f);
+		fileinput = FileReadln(f);
+		fileinput = FileReadln(f);
+		}
+	FileClose(f);
+	}
+return itemname;
+}
+
+// -------------------------------------------------
+
+// Like NameItem, instead it returns a description of an item's effects
+string DescItem(int itemindex)
+{
+string fileinput, itemdesc;
+int f, done;
+
+if (itemindex = 0)
+	{
+	itemdesc = "";
+	}
+else
+	{
+	done = 0;
+	f = FileOpen("inventory.vdf", 1);
+	fileinput = FileReadln(f);		// Read the file header.
+	while(!done)
+		{
+		fileinput = FileReadln(f);
+		if (!strcmp("EOF", fileinput)) { Exit("Item "+str(itemindex)+" not found in database! Report this as a bug!"); }
+		if (val(fileinput) = itemindex) { done = 1; }
+		fileinput = FileReadln(f);
+		fileinput = FileReadln(f);
+		fileinput = FileReadln(f);
+		itemdesc = FileReadln(f);
+		fileinput = FileReadln(f);
+		}
+	FileClose(f);
+	}
+return itemdesc;
+}
+
+// -------------------------------------------------
+
+// Toggle an item's equipped status, plus whatever benefits come from using it.
+// Pass to the function the slot the item contains - NOT the item index  - as well as
+// whether to turn off the "Unequipping!" prompt and who the person is that's equipping
+void ToggleEquip(int itemslot, int forcenoprompt, int membertoequip)
+{
+int promptreturn = 0;
+string fileinput;
+int f, done, bodyslot;
+
+// Already equipped? Unequip it!
+if (inventory[itemslot].equipped > 0)
+	{
+	if (!forcenoprompt) { promptreturn = PromptConfirm(party[inventory[itemslot].equipped-1].name+" has this equipped. Unequip?"); }
+	if ( promptreturn || forcenoprompt)
+		{
+		// Flag as unequipped
+		if (party[inventory[itemslot].equipped-1].headequip = itemslot)	{ party[inventory[itemslot].equipped-1].headequip = 9999; }
+		else if (party[inventory[itemslot].equipped-1].torsoequip = itemslot)	{ party[inventory[itemslot].equipped-1].torsoequip = 9999; }
+		else if (party[inventory[itemslot].equipped-1].armsequip = itemslot)	{ party[inventory[itemslot].equipped-1].armsequip = 9999; }
+		else if (party[inventory[itemslot].equipped-1].legsequip = itemslot)	{ party[inventory[itemslot].equipped-1].legsequip = 9999; }
+		else if (party[inventory[itemslot].equipped-1].feetequip = itemslot)	{ party[inventory[itemslot].equipped-1].feetequip = 9999; }
+		else if (party[inventory[itemslot].equipped-1].weaponequip = itemslot)	{ party[inventory[itemslot].equipped-1].weaponequip = 9999; }
+		
+		// Remove the item's special effects from the user, since it's now unequipped
+		ToggleItemEffects(itemslot, 0, inventory[itemslot].equipped-1);
+		
+		inventory[itemslot].equipped = 0;		
+		}
+	}
+
+// Ok, so it ISN'T equipped. Then EQUIP it!
+else
+	{
+	// Register as equipped
+	inventory[itemslot].equipped = membertoequip+1;
+	// Turn on effects
+	ToggleItemEffects(itemslot, 1, inventory[itemslot].equipped-1);
+	// Work out where to stick it	
+	//--- Armour -------------------------
+	
+	done = 0;
+	f = FileOpen("inventory.vdf", 1);
+	fileinput = FileReadln(f);		// Read the file header.
+	while(!done)
+		{
+		fileinput = FileReadln(f);
+		if (!strcmp("EOF", fileinput)) { Exit("Item "+str(inventory[itemslot].itemnum)+" not found in database! Report this as a bug!"); }
+		if (val(fileinput) = inventory[itemslot].itemnum) { done = 1; }
+		fileinput = FileReadln(f);
+		bodyslot = val(FileReadln(f));
+		fileinput = FileReadln(f);
+		fileinput = FileReadln(f);
+		fileinput = FileReadln(f);
+		}
+	FileClose(f);
+	
+	SwapOutItem(itemslot, bodyslot);
+		
+	//--- Weapons ------------------------
+	
+	}
+}
+
+// Dumps an item into the specified equip slot of the specified party member. Checks if there's
+// something in there first. If there is, it swaps it out. Automatically used by the equipping function
+void SwapOutItem(int itemslot, int bodyslot)
+{
+int memberequip = inventory[itemslot].equipped-1;
+
+if (bodyslot = 1)	// Head
+	{
+	if (party[memberequip].headequip < 9999)
+		{
+		inventory[party[memberequip].headequip].equipped = 0;
+		ToggleItemEffects(party[memberequip].headequip, 0, memberequip);
+		}
+	party[inventory[itemslot].equipped-1].headequip = itemslot;
+	}
+	
+if (bodyslot = 2)	// Torso
+	{
+	if (party[memberequip].torsoequip < 9999)
+		{
+		inventory[party[memberequip].torsoequip].equipped = 0;
+		ToggleItemEffects(party[memberequip].torsoequip, 0, memberequip);
+		}
+	party[inventory[itemslot].equipped-1].torsoequip = itemslot;
+	}
+	
+if (bodyslot = 3)	// Arms
+	{
+	if (party[memberequip].headequip < 9999)
+		{
+		inventory[party[memberequip].armsequip].equipped = 0;
+		ToggleItemEffects(party[memberequip].armsequip, 0, memberequip);
+		}
+	party[inventory[itemslot].equipped-1].armsequip = itemslot;
+	}
+
+if (bodyslot = 4)	// Legs
+	{
+	if (party[memberequip].legsequip < 9999)
+		{
+		inventory[party[memberequip].legsequip].equipped = 0;
+		ToggleItemEffects(party[memberequip].legsequip, 0, memberequip);
+		}
+	party[inventory[itemslot].equipped-1].legsequip = itemslot;
+	}
+
+if (bodyslot = 5)	// Feet
+	{
+	if (party[memberequip].feetequip < 9999)
+		{
+		inventory[party[memberequip].feetequip].equipped = 0;
+		ToggleItemEffects(party[memberequip].feetequip, 0, memberequip);
+		}
+	party[inventory[itemslot].equipped-1].feetequip = itemslot;
+	}
+
+if ((bodyslot & 255) ==  6)	// Weapon
+	{
+	if (party[memberequip].weaponequip < 9999)
+		{
+		inventory[party[memberequip].weaponequip].equipped = 0;
+		ToggleItemEffects(party[memberequip].weaponequip, 0, memberequip);
+		}
+	party[inventory[itemslot].equipped-1].weaponequip = itemslot;
+	}
+}
+
+// -------------------------------------------------
+
+// Lists the players' inventory in font 0, with equipped items highlighted in font 4.
+// Specify the XY co-ordinates for blitting the text, what slot to start listing from and
+// what to render to
+void ListInventory(int x, int y, int fromslot int renderdest)
+{
+int loop, currentslot;
+
+// Render 20 inventory items, from slot FROMSLOT.
+for (loop=0; loop < 20; loop++)
+	{
+	currentslot = fromslot+loop;
+	if (inventory[currentslot].equipped = 0)
+		{
+		PrintString(x, y, renderdest, font[0], NameItem(inventory[currentslot].itemnum));
+		if (inventory[currentslot].itemtype = 0 && inventory[currentslot].itemcount > 1)// Render how many we have?
+			{
+			PrintString(x+53, y, renderdest, font[0], "x"+str(inventory[currentslot].itemcount));
+			}
+		}
+	else
+		{
+		PrintString(x, y, renderdest, font[4], NameItem(inventory[currentslot].itemnum));
+		}
+	y=y+7;	// Shifts Y down for the next line of text
+	}
+}
+
+// -------------------------------------------------
+
+// Renders the current partymember's equipped items over the inventory figure in the
+// inventory screen. Specify the current partymember and a pointer to the figure's graphic
+int RenderEquippedItems(int partymember)
+{
+int head, handl, handr, torso, legs, feet, weapon, figure, renderdest;
+SetLucent(0);
+
+figure = LoadImage("invfigure.png");
+renderdest = NewImage(ImageWidth(figure), ImageHeight(figure));
+Blit(0, 0, figure, renderdest);
+FreeImage(figure);
+
+if (party[partymember].headequip < 9999)
+	{
+	head = LoadImage("inv_"+str(inventory[party[partymember].headequip].itemnum)+".png");
+	tBlit(54, 10, head, renderdest);
+	FreeImage(head);
+	}
+if (party[partymember].torsoequip < 9999)
+	{
+	torso = LoadImage("inv_"+str(inventory[party[partymember].torsoequip].itemnum)+".png");
+	tBlit(46, 31, torso, renderdest);
+	FreeImage(torso);
+	}
+if (party[partymember].armsequip < 9999)
+	{
+	handl = LoadImage("inv_"+str(inventory[party[partymember].armsequip].itemnum)+"l.png");
+	tBlit(8, 29, handl, renderdest);
+	FreeImage(handl);
+	}
+if (party[partymember].armsequip < 9999)
+	{
+	handr = LoadImage("inv_"+str(inventory[party[partymember].armsequip].itemnum)+"r.png");
+	tBlit(100, 29, handr, renderdest);
+	FreeImage(handr);
+	}
+if (party[partymember].legsequip < 9999)
+	{
+	legs = LoadImage("inv_"+str(inventory[party[partymember].legsequip].itemnum)+".png");
+	tBlit(46, 68, legs, renderdest);
+	FreeImage(legs);
+	}
+if (party[partymember].feetequip < 9999)
+	{
+	feet = LoadImage("inv_"+str(inventory[party[partymember].feetequip].itemnum)+".png");
+	tBlit(46, 96, feet, renderdest);
+	FreeImage(feet);
+	}
+
+if (party[partymember].weaponequip < 9999)
+	{
+	weapon = LoadImage("inv_"+str(inventory[party[partymember].weaponequip].itemnum)+".png");
+	tBlit(86, 52, weapon, renderdest);
+	FreeImage(weapon);
+	}
+Return renderdest;
+}

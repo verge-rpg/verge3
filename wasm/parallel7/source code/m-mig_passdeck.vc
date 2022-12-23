@@ -1,0 +1,34 @@
+// ----------------------------------------------------------- --- -- -
+//     MAP: | Mignolia Passenger Deck
+//  AUTHOR: | Fred Burbidge
+// TILESET: | mignolia1.vsp
+// COMMENT: | Bloodsplattered mayhem. This deck is a picture of hell.
+// ----------------------------------------------------------- --- -- -
+
+// Auto-executed event
+void MapStart()
+{
+// Stuff to do prior to map setup
+
+// Music!
+StartMusic("music\spooky.mod");
+
+// Setup!
+MapSetup();
+}
+
+// -------------------------------------------------
+
+void OpeningComment()
+{
+if (!flag[15])
+	{
+	flag[15] = 1;
+	TBox(party[0].port, 1, 2, party[0].name, "Ok, this can't be good.");
+	TBox(party[0].port, 1, 0, party[0].name, "It looks like The Somme in here.");
+	TBox(party[0].port, 1, 3, party[0].name, "What DID this?.");
+	TBox(party[1].port, 1, 2, party[1].name, "Oh Christ... Oh CHRIST..");
+	TBox(party[1].port, 1, 3, party[1].name, "Let's get out of here. NOW.");
+	TBox(party[0].port, 1, 1, party[0].name, "No, we've got to get to the bottom of this.");
+	}
+}

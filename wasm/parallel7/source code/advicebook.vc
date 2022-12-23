@@ -1,0 +1,40 @@
+// ----------------------------------------------------------- --- -- -
+// ADVICEBOOK.VC. Handles the random quotes from Hugo's copy of "The
+// Little Book of Advice."
+// ----------------------------------------------------------- --- -- -
+
+void RandomAdvice()
+{
+int adviceentry;
+SetRandSeed(systime.second);
+adviceentry = Random(0, 5);
+
+TBox(party[0].port, 1, 2, party[0].name, "And our randomly selected thought for the day is...");
+
+switch(adviceentry)
+	{
+	case 0: TBox(party[0].port, 1, 0, party[0].name, "'Today is the dawn of a new error.'");
+	case 0: TBox(party[0].port, 1, 3, party[0].name, "Hrm. Is that a typo?");
+	
+	case 1: TBox(party[0].port, 1, 0, party[0].name, "'There is always someone worse off than yourself.'");
+	case 1: TBox(party[0].port, 1, 3, party[0].name, "Sure there is, and I guarantee it's a children's television presenter.");
+	
+	case 2: TBox(party[0].port, 1, 0, party[0].name, "'Never visit Belgium.'");
+	case 2: TBox(party[0].port, 1, 3, party[0].name, "I like that one.");
+	
+	case 3: TBox(party[0].port, 1, 0, party[0].name, "'A rolling stone gathers no moss.'");
+	case 3: TBox(party[0].port, 1, 3, party[0].name, "Yeah. Tell that to Mick Jagger.");
+	
+	case 4: TBox(party[0].port, 1, 0, party[0].name, "'Don't believe what they say about hamsters.'");
+	case 4: TBox(party[0].port, 1, 0, party[0].name, "What DO they say about hamsters?");
+	case 4: TBox(party[0].port, 1, 3, party[0].name, "I'm confused.");
+	
+	case 5: TBox(party[0].port, 1, 0, party[0].name, "'Keep your friends close, and your enemies closer.'");
+	case 5: TBox(party[0].port, 1, 3, party[0].name, "I think I'd rather stay away from mine. They might hit me.");
+	
+	case 6: TBox(party[0].port, 1, 0, party[0].name, "'He who laughs last, laughs loudest.'");
+	case 6: TBox(party[0].port, 1, 3, party[0].name, "...Or didn't get the joke the first time.");
+	}
+CanEsc = 0;
+SetEntitiesPaused(1);
+}

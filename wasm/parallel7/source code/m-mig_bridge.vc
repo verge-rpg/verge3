@@ -1,0 +1,23 @@
+// ----------------------------------------------------------- --- -- -
+//     MAP: | Mignolia Bridge
+//  AUTHOR: | Fred Burbidge
+// TILESET: | mignolia2.vsp
+// COMMENT: | The now completely trashed bridge of the Mignolia.
+//            Smeared in blood, this area leads through to where the
+//            captain is hiding.
+// ----------------------------------------------------------- --- -- -
+
+// Auto-executed event
+void MapStart()
+{
+// Stuff to do prior to map setup
+
+// Music!
+StartMusic("music\spooky.mod");
+
+// Setup!
+MapSetup();
+}
+
+// -------------------------------------------------
+

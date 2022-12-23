@@ -1,0 +1,197 @@
+// ----------------------------------------------------------- --- -- -
+// STARTMNU.VC. Handles the startup menu. Technically part of the
+// GUI and should logically go in GUI.VC but its better to keep it
+// seperate since GUI.VC would get hideously overcrowded if this
+// lot were in it.
+// ----------------------------------------------------------- --- -- -
+
+// Renders a menu, with four buttons with the passed text on them
+
+void RenderSTMenu(string menu1, string menu2, string menu3, string menu4)
+{
+
+int stbutton, stback;
+int fadestage, ybuttonpos, itemtofade;
+
+stbutton = LoadImage("stbutton.png");
+stback = CopyScreen();
+ybuttonpos = screeny/2;
+itemtofade = 1;		// Current button being faded in
+
+// Fade in the menu, funky-style...
+while(itemtofade < 5)
+	{
+	for(fadestage = 100; fadestage >=50; fadestage=fadestage-5)
+		{
+		SetLucent(0);
+		CenterImage(stback, 0);
+		SetLucent(fadestage);
+		tblit((screenx/2)-(ImageWidth(stbutton)/2), ybuttonpos, stbutton, screen);
+		switch (itemtofade)
+			{
+			case 1: PrintCenter(screenx/2, ybuttonpos+5, screen, font[1], menu1);
+			case 2: PrintCenter(screenx/2, ybuttonpos+5, screen, font[1], menu2);
+			case 3: PrintCenter(screenx/2, ybuttonpos+5, screen, font[1], menu3);
+			case 4: PrintCenter(screenx/2, ybuttonpos+5, screen, font[1], menu4);
+			}
+		ShowPage();
+		Wait(2);
+		}
+	SetLucent(0);
+	stback = CopyScreen();
+	ybuttonpos = ybuttonpos+(ImageHeight(stbutton)+2);
+	itemtofade++;
+	}
+FreeImage(stbutton);
+FreeImage(stback);
+}
+
+// ---------------------------------------
+
+// The main script for the startup menu. From here, you have access to options,
+// loading a saved game and starting a new one.
+
+int StartMain()
+{
+int sthalo, stback;					// Images
+int fadestage, fadetype, ybuttonpos;			// Variables
+int menumove, confirm;					// Sounds
+int stmenufinish, curbutton;				// More variables
+
+// Set up everything...
+sthalo = LoadImage("sthalo.png");
+stback = LoadImage("menuback.png");
+menumove = LoadSound("menumove.ogg");
+confirm = LoadSound("confirm.ogg");
+
+stmenufinish = 0;
+curbutton = 1;			// Which button is currently selected
+ybuttonpos = screeny/2;
+fadestage = 50;
+fadetype = 1;			// Variable to determine whether to fade in or out the selection cursor
+
+// Fade in
+CenterImage(stback,0);
+SetLucent(80);
+PrintCenter(screenx/2, screeny-10, screen, font[0], copyright);
+SetLucent(0);
+FadeIn();
+
+RenderSTMenu("Start Game", "Load Game", "Options", "Quit");
+
+stback = CopyScreen();
+Unpress(0);
+
+// Render and handle input
+While(stmenufinish = 0)
+	{
+	CenterImage(stback,0);
+	SetLucent(fadestage);
+	tBlit((screenx/2)-(ImageWidth(sthalo)/2), (ybuttonpos-1)+((ImageHeight(sthalo))*(curbutton-1)), sthalo, screen);
+	SetLucent(0);
+	ShowPage();
+	if (b1)
+		{
+		// SWITCH to find what the button pressed was
+		PlaySound(confirm, soundvol);
+		Unpress(0);
+		switch(curbutton)
+			{
+			case 1: stmenufinish = 1;			// New Game
+			case 2: LoadGamePrompt(1);			// Load Game
+			case 2: if(canesc) { stmenufinish = 2; }	// If this is true, a save has been loaded
+			case 3: Options();				// Options
+			case 4: stmenufinish = QuitPrompt();		// Quit
+			}
+
+		}
+	if (up || left)
+		{
+		UnpressDirectionals();
+		if (curbutton =1) { curbutton = 4; }
+		else { curbutton--; }
+		PlaySound(menumove, soundvol);
+		}
+	if (down || right)
+		{
+		UnpressDirectionals();
+		if (curbutton =4) { curbutton = 1; }
+		else { curbutton++; }
+		PlaySound(menumove, soundvol);
+		}
+	if (fadetype = 1)
+		{
+		if (fadestage = 90) { fadetype = 0; }
+		else { fadestage++; }
+		}
+	else
+		{
+		if (fadestage = 50) { fadetype = 1; }
+		else { fadestage--; }
+		}
+	Wait(1);
+	}
+
+Wait(20);
+FreeSound(menumove);
+FreeSound(confirm);
+FreeImage(sthalo);
+FreeImage(stback);
+
+// Should we quit?
+if (stmenufinish = 4) { Credits(1); }	// Quit, with credits
+return stmenufinish;
+}
+
+// ---------------------------------------
+
+// Start a new game
+void NewGame()
+{
+int equipslot;
+InitiateBasicHooks();		// Start up game-related funkiness
+canesc = 1;			// Enable the ESC Menu
+
+RecalcHP(0);			// Determine the player's starting HP
+MaxOutHP(0);			// Give the player max health
+
+// Starting inventory!
+GiveItem(22);	// Bandana
+GiveItem(20);	// Leather jacket
+GiveItem(21);	// Trousers
+GiveItem(23);	// Boots
+GiveItem(5);	// Chocolate bar
+GiveItem(10);	// Room keycard
+GiveItem(11);	// Book of Advice!
+partymoney = 40;	// Cash!
+
+// Equip items
+equipslot = CheckForItem(20);
+ToggleEquip(equipslot, 1, 0);
+equipslot = CheckForItem(21);
+ToggleEquip(equipslot, 1, 0);
+equipslot = CheckForItem(22);
+ToggleEquip(equipslot, 1, 0);
+equipslot = CheckForItem(23);
+ToggleEquip(equipslot, 1, 0);
+
+MapSwitch("mig_bar", 2, 0, 20, 19);	// Dump the player in the start map
+}
+
+// ---------------------------------------
+
+// The main startup menu function.
+
+void StartMenu()
+{
+int neworload;
+neworload = StartMain();		// Find out if we're starting a new game or loading an
+					// old one.
+if (neworload = 1) { NewGame(); }
+if (neworload = 2)
+	{
+	InitiateBasicHooks();		// Start up game-related funkiness
+	canesc = 1;			// Enable the ESC Menu
+	MapSwitch(currentmap, 2, 1, savedx, savedy);
+	}
+}

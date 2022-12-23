@@ -1,0 +1,201 @@
+// ----------------------------------------------------------- --- -- -
+//     MAP: | Mignolia Bar Map
+//  AUTHOR: | Fred Burbidge
+// TILESET: | mignolia1.vsp
+// COMMENT: | The Mignolia's bar area, where the game begins.
+// ----------------------------------------------------------- --- -- -
+
+// Auto-executed event
+void MapStart()
+{
+// Uncomment the next line to skip the intro conversation
+//flag[0] = 1;
+
+// Music!
+StartMusic("music\jazz1.oxm");
+
+// Setup!
+MapSetup();
+if (!flag[0])
+	{
+	flag[0] = 1;
+	Wait(100);
+	TBox(party[0].port, 1, 2, party[0].name, "I need a drink.");
+	TBox(party[0].port, 1, 3, party[0].name, "Actually, I need lots of drinks.");
+	canesc = 0;
+	PlayerMove("d3");
+	Wait(40);
+	TBox(0, 1, 1, "Bartender", "Can I get you anything, sir?");
+	TBox(party[0].port, 1, 2, party[0].name, "A scotch.");
+	TBox(party[0].port, 1, 0, party[0].name, "No, actually two scotches.");
+	TBox(party[0].port, 1, 3, party[0].name, "Two DOUBLE scotches.");
+	TBox(0, 1, 1, "Bartender", "Okey-dokey..");
+	Wait(40);
+	
+	canesc = 0;
+	FreezePlayer();
+	MoveEntityWaitY(2, 26);
+	entity.specframe[3] = 22;
+	UnFreezePlayer();
+	
+	TBox(0, 1, 1, "Man at bar", "Bad day?");
+	canesc = 0;
+	Wait(40);
+	entity.specframe[party[0].ent] = 21;
+	PlayerMove("d0");
+	wait(40);
+	TBox(party[0].port, 1, 1, party[0].name, "Putting it mildly, yes.");
+	TBox(0, 1, 1, "Man at bar", "Feel like telling me about it?");
+	TBox(party[0].port, 1, 2, party[0].name, "Well, I suppose I'll end up telling SOMEONE,");
+	TBox(party[0].port, 1, 3, party[0].name, "it might as well be in a bar in the middle of outer space to a random guy I've never met before.");
+	TBox(0, 1, 1, "Man at bar", "I'm Vernon Black. How do you do?");
+	TBox(party[0].port, 1, 1, party[0].name, "Hugo Zane, and up until yesterday I was 'doing' quite well.");
+	TBox(0, 1, 1, "Vernon", "Really? What do you do, exactly?");
+	TBox(party[0].port, 1, 2, party[0].name, "I'm a bounty hunter. A fairly good one, usually. I tracked down and brought in a whole group of slave traders only last month.");
+	TBox(party[0].port, 1, 0, party[0].name, "THIS month hasn't started so good.");
+	TBox(party[0].port, 1, 0, party[0].name, "I accepted a job from one Victor Skovinski. Said he'd pay me a lot of money to track down and bring in some guy.");
+	TBox(party[0].port, 1, 0, party[0].name, "There was - of course - one condition: I had to make absolutely sure I brought the subject in alive. ");
+	TBox(party[0].port, 1, 3, party[0].name, "Skovinski made it more than clear I'd be in very serious trouble if this guy ended up dead.");
+	TBox(0, 1, 1, "Vernon", "I can see where this is going already..");
+	TBox(party[0].port, 1, 2, party[0].name, "I track the subject down to East London, confront him and..");
+	TBox(party[0].port, 1, 0, party[0].name, "The BASTARD shoots himself. I mean, what the HELL was he thinking?");
+	TBox(party[0].port, 1, 3, party[0].name, "Needless to say, I now have a very unhappy client.");
+	TBox(0, 1, 1, "Vernon", "Er, how unhappy, exactly?");
+	TBox(party[0].port, 1, 2, party[0].name, "Unhappy enough to blow up my flat.");
+	TBox(party[0].port, 1, 3, party[0].name, "And my car.");
+	TBox(0, 1, 1, "Vernon", "Shit, that's unhappy.");
+	canesc = 0;
+	Wait(40);
+	entity.specframe[3] = 0;
+	PlayerMove("d0");
+	wait(40);
+	TBox(0, 1, 1, "Vernon", "So, what're you doing here?");
+	TBox(party[0].port, 1, 2, party[0].name, "HIDING, that's what.");
+	TBox(party[0].port, 1, 0, party[0].name, "The plan was to catch the first ship off Earth and lay low on Io for a while, until this blows over.");
+	TBox(party[0].port, 1, 0, party[0].name, "IF this blows over.");
+	TBox(party[0].port, 1, 3, party[0].name, "Until then, I'm going to get exceptionally drunk.");
+	TBox(0, 1, 1, "Vernon", "I'll drink to that.");
+	TBox(party[0].port, 1, 1, party[0].name, "Yes, speaking of which: where's my scotch?");
+	
+	canesc = 0;
+	FreezePlayer();
+	MoveEntityWaitY(2, 24);
+	UnFreezePlayer();
+
+	TBox(0, 1, 1, "Bartender", "I must apologise, but we're out of scotch. I can have some ordered up from the cargo hold if you like.");
+	TBox(party[0].port, 1, 1, party[0].name, "Sod it. I'm going back to my room. I have sleep to catch up on.");
+	TBox(0, 1, 1, "Vernon", "If you insist. Maybe I'll see you later?");
+	TBox(party[0].port, 1, 1, party[0].name, "Maybe.");
+	
+	ResetAnim(party[0].ent);
+	}
+}
+
+// -------------------------------------------------
+
+// Door exit Zone
+void ExitToCorridor()
+{
+MapSwitch("mig_corridor1", 2, 0, 87, 90);
+}
+
+// Chat to off-duty guard
+void OffDutyGuard()
+{
+WaitUpdate(1);
+if (!flag[3])
+	{
+	TBox(party[0].port, 1, 1, party[0].name, "You're a guard, right?");
+	TBox(0, 1, 2, "Guard", "Yes.");
+	TBox(0, 1, 3, "Guard", "What's your point?");
+	
+	Choice("Hugo says:", "Shouldn't you be guarding something?/Just curious. How's life?/Can I get you a drink, pal?");
+	switch(lastchoice)
+		{
+		case 1: TBox(0, 1, 2, "Guard", "Even us guards get time off, you know.");
+		case 1: TBox(0, 1, 3, "Guard", "I happen to choose to spend mine wallowing in an alcohol-tinged puddle of my own misery and self-hate.");
+		case 1: TBox(party[0].port, 1, 1, party[0].name, "How about we forget I asked that question?");
+		case 1: TBox(0, 1, 1, "Guard", "What question?");
+		
+		case 2: TBox(0, 1, 2, "Guard", "Bloody awful, actually.");
+		case 2: TBox(0, 1, 3, "Guard", "My wife just left me for another woman, I've just recieved news my mother has died in a building collapse and the shift supervisor still expects me to be on duty later this evening.");
+		case 2: TBox(party[0].port, 1, 1, party[0].name, "Well.. Um, Chin up, eh?");
+		case 2: TBox(0, 1, 2, "Guard", "Oh, go away.");
+		case 2: TBox(party[0].port, 1, 1, party[0].name, "I'll do that.");
+		
+		case 3: TBox(0, 1, 1, "Guard", "Sod off.");
+		case 3: TBox(party[0].port, 1, 1, party[0].name, "Not the friendly type then?");
+		case 3: TBox(0, 1, 1, "Guard", "They don't pay me enough to be friendly.");
+		case 3: TBox(party[0].port, 1, 1, party[0].name, "Point taken.");
+		}
+	flag[3] = lastchoice;
+	
+	}
+else
+	{
+	switch(flag[3])
+		{
+		case 1: TBox(0, 1, 1, "Guard", "Do you mind? I'm in the middle of wallowing.");
+		case 2: TBox(0, 1, 1, "Guard", "Life? Don't talk to me about life!");
+		case 3: TBox(0, 1, 1, "Guard", "I told you, I'm not in the mood for socialising.");
+		}
+	}
+}
+
+// Chat to old bloke
+void OldBloke()
+{
+WaitUpdate(1);
+if (!flag[4])
+	{
+	flag[4] = 1;
+	TBox(0, 1, 1, "Old Man", "Is it me, or is there an unsettling atmosphere about this place? Almost.. sinister.");
+	}
+else
+	{
+	TBox(0, 1, 1, "Old Man", "Hmmm.");
+	}
+}
+
+// Chat to door guards
+void DoorGuards()
+{
+if (!flag[2])
+	{
+	flag[2] = 1;
+	TBox(0, 1, 1, "Guard", "Can I help you, sir?");
+	Choice("Hugo says:", "Not really/Having fun?/I wanted to be a guard once..");
+	
+	Switch(lastchoice)
+		{
+		case 1: TBox(0, 1, 2, "Guard", "Then what are you here for, sir?");
+		case 1: TBox(0, 1, 3, "Guard", "Do you find some perverse pleasure in watching people stand still for extended periods of time?");
+		case 1: TBox(party[0].port, 1, 1, party[0].name, "Certainly not!");
+		case 1: TBox(0, 1, 1, "Guard", "Good for you, sir.");
+		
+		case 2: TBox(0, 1, 1, "Guard", "No, sir. I'm having the least fun I've ever had, in the event you're actually interested.");
+		case 2: TBox(party[0].port, 1, 2, party[0].name, "Oh.");
+		case 2: TBox(party[0].port, 1, 0, party[0].name, "You know, you're not very good with casual conversation, are you?");
+		case 2: TBox(party[0].port, 1, 3, party[0].name, "You should probably work on that.");
+		case 2: TBox(0, 1, 2, "Guard", "If you say so, sir.");
+		case 2: TBox(0, 1, 3, "Guard", "Hmm. Actually, I see what you mean.");
+		
+		case 3: TBox(0, 1, 1, "Guard", "Really?");
+		case 3: TBox(party[0].port, 1, 1, party[0].name, "No, not really. Just trying to strike up casual conversation.");
+		case 3: TBox(0, 1, 2, "Guard", "Thought not, sir. The pay's rubbish.");
+		case 3: TBox(0, 1, 0, "Guard", "And as for the mind-numbing boredom..");
+		case 3: TBox(0, 1, 3, "Guard", "And don't even get me started on the HOURS.");
+		case 3: TBox(party[0].port, 1, 1, party[0].name, "Relax, I WON'T.");
+		}
+	}
+else
+	{
+	TBox(0, 1, 1, "Guard", "Move along, sir.");
+	}
+}
+
+void VernonChat()
+{
+WaitUpdate(1);
+TBox(0, 1, 1, "Vernon", "Still here?");
+}

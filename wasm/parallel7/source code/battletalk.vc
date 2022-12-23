@@ -1,0 +1,90 @@
+// ----------------------------------------------------------- --- -- -
+// BATTLETALK.VC. In-battle chatter.
+// ----------------------------------------------------------- --- -- -
+
+string BChatEnemyDefeat(int partyslot, int situation)
+{
+SetRandSeed(systime.second);
+int saying = Random(0, 4);
+string whattosay;
+
+if (partyslot = 0)
+	{
+	if (situation = 2) // Kill something!
+		{
+		Switch (saying)
+			{
+			case 0: whattosay = "Hah! You're dead, and I'M not.";
+			case 1: whattosay = "And STAY down.";
+			case 2: whattosay = "You know, I'm really rather enjoying myself.";
+			case 3: whattosay = "Denied!";
+			case 3: whattosay = "At last! I thought you'd NEVER give up.";
+			case 4: whattosay = "Don't get up.";
+			}
+		}
+	else if (situation = 1) // Argh! Killed!
+		Switch(saying)
+			{
+			case 0: whattosay = "Damn, I- Argh!";
+			case 1: whattosay = "Oh Shoot.";
+			case 2: whattosay = "Agh! That can't be go-.";
+			case 3: whattosay = "You son of a- Ugh.";
+			case 4: whattosay = "This just isn't my day...";
+			}
+	else
+		Switch(saying) // Ouch! That hurt!
+			{
+			case 0: whattosay = "Ow! Damn you!.";
+			case 1: whattosay = "Hey, you could hurt someone with that, you know.";
+			case 2: whattosay = "Hey! That hurt!.";
+			case 3: whattosay = "You'll need to try harder than THAT.";
+			case 4: whattosay = "You WILL pay for that";
+			}
+	}
+
+else if (partyslot = 1)
+	{
+	if (situation = 2)
+		{
+		Switch (saying)
+			{
+			case 0: whattosay = "God, that was horrible.";
+			case 1: whattosay = "Has it stoped moving?";
+			case 2: whattosay = "This is NOT my idea of a good time.";
+			case 3: whattosay = "Well, that wasn't so hard.";
+			case 4: whattosay = "Stay the HELL down.";
+			}
+		}
+	else if (situation = 1)
+		Switch(saying)
+			{
+			case 0: whattosay = "No! Oh no. No no no!";
+			case 1: whattosay = "Oh God. Help!";
+			case 2: whattosay = "Uhgh.. Can't feel legs...";
+			case 3: whattosay = "Hugo! Help!";
+			case 4: whattosay = "No! I don't WANT to die!.";
+			}
+	else
+		Switch(saying)
+			{
+			case 0: whattosay = "Ow! Get OFF me!.";
+			case 1: whattosay = "Get the hell away from me!.";
+			case 2: whattosay = "Damn that hurt!.";
+			case 3: whattosay = "Ow! Lay off!.";
+			case 4: whattosay = "You bastard!";
+			}
+	}
+
+else if (strcmp(party[partyslot].name, "Lenny"))
+	{
+	
+	}
+
+else if (strcmp(party[partyslot].name, "Captain Reeves"))
+	{
+	
+	}
+
+
+return whattosay;
+}

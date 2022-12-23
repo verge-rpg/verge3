@@ -51,6 +51,8 @@ bool vc_olduserglobals = false;
 bool vc_ignoreduplicatefuncs = false;
 bool vc_ignoreduplicatelocals = false;
 bool vc_nostructinfo = false;
+bool vc_oldusercall = false;
+bool vc_oldif = false;
 
 bool showpage_auto_sleep = true;
 int last_showpage = 0;
@@ -153,6 +155,10 @@ void ApplyConfig()
         vc_ignoreduplicatelocals = true;
     if (cfg_KeyPresent("nostructinfo"))
         vc_nostructinfo = true;
+    if (cfg_KeyPresent("oldusercall"))
+        vc_oldusercall = true;
+    if (cfg_KeyPresent("oldif"))
+        vc_oldif = true;    
 
     if (cfg_KeyPresent("gameroot"))
 		wasm_gameRoot = cfg_GetKeyValue("gameroot").c_str();

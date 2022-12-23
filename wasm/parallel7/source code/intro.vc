@@ -1,0 +1,67 @@
+// ----------------------------------------------------------- --- -- -
+// INTRO.VC. Script for handling the introduction
+// ----------------------------------------------------------- --- -- -
+
+void Intro()
+{
+int loop;
+int vlogo, teamlogo, gamelogo, monkey, pressenter;
+int entersound, discomonkey;
+
+// Load logos
+vlogo = LoadImage("v3.png");
+teamlogo = LoadImage("teamlogo.png");
+gamelogo = LoadImage("gamelogo.png");
+monkey = LoadImage("monkey.png");
+pressenter = LoadImage("pressenter.png");
+
+// Load sound for when player presses enter at title screen
+entersound = LoadSound("pressenter.ogg");
+discomonkey = LoadSound("discomonkey.ogg");
+
+// v3 Logo
+StartMusic("music\v3.xm");
+FlashImage(vlogo, 1);
+//PlayMovie("v3.avi");
+
+// Team / Company Logo
+cls();
+CenterImage(teamlogo, 1);
+FadeIn();
+PlaySound(discomonkey, soundvol);
+for (loop = screenx; loop > screenx-124; loop-=6)
+	{
+	cls();
+	TBlit(loop, screeny-220, monkey, screen);
+	CenterImage(teamlogo, 1);
+	ShowPage();
+	Wait(1);
+	}
+Wait(350);
+FadeOut();
+
+// Title Logo
+StartMusic("music\title.oxm");
+CenterImage(gamelogo, 0);
+ShowVersionNumber();
+FadeIn();
+
+PulseImage(pressenter, ((screenx/2)-(ImageWidth(pressenter)/2)), screeny-80);
+
+PlaySound(entersound, soundvol);
+cls();
+CenterImage(gamelogo, 0);
+ShowVersionNumber();
+ShowPage();
+
+Wait(10);
+FadeOut();
+
+FreeImage(vlogo);
+FreeImage(teamlogo);
+FreeImage(gamelogo);
+FreeImage(monkey);
+FreeImage(pressenter);
+FreeSound(entersound);
+FreeSound(discomonkey);
+}

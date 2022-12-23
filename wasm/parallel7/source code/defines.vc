@@ -1,0 +1,55 @@
+// ----------------------------------------------------------- --- -- -
+// DEFINES.VC. This file is for providing easy access to settings in
+// the game.
+// ----------------------------------------------------------- --- -- -
+
+// If the game works for no reason, THIS FILE is the bloody cause! Defines in v3 are broken,
+// as you may of guessed from my rambling below. Sometimes they work, sometimes they don't.
+// DO NOT USE THEM!
+
+#define fontheight 	10					// The height of most in-game fonts
+
+#define tportx		80					// X size of textbox portraits
+#define tporty		65					// Y size of textbox portraits
+
+#define inputfont	1					// Index of font to be used for the input function
+#define maxflags 	1000					// Maximum number of flags
+#define maxinvitems	300					// Total possible items the player can carry
+#define maxpartysize	6					// Maximum number of partymembers
+
+// Zip: My defines, used for combat
+// The CBMT defines are all actions or types of action in combat
+// Think of them like an array of strings of action names
+// Which you can indeed get with string ActionString(int action)
+#define CMBT_NULL 0
+#define CMBT_UP 257
+#define CMBT_DOWN 258
+#define CMBT_LEFT 259
+#define CMBT_RIGHT 260
+#define CMBT_WSHORT 513
+#define CMBT_WLONG 514
+#define CMBT_ANONE 1025
+#define CMBT_ABODY 1026
+#define CMBT_AARM 1027
+#define CMBT_ALEG 1028
+#define CMBT_AHEAD 1029
+#define CMBT_ROOT 128
+#define CMBT_MOVE 256
+#define CMBT_WAIT 512
+#define CMBT_ATTACK 1024
+// Damage defines used in following formula
+// ((attack * DAM_MULT) + Random(0, DAM_RAND)) / (defense + Random(0, DAM_RAND))
+#define DAM_RAND 9 // Higher the number, the more random the damage
+#define DAM_MULT 4 // Higher the number, more damage
+#define _ISIGN  & 2147483648 >> 30 + 1 // Yeay! Maths!
+
+
+
+// Zip: End of my defines
+
+// Were defines, now strings.. WAAARGH!!
+
+string gamename = "Parallel Seven";				// Name of the game
+string version 	= "v1.0";					// Version
+
+string copyright = "Copyright (c) 2004, Team Ultimate Disco Monkey";	// The copyright notice

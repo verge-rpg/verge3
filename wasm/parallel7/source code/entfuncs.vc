@@ -1,0 +1,119 @@
+// ----------------------------------------------------------- --- -- -
+// ENTFUNCS.VC. Handles entities and associated stuff
+// ----------------------------------------------------------- --- -- -
+
+// Warp an entity to the specified XY co-ords (in pixels)
+void Warp(int enttowarp, int x, int y)
+{
+entity.x[enttowarp] = x;
+entity.y[enttowarp] = y;
+}
+
+// Warp an entity to the specified XY co-ords (in tiles)
+void WarpToTile(int enttowarp, int x, int y)
+{
+int tilex, tiley;
+
+tilex = x*16;
+tiley = y*16;
+
+Warp(enttowarp, tilex, tiley);
+}
+
+// -- PARTY-SPECIFIC FUNCTIONS ---------------------
+
+// Rather than remove the partymember's stats from the partymember list,
+// we instead "deactivate" the party slot they occupy: the code ignores them until they
+// get "reactivated." You'll need to work out what slot the member occupies and pass it to
+// this function. Pass the member's slot and a message to display when they leave. Leave it as
+// "" if you want no message.
+
+void DeactivateMember(int memberslot, string leavemessage)
+{
+party[memberslot].active = 0;
+if (strcmp(leavemessage, "") != 0) { Banner(leavemessage); }
+}
+
+// Make sure you know the partymember's stats are loaded into a party slot BEFORE you reactivate
+// them or non-funky things will happen, like the party having a member join them with no stats
+
+void ActivateMember(int memberslot, string rejoinmessage)
+{
+party[memberslot].active = 1;
+if (strcmp(rejoinmessage, "") != 0) { Banner(rejoinmessage); }
+}
+
+// -- PARTY WARPING --------------------------------
+
+// Warp the party to the specified XY co-ordinates (in pixels). FADE is either 1 (fade in / out)
+// or 0 (don't).
+void WarpParty(int x, int y, int fade)
+{
+int loop;
+if (fade) { FadeOut(); }
+for (loop = 0; loop<maxpartysize; loop++)
+	{
+	if (party[loop].active)
+		{
+		Warp(party[loop].ent, x,y);
+		}
+	}
+
+if (fade)
+	{
+	Render();
+	FadeIn();
+	}
+}
+
+// Warp the party to the specified XY co-ordinates (in tiles). FADE is the same as the function
+// above.
+void WarpPartyToTile(int x, int y, int fade)
+{
+int tilex, tiley;
+
+tilex = x*16;
+tiley = y*16;
+
+WarpParty(tilex, tiley, fade);
+}
+
+// -- PARTY SPAWNING -------------------------------
+
+// Spawn the party at XY
+void SpawnParty(int x, int y, int pixelaccurate)
+{
+int loop;
+int lastmember = 0;
+
+// Spawn the player
+if (pixelaccurate)
+	{
+	party[0].ent = EntitySpawn(0, 0, party[0].chrfile+".chr");
+	Warp(party[0].ent, x,y);
+	}
+else
+	{
+	party[0].ent = EntitySpawn(x, y, party[0].chrfile+".chr");
+	}
+
+for (loop = 1; loop<maxpartysize; loop++)		// Spawn the party
+	{
+	if (party[loop].active)
+		{
+		if (pixelaccurate)
+			{
+			party[loop].ent = EntitySpawn(x, y, party[loop].chrfile+".chr");
+			Warp(party[loop].ent, x,y);
+			}
+		else
+			{
+			party[loop].ent = EntitySpawn(x, y, party[loop].chrfile+".chr");
+			}
+		EntityStalk(party[loop].ent, party[lastmember].ent);
+		lastmember = loop;
+		}
+	}
+// Set the player
+SetPlayer(party[0].ent);
+}

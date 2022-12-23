@@ -1,0 +1,232 @@
+// ----------------------------------------------------------- --- -- -
+// SCREENFX.VC. Script that handles various screen effects, such as
+// fades, blackouts, miscellaneous transitions etc.
+// ----------------------------------------------------------- --- -- -
+
+// Clears the screen to black. Just like the CLS command in BASIC. Handy.
+
+void cls()
+{
+RectFill(0, 0, screenx-1, screeny-1, rgb(0,0,0), screen);
+}
+
+// --- FADES -----------------------------
+
+// Fade from black
+
+void FadeIn()
+{
+int loop, screencap;
+
+screencap = CopyScreen();
+
+for(loop = 0; loop < 100; loop+=2)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(loop);
+	rectfill(0,0,screenx, screeny,rgb(1,1,1),screen);
+	ShowPage();
+	Wait(fadespeed);
+	}
+SetLucent(0);
+FreeImage(screencap);
+}
+
+// Fade to black
+
+void FadeOut()
+{
+int loop, screencap;
+
+screencap = CopyScreen();
+
+for(loop = 100; loop > 0; loop-=2)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(loop);
+	rectfill(0,0,screenx, screeny,rgb(1,1,1),screen);
+	ShowPage();
+	Wait(fadespeed);
+	}
+FreeImage(screencap);
+}
+
+// --- FADES WITH MUSIC -----------------------------
+
+// Fade from black with music fade in
+
+void FadeIn_m()
+{
+int loop, screencap;
+
+screencap = CopyScreen();
+
+for(loop = 0; loop < 100; loop+=2)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(loop);
+	rectfill(0,0,screenx, screeny,rgb(1,1,1),screen);
+	ShowPage();
+	if (GetSongVolume(currentmusic) < musicvol) { SetSongVolume(currentmusic, (GetSongVolume(currentmusic)+1)); }
+	Wait(fadespeed);
+	}
+SetLucent(0);
+FreeImage(screencap);
+}
+
+// Fade to black with music fade out
+
+void FadeOut_m()
+{
+int loop, screencap;
+
+screencap = CopyScreen();
+
+for(loop = 100; loop > 0; loop-=2)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(loop);
+	rectfill(0,0,screenx, screeny,rgb(1,1,1),screen);
+	ShowPage();
+	if (GetSongVolume(currentmusic) > 0) { SetSongVolume(currentmusic, GetSongVolume(currentmusic)-1); }
+	Wait(fadespeed);
+	}
+FreeImage(screencap);
+FadeMusic();
+}
+
+// Fade to black with music fade, only slower (one quarter normal speed) for dramatic effect
+
+void DramaticFadeOut()
+{
+int loop, screencap;
+
+screencap = CopyScreen();
+
+for(loop = 100; loop > 0; loop-=2)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(loop);
+	rectfill(0,0,screenx, screeny,rgb(1,1,1),screen);
+	ShowPage();
+	if (GetSongVolume(currentmusic) > 0) { SetSongVolume(currentmusic, (GetSongVolume(currentmusic)-1)); }
+	Wait(fadespeed*4);
+	}
+FreeImage(screencap);
+FadeMusic();
+}
+
+// Fades from one image through into another, no music fade (since there's no break in the action)
+// Pass it the before and after images for it to work its magic
+void TransitionalFade(int fadefrom, int fadeto)
+{
+int loop;
+
+for (loop = 100; loop > 0; loop-=2)
+	{
+	SetLucent(0);
+	CenterImage(fadefrom,0);
+	SetLucent(loop);
+	CenterImage(fadeto,0);
+	ShowPage();
+	Wait(fadespeed);
+	}
+}
+
+// --------------------------------
+
+// Fade from black to an image, then out again. With (=1) or without (=0) music
+
+void FlashImage(int imagepointer, int withmusic)
+{
+cls();
+CenterImage(imagepointer, 0);
+FadeIn();
+SkipWait(350);
+if (withmusic)
+	FadeOut_m();
+else
+	FadeOut();
+}
+
+// Specify an image and XY co-ords and this'll blit an image and fade its transparency in and
+// out until you press enter. Renders the image with single-colour transparency
+
+void PulseImage(int pulseimg, int posx, int posy)
+{
+int pulselevel, pulseswitch, screencap;
+
+screencap = CopyScreen();
+pulselevel = 100;
+pulseswitch = 0;	// 0 = Fade in. 1 = Fade out
+
+Unpress(0);
+while (!b1)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(pulselevel);
+	tBlit(posx, posy, pulseimg, screen);
+	ShowPage();
+	if (pulseswitch = 0) { pulselevel--; }
+	if (pulseswitch = 1) { pulselevel++; }
+	if (pulselevel = 50) { pulseswitch = 1; }
+	if (pulselevel = 100) { pulseswitch = 0; }
+	Wait(fadespeed);
+	}
+SetLucent(0);
+FreeImage(screencap);
+}
+
+// --------------------------------
+// These two routines are specifically for the textbox and choice routines. They handle
+// fading the textbox in and out.
+
+// Fade in a textbox or choice box
+
+void FadeInTbox(int tboximage, int screencapture, string title)
+{
+int fadestage;
+int screencap;
+
+fadestage = 100;
+
+while (fadestage >= 0)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencapture, screen);
+	SetLucent(fadestage);
+	PrintString((screenx/2)-(ImageWidth(gui[0])/2), screeny-(ImageHeight(gui[0])+20), screen, font[3], title);
+	tBlit((screenx/2)-(ImageWidth(gui[0])/2), screeny-(ImageHeight(gui[0])+10), tboximage, screen);
+	ShowPage();
+	Wait(fadespeed);
+	fadestage=fadestage-5;
+	}
+}
+
+// Fade out a textbox or choice box
+
+void FadeOutTbox(int tboximage, int screencapture, string title)
+{
+int fadestage;
+
+fadestage = 0;
+
+while (fadestage <= 100)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencapture, screen);
+	SetLucent(fadestage);
+	PrintString((screenx/2)-(ImageWidth(gui[0])/2), screeny-(ImageHeight(gui[0])+20), screen, font[3], title);
+	tBlit((screenx/2)-(ImageWidth(gui[0])/2), screeny-(ImageHeight(gui[0])+10), tboximage, screen);
+	ShowPage();
+	Wait(fadespeed);
+	fadestage=fadestage+5;
+	}
+SetLucent(0);
+}

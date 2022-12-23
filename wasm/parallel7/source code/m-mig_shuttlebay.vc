@@ -1,0 +1,21 @@
+// ----------------------------------------------------------- --- -- -
+//     MAP: | Mignolia 
+//  AUTHOR: | Fred Burbidge
+// TILESET: | mignolia1.vsp
+// COMMENT: | FILL IN!
+// ----------------------------------------------------------- --- -- -
+
+// Auto-executed event
+void MapStart()
+{
+// Stuff to do prior to map setup
+
+// Music!
+StartMusic("music\bar.mod");
+
+// Setup!
+MapSetup();
+}
+
+// -------------------------------------------------
+

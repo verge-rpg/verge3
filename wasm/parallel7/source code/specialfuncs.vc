@@ -1,0 +1,53 @@
+// ----------------------------------------------------------- --- -- -
+// SPECIALFUNCS.VC Functions for special events, recurring map things
+// and the like
+// ----------------------------------------------------------- --- -- -
+
+// Check whether the player has been granted access to a particular floor,
+// informing them if they have not or setting the lift in motion if they do
+void CheckAccess(int floor)
+{
+if (floor = 1)
+	{
+	if (!flag[100]) { flag[9] = floor; }
+	else { TBox(0, 1, 2, "Lift Terminal" "Sensors on this deck indicate a hull breach. This deck has been sealed off for your safety."); }
+	}
+
+if (floor = 3)
+	{
+	if (flag[10] > 0) { flag[9] = floor; }
+	else { TBox(party[0].port, 1, 1, party[0].name, "Wasn't I suppossed to be going somewhere on the crew deck? I don't need to go here just yet."); }
+	}
+
+if (floor = 4)
+	{
+	if (flag[10] > 0) { flag[9] = floor; }
+	else { TBox(0, 1, 2, "Lift Terminal" "Bridge crew access only: travel to this floor denied."); }
+	}
+
+else if (floor = 5)
+	{
+	if (flag[10] > 0) { flag[9] = floor; }
+	else { TBox(0, 1, 2, "Lift Terminal" "Mid-level crew access required: travel to this floor denied."); }
+	}
+
+else if (floor = 7)
+	{
+	if (flag[10] > 0) { flag[9] = floor; }
+	else { TBox(0, 1, 2, "Lift Terminal" "Floor access denied. Captain's clearance level required for travel."); }
+	}
+
+}
+
+// Dumps the player in the main lift
+void ExitToLift()
+{
+MapSwitch("mig_mainlift", 2, 0, 19, 22);
+}
+
+void AbruptEnd()
+{
+TBox(99, 1, 1, "Interference", "Sorry, ladies and gentlemen: that's it for now. Roll credits!");
+FadeOut();
+Credits(1);
+}

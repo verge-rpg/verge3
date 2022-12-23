@@ -1,0 +1,59 @@
+// ----------------------------------------------------------- --- -- -
+// MAPFUNCS.VC. Map-related functions
+// ----------------------------------------------------------- --- -- -
+
+string currentmap;		// Holds the current map filename, minus the .map extention and
+				// the "m-" prefix
+				
+// From the current map's filename, get the *actual* name of the map.
+// Update this with EVERY map that the ESC menu is accessible from.
+string GetMapName()
+{
+string mapname;
+
+if (!StrCmp(currentmap, "test")) { mapname = "Test Map"; }
+if (!StrCmp(currentmap, "mig_bar")) { mapname = "Mignolia - Bar Area"; }
+
+// New map names should be pasted just above this line
+else	{ mapname = "Map Not Identified!"; }
+
+Return mapname;
+}
+
+// -------------------------------------------------
+int savedspawnaccuracy;
+int savedtransition;
+int savedx, savedy;
+
+// Switch to a new map
+// Specify a map (minus prefixes and suffixes), transition type, whether to place the player
+// on a specific pixel or specific tile and what they co-ords will be
+void MapSwitch(string maptoload, int transition, int pixelaccurate, int x, int y)
+{
+Switch(transition)
+	{
+	case 1: FadeOut();	// Fade out, no music
+	case 2: FadeOut_m();	// Fade out, with music
+	}
+currentmap = maptoload;
+savedspawnaccuracy = pixelaccurate;
+savedtransition = transition;
+savedx = x;
+savedy = y;
+Map("m-"+maptoload+".map");	// Maps are prefixed by an "m-" so their VC files group together
+				// in a directory listing. Omit this prefix when loading a map as
+				// its added automatically to save time.
+}
+
+// Set the map up once its loaded
+void MapSetup()
+{
+SpawnParty(savedx, savedy, savedspawnaccuracy);
+Render();
+Switch(savedtransition)
+	{
+	case 1: FadeIn();	// Fade in, no music
+	case 2: FadeIn_m();	// Fade in, with music
+	}
+SetEntitiesPaused(0);
+}

@@ -1,0 +1,50 @@
+// ----------------------------------------------------------- --- -- -
+// CUTSCENE.VC. Handles in-engine cinematics
+// ----------------------------------------------------------- --- -- -
+
+int playerspeed;
+
+// Stop the player dead and turn off the ESC menu
+void FreezePlayer()
+{
+playerspeed = entity.speed[party[0].ent];
+entity.speed[party[0].ent] = 0;
+canesc = 0;
+}
+
+// Reverse the above function, restoring control
+void UnfreezePlayer()
+{
+entity.speed[party[0].ent] = playerspeed;
+canesc = 1;
+}
+
+// Makes an entity move to the specified X tile co-ord but WAITS for the entity to get there
+// before code execution continues
+void MoveEntityWaitX(int ent, int x)
+{
+EntityMove(ent, "x"+str(x));
+While (entity.x[ent]!=x*16)
+	{
+	Render();
+	ShowPage();
+	}
+}
+
+// Makes an entity move to the specified Y tile co-ord but WAITS for the entity to get there
+// before code execution continues
+void MoveEntityWaitY(int ent, int y)
+{
+EntityMove(ent, "y"+str(y));
+While (entity.y[ent]!=y*16)
+	{
+	Render();
+	ShowPage();
+	}
+}
+
+// Reset an entity's animation back to its default after we've been rendering special frames
+void ResetAnim(int ent)
+{
+entity.specframe[ent] = 0;
+}

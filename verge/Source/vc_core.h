@@ -295,7 +295,15 @@ private:
 	int cb_stack_base, cb_stack_ptr;
 	int int_last_base, str_last_base, cb_last_base;
 	std::vector < std::vector<argument_t> > vararg_stack;
-	function_t *in_func;
+	function_t* in_func;
+
+	struct ReturnAddress {
+		int ofs;
+		int cimage;
+		function_t* func;
+	};
+	std::vector<ReturnAddress> ret_addr_stack;
+
 
 	int *vcint;
 	StringRef *vcstring;
@@ -305,9 +313,17 @@ private:
 	Chunk* currentvc;
 	int current_cimage;
 	Chunk coreimages[NUM_CIMAGES];
+	int cimage_file_base_ofs[NUM_CIMAGES];
+
+	struct DumpSourceLocationContext {
+		std::string& s;
+#ifdef ALLOW_SCRIPT_COMPILATION
+		VCCompiler* vcc;
+#endif		
+	};
 
 	void LoadSystemXVC();
-	void LookupOffset(int ofs, std::string &s);
+	void DumpSourceLocation(int cimage, int ofs, function_t* expected_func, DumpSourceLocationContext& ctx);
 
 	void PushInt(int n);
 	int  PopInt();

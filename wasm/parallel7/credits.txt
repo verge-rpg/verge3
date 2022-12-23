@@ -1,0 +1,68 @@
+credback.png
+/f2
+/f2 Parallel Seven
+/pi credline.png
+/f1 A Game By Team Ultimate Disco Monkey
+/f2
+/f2 Project Lead
+/pi credline.png
+/f1 Fred Burbidge
+/f2
+/f2 Concept
+/pi credline.png
+/f1 Fred Burbidge
+/f2
+/f2 Storyline and Script
+/pi credline.png
+/f1 Fred Burbidge
+/f2
+/f2 Main Code
+/pi credline.png
+/f1 Fred Burbidge
+/f2
+/f2 Battle System
+/pi credline.png
+/f1 Zip, who I'm eternally grateful
+/f1 to for putting up with my
+/f1 dithering =P
+/f2
+/f2 Smart Ideas
+/pi credline.png
+/f1 Zip
+/f2
+/f2 Art
+/pi credline.png
+/f1 Fred Burbidge
+/f2
+/f2 Music
+/pi credline.png
+/f1 Some public domain stuff, the
+/f1 rest by the musically inclined
+/f1 Troupe. Cheers, Troupe!
+/f2
+/f2 VERGE Engine
+/pi credline.png
+/f1 Vecna and the VERGE dev team
+/f2
+/f2 Special Thanks
+/pi credline.png
+/f1 McGrue, for maintaining v-rpg.com and
+/f1 organising the compo
+/f1
+/f1 Buckermann, since this is his (modified)
+/f1 credits code I'm using
+/f1
+/f1 Tatsumi and Zeromus, for Maped3
+/f1
+/f1 Choris, for the sprite templates I based
+/f1 characters off
+/f1
+/f1 Alexandir, for being the continued source
+/f1 of amusement that he is
+/f1
+/f1 Troupe, for Ham
+/f1
+/f1 All you funky guys (and girls) on the
+/f1 VERGE forums
+/f2
+EOF

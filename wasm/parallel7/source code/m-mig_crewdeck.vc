@@ -1,0 +1,233 @@
+// ----------------------------------------------------------- --- -- -
+//     MAP: | Mignolia Crew Deck Corridor
+//  AUTHOR: | Fred Burbidge
+// TILESET: | mignolia2.vsp
+// COMMENT: | The slightly less luxurious crew deck.
+//          | Where every expense is spared!
+// ----------------------------------------------------------- --- -- -
+
+// Auto-executed event
+void MapStart()
+{
+// Stuff to do prior to map setup
+
+// Music!
+StartMusic("music\jazz2.oxm");
+
+if (flag[12] = 3)
+	{
+	// Remove Weevils
+	WarpToTile(4, 0,0);
+	WarpToTile(5, 0,0);
+	WarpToTile(6, 0,0);
+	EntityMove(3, "d2"); // Zip: Move the box too
+			     // Inter: Yes, sorry. Bugger. Forgot about that. Yargh.
+	}
+
+if (flag[14]=1)
+	{
+	// Zombie in med room!
+	SetTile(6,12,5,74);
+	SetTile(6,13,5,94);
+	SetTile(6,14,5,114);
+	// Medics gather round
+	WarpToTile(7, 6,16);
+	WarpToTile(8, 8,14);
+	WarpToTile(9, 5,15);
+	EntityMove(7, "u0");
+	EntityMove(8, "l0");
+	EntityMove(9, "r0");
+	}
+
+// Setup!
+MapSetup();
+}
+
+// -------------------------------------------------
+
+void ExitToAnnas()
+{
+MapSwitch("mig_crewquarters", 2, 0, 18, 23);
+}
+
+void OpeningComment()
+{
+if (!flag[11])
+	{
+	flag[11] = 1;
+	TBox(party[0].port, 1, 2, party[0].name, "So, this is the crew deck? Looks a bit sparse compared to the passenger decks.");
+	TBox(party[0].port, 1, 3, party[0].name, "No carpeting, for starters.");
+	TBox(party[1].port, 1, 2, party[1].name, "Yeah, well, management doesn't like to spend any more money than they have too.");
+	TBox(party[1].port, 1, 3, party[1].name, "Come on, the crew quarters are just ahead.");
+	}
+}
+
+void GuardChat()
+{
+if (!flag[13])
+	{
+	flag[13] = 1;
+	TBox(0, 1, 1, "Guard", "You're not with the crew. What are you doing here?");
+
+	Choice("Hugo replies:", "I'm a guest of Anna's/I'm the new Captain/I'm selling these fine leather jackets");
+
+	Switch(lastchoice)
+		{
+		case 1: TBox(0, 1, 1, "Guard", "Oh, right. Well, um, behave yourself.");
+
+		case 2: TBox(0, 1, 1, "Guard", "You seriously expect me to believe that?");
+		case 2: TBox(party[0].port, 1, 1, party[0].name, "That's 'You seriously expect me to believe that, CAPTAIN'!");
+		case 2: TBox(0, 1, 1, "Guard", "Very funny, sir.");
+		// Zip: Change to Annabelle's line // Interference: Woops. Damn. Thank God for beta testers.
+		case 2: TBox(party[1].port, 1, 1, party[1].name, "Stop kidding around. He's with me, we're headed back to my room.");
+		case 2: TBox(0, 1, 1, "Guard", "Oh. Well, have fun.");
+		case 2: TBox(party[0].port, 1, 1, party[0].name, "Hrm.");
+
+		case 3: TBox(0, 1, 1, "Guard", "Very funny, sir.");
+		}
+	}
+
+else { TBox(0, 1, 1, "Guard", "Move along, sir. Nothing to see here."); }
+}
+
+void LennysProblem()
+{
+if (!flag[12])
+	{
+	flag[12] = 1;
+	canesc = 0;
+	EntityMove(2, "u0");
+	PlayerMove("x38y28");
+	TBox(party[1].port, 1, 2, party[1].name, "Lenny? Why the hell is the corridor full of crates?");
+	TBox(party[1].port, 1, 3, party[1].name, "You were supposed to have these supplies in the store room HOURS ago.");
+	TBox(0, 1, 2, "Lenny", "Weevils. BIG weevils. They were in one of the packing crates and now they're running around the corridor.");
+	TBox(0, 1, 0, "Lenny", "And I mean BIG. I've never seen any THAT large before.");
+	TBox(0, 1, 0, "Lenny", "You couldn't.. um.. deal, with them, could you?");
+	TBox(0, 1, 3, "Lenny", "I have this phobia, you see..");
+	TBox(party[1].port, 1, 2, party[1].name, "You're SCARED of space weevils? Lenny, they're oversized bloody rodents.");
+	TBox(party[1].port, 1, 3, party[1].name, "Besides, you're a SECURITY guard. You're not SUPPOSED to get scared, right?");
+	TBox(0, 1, 2, "Lenny", "Oh come on, Anna! I need help here. Captain Reeves is going to have my HEAD if I don't get these crates in soon.");
+	TBox(party[1].port, 1, 1, party[1].name, "Oh alright already! Give us something to hit them with and we'll 'deal' with them, right Hugo?");
+	TBox(party[0].port, 1, 1, party[0].name, "If this is ABSOLUTELY necessary..");
+	TBox(0, 1, 2, "Lenny", "Ok, great! Here's a nightstick and my combat knife.");
+	TBox(0, 1, 3, "Lenny", "Don't forget to equip them before you start attacking!");
+	TBox(party[1].port, 1, 2, party[1].name, "Lenny, I might be gullible but I'm not bloody stupid.");
+	TBox(party[1].port, 1, 3, party[1].name, "Come on. Let's hit some space rodents..");
+
+	// Give nightstick and knife
+	GiveItem(31);	// Knife
+	GiveItem(32);	// Nightstick
+	}
+}
+
+void Lenny()
+{
+if (flag[12] = 1)
+	{
+	TBox(0, 1, 1, "Lenny", "Well, what are you WAITING for?!");
+	}
+else if (flag[12] = 2)
+	{
+	flag[12] = 3;
+	canesc = 0;
+
+	EntityMove(2, "l1d3r2d5r4u0");
+	WaitForEntity(2);
+
+	TBox(0, 1, 2, "Lenny", "They're gone. Thank you, both of you.");
+	TBox(0, 1, 3, "Lenny", "If there's anything I can do to repay you. ANYTHING.");
+	TBox(party[1].port, 1, 1, party[1].name, "Well, I-");
+	TBox(party[0].port, 1, 1, party[0].name, "Money would be nice.");
+	TBox(0, 1, 1, "Lenny", "Oh, absolutely. Here, it's more than enough for your troubles.");
+	GiveMoney(50);
+	TBox(0, 1, 1, "Lenny", "You'll probably want to be on your way. Let me push a crate out of the way so you can get past this mess.");
+
+	canesc = 0;
+	EntityMove(2, "d1");
+	WaitForEntity(2);
+	EntityMove(3, "d2");
+	EntityMove(2, "d2u1r1l0");
+	WaitForEntity(2);
+
+	EntityStalk(party[1].ent, party[0].ent);	// Resume Annabelle following
+	canesc = 1;
+	}
+else if (flag[12] = 3)
+	{
+	TBox(0, 1, 1, "Lenny", "Thanks again! I'll get these crates moving right away.");
+	}
+}
+
+void WeevilFight()
+{
+if (flag[12] < 3)
+	{
+	canesc = 0;
+	PlayerMove("x39y36r0");
+	EntityStalk(party[1].ent, 0-1);			// Stop Annabelle following
+	EntityMove(party[1].ent, "d2r0");
+	WaitForEntity(party[1].ent);
+
+	// Fighty!
+		LoadEnemy(4, 1); // Zip: Loads entity 4 as WEEVIL (enemy 1)
+		LoadEnemy(5, 1); // Zip: Loads entity 5 as WEEVIL (enemy 1)
+		LoadEnemy(6, 1); // Zip: Loads entity 6 as WEEVIL (enemy 1)
+		Combat(); // Zip: Runs the BATTEL!!!!
+		StartMusic("music\jazz.oxm");
+
+	//TBox(99, 1, 1, "Interference", "Ok, Zip: fighty fighty!.");
+
+	// Post-fighty
+	WarpToTile(4, 0,0);
+	WarpToTile(5, 0,0);
+	WarpToTile(6, 0,0);
+
+	flag[12] = 2;
+	canesc = 0;
+	CallFunction("Lenny");
+	}
+}
+
+void ZombieAttack()
+{
+int badguard;
+if (!flag[16] && flag[14])
+	{
+	TBox(party[0].port, 1, 2, party[0].name, "Er, hey there. What the hell happened to him?");
+	TBox(0, 1, 2, "Medic", "The lift guards found him. Fell right through the doors into a whining heap on the floor.");
+	TBox(0, 1, 0, "Medic", "Horrible injuries. It's deeply troubling.");
+	TBox(0, 1, 0, "Medic", "What on Earth could do this to a man? Especially here. I mean, all passengers are SCANNED for weapons when they come on board.");
+	TBox(party[1].port, 1, 2, party[1].name, "Another guard, maybe?");
+	TBox(0, 1, 0, "Medic", "THAT doesn't bear-.");
+	TBox(0, 1, 0, "Injured Guard", "Urgh! Huurgh!.");
+
+	canesc = 0;
+	SetTile(6,12,5,0);
+	SetTile(6,13,5,0);
+	SetTile(6,14,5,0);
+	badguard=EntitySpawn(6,15,"crew_mz.chr");
+	EntityMove(badguard, "r1");
+	EntityMove(7, "x5y20u0");
+	EntityMove(8, "x8y13d0");
+	EntityMove(9, "x5y13d0");
+	WaitForEntity(7);
+
+	EntityMove(badguard, "x8y16");
+	WaitForEntity(badguard);
+
+	//TBox(99, 1, 1, "Interference", "Sorry! I have to hurry to the fight, then I'm afraid that's it. Weak, eh?");
+
+	canesc = 0;
+	PlayerMove("x12y16u0");
+	EntityStalk(party[1].ent, 0-1);			// Stop Annabelle following
+	EntityMove(party[1].ent, "x11y15");
+	WaitForEntity(party[1].ent);
+
+	LoadEnemy(badguard, 2); // Zip: Loads badguard as guard (enemy 2)
+	Combat(); // Zip: Runs the BATTEL!!!!
+	//*/
+
+	TBox(99, 1, 1, "Interference", "Sorry! There would have been one last fight here before the end but at the last minute it refused to work. ARGH!. Weak, eh?");
+	AbruptEnd();
+	}
+}

@@ -1,0 +1,34 @@
+// ----------------------------------------------------------- --- -- -
+// IMGHAND.VC. Image Handling code, to make blitting images 
+// as painless as possible.
+// ----------------------------------------------------------- --- -- -
+
+// Americanised spellings herein, just to retain some semblance of continuity
+
+// Center an image in the middle of the screen. You feed it a pre-loaded
+// image, it blits it in the center of the screen. The usetransparency
+// variable can be set to 0 (no transparency), 1 (1-bit transparency)
+
+void CenterImage(int imagepointer, int usetransparency)
+{
+if (usetransparency == 1)
+	{
+	tBlit((screenx/2)-(ImageWidth(imagepointer)/2), (screeny/2)-(ImageHeight(imagepointer)/2), imagepointer, screen);
+	}
+else 
+	{
+	Blit((screenx/2)-(ImageWidth(imagepointer)/2), (screeny/2)-(ImageHeight(imagepointer)/2), imagepointer, screen);
+	}
+}
+
+// Returns a screenshot of the whole screen
+
+int CopyScreen()
+{
+int screenreturn;
+
+screenreturn = NewImage(screenx, screeny);
+
+GrabRegion(0, 0, screenx-1, screeny-1, 0, 0, screen, screenreturn);
+Return(screenreturn);
+}

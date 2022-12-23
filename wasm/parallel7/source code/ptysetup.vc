@@ -1,0 +1,219 @@
+// ----------------------------------------------------------- --- -- -
+// PTYSETUP.VC. This VC script handles setting up party characters'
+// information. This includes names, stats and the CHR files that
+// represent them graphically.
+// ----------------------------------------------------------- --- -- -
+
+int partymoney;		// How much money ("credits") the party has.
+
+// Structure for a party member
+struct pmember
+{
+// String
+string name;
+string sex;
+int port;		// Portrait Index
+int active;		// Whether the member is actively in the party or not
+string chrfile;
+int ent;		// Stores the entity of the partymember. [0] is the player.
+
+// Hit Points
+int hp;
+int maxhp;
+
+// Stats
+int strength;
+int intelligence;
+int speed;
+int constitution;
+
+// Weapon Skills
+int sklmelee;
+int sklsmallarms;
+int sklrifles;
+int sklheavyarms;
+
+// Misc Skills
+int sklengineer;
+
+// Slots to contain their Attire
+int headequip;
+int torsoequip;
+int armsequip;
+int legsequip;
+int feetequip;
+
+int weaponequip;
+
+// What type of weapon they have equipped. This ranges from 1 to 4:
+// 1 = melee
+// 2 = small arms
+// 3 = rifle
+// 4 = heavy arms
+int equippedweapontype;
+
+// Experience
+int xp;
+
+// Calculated statistics based on total stats and equipment
+int attack;
+int defense;
+// Zip: My battle stuff
+int action[6]; // Zip: Actions the player can take - format likely to change
+//int paentity; // Zip: Replaced by your .ent. Good good :D
+int nextact; // Zip: When their next action is due
+int engaged; // Zip: If they are in melee combat
+};
+
+// Ok, the struct's done. Lets set up an array to carry party data that uses it:
+pmember party[maxpartysize];
+
+// Now some variables to define some information about the party;
+
+int freepartyslot;				// First free slot to fit a new partymember in
+
+// Sets up default stats for the Player
+void SetupPlayer()
+{
+party[0].name = "Hugo";
+party[0].sex = "male";
+party[0].port = 10;
+party[0].active = 1;
+party[0].chrfile = "plr-1";
+
+party[0].strength = 8;
+party[0].intelligence = 10;
+party[0].speed = 9;
+party[0].constitution = 6;
+
+party[0].sklmelee = 8;
+party[0].sklsmallarms = 10;
+party[0].sklrifles = 8;
+party[0].sklheavyarms = 7;
+
+party[0].sklengineer = 4;
+
+party[0].headequip = 9999;
+party[0].torsoequip = 9999;
+party[0].armsequip = 9999;
+party[0].legsequip = 9999;
+party[0].feetequip = 9999;
+party[0].weaponequip = 9999;
+
+party[0].equippedweapontype = 1;	// No weapon so they use their fists, which are "melee"
+
+party[0].xp = 0;
+
+party[0].attack = 2;	// The player has fists, so their attack rating is 2.
+
+party[0].action[0] = CMBT_ATTACK;
+party[0].action[1] = CMBT_UP;
+party[0].action[2] = CMBT_DOWN;
+party[0].action[3] = CMBT_LEFT;
+party[0].action[4] = CMBT_RIGHT;
+party[0].action[5] = CMBT_WAIT;
+
+
+freepartyslot = 1;	// There's one member in the party (the player) at slot 0, therefore
+			// the next free slot is 1.
+}
+
+// -------------------------------------------------
+
+// Add someone to the current party. Update this routine with each partymember's details.
+// Use copy -> paste!
+void AddPartyMember(string membername, int joinmessage)
+{
+if (freepartyslot > maxpartysize) { Exit("Argh! A partymember was added to a full party! Noooo! Report this as a bug! The partymember in question is "+membername); }
+
+party[freepartyslot].name = membername;
+
+// Set new partymember's inventory as empty. Setting it to "0" would indicate INVENTORY SLOT 0, so
+// we use "9999" to indicate nothing is in it
+party[freepartyslot].headequip = 9999;
+party[freepartyslot].torsoequip = 9999;
+party[freepartyslot].armsequip = 9999;
+party[freepartyslot].legsequip = 9999;
+party[freepartyslot].feetequip = 9999;
+party[freepartyslot].weaponequip = 9999;
+
+party[freepartyslot].equippedweapontype = 1;
+party[freepartyslot].xp = 0;
+party[freepartyslot].attack = 2;
+
+// --------------------------------------------------
+
+if (strcmp(membername, "Annabelle")=0)
+	{
+	party[freepartyslot].sex = "female";
+	party[freepartyslot].port = 20;
+	party[freepartyslot].active = 1;
+	party[freepartyslot].chrfile = "annabelle";
+
+	party[freepartyslot].strength = 5;
+	party[freepartyslot].intelligence = 14;
+	party[freepartyslot].speed = 6;
+	party[freepartyslot].constitution = 4;
+
+	party[freepartyslot].sklmelee = 5;
+	party[freepartyslot].sklsmallarms = 6;
+	party[freepartyslot].sklrifles = 7;
+	party[freepartyslot].sklheavyarms = 5;
+
+	party[freepartyslot].sklengineer = 12;
+
+	}
+
+// --------------------------------------------------
+
+else if (strcmp(membername, "Lenny")=0)
+	{
+	party[freepartyslot].sex = "male";
+	party[freepartyslot].port = 21;
+	party[freepartyslot].active = 1;
+	party[freepartyslot].chrfile = "crew_m";
+
+	party[freepartyslot].strength = 12;
+	party[freepartyslot].intelligence = 6;
+	party[freepartyslot].speed = 10;
+	party[freepartyslot].constitution = 14;
+
+	party[freepartyslot].sklmelee = 12;
+	party[freepartyslot].sklsmallarms = 8;
+	party[freepartyslot].sklrifles = 7;
+	party[freepartyslot].sklheavyarms = 6;
+
+	party[freepartyslot].sklengineer = 4;
+	}
+
+// --------------------------------------------------
+
+else if (strcmp(membername, "Captain Reeves")=0)
+	{
+	party[freepartyslot].sex = "male";
+	party[freepartyslot].port = 20;
+	party[freepartyslot].active = 1;
+	party[freepartyslot].chrfile = "captain";
+
+	party[freepartyslot].strength = 7;
+	party[freepartyslot].intelligence = 8;
+	party[freepartyslot].speed = 10;
+	party[freepartyslot].constitution = 10;
+
+	party[freepartyslot].sklmelee = 7;
+	party[freepartyslot].sklsmallarms = 7;
+	party[freepartyslot].sklrifles = 5;
+	party[freepartyslot].sklheavyarms = 5;
+
+	party[freepartyslot].sklengineer = 6;
+	}
+
+else
+	{
+	Exit("Error! An attempt to add partymember "+membername+" was made. "+membername+" does not exist! Report this as a bug!");
+	}
+RecalcHP(freepartyslot);	// Calculate the new partymember's HP
+MaxOutHP(freepartyslot);	// Give them max health
+freepartyslot++;		// Set up for the next time
+if (joinmessage) { Banner(membername+" joined your party!"); }	// Tell the player they joined
+}

@@ -1,0 +1,1314 @@
+// ----------------------------------------------------------- --- -- -
+// ZIP.VC. Temp storage for all the stuff I'm gonna mess with.
+// Functions should be sent to appropriate files when finished.
+// ----------------------------------------------------------- --- -- -
+
+/*
+
+
+TODO
+----
+-*MOSTLYDONE**TESTED*Kill the rounds system and put multi side in the main combat loop (one of the few places still lacking)
+-*DONE**TESTED*Make the blocked ai movement cleverer
+-*IMPLEMENTED*Nest player choices
+-*DONE**TWEEKING*...and add a player targeting system (ai has one already)
+-*DONE**THANKS!*Fix the enemy sliding around problem (help?)
+-*STARTED*Add weapon ranges (short job once the data is there)
+-Limit the battle field (help?)
+-*STARTED*Handle character death
+-*STARTED*Add in experience and skills
+-*IGNORED**?SetRString?*Update the overlays and make the grid better
+-Comment my code a bit better for you and general tidy up
+-*BEGUN**PAUSED*Add 'engaged' so people can't run when in melee (and other cool stuff)
+-*STARTED*Add more abilities and unique effects
+-Load enemy data from file
+-*STARTED*Add proper battle animations
+-Poke any of your code that needs poking
+-*DONE**TWEEKING*Finally, I had this cool thing with SetPlayer and focusing on the current moving entity - but I couldn't get a smooth transition between one and the other, it jumps. Know any way to move the map independant of the player?
+-*DONE*Handle in battle player dialouge and quips
+-*HACKED**TESTED*Make dead bodies not block stuff, but also be behind things
+-*DONE**TWEEKING*Multi combatants handling
+-*DONE*Music
+-*SUPPORTED*Sound effects
+
+In a 32bit integer, there are 32 bits than can be either on or off
+This is 2^32 combinations, or 4294967296
+Binary numbers:	0   1   0   1   1.....0
+Equivalent to:	2^0+2^1+2^2+2^3+2^4...-2^31
+Which is:		1 + 2 + 4 + 8 + 16....-2147483648
+Why is the last number (bit) negative?
+So we can store all the negative numbers easily as well.
+Then it is still just case of adding to bits to get the number.
+Note that as 0 has to be stored as well, there is one less positive than negative
+So in a 32bit int, the numbe can be between -2^31 and 2^31-1
+Alternatively in decimal from -2147483648 to 2147483647
+Eg. The number 13 is stored as 8+4+1 or 1011000...0
+The number -13 is stored as -2147483648 plus everything BUT 8+4 so 11001111...1
+Note that the +1 is still on, as negative numbers stretch one lower than positives
+
+
+#define CMBT_NULL 0
+#define CMBT_UP 257
+#define CMBT_DOWN 258
+#define CMBT_LEFT 259
+#define CMBT_RIGHT 260
+#define CMBT_WSHORT 513
+#define CMBT_WLONG 514
+#define CMBT_ANONE 1025
+#define CMBT_ABODY 1026
+#define CMBT_AARM 1027
+#define CMBT_ALEG 1028
+#define CMBT_AHEAD 1029
+#define CMBT_ROOT 128
+#define CMBT_MOVE 256
+#define CMBT_WAIT 512
+#define CMBT_ATTACK 1024
+
+*/
+
+#define maxenemysize 4
+#define FRAME_ANI_A 0
+#define FRAME_ANI_B 1
+#define FRAME_DOWN 2
+#define SOUND_ATT 0
+#define SOUND_DOWN 1
+#define SOUND_HIT 2
+
+// Structure for a enemy member
+// Zip: Not sure what we're gonna need yet - bare bones atm
+struct emember
+{
+// String
+string name;
+//?string sex;
+//int port;		// Portrait Index
+//int active;		// Whether the member is actively in the party or not
+//string chrfile;
+
+// Hit Points
+int hp;
+int maxhp;
+
+// Stats
+int strength;
+int intelligence;
+int speed;
+int constitution;
+
+// Weapon Skills
+//int sklmelee;
+//int sklsmallarms;
+//int sklrifles;
+//int sklheavyarms;
+
+// Misc Skills
+//int sklengineer;
+
+// Slots to contain their Attire
+//int headequip;
+//int torsoequip;
+//int armsequip;
+//int legsequip;
+//int feetequip;
+
+//int weaponequip;
+
+// What type of weapon they have equipped. This ranges from 1 to 4:
+// 1 = melee
+// 2 = small arms
+// 3 = rifle
+// 4 = heavy arms
+int equippedweapontype;
+
+// Experience
+//int xp;
+
+// Calculated statistics based on total stats and equipment
+int attack;
+int defense;
+int ent; //Zip: To store the enemy's entity, as I can see no reason not to have it in the struct
+int action[6];
+int nextact;
+int engaged;
+int frames[6];
+int sounds[6];
+
+};
+
+emember enemy[maxenemysize];
+int numberofenemies = 0;
+
+// Zip: Loading enemy information for combat
+void LoadEnemy(int entityofenemy, int typeofenemy)
+{
+	int enemynum = numberofenemies; // Zip: Multi!
+	numberofenemies++;
+	enemy[enemynum].ent = entityofenemy;
+	switch (typeofenemy) // Zip: This should be load from file at a later stage
+	{
+	case 0:	enemy[enemynum].name = "Drunk";
+			enemy[enemynum].maxhp = 10;
+			enemy[enemynum].equippedweapontype = 1; // Zip: Melee
+			enemy[enemynum].attack = 18;
+			enemy[enemynum].defense = 4;
+			enemy[enemynum].strength = 18;
+			enemy[enemynum].intelligence = 6;
+			enemy[enemynum].speed = 12;
+			enemy[enemynum].constitution = 14;
+			enemy[enemynum].action[0] = CMBT_ATTACK;
+			enemy[enemynum].action[1] = CMBT_MOVE;
+			enemy[enemynum].action[2] = CMBT_WAIT;
+			enemy[enemynum].action[3] = CMBT_NULL;
+			enemy[enemynum].action[4] = CMBT_NULL;
+			enemy[enemynum].action[5] = CMBT_NULL;
+			enemy[enemynum].frames[FRAME_ANI_A] = 25;
+			enemy[enemynum].frames[FRAME_ANI_B] = 1;
+			enemy[enemynum].frames[FRAME_DOWN] = 26;
+	case 1:	enemy[enemynum].name = "Weevil";
+			enemy[enemynum].maxhp = 6  + Random(0, 5);
+			enemy[enemynum].equippedweapontype = 1; // Zip: Melee
+			enemy[enemynum].attack = 12;
+			enemy[enemynum].defense = 8;
+			enemy[enemynum].strength = 12;
+			enemy[enemynum].intelligence = 8;
+			enemy[enemynum].speed = 20;
+			enemy[enemynum].constitution = 8;
+			enemy[enemynum].action[0] = CMBT_ATTACK;
+			enemy[enemynum].action[1] = CMBT_MOVE;
+			enemy[enemynum].action[2] = CMBT_WAIT;
+			enemy[enemynum].action[3] = CMBT_NULL;
+			enemy[enemynum].action[4] = CMBT_NULL;
+			enemy[enemynum].action[5] = CMBT_NULL;
+			enemy[enemynum].frames[FRAME_ANI_A] = 1;
+			enemy[enemynum].frames[FRAME_ANI_B] = 2;
+			enemy[enemynum].frames[FRAME_DOWN] = 26;
+	case 2:	enemy[enemynum].name = "Guard"; //Injured Guard
+			enemy[enemynum].maxhp = 21;
+			enemy[enemynum].equippedweapontype = 1; // Zip: Melee
+			enemy[enemynum].attack = 14;
+			enemy[enemynum].defense = 12;
+			enemy[enemynum].strength = 16;
+			enemy[enemynum].intelligence = 4;
+			enemy[enemynum].speed = 2;
+			enemy[enemynum].constitution = 20;
+			enemy[enemynum].action[0] = CMBT_ATTACK;
+			enemy[enemynum].action[1] = CMBT_MOVE;
+			enemy[enemynum].action[2] = CMBT_WAIT;
+			enemy[enemynum].action[3] = CMBT_NULL;
+			enemy[enemynum].action[4] = CMBT_NULL;
+			enemy[enemynum].action[5] = CMBT_NULL;
+			enemy[enemynum].frames[FRAME_ANI_A] = 1;
+			enemy[enemynum].frames[FRAME_ANI_B] = 2;
+			enemy[enemynum].frames[FRAME_DOWN] = 25;
+	}
+	enemy[enemynum].nextact = (30 - enemy[enemynum].speed) + Random(0, 9);
+	enemy[enemynum].hp = enemy[enemynum].maxhp;
+	enemy[enemynum].engaged = CMBT_NULL;
+}
+
+int inbattle = 0;
+int playerstatusbox, enemystatusbox, overlayluc;
+// Zip: Absoulte minimal combat atm - not even looking at attack/defence values
+void Combat()
+{
+	int comi, nextactor, nextacttime;
+	string previoussong = lasttune;
+	int battletime = 0;
+	playerstatusbox = RenderInterText(90, 21);
+	enemystatusbox = RenderInterText(60, 21);
+	HookRetrace("StatusOverlays");
+
+	overlayluc = 100;
+	//WaitUpdate(1);
+	//SetEntitiesPaused(0);
+	//UnfreezePlayer();
+
+	for(comi = 0; comi < freepartyslot; comi++)
+	{ if (party[comi].hp > 0)
+	{
+		//TEMP FIX
+			party[comi].action[0] = CMBT_ATTACK;
+			party[comi].action[1] = CMBT_MOVE;
+			party[comi].action[2] = CMBT_WAIT;
+			party[comi].action[3] = CMBT_NULL;
+			party[comi].action[4] = CMBT_NULL;
+			party[comi].action[5] = CMBT_NULL;
+		//TEMP FIX
+		party[comi].nextact = (30 - party[comi].speed) + Random(0, 9);
+		party[comi].engaged = 255;
+	}}
+	inbattle = 1;
+	canesc = 0;			// Turn off ESC Menu
+	timer = 0;
+	while (overlayluc > 0)
+	{
+		overlayluc = 100 - timer;
+		SetSongVolume(currentmusic, (100 - timer) * musicvol / 100);
+		Render();
+		ShowPage();
+	}
+	StartMusic("music/battle.oxm");
+	while (inbattle)
+	{
+		nextacttime = 2147483647;
+		for(comi = 0; comi < freepartyslot; comi++)
+		{
+		if (party[comi].hp > 0)
+		{
+			if (party[comi].nextact < nextacttime)
+			{
+				nextactor = comi;
+				nextacttime = party[comi].nextact;
+			}
+		}}
+		for(comi = 0; comi < numberofenemies; comi++)
+		{
+		if (enemy[comi].hp > 0)
+		{
+			if (enemy[comi].nextact < nextacttime)
+			{
+				nextactor = comi + 100;
+				nextacttime = enemy[comi].nextact;
+			}
+		}}
+		//Log("P:"+str(party[0].nextact)+"2:"+str(party[1].nextact)+" E:"+str(enemy[0].nextact)+" 1:"+str(enemy[1].nextact)+" 2:"+str(enemy[2].nextact)+" N:"+str(nextactor));
+		if (nextactor < 100)
+		{
+			battletime = party[nextactor].nextact;
+			ChangePlayer(party[nextactor].ent);
+			party[nextactor].nextact += PlayerActions(nextactor, MyChoice(nextactor)) + Random(0, (30-party[nextactor].speed)/2);
+		}
+		else
+		{
+			nextactor -= 100;
+			battletime = enemy[nextactor].nextact;
+			ChangePlayer(enemy[nextactor].ent);
+			enemy[nextactor].nextact += AIActions(nextactor, AIChoice(nextactor)) + Random(0, (30-enemy[nextactor].speed)/2);
+		}
+		lastchoice = 0;
+		Render();
+	}
+	ChangePlayer(party[0].ent);
+	timer = 0;
+	while (overlayluc < 100)
+	{
+		overlayluc = timer;
+		SetSongVolume(currentmusic, (100 - timer) * musicvol / 100);
+		Render();
+		ShowPage();
+	}
+	HookRetrace("RetraceHook");
+	StartMusic(previoussong);
+	for(comi = 0; comi < freepartyslot; comi++)
+	{ if (party[comi].active > 0)
+	{
+		if (party[comi].hp == 0) party[comi].hp = 1;
+		else
+		{
+			party[comi].xp += 50;
+			party[comi].strength += 1;
+			party[comi].speed += 1;
+			party[comi].constitution += 1;
+			party[comi].intelligence += 1;
+			RecalcHP(comi);
+			MyTBox(comi, "Gained Experience!");
+		}
+		party[comi].engaged = CMBT_NULL;
+		entity.specframe[party[comi].ent] = 0;
+	}}
+	numberofenemies = 0;
+	canesc = 1;			// Turn on ESC Menu
+	FreeImage(playerstatusbox);
+	FreeImage(enemystatusbox);
+
+}
+
+int AIActions(int aienemy, int aiaction)
+{
+	int dmgtemp;
+	//Log(str(aienemy)+"AI: "+ActionString(aiaction)+" on "+party[lastchoice].name);
+	if (aiaction & CMBT_ATTACK)
+	{
+		dmgtemp = ((enemy[aienemy].attack * DAM_MULT) + Random(0, DAM_RAND)) / (party[lastchoice].defense + Random(0, DAM_RAND));
+		MyBanner("The "+enemy[aienemy].name+" hits you for "+str(dmgtemp)+" damage");
+		party[lastchoice].engaged = aienemy;
+		//entity.face[party[lastchoice.ent] = entity.face[
+		if (party[lastchoice].hp <= dmgtemp) MyTBox(lastchoice, BChatEnemyDefeat(lastchoice, 1));
+		else MyTBox(lastchoice, BChatEnemyDefeat(lastchoice, 0));
+		TakeHP(lastchoice, dmgtemp);
+		return ActionDelay(CMBT_ATTACK);
+	}
+	else if (aiaction & CMBT_MOVE)
+	{
+		if (aiaction == CMBT_UP) {
+			PlayerMove("x"+str(entity.x[enemy[aienemy].ent]/16)+"y"+str(entity.y[enemy[aienemy].ent]/16-1)+"u0"); }
+		else if (aiaction == CMBT_DOWN) {
+			PlayerMove("x"+str(entity.x[enemy[aienemy].ent]/16)+"y"+str(entity.y[enemy[aienemy].ent]/16+1)+"d0"); }
+		else if (aiaction == CMBT_LEFT) {
+			PlayerMove("x"+str(entity.x[enemy[aienemy].ent]/16-1)+"y"+str(entity.y[enemy[aienemy].ent]/16)+"l0"); }
+		else if (aiaction == CMBT_RIGHT) {
+			PlayerMove("x"+str(entity.x[enemy[aienemy].ent]/16+1)+"y"+str(entity.y[enemy[aienemy].ent]/16)+"r0"); }
+
+		return ActionDelay(aiaction);
+	}
+
+//*/
+	return ActionDelay(CMBT_WAIT);
+}
+
+int PlayerActions(int pplayer, int paction)
+// Some nasty code in this baby
+{
+	int dmgtemp = 0;
+	int pa_miss, pa_body, pa_arm, pa_leg, pa_head, pa_skill, pa_rand;
+	if (paction & CMBT_ATTACK)
+	{
+		pa_skill = party[pplayer].sklmelee;
+		if (paction == CMBT_ANONE) pa_miss = (enemy[lastchoice].defense * 2) - pa_skill;
+		else  pa_miss = enemy[lastchoice].defense * 2;
+		if (paction == CMBT_ABODY) pa_body = pa_miss + 40 + pa_skill;
+		else  pa_body = pa_miss + 40;
+		if (paction == CMBT_AARM) pa_arm = pa_body + 20 + pa_skill;
+		else  pa_arm = pa_body + 20;
+		if (paction == CMBT_ALEG) pa_leg = pa_arm + 20 + pa_skill;
+		else  pa_leg = pa_arm + 20;
+		if (paction == CMBT_AHEAD) pa_head = pa_leg + 10 + pa_skill;
+		else  pa_head = pa_leg + 10;
+		pa_rand = Random(0, pa_head);
+		if (pa_rand <= pa_miss)
+		{
+			pa_rand = Random(0, 3);
+			if (pa_rand == 0) MyBanner("You completely miss the "+enemy[lastchoice].name);
+			if (pa_rand == 1) MyBanner("The "+enemy[lastchoice].name+" evades your attack");
+			if (pa_rand == 2) MyBanner("The air is all you manage to hit");
+			if (pa_rand == 3) MyBanner("Duh! Missed, thicko!"); // dragslay tribute
+		}
+		else
+		{
+			if (pa_rand <= pa_body)
+			{
+				MyBanner("You hit the "+enemy[lastchoice].name+" in the body");
+				dmgtemp = 2;
+				if (paction == CMBT_ABODY)
+				{
+					MyBanner("Your attack stuns the "+enemy[lastchoice].name);
+					enemy[lastchoice].nextact += 20 + pa_skill - enemy[lastchoice].constitution;
+					if (party[pplayer].engaged == lastchoice) party[pplayer].engaged == 255;
+					dmgtemp += 2;
+				}
+			}
+			else if (pa_rand <= pa_arm)
+			{
+				// Weevil HACK!
+				if (enemy[lastchoice].speed == 20) MyBanner("You hit the "+enemy[lastchoice].name+" in the jaw");
+				else MyBanner("You hit the "+enemy[lastchoice].name+" in the arm");
+				dmgtemp = 0;
+				if (paction == CMBT_AARM)
+				{
+					MyBanner("The blow lowers their attack");
+					if (enemy[lastchoice].attack > 5) enemy[lastchoice].attack -= 5;
+					dmgtemp += 2;
+				}
+			}
+			else if (pa_rand <= pa_leg)
+			{
+				MyBanner("You hit the "+enemy[lastchoice].name+" in the leg");
+				dmgtemp = 0;
+				if (paction == CMBT_ALEG)
+				{
+					MyBanner("Your attack knocks the "+enemy[lastchoice].name+" over");
+					enemy[lastchoice].nextact += 20 + pa_skill - enemy[lastchoice].constitution;
+					if (party[pplayer].engaged == lastchoice) party[pplayer].engaged == 255;
+					dmgtemp += 2;
+				}
+			}
+			else// if (pa_rand <= pa_head)
+			{
+				MyBanner("You hit the "+enemy[lastchoice].name+" in the head");
+				dmgtemp = 3;
+				if (paction == CMBT_AHEAD)
+				{
+					MyBanner("Your attack stuns the "+enemy[lastchoice].name);
+					enemy[lastchoice].nextact += 30 + pa_skill - enemy[lastchoice].constitution;
+					dmgtemp += 3;
+				}
+			}
+			dmgtemp = (((party[pplayer].attack * DAM_MULT) + Random(dmgtemp, DAM_RAND)) / (enemy[lastchoice].defense + Random(0, DAM_RAND)));
+			MyBanner("Doing "+str(dmgtemp)+" damage");
+			TakeEnemyHP(lastchoice, dmgtemp);
+			if (enemy[lastchoice].hp > 1)
+			{
+
+				enemy[lastchoice].engaged = pplayer;
+			}
+			else
+			{
+				if (party[pplayer].engaged == lastchoice) party[pplayer].engaged == 255;
+				MyTBox(pplayer, BChatEnemyDefeat(pplayer, 2));
+
+				party[pplayer].xp += 50;
+			}
+
+		}
+		return ActionDelay(paction);
+	}
+	else if (paction & CMBT_MOVE)
+	{
+		if (paction == CMBT_UP)
+		{
+			PlayerMove("x"+str(entity.x[party[pplayer].ent]/16)+"y"+str(entity.y[party[pplayer].ent]/16-1)+"u0");
+		}
+		else if (paction == CMBT_DOWN)
+		{
+			PlayerMove("x"+str(entity.x[party[pplayer].ent]/16)+"y"+str(entity.y[party[pplayer].ent]/16+1)+"d0");
+		}
+		else if (paction == CMBT_LEFT)
+		{
+			PlayerMove("x"+str(entity.x[party[pplayer].ent]/16-1)+"y"+str(entity.y[party[pplayer].ent]/16)+"l0");
+		}
+		else if (paction == CMBT_RIGHT)
+		{
+			PlayerMove("x"+str(entity.x[party[pplayer].ent]/16+1)+"y"+str(entity.y[party[pplayer].ent]/16)+"r0");
+		}
+		return ActionDelay(paction);
+	}
+//*/
+	return ActionDelay(CMBT_WAIT);
+}
+
+void ChangePlayer(int chpl_player)
+// Changes the current player with a smooth camera transition
+// Pass: The entity index to become the new player
+{
+	// Sets old coords to current top left screen x,y
+	int chpl_oldx = xwin;
+	int chpl_oldy = ywin;
+	// Sets new coords to centered on the player-to-be
+	int chpl_newx = entity.x[chpl_player] - (screenx/2) + 8;
+	int chpl_newy = entity.y[chpl_player] - (screeny/2) + 8;
+	cameratracking = 0; // Disconnects the camera from the player
+	int chpl_time = timer; // Records current time
+	// Loops until half a second has past (adjust as needed)
+	while ((timer - chpl_time) < 50)
+	{
+		// Sets the coords to point along line over time
+		xwin = (chpl_oldx + ((timer - chpl_time) * (chpl_newx - chpl_oldx) / 50));
+		ywin = (chpl_oldy + ((timer - chpl_time) * (chpl_newy - chpl_oldy) / 50));
+		Render(); // Renders the map
+		ShowPage(); // Blits the buffer to the screen
+	}
+	SetPlayer(chpl_player); // Sets the new player
+	cameratracking = 1; // Reconnects the camera to the player
+}
+
+void StatusOverlays()
+{
+	int sox, soy;
+	SetLucent(overlayluc);
+	for (soy = 16 - (ywin % 16); soy < screeny; soy+=16)
+	{
+		for (sox = 16 - (xwin % 16); sox < screenx; sox+=16)
+		{
+			SetPixel(sox, soy, 0, screen);
+		}
+	}
+	soy = 0-1;
+	for (sox = 0; sox < freepartyslot; sox++)
+	{ if (party[sox].active) {
+		soy++;
+		Blit(5 + (soy * (5 + ImageWidth(playerstatusbox))), 235 - ImageHeight(playerstatusbox), playerstatusbox, screen);
+		PrintString(9 + (soy * (5 + ImageWidth(playerstatusbox))), 239 - ImageHeight(playerstatusbox), screen, font[3], party[sox].name);
+		PrintRight(1 + ImageWidth(playerstatusbox) + (soy * (5 + ImageWidth(playerstatusbox))), 246 - (ImageHeight(playerstatusbox)), screen, font[3], str(party[sox].hp)+"/"+str(party[sox].maxhp));
+	}}
+	for (sox = 0; sox < numberofenemies; sox++)
+	{ if (enemy[sox].hp) {
+		Blit(320 -  ((sox + 1) * (5 + ImageWidth(enemystatusbox))), 5, enemystatusbox, screen);
+		PrintString(324 - ((sox + 1) * (5 + ImageWidth(enemystatusbox))), 9, screen, font[3], enemy[sox].name);
+		PrintRight(311 - ((sox) * (5 + ImageWidth(enemystatusbox))), 16, screen, font[3], str(enemy[sox].hp)+"/"+str(enemy[sox].maxhp));
+	}}
+	SetLucent(0);
+	for (sox = 0; sox < freepartyslot; sox++) { if (party[sox].active)	{
+		if (party[sox].hp < 1) entity.specframe[party[sox].ent] = 25;
+		else if (entity.movecode[party[sox].ent]) entity.specframe[party[sox].ent] = 0;
+		else if (timer % 200 < 100) entity.specframe[party[sox].ent] = 4;
+		else entity.specframe[party[sox].ent] = 2;
+	}}
+	for (sox = 0; sox < numberofenemies; sox++) {
+		if (enemy[sox].hp < 1) entity.specframe[enemy[sox].ent] = enemy[sox].frames[FRAME_DOWN];
+		else if (entity.movecode[enemy[sox].ent]) entity.specframe[enemy[sox].ent] = 0;
+		else if (timer % 200 < 100) entity.specframe[enemy[sox].ent] = enemy[sox].frames[FRAME_ANI_A];
+		else entity.specframe[enemy[sox].ent] = enemy[sox].frames[FRAME_ANI_B];
+	}
+
+
+//*/
+}
+
+// Takes away the specified HP from the specified enemy
+// Zip: Prettied up from your TakeHP func.
+void TakeEnemyHP(int enemynumber, int subhp)
+{
+	if (enemy[enemynumber].hp > subhp)
+	{
+		enemy[enemynumber].hp -= subhp;
+	}
+	else
+	{
+		enemy[enemynumber].hp = 0;
+		MyBanner("The "+enemy[enemynumber].name+" goes down!");
+		inbattle = 0;
+		for (subhp = 0; subhp < numberofenemies; subhp++)
+		{
+			if (enemy[subhp].hp) inbattle = 1;
+		}
+	}
+//*/
+}
+
+int MyChoice(int player_num)
+{
+	int numchoices, curchoice, secondbox, actionselected;
+	for (curchoice = 0; curchoice < 6; curchoice++)
+	{
+		if (party[player_num].action[curchoice] != CMBT_NULL) numchoices++;
+	}
+	int cboxbuffer = RenderInterText(60, numchoices * fontheight + textoffset + 5);
+	SetEntitiesPaused(1);
+
+	for (curchoice = 0; curchoice < numchoices; curchoice++)
+	{
+
+		if (IsChoiceValid(player_num, party[player_num].action[curchoice])) SetLucent(0);
+		else SetLucent(50);
+		PrintString(textoffset/2+(ImageWidth(c_arrow)), (textoffset/2)+(ImageWidth(c_arrow))+((fontheight)*curchoice), cboxbuffer, font[1], ActionString(party[0].action[curchoice]));
+	}
+	curchoice = 0;
+	MyFadeInTbox(5 + (player_num * (5 + ImageWidth(playerstatusbox))), 210 - ImageHeight(cboxbuffer), cboxbuffer);		// Fade in choice box
+
+	while(actionselected == CMBT_NULL)
+	{
+		Render();
+		tBlit(5 + (player_num * (5 + ImageWidth(playerstatusbox))), 210 - ImageHeight(cboxbuffer), cboxbuffer, screen);
+		tblit(5 + (player_num * (5 + ImageWidth(playerstatusbox)))+(textoffset/2), 210 - ImageHeight(cboxbuffer)+(textoffset/2)+(ImageWidth(c_arrow))+((fontheight)*curchoice), c_arrow, screen);
+		ShowPage();
+		if (right || down)
+		{
+			if (curchoice = numchoices-1) { curchoice = 0; }
+			else { curchoice++; }
+			UnpressDirectionals();
+		}
+		if (left || up)
+		{
+			if (curchoice = 0) { curchoice = numchoices-1; }
+			else { curchoice--; }
+			UnpressDirectionals();
+		}
+		if (b1)
+		{
+			actionselected = party[player_num].action[curchoice];
+			if (actionselected == CMBT_MOVE)
+			{
+				actionselected = MySecondChoice(player_num, CMBT_UP, CMBT_RIGHT, cboxbuffer);
+			}
+			else if (actionselected == CMBT_WAIT)
+			{
+				actionselected = MySecondChoice(player_num, CMBT_WSHORT, CMBT_WLONG, cboxbuffer);
+			}
+			else if (actionselected == CMBT_ATTACK)
+			{
+				actionselected = MySecondChoice(player_num, CMBT_ANONE, CMBT_AHEAD, cboxbuffer);
+			}
+			if (!IsChoiceValid(player_num, actionselected)) actionselected = CMBT_NULL; // Error sound?
+			// Target handling lastchoice = target
+			else if (actionselected & CMBT_ATTACK) if (MyPlayerTargeting(player_num, actionselected)) actionselected = CMBT_NULL;
+		}
+	}
+	//MyFadeOutTbox(5 + (player_num * (5 + ImageWidth(playerstatusbox))), 210 - ImageHeight(cboxbuffer), cboxbuffer);		// Fade out choice box
+	SetEntitiesPaused(0);
+
+	SetLucent(0);
+	ShowPage();
+	FreeImage(cboxbuffer);
+	Unpress(0);
+//*/
+	return actionselected;
+}
+
+int MyPlayerTargeting(int pt_party, int pt_action)
+// Ugly shit this, needs cleaning
+{
+	int nexttime, pt_newx, pt_newy, pt_oldx, pt_oldy, timecount;
+	cameratracking = 0;
+	//left = 1;
+	while (!IsTargetValid(pt_party, lastchoice, pt_action))
+	{
+		lastchoice = (lastchoice + 1) % numberofenemies;
+	}
+	pt_oldx = xwin;
+	pt_oldy = ywin;
+	// Sets target coords
+	pt_newx = entity.x[enemy[lastchoice].ent] - (screenx/2) + 8;
+	pt_newy = entity.y[enemy[lastchoice].ent] - (screeny/2) + 8;
+	timecount = 0;
+	nexttime = 0;
+
+	Unpress(1);
+	while(!b1 && !b3)
+	{
+		if (timer > nexttime)
+		{
+			xwin = (pt_oldx + ((timecount) * (pt_newx - pt_oldx) / 20));
+			ywin = (pt_oldy + ((timecount) * (pt_newy - pt_oldy) / 20));
+			if (timecount == 20)
+			{
+				nexttime = 2147483647;
+			}
+			else
+			{
+				timecount++;
+				nexttime = timer + 1;
+			}
+		}
+		Render();
+		TBlit(316 -  ((lastchoice + 1) * (5 + ImageWidth(enemystatusbox))), (ImageHeight(enemystatusbox)/2), c_arrow, screen);
+		ShowPage();
+		if (right + down + left + up > 0)
+		{
+			if (right || down)
+			{
+				lastchoice = (lastchoice + 1) % numberofenemies;
+			}
+			else if (left || up)
+			{
+				lastchoice = (lastchoice + (numberofenemies - 1)) % numberofenemies;
+			}
+			while (!IsTargetValid(pt_party, lastchoice, pt_action))
+			{
+				if (right || down)
+				{
+					lastchoice = (lastchoice + 1) % numberofenemies;
+				}
+				else if (left || up)
+				{
+					lastchoice = (lastchoice + (numberofenemies - 1)) % numberofenemies;
+				}
+			}
+			// Sets current coords
+			pt_oldx = xwin;
+			pt_oldy = ywin;
+			// Sets target coords
+			pt_newx = entity.x[enemy[lastchoice].ent] - (screenx/2) + 8;
+			pt_newy = entity.y[enemy[lastchoice].ent] - (screeny/2) + 8;
+			timecount = 0;
+			nexttime = 0;
+			UnpressDirectionals();
+		}
+	}
+	if(b1) nexttime = 0;
+	else nexttime = 1;
+	pt_oldx = xwin;
+	pt_oldy = ywin;
+	pt_newx = entity.x[party[pt_party].ent] - (screenx/2) + 8;
+	pt_newy = entity.y[party[pt_party].ent] - (screeny/2) + 8;
+	timecount = timer;
+	while((timer - timecount) < 21)
+	{
+		xwin = (pt_oldx + ((timer - timecount) * (pt_newx - pt_oldx) / 20));
+		ywin = (pt_oldy + ((timer - timecount) * (pt_newy - pt_oldy) / 20));
+		Render();
+		ShowPage();
+	}
+	cameratracking = 1;
+
+//*/
+	return nexttime;
+}
+
+int MySecondChoice(int sc_party, int sc_first, int sc_last, int sc_firstbox)
+{
+	int sc_choice;
+	int sc_num = sc_last - sc_first + 1;
+	int sc_secondbox = RenderInterText(60, sc_num * fontheight + textoffset + 5);
+	Unpress(1);
+	for (sc_choice = 0; sc_choice < sc_num; sc_choice++)//((sc_last-sc_first)/(sc_num - 1)))
+	{
+		if (IsChoiceValid(sc_party, sc_choice+sc_first)) SetLucent(0);
+		else SetLucent(50);
+		PrintString(textoffset/2+(ImageWidth(c_arrow)), (textoffset/2)+(ImageWidth(c_arrow))+((fontheight)*sc_choice), sc_secondbox, font[1], ActionString(sc_choice+sc_first));
+	}
+	sc_num = sc_choice;
+	sc_choice = 0;
+	//Zip: Broke //MyFadeInTbox(15, 200 - ImageHeight(sc_secondbox), sc_secondbox);		// Fade in second choice box
+	while(!b1 && !b3)
+	{
+		Render();
+		tBlit(5 + (sc_party * (5 + ImageWidth(playerstatusbox))), 210 - ImageHeight(sc_firstbox), sc_firstbox, screen);
+		//Zip: Broke, and not needed //tblit(7+textoffset/2, 210 - ImageHeight(sc_firstbox)+(textoffset/2)+(ImageWidth(c_arrow))+((fontheight)*curchoice), c_arrow, screen);
+		tBlit(15 + (sc_party * (5 + ImageWidth(playerstatusbox))), 200 - ImageHeight(sc_secondbox), sc_secondbox, screen);
+		tblit(15 + (sc_party * (5 + ImageWidth(playerstatusbox)))+(textoffset/2), 200 - ImageHeight(sc_secondbox)+(textoffset/2)+(ImageWidth(c_arrow))+((fontheight)*sc_choice), c_arrow, screen);
+		ShowPage();
+		if (right || down)
+		{
+			if (sc_choice = sc_num-1) { sc_choice = 0; }
+			else { sc_choice++; }
+			UnpressDirectionals();
+		}
+		if (left || up)
+		{
+			if (sc_choice = 0) { sc_choice = sc_num-1; }
+			else { sc_choice--; }
+			UnpressDirectionals();
+		}
+		if (b1)
+		{
+			if (!IsChoiceValid(sc_party, sc_choice + sc_first)) Unpress(1); // Error sound?
+		}
+
+	}
+	//Zip: Broke //MyFadeOutTbox(15, 200 - ImageHeight(sc_secondbox), sc_secondbox);		// Fade out second choice box
+	FreeImage(sc_secondbox);
+	if (b1) return sc_choice + sc_first;
+	else return CMBT_NULL;
+}
+
+void MyBanner(string msg_text)
+{
+	int mboxbuffer = RenderInterText(300, 20);
+	PrintCenter(ImageWidth(mboxbuffer)/2, (textoffset-3), mboxbuffer, font[1], msg_text);
+
+	SetEntitiesPaused(1);
+
+	MyFadeInTbox(screenx/2 - (ImageWidth(mboxbuffer)/2), screeny/2 - (ImageHeight(mboxbuffer)/4), mboxbuffer);		// Fade in choice box
+
+	while(!b1)
+	{
+		Render();
+		tBlit(screenx/2 - (ImageWidth(mboxbuffer)/2), screeny/2 - (ImageHeight(mboxbuffer)/4), mboxbuffer, screen);
+		ShowPage();
+	}
+
+	MyFadeOutTbox(screenx/2 - (ImageWidth(mboxbuffer)/2), screeny/2 - (ImageHeight(mboxbuffer)/4), mboxbuffer);		// Fade out choice box
+	SetEntitiesPaused(0);
+
+	SetLucent(0);
+	ShowPage();
+	FreeImage(mboxbuffer);
+	Unpress(0);
+//*/
+}
+
+struct aiinformation
+{
+	int aibest;
+
+	int aidist[maxpartysize];
+	int aivalid[maxpartysize];
+
+}
+aiinformation aiinfo;
+
+int AIChoice(int enm_num)
+{
+	int x_dist, y_dist;
+	int aic;
+	aiinfo.aibest = 255; // No best target
+	for (aic = 0; aic < freepartyslot; aic++) // Loop through party memebers
+	{
+	if (party[aic].hp > 0) // If they're alive/present
+	{
+		aiinfo.aivalid[aic] = 1; // Set them as a valid target
+		if (aiinfo.aibest == 255) aiinfo.aibest = aic; // Set them as the best target if they're the first
+		x_dist = entity.x[enemy[enm_num].ent] - entity.x[party[aic].ent]; // Linear x distance
+		y_dist = entity.y[enemy[enm_num].ent] - entity.y[party[aic].ent]; // Linear y distance
+		aiinfo.aidist[aic] = sqrt((x_dist*x_dist)+(y_dist*y_dist)); // Set their distance for the ai
+		if (aiinfo.aidist[aic] < 16 + 2) // If they're in range, add *weapon_range later
+		{
+			aiinfo.aivalid[aic] = 2; // Set them to in range
+			// If they're the first in range make them the best target
+			if (aiinfo.aivalid[aiinfo.aibest] == 1) aiinfo.aibest = aic;
+			// COMPLEX target analysis to go here. Atm looks at hit points
+			else if (party[aic].hp + Random(0,9) < party[aiinfo.aibest].hp + Random(0,9)) aiinfo.aibest = aic;
+		}
+	}
+	else aiinfo.aivalid[aic] = 0;
+	}
+	if (aiinfo.aibest == 255)
+	{
+		Log("WaitingA");
+		lastchoice = aiinfo.aibest;
+		return CMBT_WAIT;
+	}
+	else if (aiinfo.aivalid[aiinfo.aibest] == 2)
+	{
+		lastchoice = aiinfo.aibest;
+		return CMBT_ATTACK;
+	}
+	else if(aiinfo.aivalid[aiinfo.aibest] == 1)// && enemy[enm_num].engaged == CMBT_NULL)
+	{
+		x_dist = entity.x[enemy[enm_num].ent] - entity.x[party[aiinfo.aibest].ent]; // Linear x distance
+		y_dist = entity.y[enemy[enm_num].ent] - entity.y[party[aiinfo.aibest].ent]; // Linear y distance
+		lastchoice = aiinfo.aibest;
+		if (x_dist * (x_dist _ISIGN) < y_dist * (y_dist _ISIGN))
+		{
+			if (y_dist > Random(0, 1))
+			{
+				if (IsMoveValid(enemy[enm_num].ent, CMBT_UP)) return CMBT_UP;
+			}
+			else
+			{
+				if (IsMoveValid(enemy[enm_num].ent, CMBT_DOWN)) return CMBT_DOWN;
+			}
+				if (x_dist > Random(0, 1))
+				{
+					if (IsMoveValid(enemy[enm_num].ent, CMBT_LEFT)) return CMBT_LEFT;
+					if (IsMoveValid(enemy[enm_num].ent, CMBT_RIGHT)) return CMBT_RIGHT;
+				}
+				else
+				{
+					if (IsMoveValid(enemy[enm_num].ent, CMBT_RIGHT)) return CMBT_RIGHT;
+					if (IsMoveValid(enemy[enm_num].ent, CMBT_LEFT)) return CMBT_LEFT;
+				}
+		}
+		else
+		{
+			if (x_dist > Random(0, 1))
+			{
+				if (IsMoveValid(enemy[enm_num].ent, CMBT_LEFT)) return CMBT_LEFT;
+			}
+			else
+			{
+				if (IsMoveValid(enemy[enm_num].ent, CMBT_RIGHT)) return CMBT_RIGHT;
+			}
+				if (y_dist > Random(0, 1))
+				{
+					if (IsMoveValid(enemy[enm_num].ent, CMBT_UP)) return CMBT_UP;
+					if (IsMoveValid(enemy[enm_num].ent, CMBT_DOWN)) return CMBT_DOWN;
+				}
+				else
+				{
+					if (IsMoveValid(enemy[enm_num].ent, CMBT_DOWN)) return CMBT_DOWN;
+					if (IsMoveValid(enemy[enm_num].ent, CMBT_UP)) return CMBT_UP;
+				}
+		}
+	}
+	Log("WaitingB");
+	lastchoice = aiinfo.aibest;
+	return CMBT_WAIT;
+//*/
+}
+
+int IsMoveValid(int check, int direction)
+{
+	int isv;
+	int valid = 1;
+switch (direction)
+{
+case CMBT_UP:
+	if (GetObsPixel(entity.x[check], entity.y[check] - 16)) valid = 0;
+	else
+	{
+	for (isv = 0; isv < entities; isv++)
+	{
+		if ((entity.x[isv]/16) == (entity.x[check]/16)
+		 && (entity.y[isv]/16) == (entity.y[check]/16 - 1))
+		{
+		if (entity.frame[isv] < 25) valid = 0;
+	 	}
+	}}
+case CMBT_DOWN:
+	if (GetObsPixel(entity.x[check], entity.y[check] + 16)) valid = 0;
+	else
+	{
+	for (isv = 0; isv < entities; isv++)
+	{
+		if ((entity.x[isv]/16) == (entity.x[check]/16)
+		 && (entity.y[isv]/16) == (entity.y[check]/16 + 1))
+		{
+		if (entity.frame[isv] < 25) valid = 0;
+	 	}
+	}}
+case CMBT_LEFT:
+	if (GetObsPixel(entity.x[check] - 16, entity.y[check])) valid = 0;
+	else
+	{
+	for (isv = 0; isv < entities; isv++)
+	{
+		if ((entity.x[isv]/16) == (entity.x[check]/16 - 1)
+		 && (entity.y[isv]/16) == (entity.y[check]/16))
+		{
+		if (entity.frame[isv] < 25) valid = 0;
+	 	}
+	}}
+case CMBT_RIGHT:
+	if (GetObsPixel(entity.x[check] + 16, entity.y[check])) valid = 0;
+	else
+	{
+	for (isv = 0; isv < entities; isv++)
+	{
+		if ((entity.x[isv]/16) == (entity.x[check]/16 + 1)
+		 && (entity.y[isv]/16) == (entity.y[check]/16))
+		{
+		if (entity.frame[isv] < 25) valid = 0;
+	 	}
+	}}
+default: MessageBox("Invalid pass to IsMoveValid() func: "+str(direction));
+}
+	return valid;
+}
+
+int IsTargetValid(int check, int itv_target, int itv_action)
+{
+	int isv, x_dist, y_dist;
+	int valid = 0;
+	if (enemy[itv_target].hp > 0)
+	{
+		x_dist = entity.x[enemy[itv_target].ent] - entity.x[party[check].ent];
+		y_dist = entity.y[enemy[itv_target].ent] - entity.y[party[check].ent];
+		//Log("x:"+str(x_dist)+"y:"+str(y_dist)+"squirt: "+str(sqrt((x_dist*x_dist)+(y_dist*y_dist))));
+		if (sqrt((x_dist*x_dist)+(y_dist*y_dist)) < 18) valid = 1;
+	}
+	return valid;
+}
+
+int IsChoiceValid(int check, int isv_action)
+{
+	int isv, x_dist, y_dist;
+	int valid = 1;
+	if (isv_action == CMBT_MOVE)
+	{
+		//if (party[check].engaged != CMBT_NULL) valid = 0;
+		return valid;
+	}
+	else if (isv_action == CMBT_UP)
+	{
+		/*if (GetObsPixel(entity.x[party[check].ent], entity.y[party[check].ent] - 16)) valid = 0;
+		else
+		{
+		for (isv = 0; isv < entities; isv++)
+		{
+			if ((entity.x[isv]/16) == (entity.x[party[check].ent]/16)
+			 && (entity.y[isv]/16) == (entity.y[party[check].ent]/16 - 1))
+			 valid = 0;
+			 //Log(str(isv)+":"+str(entity.x[isv]/16)+","+str(entity.x[party[check].ent]/16)
+			 //+","+str(entity.y[isv]/16)+","+str((entity.y[party[check].ent]/16) - 1));
+			 //Log(str(isv)+":"+str(entity.x[isv])+","+str(entity.x[party[check].ent])
+			 //+","+str(entity.y[isv])+","+str(entity.y[party[check].ent]));
+		}}*/
+		return IsMoveValid(party[check].ent, CMBT_UP);//valid;
+	}
+	else if (isv_action == CMBT_DOWN)
+	{
+		/*if (GetObsPixel(entity.x[party[check].ent], entity.y[party[check].ent] + 16)) valid = 0;
+		else
+		{
+		for (isv = 0; isv < entities; isv++)
+		{
+			if ((entity.x[isv]/16) == (entity.x[party[check].ent]/16)
+			 && (entity.y[isv]/16) == (entity.y[party[check].ent]/16 + 1))
+			 valid = 0;
+		}}*/
+		return IsMoveValid(party[check].ent, CMBT_DOWN);
+	}
+	else if (isv_action == CMBT_LEFT)
+	{
+		return IsMoveValid(party[check].ent, CMBT_LEFT);
+	}
+	else if (isv_action == CMBT_RIGHT)
+	{
+		return IsMoveValid(party[check].ent, CMBT_RIGHT);
+	}
+	else if (isv_action == CMBT_WAIT)
+	{
+		return valid;
+	}
+	else if (isv_action == CMBT_WSHORT)
+	{
+		return valid;
+	}
+	else if (isv_action == CMBT_WLONG)
+	{
+		return valid;
+	}
+	else if (isv_action & CMBT_ATTACK)
+	{
+		valid = 0;
+		for (isv = 0; isv < numberofenemies; isv++)
+		{
+		if (enemy[isv].hp > 0)
+		{
+			x_dist = entity.x[enemy[isv].ent] - entity.x[party[check].ent];
+			y_dist = entity.y[enemy[isv].ent] - entity.y[party[check].ent];
+			//Log("x:"+str(x_dist)+"y:"+str(y_dist)+"squirt: "+str(sqrt((x_dist*x_dist)+(y_dist*y_dist))));
+			if (sqrt((x_dist*x_dist)+(y_dist*y_dist)) < 18) valid = 1;
+		}
+		}
+		return valid;
+	}
+	if (isv_action == CMBT_NULL)
+	{
+		return 0;
+	}
+	MessageBox("Invalid pass to IsChoiceValid() func: "+str(isv_action));
+	//*/
+	return 0;
+}
+
+
+string ActionString(int action)
+{
+	if (action == CMBT_MOVE) return "Move";
+	else if (action == CMBT_UP) return "Up";
+	else if (action == CMBT_DOWN) return "Down";
+	else if (action == CMBT_LEFT) return "Left";
+	else if (action == CMBT_RIGHT) return "Right";
+	else if (action == CMBT_WAIT) return "Wait";
+	else if (action == CMBT_WSHORT) return "Short";
+	else if (action == CMBT_WLONG) return "Long";
+	else if (action == CMBT_ATTACK) return "Attack";
+	else if (action == CMBT_ANONE) return "No Aim";
+	else if (action == CMBT_ALEG) return "A:Legs";
+	else if (action == CMBT_ABODY) return "A:Body";
+	else if (action == CMBT_AHEAD) return "A:Head";
+	// Weevil HACK!!!!
+	else if (enemy[0].speed == 20) return "A:Jaw";
+	else if (action == CMBT_AARM) return "A:Arm";
+	/*switch (action) // VERGE bug, crashes on switch
+	{
+		case CMBT_MOVE: return "Move";
+		case CMBT_UP: return "Up";
+		case CMBT_DOWN: return "Down";
+		case CMBT_LEFT: return "Left";
+		case CMBT_RIGHT: return "Right";
+		case CMBT_WAIT: return "Wait";
+		case CMBT_WSHORT: return "Short";
+		case CMBT_WLONG: return "Long";
+		case CMBT_ATTACK: return "Attack";
+	}*/
+	return "ERROR!";
+//*/
+}
+
+int ActionDelay(int action)
+{
+	if (action == CMBT_MOVE) return 10;
+	else if (action == CMBT_UP) return 10;
+	else if (action == CMBT_DOWN) return 10;
+	else if (action == CMBT_LEFT) return 10;
+	else if (action == CMBT_RIGHT) return 10;
+	else if (action == CMBT_WAIT) return 10;
+	else if (action == CMBT_WSHORT) return 10;
+	else if (action == CMBT_WLONG) return 40;
+	else if (action == CMBT_ATTACK) return 30;
+	else if (action == CMBT_ANONE) return 30;
+	else if (action == CMBT_ALEG) return 35;
+	else if (action == CMBT_ABODY) return 35;
+	else if (action == CMBT_AARM) return 35;
+	else if (action == CMBT_AHEAD) return 40;
+	/*switch (action) // VERGE bug, crashes on switch
+	{
+		case CMBT_MOVE: return 10;
+		case CMBT_UP: return 10;
+		case CMBT_DOWN: return 10;
+		case CMBT_LEFT: return 10;
+		case CMBT_RIGHT: return 10;
+		case CMBT_WAIT: return 10;
+		case CMBT_WSHORT: return 10;
+		case CMBT_WLONG: return 30;
+		case CMBT_ATTACK: return 30;
+	}*/
+	return 0; // Zip: ERROR! Watch out fo instant act entities
+//*/
+}
+
+void WaitForEntity(int wait_entity)
+{
+	while (entity.movecode[wait_entity])
+	{
+		Render();
+		ShowPage();
+	}
+}
+
+void MyFadeInTbox(int tbox_x, int tbox_y, int tbox_image)
+{
+	int fadestage = 100;
+	Render();
+	int screencapture = CopyScreen();
+
+	while (fadestage >= 0)
+	{
+		SetLucent(0);
+		Blit(0, 0, screencapture, screen);
+		SetLucent(fadestage);
+		tBlit(tbox_x, tbox_y, tbox_image, screen);
+		ShowPage();
+		Wait(fadespeed);
+		fadestage=fadestage-5;
+	}
+	SetLucent(0);
+//*/
+}
+
+void MyFadeOutTbox(int tbox_x, int tbox_y, int tbox_image)
+{
+	int fadestage = 0;
+	Render();
+	int screencapture = CopyScreen();
+
+	while (fadestage <= 100)
+	{
+		SetLucent(0);
+		Blit(0, 0, screencapture, screen);
+		SetLucent(fadestage);
+		tBlit(tbox_x, tbox_y, tbox_image, screen);
+		ShowPage();
+		Wait(fadespeed);
+		fadestage=fadestage+5;
+	}
+	SetLucent(0);
+//*/
+}
+
+void MyBanner(string msg_text)
+{
+	int mboxbuffer = RenderInterText(300, 20);
+	PrintCenter(ImageWidth(mboxbuffer)/2, (textoffset-3), mboxbuffer, font[1], msg_text);
+
+	SetEntitiesPaused(1);
+
+	MyFadeInTbox(screenx/2 - (ImageWidth(mboxbuffer)/2), screeny/4 - (ImageHeight(mboxbuffer)/2), mboxbuffer);		// Fade in choice box
+
+	while(!b1)
+	{
+		Render();
+		tBlit(screenx/2 - (ImageWidth(mboxbuffer)/2), screeny/4 - (ImageHeight(mboxbuffer)/2), mboxbuffer, screen);
+		ShowPage();
+	}
+
+	MyFadeOutTbox(screenx/2 - (ImageWidth(mboxbuffer)/2), screeny/4 - (ImageHeight(mboxbuffer)/2), mboxbuffer);		// Fade out choice box
+	SetEntitiesPaused(0);
+
+	SetLucent(0);
+	ShowPage();
+	FreeImage(mboxbuffer);
+	Unpress(0);
+//*/
+}
+
+
+void MyTBox(int tb_player, string tb_text)
+{
+int textx, texty, linelength, numlines, curpos, totallines;
+int screencap, tboxbuffer, port, morearrow;
+	int tboxbuffer = RenderInterText(300, 80);
+
+linelength = maxlinelength;
+textx = textoffset;
+
+SetEntitiesPaused(1);
+
+
+	port = LoadImage("port"+str(party[tb_player].port)+".png");
+	tBlit(textoffset, textoffset, port, tboxbuffer);
+	textx = textx+(tportx+textoffset);
+	maxlinelength = linelengthlimit - (tportx+textoffset);
+
+
+
+PrintString(textx, 10, tboxbuffer, font[3], party[tb_player].name);
+
+numlines = WrapText(font[1], tb_text)-1;	// Grab the number of lines to print. We decrease by one since we're using it to handle the array textwrap[], which starts at 0, not 1.
+totallines = numlines;
+texty = textoffset + 15;
+
+// Blit the text, letter by letter:
+while (numlines >= 0)
+	{
+	for (curpos = 1; curpos <= len(textwrap[totallines-numlines]); curpos++)
+		{
+		PrintString(textx, texty, tboxbuffer, font[1], left(textwrap[totallines-numlines], curpos));
+		//tBlit((screenx/2)-(ImageWidth(gui[0])/2), screeny-(ImageHeight(gui[0])+10), tboxbuffer, screen);
+		ShowPage();
+		}
+	numlines--;
+	texty = texty+(fontheight+1);
+	}
+
+MyFadeInTbox(screenx/2 - (ImageWidth(tboxbuffer)/2), screeny - (ImageHeight(tboxbuffer))-10, tboxbuffer);		// Fade in choice box
+
+while(!b1)
+{
+	Render();
+	tBlit(screenx/2 - (ImageWidth(tboxbuffer)/2), screeny - (ImageHeight(tboxbuffer))-10, tboxbuffer, screen);
+	ShowPage();
+}
+
+MyFadeOutTbox(screenx/2 - (ImageWidth(tboxbuffer)/2), screeny - (ImageHeight(tboxbuffer))-10, tboxbuffer);		// Fade out choice box
+FreeImage(tboxbuffer);
+FreeImage(port);
+Unpress(0);
+SetEntitiesPaused(0);
+}
+
+int RenderInterText(int rit_x2, int rit_y2)
+// BUG(FIXED?): Odd Height/Width boxes don't set a middle pixel for middle lines
+{
+	int rit_x, rit_y;
+	int rit_rand;
+	int rit_image = NewImage(rit_x2, rit_y2);
+	rit_x2 -= 2;
+	rit_y2 -= 2;
+	// Complex middle line drawing, can be replaced with Rect code below
+	for (rit_y = 0; rit_y < rit_y2 / 2; rit_y++)
+	{
+		if (rit_y > 15) rit_rand = RGB(148,132,82);
+		else if (rit_y > 2 && rit_y < 8) rit_rand = RGB(181,173,148);
+		else if (rit_y > 12 && rit_y < 16) rit_rand = RGB(82,74,49);
+		else if (rit_y = 12) rit_rand = 0;
+		else rit_rand = RGB(148,132,82);
+		SetPixel(1, rit_y + 1, rit_rand, rit_image); // Line starting top left
+		SetPixel(1, rit_y2 - rit_y, rit_rand, rit_image); // Line starting bottom left
+		SetPixel(rit_x2, rit_y + 1, rit_rand, rit_image); // Line starting top right
+		SetPixel(rit_x2, rit_y2 - rit_y, rit_rand, rit_image); // Line starting bottom right
+	}
+	SetPixel(1, (rit_y2 + 2) / 2, RGB(148,132,82), rit_image); // Middle dot left
+	SetPixel(rit_x2, (rit_y2 + 2) / 2, RGB(148,132,82), rit_image); // Middle dot right
+	for (rit_x = 0; rit_x < rit_x2 / 2; rit_x++)
+	{
+		if (rit_x > 15) rit_rand = RGB(148,132,82);
+		else if (rit_x > 2 && rit_x < 7) rit_rand = RGB(181,173,148);
+		else if (rit_x > 10 && rit_x < 14) rit_rand = RGB(82,74,49);
+		else if (rit_x = 10) rit_rand = 0;
+		else rit_rand = RGB(148,132,82);
+		SetPixel(rit_x + 1, 1, rit_rand, rit_image); // Line starting top left
+		SetPixel(rit_x2 - rit_x, 1, rit_rand, rit_image); // Line starting top right
+		SetPixel(rit_x + 1, rit_y2, rit_rand, rit_image); // Line starting bottom left
+		SetPixel(rit_x2 - rit_x, rit_y2, rit_rand, rit_image); // Line starting bottom right
+	}
+	SetPixel((rit_x2 + 2) / 2, 1, RGB(148,132,82), rit_image); // Middle dot top
+	SetPixel((rit_x2 + 2) / 2, rit_y2 RGB(148,132,82), rit_image); // Middle dot bottom
+	// End of complex middle lines
+	rit_x2--;
+	rit_y2--; // Don't ask
+	Rect(0, 0, rit_x2 + 2, rit_y2 + 2, 0, rit_image); // Outer black rect
+	// Simple middle line drawing
+	//Rect(1, 1, rit_x2 + 1, rit_y2 + 1, RGB(148,132,82), rit_image);
+	Rect(2, 2, rit_x2, rit_y2, 0, rit_image); // Inner black rect
+	for (rit_y = 3; rit_y < rit_y2; rit_y++)
+	{
+		for (rit_x = 3; rit_x < rit_x2; rit_x++)
+		{
+			if((rit_y + 2 % 4) == 0 || (rit_x + 3 % 5) == 0) // If it's the grid
+			//if (((rit_x + rit_y) % 8) < 1 || (rit_x % 8) == (rit_y % 8)) // If it's the grid
+			{
+				rit_rand = MixColor(RGB(148,57,57), 0, Random(0, 4) * 16); // Tempory random selection
+				SetPixel(rit_x, rit_y, MixColor(rit_rand, 0, ((rit_x+rit_y)*64)/(rit_y2+rit_x2)), rit_image);
+			}
+			else // If it's the background
+			{
+				SetPixel(rit_x, rit_y, MixColor(RGB(90,33,33), 0, ((rit_x+rit_y)*64)/(rit_y2+rit_x2)), rit_image);
+			}
+		}
+	}
+	return rit_image;
+}

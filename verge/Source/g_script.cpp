@@ -490,7 +490,7 @@ void ScriptEngine::WriteHvar_derived(int category, int loc, int ofs, int value)
 
 void ScriptEngine::Error(const char *str, ...) { 
   	va_list argptr;
-	char msg[256];
+	char msg[4096];
 
 	va_start(argptr, str);
 	vsprintf(msg, str, argptr);

@@ -847,10 +847,11 @@ bool VCCompiler::CompileAll()
 
 debuginfo VCCompiler::GetDebugForOffset(int ofs)
 {
-	debuginfo debug;
-	debug.funcname[0] = 0;
-	debug.sourcefile[0] = 0;
-	debug.linenum = 0;
+	// TODO: allow debug for map scripts -- the compiler code currently is hardcoded to system.vc.
+
+	debuginfo debug {};
+	linenum = 0;
+	sourcefile[0] = 0;
 	precompile_numfuncs = 0;
 	target_cimage = 0;
 	// avoid errors due to duplicates
@@ -2634,7 +2635,6 @@ void VCCompiler::ParseGlobalDecl(scan_t type)
 				{
 					vprint("Parsing string in ParseGlobalDecl(): %s(%d)\n", sourcefile, linenum);
 					initstr += '\"';
-					log("");
 					while (source[srcofs] != '\"')
 					{
 						if (!source[srcofs])

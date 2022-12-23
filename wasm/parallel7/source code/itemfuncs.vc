@@ -1,0 +1,190 @@
+// ----------------------------------------------------------- --- -- -
+// ITEMFUNCS.VC. Handles item-specific actions. Edit this to make new
+// items do stuff
+// ----------------------------------------------------------- --- -- -
+
+// Actions to perform when using an item. Specify the item, item slot and the user
+// If it's not a "useable" item, don't bother putting it in this function or any of those that follow
+void UseItem(int itemslot, int membertouse)
+{
+int reuseable = 1;	// Is item reuseable? Default = yes.
+int itemindex = inventory[itemslot].itemnum;
+
+if (itemindex = 0) {}
+
+// Handle basic armour
+else if (inventory[itemslot].itemtype = 2)
+	{
+	ToggleEquip(itemslot, 0, membertouse);
+	}
+
+// Handle basic weapons
+else if (inventory[itemslot].itemtype > 2)
+	{
+	ToggleEquip(itemslot, 0, membertouse);
+	}
+
+
+//--- Medical Stuff ------------------
+
+else if (itemindex = 1)
+	{
+	// Med Patch
+	if (PromptConfirm("Really Use?"))
+		{
+		reuseable = 0;
+		RestoreHP(membertouse, 10);
+		Banner(party[membertouse].name+" - Recovered 10hp!");
+		}
+	}
+
+else if (itemindex = 2)
+	{
+	// Med Patch +1
+	if (PromptConfirm("Really Use?"))
+		{
+		reuseable = 0;
+		RestoreHP(membertouse, 20);
+		Banner(party[membertouse].name+" - Recovered 20hp!");
+		}
+	}
+
+else if (itemindex = 3)
+	{
+	// Med Patch +2
+	if (PromptConfirm("Really Use?"))
+		{
+		reuseable = 0;
+		RestoreHP(membertouse, 50);
+		Banner(party[membertouse].name+" - Recovered 50hp!");
+		}
+	}
+
+else if (itemindex = 4)
+	{
+	// Micro Surgeon
+	if (PromptConfirm("Really Use?"))
+		{
+		reuseable = 0;
+		MaxOutHP(membertouse);
+		Banner(party[membertouse].name+" - HP Restored To Max!");
+		}
+	}
+
+else if (itemindex = 5)
+	{
+	// Chocolate Bar
+	if (PromptConfirm("Really Eat?"))
+		{
+		reuseable = 0;
+		RestoreHP(membertouse, 2);
+		Banner(party[membertouse].name+" - Recovered 2hp!");
+		}
+	}
+
+else if (itemindex = 6)
+	{
+	// Dr Pepper
+	if (PromptConfirm("Really Drink?"))
+		{
+		reuseable = 0;
+		RestoreHP(membertouse, 4);
+		Banner(party[membertouse].name+" - Recovered 4hp!");
+		}
+	}
+
+else if (itemindex = 7)
+	{
+	// Sandwich
+	if (PromptConfirm("Really Eat?"))
+		{
+		reuseable = 0;
+		RestoreHP(membertouse, 4);
+		Banner(party[membertouse].name+" - Recovered 6hp!");
+		}
+	}
+
+else if (itemindex = 6)
+	{
+	// Coffee
+	if (PromptConfirm("Really Drink?"))
+		{
+		reuseable = 0;
+		RestoreHP(membertouse, 7);
+		Banner(party[membertouse].name+" - Recovered 7hp!");
+		}
+	}
+
+//--- Items --------------------------
+
+else if (itemindex = 11)
+	{
+	// Little Book Of Advice
+	Unpress(0);
+	RandomAdvice();
+	}
+
+//--- END OF INVENTORY ITEMS ---------
+
+else
+	{
+	Banner("This item cannot be 'used'!");		// Item not useable
+	}
+
+if (itemindex !=0 && reuseable = 0)
+	{
+	TakeItem(itemindex);
+	}
+}
+
+// -------------------------------------------------
+
+// Toggles on and off item effects. onoroff = 1 then turn it on,
+// 0 then turn it off.
+void ToggleItemEffects(int itemslot, int onoroff, int membertotoggle)
+{
+if (onoroff)	// -- Turn effects ON
+	{
+	switch(inventory[itemslot].itemnum)
+		{
+		// Armour
+		case 20: party[membertotoggle].defense += 10;	// Hugo's jacket
+		case 21: party[membertotoggle].defense += 5;	// Hugo's trousers
+		case 22: party[membertotoggle].defense += 2;	// Hugo's bandana
+		case 23: party[membertotoggle].defense += 6;	// Hugo's boots
+
+		case 24: party[membertotoggle].defense += 7;	// Mignolia Jacket
+		case 25: party[membertotoggle].defense += 3;	// Mignolia Skirt
+
+		// Weapons
+		case 30: party[membertotoggle].attack += 3;	// Broom
+				party[membertotoggle].equippedweapontype = 1; // Zip: Doing shit
+		case 31: party[membertotoggle].attack += 6;	// Combat Knife
+				party[membertotoggle].equippedweapontype = 1; // Zip: Doing shit
+		case 32: party[membertotoggle].attack += 5;	// Nightstick
+				party[membertotoggle].equippedweapontype = 1; // Zip: Doing shit
+		}
+	}
+
+else		// -- Turn effects OFF
+	{
+	switch(inventory[itemslot].itemnum)
+		{
+		// Armour
+		case 20: party[membertotoggle].defense -= 10;	// Hugo's jacket
+		case 21: party[membertotoggle].defense -= 5;	// Hugo's trousers
+		case 22: party[membertotoggle].defense -= 2;	// Hugo's bandana
+		case 23: party[membertotoggle].defense -= 6;	// Hugo's boots
+
+		// Weapons
+		case 30: party[membertotoggle].attack -= 3;	// Broom
+				party[membertotoggle].equippedweapontype = 1; // Zip: Doing shit
+		case 31: party[membertotoggle].attack -= 6;	// Combat Knife
+				party[membertotoggle].equippedweapontype = 1; // Zip: Doing shit
+		case 32: party[membertotoggle].attack -= 5;	// Nightstick
+				party[membertotoggle].equippedweapontype = 1; // Zip: Doing shit
+		}
+	}
+
+
+}

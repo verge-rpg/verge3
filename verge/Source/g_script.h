@@ -108,7 +108,7 @@ public:
 	virtual void ReadVararg(std::vector<argument_t>& vararg) = 0;
 	void vcerr(char *str, ...) {
 	  	va_list argptr;
-		char msg[256];
+		char msg[4096];
 
 		va_start(argptr, str);
 		vsprintf(msg, str, argptr);

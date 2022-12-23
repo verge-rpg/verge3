@@ -1,0 +1,863 @@
+// ----------------------------------------------------------- --- -- -
+// GUI.VC. Script to handle the guided user interface. This includes
+// menus and the textbox
+// ----------------------------------------------------------- --- -- -
+
+// Loads images for the GUI. You specify a number corresponding to the set of images you want to use
+
+void LoadGUI(int guinum)
+{
+gui[0] = LoadImage("tbox"+str(guinum)+".png");
+gui[1] = LoadImage("banner"+str(guinum)+".png");
+}
+
+// Loads the ESC Menu buttons. These never change regardless of what textbox set is loaded
+
+void LoadGUIButtons()
+{
+guihalo = LoadImage("guihalo.png");
+
+guibton[0] = LoadImage("guisave.png");
+guibton[1] = LoadImage("guiload.png");
+guibton[2] = LoadImage("guiinv.png");
+guibton[3] = LoadImage("guistat.png");
+guibton[4] = LoadImage("guisttngs.png");
+guibton[5] = LoadImage("guiquit.png");
+}
+
+// --------------------------------
+
+// Textbox. Plug in a portrait index (0 for no portrait), font number,
+// box title and box text. Voila.
+// The mode variable determines what sort of textbox to show: 1 is fade in AND out, 2 is
+// fade in but NOT out and display a "more" arrow, 3 is fade out but NOT in and 0 is no fades
+// at all and display the "more" arrow.
+
+void TBox(int portrait, int tboxfont, int mode, string tboxtitle, string tboxmessage)
+{
+int textx, texty, linelength, numlines, curpos, totallines;
+int screencap, tboxbuffer, port, morearrow;
+
+linelength = maxlinelength;
+textx = textoffset;
+
+SetEntitiesPaused(1);
+
+screencap = CopyScreen();
+tboxbuffer = NewImage(ImageWidth(gui[0]), ImageHeight(gui[0]));
+morearrow = LoadImage("downarrow.png");
+
+Blit(0, 0, gui[0], tboxbuffer);
+
+if (portrait != 0)
+	{
+	port = LoadImage("port"+str(portrait)+".png");
+	tBlit(textoffset, textoffset, port, tboxbuffer);
+	textx = textx+(tportx+textoffset);
+	maxlinelength = linelengthlimit - (tportx+textoffset);
+	}
+
+else	{ maxlinelength = linelengthlimit; }
+
+canesc = 0;		// Turn off ESC menu
+
+if (mode = 1 || mode =  2)
+	{
+	FadeInTbox(tboxbuffer, screencap, tboxtitle);		// Fade in textbox?
+	}
+else
+	{
+	PrintString((screenx/2)-(ImageWidth(gui[0])/2), screeny-(ImageHeight(gui[0])+20), screen, font[3], tboxtitle);
+	}
+
+numlines = WrapText(font[tboxfont], tboxmessage)-1;	// Grab the number of lines to print. We decrease by one since we're using it to handle the array textwrap[], which starts at 0, not 1.
+totallines = numlines;
+texty = textoffset;
+
+// Blit the text, letter by letter:
+while (numlines >= 0)
+	{
+	for (curpos = 1; curpos <= len(textwrap[totallines-numlines]); curpos++)
+		{
+		PrintString(textx, texty, tboxbuffer, font[tboxfont], left(textwrap[totallines-numlines], curpos));
+		tBlit((screenx/2)-(ImageWidth(gui[0])/2), screeny-(ImageHeight(gui[0])+10), tboxbuffer, screen);
+		ShowPage();
+		SkipWait(tboxwait);
+		}
+	numlines--;
+	texty = texty+(fontheight+1);
+	}
+if(mode = 0 || mode = 2) { PulseImage(morearrow, screenx-25, screeny-18); }
+else { WaitForEnter(); }
+
+if (mode = 1 || mode = 3)
+	{
+	FadeOutTbox(tboxbuffer, screencap, tboxtitle);		// Fade out textbox?
+	}
+
+Blit(0, 0, screencap, screen);
+
+FreeImage(tboxbuffer);
+FreeImage(screencap);
+FreeImage(morearrow);
+if (portrait != 0) { FreeImage(port); }
+canesc = 1;		// Turn back on ESC menu
+Unpress(0);
+SetEntitiesPaused(0);
+}
+
+// --------------------------------
+
+// Choice box. This pops up with a prompt and a series of choices to select. Handy for
+// alternatives in conversations etc. Choices are separated by a "/" and there can be a total
+// of four per box
+
+string option[6];		// Array to hold choices
+int lastchoice;			// Holds what the last choice made was.
+
+void Choice(string prompt, string choices)
+{
+int numchoices;			// Number of choices
+int curchoice;			// Current choice the player has selected
+int loop;			// Loop counter
+int curcharacter;		// Current letter the routine is checking
+string tmp;
+int lines;
+int screencap;
+
+int cboxbuffer;			// Holds the composite choice box image
+
+SetEntitiesPaused(1);
+loop = 0;
+numchoices = 0;
+curcharacter = 0;
+curchoice = 0;
+tmp = "";
+screencap = CopyScreen();
+
+canesc = 0;			// Turn off ESC Menu
+
+while (loop != 1)
+	{
+	option[numchoices] = "";
+	while (strcmp(tmp,"/") != 0 && curcharacter <= len(choices))
+		{
+		UpdateControls();
+		tmp = mid(choices, curcharacter, 1);
+		if (strcmp(tmp,"/") != 0) { option[numchoices] = option[numchoices]+tmp; }
+		curcharacter = curcharacter + 1;
+		}
+	numchoices++;
+	if (curcharacter > len(choices)){loop = 1;}
+	tmp = "";
+	}
+	
+// Have we messed anything up?
+if (numchoices > 6){ Exit("Too many choices passed to Choice Function!"); }
+if (numchoices = 0){ Exit("Choice function called with no choices!"); }
+
+cboxbuffer = NewImage(ImageWidth(gui[0]), ImageHeight(gui[0]));
+Blit(0, 0, gui[0], cboxbuffer);
+PrintString(textoffset, textoffset, cboxbuffer, font[1], prompt);
+Line(textoffset, textoffset+fontheight, textoffset+linelengthlimit, textoffset+fontheight, RGB(255,255,255), cboxbuffer);
+Line(textoffset, textoffset+(fontheight+1), textoffset+linelengthlimit, textoffset+(fontheight+1), RGB(1,1,1), cboxbuffer);
+
+for (lines = 1; lines<=numchoices; lines++) { PrintString(textoffset+(ImageWidth(c_arrow)+4), (textoffset+3)+((fontheight+1)*lines), cboxbuffer, font[1], option[lines-1]);	}
+
+FadeInTbox(cboxbuffer, screencap, "");		// Fade in choice box
+
+while(!b1)
+	{
+	Blit(0, 0, screencap, screen);
+	tBlit((screenx/2)-(ImageWidth(gui[0])/2), screeny-(ImageHeight(gui[0])+10), cboxbuffer, screen);
+	tblit((screenx/2)-(ImageWidth(gui[0])/2)+textoffset, screeny-(ImageHeight(gui[0])+10)+((textoffset+3)+((fontheight+1)*curchoice)+fontheight), c_arrow, screen);
+	ShowPage();
+	if (right || down)
+		{
+		if (curchoice = numchoices-1) { curchoice = 0; }
+		else { curchoice++; }
+		UnpressDirectionals();
+		}
+	if (left || up)
+		{
+		if (curchoice = 0) { curchoice = numchoices-1; }
+		else { curchoice--; }
+		UnpressDirectionals();
+		}
+	}
+
+FadeOutTbox(cboxbuffer, screencap, "");		// Fade out choice box
+
+SetLucent(0);
+ShowPage();
+FreeImage(cboxbuffer);
+FreeImage(screencap);
+lastchoice = curchoice+1;
+canesc = 1;					// Turn back on ESC menu
+Unpress(0);
+SetEntitiesPaused(0);
+}
+
+// --------------------------------
+
+// Text input box.
+
+void TextInput(string prompt, int length)
+{
+int screencap, screencaptwo;
+int boxbuffer;			// Holds the composite box image
+
+screencap = CopyScreen();
+write = "";			// Clear the text input buffer
+Xpos = 0;
+
+canesc = 0;			// Turn off ESC Menu
+SetEntitiesPaused(1);
+
+boxbuffer = NewImage(ImageWidth(gui[0]), ImageHeight(gui[0]));
+Blit(0, 0, gui[0], boxbuffer);
+PrintString(textoffset, textoffset, boxbuffer, font[1], prompt);
+Line(textoffset, textoffset+fontheight, textoffset+linelengthlimit, textoffset+fontheight, RGB(255,255,255), boxbuffer);
+Line(textoffset, textoffset+(fontheight+1), textoffset+linelengthlimit, textoffset+(fontheight+1), RGB(1,1,1), boxbuffer);
+TransRect(textoffset, (textoffset+3)+(fontheight+1), linelengthlimit+1, fontheight+5, RGB(1,1,1), boxbuffer);
+FadeInTbox(boxbuffer, screencap, "");		// Fade in
+
+screencaptwo = CopyScreen();
+
+while(!b1)
+	{
+	CenterImage(screencaptwo,0);
+	Input(((screenx/2)-(ImageWidth(gui[0])/2))+textoffset+3, (screeny-(ImageHeight(gui[0])+10))+((textoffset+3)+(fontheight+1))+3,length);
+	ShowPage();
+	}
+
+FadeOutTbox(boxbuffer, screencap, "");		// Fade out
+
+SetLucent(0);
+ShowPage();
+FreeImage(boxbuffer);
+FreeImage(screencap);
+FreeImage(screencaptwo);
+canesc = 1;					// Turn back on ESC menu
+Unpress(0);
+SetEntitiesPaused(0);
+}
+
+// --------------------------------
+
+// A mini-textbox for brief informative messages
+
+void Banner(string text)
+{
+int screencap, bannerback;
+int fadestage;
+
+SetEntitiesPaused(1);
+
+SetLucent(0);
+screencap = CopyScreen();
+bannerback = NewImage(ImageWidth(gui[1]), ImageHeight(gui[1]));
+tBlit(0, 0, gui[1], bannerback);
+PrintCenter(ImageWidth(bannerback)/2, 8, bannerback, font[1], text);
+
+fadestage = 100;
+
+while (fadestage >= 0)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(fadestage);
+	tBlit((screenx/2)-(ImageWidth(gui[1])/2), 20, bannerback, screen);
+	ShowPage();
+	Wait(fadespeed);
+	fadestage=fadestage-5;
+	}
+
+Unpress(0);
+WaitForEnter();
+
+while (fadestage <= 100)
+	{
+	SetLucent(0);
+	Blit(0, 0, screencap, screen);
+	SetLucent(fadestage);
+	tBlit((screenx/2)-(ImageWidth(gui[1])/2), 20, bannerback, screen);
+	ShowPage();
+	Wait(fadespeed);
+	fadestage=fadestage+5;
+	}
+
+Unpress(0);
+SetLucent(0);
+FreeImage(screencap);
+FreeImage(bannerback);
+SetEntitiesPaused(0);
+}
+// --------------------------------
+
+// Prompts the player before quitting
+
+int QuitPrompt()
+{
+int quitchoice;
+
+SetLucent(50);
+RectFill(0, 0, screenx, screeny, RGB(1,1,1), screen);
+SetLucent(0);
+
+quitchoice = PromptConfirm("Really Quit?");
+
+if (quitchoice = 1) { Return 4; }
+if (quitchoice = 0) { Return 0; }
+}
+
+// --------------------------------
+
+// Prompts the player before before... something
+// Accepts a string containing the prompt text as input
+int PromptConfirm(string prompt)
+{
+int conback;
+int conchoice;
+
+SetEntitiesPaused(1);
+
+conchoice = 3;
+conback = LoadImage("stquit.png");
+SetLucent(0);
+PrintCenter(ImageWidth(conback)/2, fontheight-1, conback, font[1], prompt);
+PrintCenter(ImageWidth(conback)/2, (fontheight-1)+(fontheight+1), conback, font[1], "Enter / ESC");
+
+Unpress(0);
+
+CenterImage(conback, 0);
+ShowPage();
+
+while (conchoice = 3)
+	{
+	if (b1) { conchoice = 1; }	// Yes
+	if (b3) { conchoice = 0; }	// No!
+	UpdateControls();
+	}
+FreeImage(conback);
+Unpress(0);
+SetEntitiesPaused(0);
+Return conchoice;
+}
+
+// --------------------------------
+
+// The help menu. Summoned with F1
+void HelpMenu()
+
+{
+SetEntitiesPaused(1);
+canesc = 0;
+
+SetEntitiesPaused(0);
+canesc = 1;
+}
+
+// --------------------------------
+
+// The ESC key menu. From here the player accesses their inventory, status and
+// the save and load dialogues.
+
+void EscMenu()
+{
+int screencap, loop, fadestage, fadetype, curpos;
+string textprompt;
+
+fadetype = 1;
+fadestage = 0;
+curpos = 0;
+canesc = 0;
+
+Unpress(0);
+key[SCAN_ESC] = 0;	// Unpress ESC
+SetEntitiesPaused(1);
+
+// Blit Buttons
+for(loop=0; loop<6; loop++)
+	{
+	Blit(10+((ImageWidth(guibton[0])+2)*loop), 10, guibton[loop], screen);
+	}
+ShowPage();
+
+screencap = CopyScreen();
+
+// Render the menu and handle input
+while(!b3)
+	{
+	switch(curpos)
+		{
+		case 0:	textprompt = "Save your game.";
+		case 1: textprompt = "Load a previous game.";
+		case 2: textprompt = "Open your inventory.";
+		case 3: textprompt = "View the party's status.";
+		case 4: textprompt = "Alter the settings.";
+		case 5: textprompt = "Quit "+gamename+".";
+		}
+	if (fadetype = 0 && fadestage < 80) { fadestage++; }
+	if (fadetype = 1 && fadestage > 0) { fadestage--; }
+	if (fadestage = 80)
+		{
+		fadetype = 1;
+		fadestage--;
+		}
+	if (fadestage = 0)
+			{
+			fadetype = 0;
+			fadestage++;
+		}
+	CenterImage(screencap, 0);
+	PrintString(10, 10+(ImageHeight(guibton[0])+4), screen, font[0], textprompt);
+	SetLucent(fadestage);
+	tBlit(9+((ImageWidth(guibton[0])+2)*curpos), 9, guihalo, screen);
+	
+	if (up || left)
+		{
+		UnpressDirectionals();
+		if (curpos != 0) { curpos--; }
+		else { curpos = 5; }
+		}
+	if (down || right)
+		{
+		UnpressDirectionals();
+		if (curpos != 5) { curpos++; }
+		else { curpos = 0; }
+		}
+	if (b1)
+		{
+		Unpress(0);
+		switch(curpos)
+			{
+			case 0: SaveGamePrompt();			// Save
+			case 1: LoadGamePrompt(0);			// Load
+			case 2: ViewInventory();			// Inventory
+			case 3: ViewStatus();				// Status
+			case 4: Options();				// Settings
+			case 5: If(QuitPrompt())			// Quit
+					{
+					FadeOut_m();
+					Exit("");
+					}
+			}
+		}
+	SetLucent(0);
+	ShowPage();
+	Wait(1);
+	}
+SetEntitiesPaused(0);
+canesc = 1;
+}
+
+// --------------------------------
+// Status screen
+void ViewStatus()
+{
+int screencap, statback, portrait, switcharrows;
+
+statback = LoadImage("mediumbox.png");
+
+int posx = ((screenx/2)-(ImageWidth(statback)/2))+10;
+int posy = ((screeny/2)-(ImageHeight(statback)/2))+10;
+int currentmember = 0;
+
+portrait = LoadImage("port"+str(party[currentmember].port)+".png");
+switcharrows = LoadImage("switcharrow.png");
+
+SetLucent(0);
+CenterImage(statback,0);
+PrintString(posx, posy, screen, font[1], "Status");
+line(posx, posy+fontheight, posx+130, posy+fontheight, RGB(255,255,255), screen);
+line(posx, posy+(fontheight+1), posx+130, posy+(fontheight+1), RGB(0,0,0), screen);
+screencap = CopyScreen();
+
+FreeImage(statback);
+
+while(!b3)
+	{
+	
+	if (left || up)
+			{
+			if (currentmember > 0) { currentmember--; }
+			else { currentmember = freepartyslot-1; }
+			}
+	
+	if (right || down)
+			{
+			if (currentmember != freepartyslot-1) { currentmember++; }
+			else { currentmember = 0; }
+			}
+	
+	if (up || down || left || right)
+		{
+		UnpressDirectionals();
+		portrait = LoadImage("port"+str(party[currentmember].port)+".png");
+		}
+	
+	CenterImage(screencap,0);
+	SetLucent(60);
+	Silhouette(posx-13, posy+32, RGB(1,1,1), portrait, screen);
+	SetLucent(0);
+	tBlit(posx-15, posy+30, portrait, screen);
+	tBlit(posx+30, posy+85, switcharrows, screen);
+	
+	PrintString(posx, posy+(fontheight+6), screen, font[0], "Name: "+party[currentmember].name);
+	
+	PrintString(posx+60, posy+38, screen, font[0], "STR: "+str(party[currentmember].strength));
+	PrintString(posx+60, posy+46, screen, font[0], "INT: "+str(party[currentmember].intelligence));
+	PrintString(posx+60, posy+54, screen, font[0], "SPD: "+str(party[currentmember].speed));
+	PrintString(posx+60, posy+62, screen, font[0], "CON: "+str(party[currentmember].constitution));
+	
+	PrintString(posx+60, posy+78, screen, font[0], "MEL: "+str(party[currentmember].sklmelee));
+	PrintString(posx+60, posy+86, screen, font[0], "SML: "+str(party[currentmember].sklsmallarms));
+	PrintString(posx+60, posy+94, screen, font[0], "RFL: "+str(party[currentmember].sklrifles));
+	PrintString(posx+60, posy+102, screen, font[0],"HEV: "+str(party[currentmember].sklheavyarms));
+	
+	PrintString(posx+60, posy+118, screen, font[0],"ENG: "+str(party[currentmember].sklengineer));
+	
+	ShowPage();
+	}
+
+Unpress(0);
+// Free stuff up
+FreeImage(screencap);
+}
+
+// --------------------------------
+
+// View the inventory
+void ViewInventory()
+{
+int invback, invfigure, screencap, inv_img, inv_desc, switcharrows;
+int topinvitem, selecteditemslot, selecteditem;
+int portrait;
+int arrowup, arrowdown;
+int currentmember;
+int posx, posy;
+
+invback = LoadImage("invback.png");
+SetLucent(0);
+portrait = LoadImage("port"+str(party[0].port)+".png");
+arrowdown = LoadImage("downarrow.png");
+arrowup = LoadImage("uparrow.png");
+switcharrows = LoadImage("switcharrow.png");
+
+posx = ((screenx/2)-(ImageWidth(invback)/2))+10;
+posy = ((screeny/2)-(ImageHeight(invback)/2))+10;
+topinvitem = 0;
+currentmember = 0;
+selecteditemslot = 0;
+
+invfigure = RenderEquippedItems(currentmember);
+// Draw the inventory list and current item description to graphics
+inv_img = LoadImage("inv_img.png");
+inv_desc = LoadImage("inv_desc.png");
+ListInventory(0, 0, topinvitem, inv_img);
+PrintString(0, 0, inv_desc, font[0], DescItem(inventory[selecteditem].itemnum));
+
+SetLucent(50);
+RectFill(0, 0, screenx, screeny, RGB(1,1,1), screen);
+SetLucent(0);
+CenterImage(invback, 1);
+PrintString(posx, posy, screen, font[1], "Inventory");
+line(posx, posy+fontheight, posx+130, posy+fontheight, RGB(255,255,255), screen);
+line(posx, posy+(fontheight+1), posx+130, posy+(fontheight+1), RGB(0,0,0), screen);
+
+screencap = CopyScreen();
+tBlit(posx+35, posy+26, invfigure, screen);
+
+while(!b3)
+	{
+	
+	if (b1 && inventory[selecteditem].itemnum > 0)
+		{
+		UseItem(selecteditem, currentmember);
+		// Update graphics
+		invfigure = RenderEquippedItems(currentmember);
+		inv_img = LoadImage("inv_img.png");
+		inv_desc = LoadImage("inv_desc.png");
+		ListInventory(0, 0, topinvitem, inv_img);
+		PrintString(0, 0, inv_desc, font[0], DescItem(inventory[selecteditem].itemnum));
+		}
+		
+	if (left)
+		{
+		if (currentmember > 0) { currentmember--; }
+		else { currentmember = freepartyslot-1; }
+		}
+	if (right)
+		{
+		if (currentmember != freepartyslot-1) { currentmember++; }
+		else { currentmember = 0; }
+		}
+	if (up)
+		{
+		if (selecteditemslot > 0) { selecteditemslot--; }
+		else if (topinvitem != 0) { topinvitem--; }
+		}
+	if (down)
+		{
+		if (selecteditemslot < 19) { selecteditemslot++; }
+		else if (topinvitem != maxinvitems-21) { topinvitem++; }
+		}
+	if (left || right)
+		{
+		// Update graphics
+		portrait = LoadImage("port"+str(party[currentmember].port)+".png");
+		invfigure = RenderEquippedItems(currentmember);
+		}
+	if (left || right || up || down)
+		{
+		UnpressDirectionals();
+		inv_img = LoadImage("inv_img.png");
+		inv_desc = LoadImage("inv_desc.png");
+		ListInventory(0, 0, topinvitem, inv_img);
+		selecteditem = topinvitem+selecteditemslot;
+		PrintString(0, 0, inv_desc, font[0], DescItem(inventory[selecteditem].itemnum));
+		}
+		
+	CenterImage(screencap, 0);
+	TransRect(posx+173, (posy-1)+(7*selecteditemslot), 68, 7, RGB(231,222,239), screen);
+	tBlit(posx+175, posy, inv_img, screen);
+	SetLucent(50);
+	if (topinvitem > 0) { tBlit(posx+204, posy-6, arrowup, screen); }
+	tBlit(posx+204, posy+141, arrowdown, screen);
+	SetLucent(0);
+	PrintString(posx, posy+(fontheight+10), screen, font[0], "Credits: "+str(partymoney));
+	PrintString(posx, posy+(fontheight+18), screen, font[0], "Name: "+party[currentmember].name);
+	PrintString(posx, posy+(fontheight+26), screen, font[0], "Hitpoints = "+str(party[currentmember].hp)+"/"+str(party[currentmember].maxhp));
+	PrintString(posx, posy+(fontheight+34), screen, font[0], "XP = "+str(party[currentmember].xp));
+	PrintString(posx, posy+(fontheight+42), screen, font[0], "Def = "+str(party[currentmember].defense));
+	PrintString(posx, posy+(fontheight+50), screen, font[0], "Att = "+str(party[currentmember].attack));
+	tBlit(posx, posy+163, inv_desc, screen);
+	tBlit(posx+35, posy+26, invfigure, screen);
+	SetLucent(60);
+	Silhouette(posx-13, posy+77, RGB(1,1,1), portrait, screen);
+	SetLucent(0);
+	tBlit(posx-15, posy+75, portrait, screen);
+	tBlit(posx+30, posy+130, switcharrows, screen);
+		
+	Unpress(0);
+	ShowPage();
+	}
+
+Unpress(0);
+FreeImage(invback);
+FreeImage(inv_img);
+FreeImage(inv_desc);
+FreeImage(invfigure);
+FreeImage(screencap);
+FreeImage(portrait);
+FreeImage(arrowdown);
+FreeImage(arrowup);
+FreeImage(switcharrows);
+}
+
+// --------------------------------
+
+void GameOver()
+{
+int go_back = LoadImage("gameover.png");
+
+SetEntitiesPaused(1);
+Cls();
+CenterImage(go_back,0);
+StartMusic("music\gameover");
+FadeIn();
+SkipWait(200);
+FadeOut_m();
+
+FreeImage(go_back);
+Exit("Game over, Player One. Stay vigilant.");
+}
+
+// --------------------------------
+
+// The options dialogue
+void Options()
+{
+int menuback, screencap, soundpic, musicpic;
+int posx, posy;
+int currentselection = 1;
+
+menuback = LoadImage("mediumbox.png");
+soundpic = LoadImage("soundpic.png");
+musicpic = LoadImage("musicpic.png");
+
+posx = ((screenx/2)-(ImageWidth(menuback)/2))+10;
+posy = ((screeny/2)-(ImageHeight(menuback)/2))+10;
+SetLucent(50);
+RectFill(0, 0, screenx, screeny, RGB(1,1,1), screen);
+SetLucent(0);
+CenterImage(menuback, 0);
+PrintString(posx, posy, screen, font[1], "Options");
+line(posx, posy+fontheight, posx+130, posy+fontheight, RGB(255,255,255), screen);
+line(posx, posy+(fontheight+1), posx+130, posy+(fontheight+1), RGB(0,0,0), screen);
+PrintString(posx, posy+(fontheight+6), screen, font[0], "Adjust your settings");
+TransRect(posx+3, posy+(fontheight*3), 103, fontheight+5, RGB(1,1,1), screen);
+TransRect(posx+3, posy+(fontheight*5), 103, fontheight+5, RGB(1,1,1), screen);
+tBlit(posx+110, posy+(fontheight*3), musicpic, screen);
+tBlit(posx+110, posy+(fontheight*5), soundpic, screen);
+
+screencap = CopyScreen();
+
+FreeImage(menuback);
+FreeImage(soundpic);
+FreeImage(musicPic);
+
+Unpress(0);
+
+while(!b3)
+	{
+	CenterImage(screencap,0);
+	if (left)
+		{
+		if (currentselection = 1 && musicvol > 0) { musicvol--; }
+		if (currentselection = 2 && soundvol > 0) { soundvol--; }
+		SetSongVolume(currentmusic, musicvol);
+		Wait(1);
+		}
+	if (right)
+		{
+		if (currentselection = 1 && musicvol < 100) { musicvol++; }
+		if (currentselection = 2 && soundvol < 100) { soundvol++; }
+		SetSongVolume(currentmusic, musicvol);
+		Wait(1);
+		}
+	if (up || down)
+		{
+		if (currentselection = 1) { currentselection = 2; }
+		else currentselection = 1;
+		UnpressDirectionals();
+		}
+	
+	if (currentselection = 1) { Rect(posx+3, posy+(fontheight*3), posx+105, posy+(fontheight*4)+4, RGB(255,255,255), screen); }
+	if (currentselection = 2) { Rect(posx+3, posy+(fontheight*5), posx+105, posy+(fontheight*6)+4, RGB(255,255,255), screen); }
+	
+	SetLucent(40);
+	RectFill(posx+4, posy+(fontheight*3)+1, posx+4+musicvol, posy+(fontheight*3)+(fontheight+3), RGB(musicvol+100, 0, 0), screen);
+	RectFill(posx+4, posy+(fontheight*5)+1, posx+4+soundvol, posy+(fontheight*5)+(fontheight+3), RGB(0, 0, soundvol+100), screen);
+	SetLucent(0);
+	
+	ShowPage();
+	}
+Unpress(0);
+}
+
+// - SAVE AND LOAD BOXES ----------
+
+// Render the box for saving and loading
+void RenderPromptBox(string title, string instructions)
+{
+int menuback;
+int posx, posy;
+
+menuback = LoadImage("mediumbox.png");
+posx = ((screenx/2)-(ImageWidth(menuback)/2))+10;
+posy = ((screeny/2)-(ImageHeight(menuback)/2))+10;
+SetLucent(50);
+RectFill(0, 0, screenx, screeny, RGB(1,1,1), screen);
+SetLucent(0);
+CenterImage(menuback, 0);
+PrintString(posx, posy, screen, font[1], title);
+line(posx, posy+fontheight, posx+130, posy+fontheight, RGB(255,255,255), screen);
+line(posx, posy+(fontheight+1), posx+130, posy+(fontheight+1), RGB(0,0,0), screen);
+PrintString(posx, posy+(fontheight+6), screen, font[0], instructions);
+TransRect(posx, posy+(fontheight*3), 156, fontheight+5, RGB(1,1,1), screen);
+FreeImage(menuback);
+}
+
+// Save game
+void SaveGamePrompt()
+{
+int screencap;
+int posx, posy;
+
+posx = ((screenx/2)-88)+14;
+posy = ((screeny/2)-77)+(fontheight*4);
+
+RenderPromptBox("Save Game", "Type in a name for your save file:");
+
+screencap = CopyScreen();
+write  = party[0].name;			// Stuff the player's character name into the prompt by default
+Xpos = len(party[0].name);		// Set where the text cursor should be
+
+Unpress(0);
+
+while(!b3 && !b1)
+	{
+	CenterImage(screencap,0);
+	Input(posx, posy, 10);
+	ShowPage();
+	}
+
+if (b1)
+	{
+	SaveGame(write);
+	Banner("File Saved!");
+	}
+
+FreeImage(screencap);
+Unpress(0);
+}
+
+// Load game
+void LoadGamePrompt(int fromstartmenu)
+{
+int screencap;
+int posx, posy;
+int filehasloaded;
+
+posx = ((screenx/2)-88)+14;
+posy = ((screeny/2)-77)+(fontheight*4);
+filehasloaded = 0;
+
+RenderPromptBox("Load", "Type in the file to load:");
+
+screencap = CopyScreen();
+if (!fromstartmenu)
+	{
+	write  = party[0].name;			// Stuff the player's character name into the prompt by default
+	Xpos = len(party[0].name);		// Set where the text cursor should be
+	}
+else
+	{
+	write  = "";		// Clear the text input buffer
+	Xpos = 0;		// Reset the cursor position (just in case)
+	}
+
+Unpress(0);
+
+while(!b3 && !b1)
+	{
+	CenterImage(screencap,0);
+	Input(posx, posy, 10);
+	ShowPage();
+	}
+
+if (b1)
+	{
+	ToLower(write);
+	if (FileExists(write+".sav"))
+		{
+		LoadGame(write);
+		filehasloaded = 1;
+		}
+	else
+		{
+		Banner("That file does not exist!");
+		}
+	}
+
+FreeImage(screencap);
+Unpress(0);
+
+if (filehasloaded)
+	{
+	canesc = 1;
+	if (!fromstartmenu) { MapSwitch(currentmap, 2, 1, savedx, savedy); }
+	}
+}

@@ -1,0 +1,158 @@
+*** Inventory Database File. Do not mess with this unless you know what you're doing!
+1
+0
+0
+Med Patch
+Standard nanite medical healing patch. Restores +10 hp.
+
+2
+0
+0
+Med Patch +1
+Improved nanite medical healing patch. Restores +20 hp.
+
+3
+0
+0
+Med Patch +2
+Advanced nanite medical healing patch. Restores +50 hp.
+
+4
+0
+0
+Micro Surgeon
+Emergency surgery field kit. Restores hp to max.
+
+5
+0
+0
+Chocolate Bar
+Tasty energy snack. Restores +2hp.
+
+6
+0
+0
+Dr Pepper
+Fruity drink. Restores +4hp.
+
+7
+0
+0
+Sandwich
+Foil wrapped, wholemeal sandwich. Restores +6hp.
+
+8
+0
+0
+Coffee
+An air-tight canister of fresh, hot coffee. Restores +7hp.
+
+10
+1
+0
+Cabin Keycard
+The keycard to Hugo's cabin.
+
+11
+1
+0
+Book of Advice
+A small book of random advisory messages.
+
+20
+2
+2
+Leather Jacket
+Hugo's battered old leather jacket. +10 def.
+
+21
+2
+4
+Hugo's Trousers
+Hugo's faded purple trousers. +5 def.
+
+22
+2
+1
+Bandana
+Hugo's red bandana. Keeps his hair out of his face. +2 def.
+
+23
+2
+5
+Boots
+Hugo's size twelve boots. Waterproof. +6 def.
+
+24
+2
+2
+Crew Jacket
+Standard issue Mignolia crew jacket. +7 def
+
+25
+2
+4
+Crew Skirt
+Standard issue Mignolia crew skirt. +3 def
+
+26
+2
+2
+Guard's Jacket
+Guard Body Armour. +13 def
+
+27
+2
+4
+Guard's Trousers
+Guard Body Armour. +6 def
+
+28
+2
+1
+Guard Helmet
+Standard issue Mignolia guard's helmet. +5 def
+
+29
+2
+5
+Shoes
+A pair of fairly ordinary-looking shoes. +3 def
+
+30
+3
+6
+Broom
+Sweeps floors. Also a makeshift weapon. +3 att
+
+31
+3
+6
+Combat Knife
+Serrated combat knife. +6 att
+
+32
+3
+6
+Nightstick
+Good for hitting things. +5 att
+
+33
+3
+774
+Glass Pistols
+Hugo's favourite guns. Undetectable by metal detectors. +8 att
+
+34
+3
+774
+Stub Gun
+Standard issue guard sidearm. +10 att
+
+35
+3
+1286
+Assault Rifle
+Military assault gun. +15 att
+
+EOF

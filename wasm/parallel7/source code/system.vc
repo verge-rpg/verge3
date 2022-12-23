@@ -1,0 +1,81 @@
+// **********************************************************
+// *				    			    *
+// * Project Name: HOV Entry Source Code  	    	    *
+// *       Author: Fred "Interference" Burbidge		    *
+// *				    			    *
+// **********************************************************
+
+// + Uses a modified version of Fred's Textbox Engine. Since "Fred" is
+//   *ME* I can do what I damn well like with it.
+
+// + Uses a modified verion of Buckermann's credits system.
+
+// + The management apologises for the unruly state of areas of this
+//   code. Abandon hope all ye who enter, etc.
+
+// ----------------------------------------------------------- --- -- -
+// SYSTEM.VC. The file that all other VC files branch off from
+// ----------------------------------------------------------- --- -- -
+
+// -- Files to include
+
+// Low-level stuff
+
+#include "defines.vc"
+#include "setup.vc"
+#include "filehand.vc"
+#include "texthand.vc"
+#include "keyboard.vc"
+#include "misc.vc"
+#include "imghand.vc"
+#include "screenfx.vc"
+#include "sound.vc"
+#include "hooks.vc"
+
+// Entity / party handling
+
+#include "ptysetup.vc"
+#include "entfuncs.vc"
+#include "invfuncs.vc"
+#include "itemfuncs.vc"
+#include "statsys.vc"
+
+// Map-related stuff
+
+#include "mapfuncs.vc"
+
+// GUI-related functions scripts
+
+#include "gui.vc"
+#include "intro.vc"
+#include "startmnu.vc"
+#include "credits.vc"
+
+// Item-specific VC files
+
+#include "advicebook.vc"
+#include "descriptive.vc"
+#include "snackstop.vc"
+
+// Cinematics and map-specific VC
+
+#include "cutscene.vc"
+#include "specialfuncs.vc"
+
+// Battle Systems code and related VC
+
+#include "zip.vc" // Zip: Me! Yeay!
+#include "battletalk.vc"
+
+// ---------------------------
+
+// Automatically executed function. It triggers the starting logos and start menu
+
+void AutoExec()
+{
+Setup();
+
+// Comment out to skip
+Intro();
+StartMenu();
+}

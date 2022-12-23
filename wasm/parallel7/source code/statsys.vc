@@ -1,0 +1,55 @@
+// ----------------------------------------------------------- --- -- -
+// STATSYS.VC. The statistics system. This VC handles the levelling up
+// of skills, hit point handling and the like.
+// ----------------------------------------------------------- --- -- -
+
+// --- HP-RELATED FUNCTIONS ------------------------
+
+// Recalculate the party member's max HP based on constitution
+void RecalcHP(int partymember)
+{
+party[partymember].maxhp = party[partymember].constitution*2;
+if (party[partymember].hp > party[partymember].hp) { MaxOutHP(partymember); }
+}
+
+// Restore HP to maximum
+void MaxOutHP(int partymember)
+{
+party[partymember].hp = party[partymember].maxhp;
+}
+
+// Restore the specified HP to the specified party member. This function prevents healing from
+// exceeding the party member's maximum hit points
+void RestoreHP(int partymember, int reshp)
+{
+if ((party[partymember].hp+reshp) < party[partymember].maxhp)
+	{
+	party[partymember].hp = party[partymember].hp + reshp;
+	}
+else
+	{
+	MaxOutHP(partymember);
+	}
+}
+
+// Takes away the specified HP from the specified party member.
+void TakeHP(int partymember, int subhp)
+{
+if ((party[partymember].hp-subhp) > 0)
+	{
+	party[partymember].hp = party[partymember].hp - subhp;
+	}
+else
+	{
+	party[partymember].hp = 0;
+	}
+
+if (partymember = 0 && party[partymember].hp = 0)
+	{
+	// GAME OVER DUDE!
+	WaitUpdate(100);
+	DramaticFadeOut();
+	GameOver();
+	}
+
+}

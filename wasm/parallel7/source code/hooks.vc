@@ -1,0 +1,32 @@
+// ----------------------------------------------------------- --- -- -
+// HOOKS.VC. Handles HookTimer() and HookRetrace()s.
+// ----------------------------------------------------------- --- -- -
+
+// Hook Key this to ESC
+void EscMenuHook()
+{
+if (canesc=1) { EscMenu(); }
+}
+
+// HookRetrace this
+void RetraceHook()
+{
+// Stuff that needs Hook'ing
+// Zip: Grid overlay demonstration
+/*int sox, soy; // Zip: Dip your sox in soy!
+	for (soy = 16 - (ywin % 16); soy < screeny; soy+=16)
+	{
+		for (sox = 16 - (xwin % 16); sox < screenx; sox+=16)
+		{
+			SetPixel(sox, soy, 0, screen);
+		}
+	}*/
+
+}
+
+void InitiateBasicHooks()
+{
+HookKey(SCAN_ESC, "EscMenuHook");
+HookKey(SCAN_F1, "HelpMenuHook");
+HookRetrace("RetraceHook");
+}

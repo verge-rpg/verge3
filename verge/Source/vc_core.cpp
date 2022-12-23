@@ -46,6 +46,7 @@ extern void VcBuildLibraryDispatchTable ();
 /****************************** code ******************************/
 
 VCCore::VCCore()
+: cimage_file_base_ofs {}
 {
 	userfuncMap[0] = userfuncMap[1] = userfuncMap[2] = 0;
 
@@ -57,6 +58,7 @@ VCCore::VCCore()
 	str_stack_ptr = 0;
 	cb_stack_base = 0;
 	cb_stack_ptr = 0;
+	in_func = nullptr;
 	currentvc = &coreimages[CIMAGE_SYSTEM];
 	current_cimage = CIMAGE_SYSTEM;
 	LoadSystemXVC();
@@ -277,7 +279,7 @@ void VCCore::LoadSystemXVC()
 		userfuncs[CIMAGE_SYSTEM].push_back(func);
 		userfuncMap[CIMAGE_SYSTEM][i].index = i;
 		userfuncMap[CIMAGE_SYSTEM][i].hash = FastHash(func->name);
-		//log("hash %08X function %s", userfuncMap[CIMAGE_SYSTEM][i].hash, func->name);
+		//log("added function %d %s hash %08X", i, func->name, userfuncMap[CIMAGE_SYSTEM][i].hash);
 	}
 	std::sort(userfuncMap[CIMAGE_SYSTEM],userfuncMap[CIMAGE_SYSTEM]+size);
 	//for(int i=0;i<size;i++)
@@ -289,7 +291,9 @@ void VCCore::LoadSystemXVC()
 	vccallback = new VergeCallback[maxcb];
 	memset(vcint, 0, maxint*4);
 
-	//log("VCCore::LoadSystemXVC(): loading chunk");
+	int start_offset = vtell(vf) + 4;
+	//log("VCCore::LoadSystemXVC(): loading chunk at starting file offset %d", start_offset);
+	cimage_file_base_ofs[CIMAGE_SYSTEM] = start_offset;
 	coreimages[CIMAGE_SYSTEM].LoadChunk(f);
 	vclose(vf);
 }
@@ -339,9 +343,16 @@ void VCCore::LoadCore(VFILE *f, int cimage, bool append, bool patch_others)
 
 	std::sort(userfuncMap[cimage],userfuncMap[cimage]+newfuncs);
 
+	int start_offset = vtell(f) + 4;
+	//log("VCCore::LoadCore(): loading chunk at starting file offset %d", start_offset);
+	cimage_file_base_ofs[cimage] = start_offset;
+
 	if(append)
+	{
 		coreimages[cimage].Append(f->fp, true);
-	else {
+	}
+	else
+	{
 		new(&coreimages[cimage])Chunk(); //inplace construct a new chunk to make sure everything is zapped
 		coreimages[cimage].LoadChunk(f->fp);
 	}
@@ -529,6 +540,10 @@ int VCCore::ProcessOperand()
 	quad d=0, ofs=0;
 
 	byte op = currentvc->GrabC();
+
+	//if (current_cimage == CIMAGE_MAP)
+		//log("VCCore::ProcessOperand: operand type %d @ rel_ofs = $%08X, abs_ofs = $%08X", op, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
+
 	switch (op)
 	{
 		case intPLUGINVAR:
@@ -643,8 +658,18 @@ int VCCore::ProcessOperand()
 			return vcreturn;
 		case intUSERFUNC:
 			currentvc->GrabC(); // skip opUSERFUNC
-			c = currentvc->GrabC(); // to ensure correct order
-			ExecuteUserFunc(c, currentvc->GrabD());
+			if (!vc_oldusercall)
+			{
+				c = currentvc->GrabC();
+			}
+
+			d = currentvc->GrabD();
+			if (vc_oldusercall)
+			{
+				c = d < userfuncs[CIMAGE_SYSTEM].size() ? CIMAGE_SYSTEM : CIMAGE_MAP;
+			}
+
+			ExecuteUserFunc(c, d);
 			return vcreturn;
 		case intPLUGINFUNC:
 			currentvc->GrabC(); //skip opPluginFunc
@@ -674,6 +699,10 @@ int VCCore::ResolveOperand()
 	while (true)
 	{
 		byte c = currentvc->GrabC();
+
+		//if (current_cimage == CIMAGE_MAP)
+			//log("VCCore::ResolveOperand: opcode %d @ rel_ofs = $%08X, abs_ofs = $%08X", c, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
+
 		switch (c)
 		{
 			case iopADD: num += ProcessOperand(); continue;
@@ -880,8 +909,18 @@ StringRef VCCore::ProcessString()
 			break;
 		case strUSERFUNC:
 			currentvc->GrabC(); // skip opUSERFUNC
-			temp = currentvc->GrabC(); // to ensure correct order
-			ExecuteUserFunc(temp, currentvc->GrabD());
+			if (!vc_oldusercall)
+			{
+				temp = currentvc->GrabC();
+			}
+
+			d = currentvc->GrabD();
+			if (vc_oldusercall)
+			{
+				temp = temp < userfuncs[CIMAGE_SYSTEM].size() ? CIMAGE_SYSTEM : CIMAGE_MAP;
+			}
+
+			ExecuteUserFunc(temp, d);
 			ret = vcretstr;
 			break;
 		case strPLUGINFUNC:
@@ -1089,6 +1128,10 @@ void VCCore::ExecuteBlock()
 
 		byte opcode = currentvc->GrabC();
 		byte temp = 0;
+
+		//if (current_cimage == CIMAGE_MAP)
+			//log("VCCore::ExecuteBlock: opcode %d @ rel_ofs = $%08X, abs_ofs = $%08X", opcode, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
+
 		switch (opcode)
 		{
 			case opRETURN:		done = true; break; //code=(char *) vcpop(); break;
@@ -1096,15 +1139,31 @@ void VCCore::ExecuteBlock()
 			case opIF:			HandleIf(); break;
 			case opPLUGINFUNC:	HandlePluginFunc(currentvc->GrabD()); break;
 			case opLIBFUNC:		HandleLibFunc(vc_oldlibfuncs ? currentvc->GrabC() : currentvc->GrabW()); break;
-			case opUSERFUNC:	temp = currentvc->GrabC(); // to ensure correct order of eval
-								ExecuteUserFunc(temp, currentvc->GrabD()); break;
+			case opUSERFUNC:
+			{
+				if (!vc_oldusercall)
+				{
+					temp = currentvc->GrabC();
+				}
+
+				int ufunc = currentvc->GrabD();
+				if (vc_oldusercall)
+				{
+					temp = ufunc < userfuncs[CIMAGE_SYSTEM].size() ? CIMAGE_SYSTEM : CIMAGE_MAP;
+				}
+
+				ExecuteUserFunc(temp, ufunc);
+				break;
+			}
 			case opGOTO:		currentvc->setpos(currentvc->GrabD()); break;
 			case opSWITCH:
-				if(!HandleSwitch()) {
-					done = true; // it returned abnormally, so we return to
+			{
+				if(!HandleSwitch())
+				{
+					done = true; // it returned abnormally, so we return too.
 				}
 				break;
-
+			}
 			case opRETVALUE:	vcreturn=ResolveOperand();  break;
 			case opRETSTRING:	vcretstr=ResolveString(); break;
 			case opRETCB:		vcretcb=ResolveCallback(); break;
@@ -1314,6 +1373,7 @@ void VCCore::ExecuteCallback(const VergeCallback& cb, bool calling_from_library)
 
 void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 {
+	//log("ExecuteUserFunc %d %d", cimage, ufunc);
 	bool check_for_patch = true;
 	// apply patches until we arrive and an unpatched one
 	while(check_for_patch) {
@@ -1466,11 +1526,18 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 	int save_pos = currentvc->curpos();
 	int save_cimage = current_cimage;
 
+	ret_addr_stack.push_back(ReturnAddress { save_pos, save_cimage, in_func });
+	//log("push {ofs=%d, cimage=%d, func=%s}, ret_addr_stack.size()=%d. calling {ofs=%d, cimage=%d, func=%s}", save_pos, save_cimage, in_func ? in_func->name : "<system>", static_cast<int>(ret_addr_stack.size()), func->codeofs, cimage, func->name);
+
 	// setup for funcall
 	current_cimage = cimage;
 	currentvc = &coreimages[cimage];
-	currentvc->setpos(func->codeofs);
-	function_t *last_func = in_func;
+	if (vc_oldusercall && cimage == CIMAGE_MAP)
+		currentvc->setpos(func->codeofs - coreimages[CIMAGE_SYSTEM].size());
+	else
+		currentvc->setpos(func->codeofs);
+
+	function_t* last_func = in_func;
 	in_func = func;
 
 	ExecuteBlock();   // execute!
@@ -1499,6 +1566,9 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 	current_cimage = save_cimage;
 	currentvc = &coreimages[save_cimage];
 	currentvc->setpos(save_pos);
+
+	ret_addr_stack.pop_back();
+	//log("pop, ret_addr_stack.size()=%d", static_cast<int>(ret_addr_stack.size()));
 
 	int_stack_base = save_intbase;
 	str_stack_base = save_strbase;
@@ -1841,22 +1911,66 @@ void VCCore::HandleIf()
 	if (ProcessIf())
 	{
 		currentvc->GrabD();
-		return;
+		//if (current_cimage == CIMAGE_MAP)
+			//log("VCCore::HandleIf: branch was true: skipped else offset @ rel_ofs = $%08X, abs_ofs = $%08X", currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
 	}
-	int ofs = currentvc->GrabD();
-	currentvc->setpos(ofs);
+	else
+	{
+		int ofs = currentvc->GrabD();
+		//if (current_cimage == CIMAGE_MAP)
+			//log("VCCore::HandleIf: branch was false: jumping to offset %d @ rel_ofs = $%08X, abs_ofs = $%08X", ofs, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
+		currentvc->setpos(ofs);
+	}
 }
 
 bool VCCore::ProcessIf()
 {
 	bool exec = ProcessIfOperand();
+
+	if (vc_oldif)
+	{
+	    while (true)
+	    {
+	        byte c = currentvc->GrabC();
+	        switch (c)
+	        {
+		        case ifAND: exec = ProcessIfOperand() && exec; continue;
+		        case ifOR: exec = ProcessIfOperand() || exec; continue;
+		        case ifUNGROUP: break;
+				default:
+					vcerr("VCCore::ProcessIf: (vc_oldif) Invalid if opcode %d.", c);
+	        }
+	        break;
+	    }
+	}
+
 	return exec;
 }
 
 bool VCCore::ProcessIfOperand()
 {
 	int eval = ResolveOperand();
-	return eval ? true : false;
+
+	if (vc_oldif)
+	{
+	    byte c = currentvc->GrabC();
+	    switch (c)
+	    {
+		    case ifZERO: return eval == 0;
+		    case ifNONZERO: return eval != 0;
+		    case ifEQUAL: return eval == ResolveOperand();
+		    case ifNOTEQUAL: return eval != ResolveOperand();
+		    case ifGREATER: return eval > ResolveOperand();
+		    case ifGREATEROREQUAL: return eval >= ResolveOperand();
+		    case ifLESS: return eval < ResolveOperand();
+		    case ifLESSOREQUAL: return eval <= ResolveOperand();
+		    case intGROUP: return ProcessIf();
+			default:
+				vcerr("VCCore::ProcessIfOperand: (vc_oldif) Invalid if operand %d.", c);
+	    }
+    }
+
+	return eval != 0;
 }
 
 bool VCCore::HandleSwitch()
@@ -1911,30 +2025,76 @@ bool VCCore::HandleSwitch()
 	return true;
 }
 
-void VCCore::LookupOffset(int ofs, std::string &s)
+void VCCore::DumpSourceLocation(int cimage, int ofs, function_t* expected_func, DumpSourceLocationContext& ctx)
 {
-	#ifdef ALLOW_SCRIPT_COMPILATION
-	for (int i=0; i<userfuncs[current_cimage].size(); i++)
-		if (ofs < userfuncs[current_cimage][i]->codeend)
+	auto& s = ctx.s;
+
+#ifdef ALLOW_SCRIPT_COMPILATION
+		// TODO: allow debug for map scripts -- the compiler code currently is hardcoded to system.vc.
+		auto& vcc = ctx.vcc;
+
+		for (int i = 0; i < userfuncs[cimage].size(); i++)
 		{
-			VCCompiler *vcc = new VCCompiler();
-			debuginfo debug = vcc->GetDebugForOffset(ofs);
-			delete vcc;
-			s += va("\t%s - %s(%d)\n", userfuncs[current_cimage][i]->name, debug.sourcefile, debug.linenum);
-			return;
+			if (ofs < userfuncs[cimage][i]->codeend)
+			{
+				debuginfo debug {};
+				if (cimage == CIMAGE_SYSTEM)
+				{
+					debug = vcc->GetDebugForOffset(ofs);
+				}
+
+				if (debug.sourcefile[0] == 0)
+				{
+					strcpy(debug.sourcefile, "???");
+				}
+
+				s += va("%s in %s(%d) (cimage=%d, base_ofs=$%08X, rel_ofs=$%08X, abs_ofs=$%08X)", userfuncs[cimage][i]->name, debug.sourcefile, debug.linenum, cimage, cimage_file_base_ofs[cimage], ofs, cimage_file_base_ofs[cimage] + ofs);
+				if (expected_func && expected_func != userfuncs[cimage][i])
+				{
+					s += va(" (warning: expected to be in %s but ended up in %s)", expected_func->name, userfuncs[cimage][i]->name);
+				}
+				s += '\n';
+
+				return;
+			}
 		}
-	#endif
-	s += va("\tUNKNOWN: %d\n", ofs);
+#endif
+
+	s += va("<function unknown> (cimage=%d, base_ofs=$%08X, rel_ofs=$%08X, abs_ofs=$%08X)", cimage, cimage_file_base_ofs[cimage], ofs, cimage_file_base_ofs[cimage] + ofs);
+	if (expected_func)
+	{
+		s += va(" (warning: expected to be in %s but ended up at unknown function)", expected_func->name);
+	}
+	s += '\n';	
 }
 
 void VCCore::DisplayError(CStringRef msg)
 {
 	std::string s = msg.c_str();
-	s += ": \n\n";
-	LookupOffset(currentvc->curpos(), s);
-	/*int stackentries = vcsp - vcstack;
-	for (int i=stackentries-1; i>=0; i--)
-		FindSomethingAbout(vcstack[i], s);*/
+	s += va(": \n\n#1: ", static_cast<int>(ret_addr_stack.size()));
+
+	DumpSourceLocationContext ctx {s};
+#ifdef ALLOW_SCRIPT_COMPILATION
+	ctx.vcc = new VCCompiler();
+#endif	
+
+	DumpSourceLocation(current_cimage, currentvc->curpos(), in_func, ctx);
+
+	for (int i = static_cast<int>(ret_addr_stack.size()) - 1; i >= 0; i--)
+	{
+		auto& ret_addr = ret_addr_stack[i];
+
+		if (i > 0 || ret_addr.func)
+		{
+			s += va("#%d: ", static_cast<int>(ret_addr_stack.size()) - i + 1);
+			DumpSourceLocation(ret_addr.cimage, ret_addr.ofs, ret_addr.func, ctx);
+		}
+	}
+
+#ifdef ALLOW_SCRIPT_COMPILATION
+	delete ctx.vcc;
+#endif
+
 	err(s.c_str());
 }
 

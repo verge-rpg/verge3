@@ -1,0 +1,245 @@
+// ----------------------------------------------------------- --- -- -
+//     MAP: | Mignolia Corridor 1
+//  AUTHOR: | Fred Burbidge
+// TILESET: | mignolia1.vsp
+// COMMENT: | Connects the bar to various other area. This is where
+//          | Hugo has a fight with a drunk bloke
+// ----------------------------------------------------------- --- -- -
+
+// Auto-executed event
+void MapStart()
+{
+// Stuff to do prior to map setup
+
+// Change drunk's animation frame
+entity.specframe[2] = 20;
+
+// Store what the current floor is for the lift
+flag[9] = 1;
+
+if (flag[7]) { SetTile(88, 82, 5, 0); }	// Credit chit taken? Remove it then!
+
+if (flag[8])				// Have we defeated the drunk?
+	{
+	// Remove drunk!
+	WarpToTile(2, 0,0);
+	// Remove Annabelle
+	WarpToTile(3, 0,0);
+	// Remove Broom!
+	SetTile(78, 61, 4, 0);
+	SetTile(78, 60, 8, 0);
+	}
+
+// Music!
+StartMusic("music\jazz2.oxm");
+
+// Setup!
+MapSetup();
+}
+
+// -------------------------------------------------
+
+// Exit to bar
+void ExitToBar()
+{
+MapSwitch("mig_bar", 2, 0, 24, 14);
+}
+
+void InfoLinkTerminal1()
+{
+if (!flag[5])
+	{
+	flag[5] = 1;
+	TBox(party[0].port, 1, 2, party[0].name, "This is an InfoLink terminal. It allows passengers to navigate the ship easier by providing directions and also has an up-to-the minute live feed from");
+	TBox(party[0].port, 1, 3, party[0].name, "the interplanetary news network.");
+	}
+
+lastchoice = 0;
+while(lastchoice != 4)
+	{
+	Choice("Please make a selection:", "Ask for directions/View news/Call security/Exit terminal");
+
+	Switch(lastchoice)
+		{
+		case 1: TBox(0, 1, 1, "Terminal", "^ Main lift to other decks and lobby area, [ Snack Stop, ] Bar Area.");
+		case 2: InfoLinkNews();
+		case 3: InfoLinkSecurity();
+		}
+	}
+TBox(0, 1, 1, "Terminal", "Thank you for using InfoLink.");
+}
+
+void DroppedCredits()
+{
+if (!flag[7])
+	{
+	flag[7] = 1;
+	TBox(party[0].port, 1, 2, party[0].name, "That's careless: someone's dropped a credit chit here.");
+	TBox(party[0].port, 1, 0, party[0].name, "Well, waste not, want not, that's what I say.");
+	TBox(party[0].port, 1, 3, party[0].name, "Nobody's going to mind if I just add these to my account..");
+	GiveMoney(8);
+	SetTile(88, 82, 5, 0);
+	}
+}
+
+void WanderGirlChat()
+{
+
+}
+
+void WanderGuyChat()
+{
+
+}
+
+void DrunkEncounter()
+{
+// Cutscene!
+int smashsound, equipslot;
+smashsound = LoadSound("g_smash.ogg");
+
+if (!flag[8])
+	{
+	flag[8] = 1;
+	canesc = 0;
+	PlayerMove("u0");
+	FreezePlayer();
+	MoveEntityWaitY(3,56);
+
+	TBox(0, 1, 2, "Drunk" "Waaugh.. Fu- Fughgg..");
+	TBox(0, 1, 3, "Drunk" "Shiii-uhgg. The roomsch shpinnin' round 'n round 'n..");
+	canesc = 0;
+	EntityMove(3, "l0");
+	WaitUpdate(5);
+	TBox(20, 1, 1, "Female Crewmember" "Excuse me, sir, I think you're drunk.");
+
+	// Animate drunk dropping booze
+	canesc = 0;
+	WaitUpdate(50);
+	entity.specframe[2] = 21;
+	WaitUpdate(20);
+	entity.specframe[2] = 22;
+	PlaySound(smashsound, soundvol);
+	WaitUpdate(100);
+	entity.specframe[2] = 23;
+	WaitUpdate(100);
+
+	TBox(0, 1, 1, "Drunk" "Hey, you bashtard! Look what you made me do!");
+	TBox(20, 1, 1, "Female Crewmember" "But I-");
+	TBox(0, 1, 1, "Drunk" "I oughtta smash your face.");
+
+	Choice("Hugo interjects with:", "That was entirely your fault, sir/It's ok, it was my fault/Leave the lady alone, ok?");
+
+	switch(lastchoice)
+		{
+		case 1: TBox(0, 1, 2, "Drunk" "Oh yeah?");
+		case 1: TBox(0, 1, 3, "Drunk" "You starting something? 'Cos I'll smash YOU up too.");
+		case 1: TBox(party[0].port, 1, 2, party[0].name, "You don't have to get violent.");
+		case 1: TBox(party[0].port, 1, 3, party[0].name, "Just go back to your room and have a lie down, ok?");
+
+		case 2: TBox(0, 1, 1, "Drunk" "Then I'll smash your face instead.");
+		case 2: TBox(party[0].port, 1, 2, party[0].name, "Is that strictly necessary? I mean, can't we discuss this?");
+		case 2: TBox(party[0].port, 1, 3, party[0].name, "Over a drink, maybe?");
+
+		case 3: TBox(0, 1, 1, "Drunk" "Then I'll smash your face instead.");
+		case 3: TBox(party[0].port, 1, 1, party[0].name, "Wouldn't you rather just dispense with the voilence all together?");
+		}
+
+	flag[8] = lastchoice;
+	canesc = 0;
+
+	// Animate drunk picking up broken bottle
+	canesc = 0;
+	entity.specframe[2] = 24;
+	WaitUpdate(100);
+	entity.specframe[2] = 25;
+	WaitUpdate(100);
+
+	TBox(0, 1, 1, "Drunk" "That's IT! I'm gonna bloody KILL you!");
+	TBox(party[0].port, 1, 1, party[0].name, "That's a 'no' then.");
+	canesc = 0;
+	// Unfreeze the player so we can move him
+	UnfreezePlayer();
+	canesc = 0;
+	PlayerMove("d0");
+	WaitUpdate(40);
+	PlayerMove("r0");
+	WaitUpdate(40);
+	TBox(party[0].port, 1, 1, party[0].name, "Where the hell is there a weapon when you need one?");
+	PlayerMove("y61x77r0");
+	WaitUpdate(40);
+	TBox(party[0].port, 1, 3, party[0].name, "A broom. Ok, better than nothing..");
+
+	// Grab Broom and equip!
+	canesc = 0;
+	GiveItem(30);
+	equipslot = CheckForItem(30);
+	ToggleEquip(equipslot, 1, 0);
+
+	SetTile(78, 61, 4, 0);
+	SetTile(78, 60, 8, 0);
+
+	WaitUpdate(10);
+	EntityMove(3, "r2l0");
+	PlayerMove("x75y59u0");
+	TBox(party[0].port, 1, 3, party[0].name, "Ok pal, let's BOOGIE.");
+	canesc = 0;
+	
+	// FIGHTY FIGHTY GO HERE!
+	LoadEnemy(2, 0); // Zip: Loads entity 2 as drunk (enemy 0)
+	Combat(); // Zip: Runs the BATTEL!!!!
+	StartMusic("music\jazz2.oxm");
+
+	FreezePlayer();
+	entity.specframe[2] = 0;
+	WaitUpdate(10);
+	TBox(0, 1, 2, "Drunk" "What? Agh! You-");
+	TBox(0, 1, 3, "Drunk" "Waaaaah!");
+	
+	canesc = 0;
+	MoveEntityWaitX(2, 77);
+	MoveEntityWaitY(2, 42);
+
+	// Wait for drunk to leave the scene
+	while (entity.y[2]>(42*16))
+		{
+		Render();
+		ShowPage();
+		}
+	WarpToTile(2, 0,0);		// Ditch the drunk!
+	UnfreezePlayer();
+	PlayerMove("y56x78r0"); // Zip: "r0" so he faces her if coming from another direction
+
+	TBox(20, 1, 2, "Female Crewmember" "Whew! Thanks.");
+	TBox(20, 1, 3, "Female Crewmember" "Another minute there and I could've found myself in the medical bay. I owe you one.");
+	TBox(party[0].port, 1, 1, party[0].name, "It was nothing, really.");
+	TBox(20, 1, 1, "Female Crewmember" "Nothing? You single-handedly beat him off with a BROOMSTICK.");
+	TBox(party[0].port, 1, 2, party[0].name, "Well, all in a days work, eh?.");
+	TBox(party[0].port, 1, 3, party[0].name, "Uh, anyway. I'm Hugo Zane: who the heck are you?");
+	TBox(20, 1, 2, "Female Crewmember" "Annabelle Fisk.");
+	TBox(20, 1, 0, "Female Crewmember" "Er, Annabelle.");
+	TBox(20, 1, 3, "Female Crewmember" "Well, Anna.");
+	TBox(20, 1, 2, "Annabelle" "So.. Uh, you wanna escort me back to my cabin on the crew deck?.");
+	TBox(20, 1, 0, "Annabelle" "Y'know, just incase that drunk follows me back.");
+	TBox(20, 1, 3, "Annabelle" "We could have coffee?");
+	TBox(party[0].port, 1, 1, party[0].name, "Best offer I've had so far.");
+	TBox(20, 1, 1, "Annabelle" "Sweet. We can take the main lift: it's at the far end of the reception area, just up ahead.");
+
+
+	// Annabelle joins!
+	EntityStalk(3, party[freepartyslot-1].ent);
+	AddPartyMember("Annabelle", 1);
+	// Annabelle's gear
+	GiveItem(24);
+	GiveItem(25);
+	GiveItem(29);
+	equipslot = CheckForItem(24);
+	ToggleEquip(equipslot, 1, freepartyslot-1);
+	equipslot = CheckForItem(25);
+	ToggleEquip(equipslot, 1, freepartyslot-1);
+	equipslot = CheckForItem(29);
+	ToggleEquip(equipslot, 1, freepartyslot-1);
+
+	FreeSound(smashsound);
+	}
+}

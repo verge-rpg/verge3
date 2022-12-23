@@ -1,0 +1,65 @@
+// ----------------------------------------------------------- --- -- -
+//     MAP: | Mignolia Main Lift
+//  AUTHOR: | Fred Burbidge
+// TILESET: | mignolia1.vsp
+// COMMENT: | For transportation between decks
+// ----------------------------------------------------------- --- -- -
+
+// Auto-executed event
+void MapStart()
+{
+// Stuff to do prior to map setup
+
+// Setup!
+MapSetup();
+}
+
+// -------------------------------------------------
+
+void LiftExit()
+{
+// FLAG NINE FROM OUTER SPACE!
+// ... Oh, nevermind...
+switch (flag[9])
+	{
+	case 1: MapSwitch("mig_corridor1", 2, 0, 77, 23);
+	case 2: MapSwitch("mig_crewdeck", 2, 0, 43, 14);
+	case 3: MapSwitch("mig_bridge", 2, 0, 24, 14);
+	}
+}
+
+void LiftControls()
+{
+int lastfloor = flag[9];
+
+Choice("Which floor will you select?","Lobby and Bar/Crew Deck/Passenger Deck/More choices.../Nevermind");
+
+switch(lastchoice)
+	{
+	case 1: CheckAccess(1);	// Lobby
+	case 2: flag[9] = 2;	// Crew Deck
+	case 3: CheckAccess(3); // Passenger Deck
+	}
+
+if (lastchoice = 4)
+	{
+	Choice("Which floor will you select?","The Bridge/Cargo Bay/Shuttlebays and Escape Pods/Restricted Access Level/Nevermind");
+	switch(lastchoice)
+		{
+		case 1: CheckAccess(4);	// Bridge
+		case 2: CheckAccess(5);	// Cargo Bay
+		case 3: TBox(99, 1, 2, "Interference" "Not done yet!"); // Shuttlebays (level 6)
+		case 4: CheckAccess(7); // Restricted Access Level
+		}
+	}
+
+if (lastfloor != flag[9])
+	{
+	canesc = 0;
+	FadeOut();
+	Wait(100);
+	Render();
+	FadeIn();
+	TBox(0, 1, 2, "Lift Terminal" "Your floor has been reached. You may now leave the lift.");
+	}
+}

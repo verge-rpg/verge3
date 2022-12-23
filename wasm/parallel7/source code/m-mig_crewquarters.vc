@@ -1,0 +1,80 @@
+// ----------------------------------------------------------- --- -- -
+//     MAP: | Mignolia Individual Crew Quarters
+//  AUTHOR: | Fred Burbidge
+// TILESET: | mignolia3.vsp
+// COMMENT: | All the individual crew rooms off the crew deck. Includes
+//            Annabelle's
+// ----------------------------------------------------------- --- -- -
+
+// Auto-executed event
+void MapStart()
+{
+// Stuff to do prior to map setup
+
+// Music!
+StartMusic("music\crew.mod");
+
+// Setup!
+MapSetup();
+}
+
+// -------------------------------------------------
+
+void ExitToCrewDeck()
+{
+MapSwitch("mig_crewdeck", 2, 0, 35, 68);
+}
+
+void DescAnnasBed()
+{
+TBox(party[0].port, 1, 2, party[0].name, "Anna's bed.");
+TBox(party[0].port, 1, 3, party[0].name, "Hmm.");
+}
+
+void AnnasRoom()
+{
+if (!flag[14])
+	{
+	flag[14] = 1;
+	TBox(party[0].port, 1, 1, party[0].name, "Hmm. Functionable but nice.");
+	TBox(party[1].port, 1, 1, party[1].name, "It's cramped, cold and underfurnished plus the floor creaks. It's home for now, though. Come on in.");
+	TBox(party[0].port, 1, 1, party[0].name, "Well, wherever you hang your hat, I suppose.");
+	TBox(party[1].port, 1, 2, party[1].name, "Yeah, something like that.");
+	TBox(party[1].port, 1, 3, party[1].name, "Let's see about getting some coffee.");
+	TBox(party[0].port, 1, 1, party[0].name, "Just coffee? I mean-");
+	TBox(party[1].port, 1, 1, party[1].name, "You had something else in mind?");
+	TBox(party[0].port, 1, 1, party[0].name, "Uh... no.. er..");
+	TBox(party[1].port, 1, 1, party[1].name, "You're strange.");
+	TBox(party[0].port, 1, 1, party[0].name, "Yes. Yes I am.");
+	
+	canesc = 0;
+	EntityStalk(party[1].ent, 0-1);	// Stop Annabelle following
+	EntityMove(party[1].ent, "x20y15");
+	PlayerMove("x18y15r0");
+	WaitForEntity(party[1].ent);
+	FreezePlayer();
+	WaitUpdate(100);
+	EntityMove(party[1].ent, "l0");
+	SetTile(19, 13, 5, 113);
+	UnfreezePlayer();
+	PlayerMove("r0");
+	TBox(party[1].port, 1, 2, party[1].name, "There you go. See what I mean about underfurnished? I don't even get a kitchen, just a food dispenser.");
+	TBox(party[1].port, 1, 3, party[1].name, "Takes all the romance out of it..");
+	TBox(party[0].port, 1, 1, party[0].name, "Uh.. romance?");
+	TBox(party[1].port, 1, 1, party[1].name, "Hey, drink you're coffee.");
+	Banner("Recovered 10hp Each!");
+	RestoreHP(0,10);
+	RestoreHP(1,10);
+	PlayerMove("r1");
+	TBox(party[1].port, 1, 2, party[1].name, "Ouch, My arm hurts like hell: I think I've strained a muscle. Must've happened when we fought those Weevils.");
+	TBox(party[1].port, 1, 3, party[1].name, "Can we stop in at the medical bay on this deck and get a medic to take a look?");
+	TBox(party[0].port, 1, 2, party[0].name, "Mmmm...");
+	TBox(party[0].port, 1, 3, party[0].name, "Uh, I mean.. Yeah.");
+	TBox(party[1].port, 1, 1, party[1].name, "Let's go, then. You lead the way.");
+	TBox(party[0].port, 1, 2, party[0].name, "What? Already? Well.. If you're in pain.");
+	TBox(party[0].port, 1, 3, party[0].name, "Lets go.");
+	
+	EntityStalk(party[1].ent, party[0].ent); // Resume Annabelle following
+	canesc = 1;
+	}
+}

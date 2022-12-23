@@ -1,0 +1,123 @@
+// ----------------------------------------------------------- --- -- -
+// TEXTHAND.VC. Handles text rendering, like text wrapping and
+// underlining text.
+// ----------------------------------------------------------- --- -- -
+
+// Load all the fonts into array fonts[5], declared in SETUP.VC
+
+int font[5];				// Fonts array
+
+void FontLoad()
+{
+font[0] = LoadFont("font0.png");	// "Titch," a really tiny font
+font[1] = LoadFont("font1.png");	// The main textbox font
+font[2] = LoadFont("font2.png");	// Font for larger writing
+font[3] = LoadFont("font3.png");	// Textbox titles font
+font[4] = LoadFont("font4.png");	// Titch in yellow
+
+EnableVariableWidth(font[0]);
+EnableVariableWidth(font[1]);
+EnableVariableWidth(font[2]);
+EnableVariableWidth(font[3]);
+EnableVariableWidth(font[4]);
+}
+
+// ---------------------------
+
+// A variant on tSB's wraptext function. Modified for v3, it can now handle variable
+// width fonts.
+// It returns the total number of lines the passed string was cut into, so you'd use
+// it buy assigning it to an integer variable (eg. numlines = WrapText(myfont, "hello mum"); )
+// which will store how many lines the string was cut to.
+
+// Its used in the textbox routine and maybe in a few other places
+
+string textwrap[10];		// Stores output from the wrap text routine
+
+int WrapText(int txtfont, string s)
+{
+int curline, curpos, countpos;
+int charwrap;
+string tempst, countst;
+
+curline=0;
+tempst=s;
+charwrap = maxlinelength;
+
+// Just one line of text? Don't bother processing it
+
+if (TextWidth(txtfont, s)<charwrap)
+	{
+	textwrap[0]=s;
+	return 1;
+	}
+
+// Calculate how many characters fit in a string that's the maximum line length
+// and stick this number in charwrap
+ 
+ while (len(tempst)>0 && curline<maxwraplines)
+ 	{
+ 	countst = "";
+ 	charwrap = 0;
+ 	countpos = 1;
+
+	if (TextWidth(txtfont, tempst) >= maxlinelength)
+ 		{
+		while(TextWidth(txtfont, countst) <= maxlinelength)
+			{
+			countst = left(tempst, countpos);
+			countpos++;
+			}
+		charwrap = len(countst)-1;
+		}
+	else
+		{
+		charwrap = len(tempst);
+		tempst = tempst+" ";
+		}
+
+// Start at the charwrap-th char and go backwards until we find a space.
+// Chop it there
+	
+ 	for (curpos=charwrap; curpos>0; curpos--)
+ 	 	{
+ 	 	if (strcmp(mid(tempst,curpos,1), " ") = 0)
+ 	 		{       
+ 	 		textwrap[curline]=left(tempst,curpos);
+ 	 		tempst=right(tempst,len(tempst)-curpos-1);
+ 	 		curline++;
+ 	 		curpos=0-1; // Jump out of the loop
+ 	 		}
+ 	   	}
+	}
+return curline;
+}
+
+// ---------------------------
+
+// Like PrintString but underlines the text with a line of the specified colour
+
+void UnderlineText(int x, int y, int destimage, int textfont, int linecolor, string txt)
+{
+PrintString(x, y, destimage, font[textfont], txt);
+Line(x, y+12, (x+TextWidth(font[textfont], txt)-2), y+12, linecolor, screen);
+}
+
+// As above, but centers it on the x axis, with x being its center point
+
+void CenterUnderlineText(int x, int y, int destimage, int textfont, int linecolor, string txt)
+{
+PrintString(x-(TextWidth(font[textfont], txt)/2), y, destimage, font[textfont], txt);
+Line(x-(TextWidth(font[textfont], txt)/2), y+12, (x-(TextWidth(font[textfont], txt)/2)+(TextWidth(font[textfont], txt)))-2, y+12, linecolor, destimage);
+}
+
+// Takes a string and makes the first letter in it a capital
+string Capitalise(string text)
+{
+string firstletter;
+
+firstletter = Left(text, 1);
+firstletter = ToUpper(firstletter);
+text = Right(text, len(text));
+return firstletter + text;
+}
