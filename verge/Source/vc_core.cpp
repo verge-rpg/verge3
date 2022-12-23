@@ -542,7 +542,7 @@ int VCCore::ProcessOperand()
 	byte op = currentvc->GrabC();
 
 	//if (current_cimage == CIMAGE_MAP)
-		//log("VCCore::ProcessOperand: operand type %d @ rel_ofs = $%08X, abs_ofs = $%08X", op, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
+	//	log("VCCore::ProcessOperand: operand type %d @ rel_ofs = $%08X, abs_ofs = $%08X", op, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
 
 	switch (op)
 	{
@@ -701,7 +701,7 @@ int VCCore::ResolveOperand()
 		byte c = currentvc->GrabC();
 
 		//if (current_cimage == CIMAGE_MAP)
-			//log("VCCore::ResolveOperand: opcode %d @ rel_ofs = $%08X, abs_ofs = $%08X", c, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
+		//	log("VCCore::ResolveOperand: opcode %d @ rel_ofs = $%08X, abs_ofs = $%08X", c, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
 
 		switch (c)
 		{
@@ -1130,7 +1130,7 @@ void VCCore::ExecuteBlock()
 		byte temp = 0;
 
 		//if (current_cimage == CIMAGE_MAP)
-			//log("VCCore::ExecuteBlock: opcode %d @ rel_ofs = $%08X, abs_ofs = $%08X", opcode, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
+		//	log("VCCore::ExecuteBlock: opcode %d @ rel_ofs = $%08X, abs_ofs = $%08X", opcode, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
 
 		switch (opcode)
 		{
@@ -1155,7 +1155,14 @@ void VCCore::ExecuteBlock()
 				ExecuteUserFunc(temp, ufunc);
 				break;
 			}
-			case opGOTO:		currentvc->setpos(currentvc->GrabD()); break;
+			case opGOTO:
+			{
+				int ofs = currentvc->GrabD();
+				currentvc->setpos(!vc_oldusercall || current_cimage != CIMAGE_MAP
+					? ofs
+					: ofs - coreimages[CIMAGE_SYSTEM].size());			
+				break;
+			}
 			case opSWITCH:
 			{
 				if(!HandleSwitch())
@@ -1532,10 +1539,9 @@ void VCCore::ExecuteUserFunc(int cimage, int ufunc, bool argument_pass)
 	// setup for funcall
 	current_cimage = cimage;
 	currentvc = &coreimages[cimage];
-	if (vc_oldusercall && cimage == CIMAGE_MAP)
-		currentvc->setpos(func->codeofs - coreimages[CIMAGE_SYSTEM].size());
-	else
-		currentvc->setpos(func->codeofs);
+	currentvc->setpos(!vc_oldusercall || current_cimage != CIMAGE_MAP
+		? func->codeofs
+		: func->codeofs - coreimages[CIMAGE_SYSTEM].size());
 
 	function_t* last_func = in_func;
 	in_func = func;
@@ -1912,14 +1918,16 @@ void VCCore::HandleIf()
 	{
 		currentvc->GrabD();
 		//if (current_cimage == CIMAGE_MAP)
-			//log("VCCore::HandleIf: branch was true: skipped else offset @ rel_ofs = $%08X, abs_ofs = $%08X", currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
+		//	log("VCCore::HandleIf: branch was true: skipped else offset @ rel_ofs = $%08X, abs_ofs = $%08X", currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
 	}
 	else
 	{
 		int ofs = currentvc->GrabD();
 		//if (current_cimage == CIMAGE_MAP)
-			//log("VCCore::HandleIf: branch was false: jumping to offset %d @ rel_ofs = $%08X, abs_ofs = $%08X", ofs, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
-		currentvc->setpos(ofs);
+		//	log("VCCore::HandleIf: branch was false: jumping to offset %d @ rel_ofs = $%08X, abs_ofs = $%08X", ofs, currentvc->curpos() - 1, cimage_file_base_ofs[current_cimage] + currentvc->curpos() - 1);
+		currentvc->setpos(!vc_oldusercall || current_cimage != CIMAGE_MAP
+			? ofs
+			: ofs - coreimages[CIMAGE_SYSTEM].size());
 	}
 }
 
@@ -1989,6 +1997,8 @@ bool VCCore::HandleSwitch()
 			{
 				int compvalue = ResolveOperand();
 				int next = currentvc->GrabD();
+				if (vc_oldusercall && current_cimage == CIMAGE_MAP)
+					next -= coreimages[CIMAGE_SYSTEM].size();
 				if (compvalue != realvalue)
 				{
 					currentvc->setpos(next);
@@ -2005,6 +2015,8 @@ bool VCCore::HandleSwitch()
 			case opDEFAULT:
 			{
 				int next = currentvc->GrabD();
+				if (vc_oldusercall && current_cimage == CIMAGE_MAP)
+					next -= coreimages[CIMAGE_SYSTEM].size();	
 				if (executed)
 				{
 					currentvc->setpos(next);
