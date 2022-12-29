@@ -18,6 +18,13 @@
 
 /****************************** data ******************************/
 
+// Overkill (2006-06-30): Key buffer - stores ASCII keystrokes,
+// since verge sucks at reading input fast enough.
+std::string keybuffer;
+// Overkill (2006-06-30): The delay before keys repeat. (Defaults to 0 - no repeat).
+int key_input_delay;
+quad key_timer, key_repeater, repeatedkey;
+
 char keys[256];
 byte lastpressed;
 byte lastkey;
@@ -185,6 +192,13 @@ byte SdlKeyToScan(SDL_Keycode key)
 
 /****************************** code ******************************/
 
+// Overkill (2006-06-30):
+// Clears the contents of the key buffer.
+void FlushKeyBuffer()
+{
+    keybuffer = "";
+}
+
 void ParseKeyEvent(const SDL_KeyboardEvent& keyEvent)
 {
 	byte scanCode = SdlKeyToScan(keyEvent.keysym.sym);
@@ -200,10 +214,59 @@ void ParseKeyEvent(const SDL_KeyboardEvent& keyEvent)
 			lastkey = key_shift_tbl[lastpressed];
 		else
 			lastkey = key_ascii_tbl[lastpressed];
+
+        // Overkill (2006-06-30): Add input to a key buffer.
+        // Backspace.
+        if (lastpressed == SCAN_BACKSP)
+        {
+            keybuffer = keybuffer + (char)8;
+        }
+        // Enter.
+        else if (lastpressed == SCAN_ENTER)
+        {
+            keybuffer = keybuffer + '\n';
+        }
+        else if (lastkey)
+        {
+            keybuffer = keybuffer + (char)lastkey;
+        }
+
+        if (lastpressed != repeatedkey)
+        {
+            key_timer = systemtime;
+            key_repeater = 0;
+            repeatedkey = lastpressed;
+        }        
 	}
 	else
 	{
-		keys[scanCode]=0;
+		keys[scanCode] = 0;
+
+        bool clear_repeat = false;
+        if (scanCode == (unsigned) repeatedkey)
+        {
+            clear_repeat = true;
+        }
+
+        switch (scanCode)
+        {
+            case SCAN_LEFT: 
+            case SCAN_RIGHT:
+            case SCAN_DOWN:
+            case SCAN_UP:
+            case SCAN_ALT:
+            case SCAN_ENTER:
+                keys[scanCode] = 0;
+                clear_repeat = true;
+                break;
+        }        
+
+        if (clear_repeat)
+        {
+            key_timer = 0;
+            key_repeater = 0;
+            repeatedkey = 0;            
+        }
 	}
 #ifdef __APPLE__
 	// check for command-q or command-enter
@@ -227,9 +290,44 @@ void ParseKeyEvent(const SDL_KeyboardEvent& keyEvent)
 	if (lastpressed == SCAN_UP && keys[SCAN_DOWN]) keys[SCAN_DOWN]=0;
 	if (lastpressed == SCAN_DOWN && keys[SCAN_UP]) keys[SCAN_UP]=0;
 
+    // Overkill (2006-06-30):
+    // Allowing for key repeat as long as the user wants key repeat (defaults to off).
+    if (systemtime - key_timer > key_input_delay
+            && repeatedkey > 0 && key_input_delay > 0)
+    {
+        // Overkill (2006-06-30): Add input to a key buffer.
+        byte mykey;
+        if (keys[SCAN_LSHIFT] || keys[SCAN_RSHIFT])
+            mykey = key_shift_tbl[repeatedkey];
+        else
+            mykey = key_ascii_tbl[repeatedkey];
+        // Backspace.
+        if (repeatedkey == SCAN_BACKSP)
+        {
+            keybuffer = keybuffer + (char)8;
+        }
+        // Enter.
+        else if (repeatedkey == SCAN_ENTER)
+        {
+            keybuffer = keybuffer + '\n';
+        }
+        else if (mykey)
+        {
+            keybuffer = keybuffer + (char)mykey;
+        }
+        // Update the timestamp, so it'll repeat at a sane rate again.
+        key_timer = systemtime;
+    }
+
 	if (key_pressed && bindarray[lastpressed].length())
 		se->ExecuteFunctionString(bindarray[lastpressed].c_str());
-	return ;
+
+    // Overkill (2006-06-30): 
+    // If the string gets too long, shorten it to the 255 most recent characters.
+    if (keybuffer.length() > 255)
+    {
+        keybuffer = vc_strright(keybuffer,255).c_str();
+    }    
 }
 
 void UpdateKeyboard()

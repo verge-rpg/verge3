@@ -18,6 +18,17 @@ void ParseKeyEvent(const SDL_KeyboardEvent& keyEvent);
 
 bool isSDLKeyPressed(SDL_Keycode key);
 
+// Overkill (2006-06-30):
+// Clears the contents of the key buffer.
+void FlushKeyBuffer();
+
+// Overkill (2006-06-30): Key buffer - stores ASCII keystrokes,
+// since verge sucks at reading input fast enough.
+extern std::string keybuffer;
+// Overkill (2006-06-30): The delay before keys repeat. (Defaults to 0 - no repeat).
+extern int key_input_delay;
+extern quad key_timer, key_repeater, repeatedkey;
+
 extern char keys[256];
 extern byte lastpressed;
 

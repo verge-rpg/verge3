@@ -2086,39 +2086,24 @@ void ScriptEngine::ColorReplace(int find, int replace, int image)
 }
 
 // Overkill (2006-06-30): Gets the contents of the key buffer.
-// TODO: Implement for other platforms.
 StringRef ScriptEngine::GetKeyBuffer()
 {
-	#ifdef __WIN32__
-		return keybuffer;
-	#else 
-		err("The function GetKeyBuffer() is not defined for this platform.");
-		return StringRef();
-	#endif
+	return keybuffer;
 }
 
 // Overkill (2006-06-30): Clears the contents of the key buffer.
-// TODO: Implement for other platforms.
 void ScriptEngine::FlushKeyBuffer()
 {
-	#ifdef __WIN32__
-		::FlushKeyBuffer();
-	#else 
-		err("The function FlushKeyBuffer() is not defined for this platform.");
-	#endif
+	::FlushKeyBuffer();
 }
 
 // Overkill (2006-06-30): Sets the delay in centiseconds before key repeat.
-// TODO: Implement for other platforms.
 void ScriptEngine::SetKeyDelay(int d)
 {
 	if (d < 0)
 	{
 		d = 0;
 	}
-	#ifdef __WIN32__
-		key_input_delay = d;
-	#else 
-		err("The function SetKeyDelay() is not defined for this platform.");
-	#endif
+	
+	key_input_delay = d;
 }
