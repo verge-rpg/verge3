@@ -44,6 +44,7 @@ bool editcode = false;
 int gamerate = 100;
 int soundengine = 0;
 bool use_lua = false;
+bool v3_oldfontsubset = false;
 bool vc_oldstring = false;
 bool vc_redefinelibfuncs = false;
 bool vc_oldlibfuncs = false;
@@ -141,6 +142,8 @@ void ApplyConfig()
 	} else if (cfg_KeyPresent("logconsole-normalstdout")) {
 		logconsole = true;
 	}
+    if (cfg_KeyPresent("oldfontsubset"))
+        v3_oldfontsubset = true;
     if (cfg_KeyPresent("oldstring"))
         vc_oldstring = true;
     if (cfg_KeyPresent("redefinelibfuncs"))

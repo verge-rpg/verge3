@@ -28,6 +28,7 @@ extern bool automax;
 extern bool releasemode;
 extern char mapname[255];
 extern int gamerate;
+extern bool v3_oldfontsubset;
 extern bool vc_oldstring;
 extern bool vc_redefinelibfuncs;
 extern bool vc_oldlibfuncs;

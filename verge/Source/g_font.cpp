@@ -141,17 +141,16 @@ void Font::PrintLine(char *s, char *end, int x, int y, image *dest)
 	{
 		if (!*s)
 			return;
-		if (*s == '\f')
+		if (*s == '\f' || (v3_oldfontsubset && *s == '@'))
 		{
-			/*
-			// what's wrong with just using \f0?
-			if (incolor)
+			// For compatibility. new code should use \f0 instead
+			if (v3_oldfontsubset && incolor)
 			{
 				selected = 0;
 				incolor = false;
 				continue;
 			}
-			*/
+			
 			if (!*++s) return;
 			selected = *s - '0';
 			if (selected >= subsets || selected < 0)
@@ -273,16 +272,15 @@ int Font::Pixels(const char *str, const char* end)
 
     for (const char *s = str; *s && (!end || s < end); s++)
 	{
-		if (*s == '\f')
+		if (*s == '\f' || (v3_oldfontsubset && *s == '@'))
 		{
-			/*
-			// what's wrong with just using \f0?
-			if (incolor)
+			// For compatibility. new code should use \f0 instead
+			if (v3_oldfontsubset && incolor)
 			{
 				incolor = false;
 				continue;
 			}
-			*/
+
 			if (!*++s) break;
 			incolor = true;
 			continue;
