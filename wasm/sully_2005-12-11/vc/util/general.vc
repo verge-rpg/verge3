@@ -1,0 +1,173 @@
+// A general-use vc function library!
+//
+// This is the home for functions that could pretty much belong in
+// the builtins, but don't for one reason or another (usually duplication)
+//
+
+
+/************************** entity.face constants ****************************/
+
+// The valid values of Entity.Face[]
+//
+// These should really be predefined.
+#define FACE_UP			1
+#define FACE_DOWN		2
+#define FACE_LEFT		3
+#define FACE_RIGHT		4
+
+
+
+// These four functions return true if the player entity is facing in the specified
+// direction
+//
+// they all assume that GetPlayer() will return the current map entity index
+// of the player... which is a good thing to assume, IMO.
+int FacingUp() {	if( Entity.Face[GetPlayer()] == FACE_UP ) return 1;	return 0;		}
+int FacingDown() {	if( Entity.Face[GetPlayer()] == FACE_DOWN ) return 1;	return 0;	}
+int FacingLeft() {	if( Entity.Face[GetPlayer()] == FACE_LEFT ) return 1;	return 0;	}
+int FacingRight() {	if( Entity.Face[GetPlayer()] == FACE_RIGHT ) return 1;	return 0;	}
+
+
+
+
+// Takes an integer
+// Returns the absolute value of that integer.
+int abs(int i)
+{
+	 if (i>=0) return i;
+	 return 0-i; // Zip: Less foolish
+}
+
+
+// Takes a string, returns the string with leading and trailing whitespace
+// removed.
+string trim( string s ) {
+	int fore, aft, i, hit;
+	string tmpchr;
+
+	for( i=0; i<len(s)-1; i++ ) { //seek the front!
+		tmpchr = mid( s, i, 1 );
+
+		if( !equ(tmpchr," ") && !equ(tmpchr,"	") ) { //if it's not whitespace
+			hit = 1; //true
+
+			fore = i;
+			i=len(s)-1;
+		}
+	}
+
+	if( !hit ) {
+		return "";
+	}
+
+	for( i=len(s); i>1; i-- ) { //seek the front!
+		tmpchr = mid( s, i-1, 1 );
+		if( !equ(tmpchr," ") && !equ(tmpchr,"	") ) { //if it's not whitespace
+			hit = 1; //true
+
+			aft = i;
+			i=1;
+		}
+	}
+
+	return mid( s, fore, (aft-fore) );
+}
+
+
+// Takes two strings.
+// Returns true if the two strings are the same.
+//
+// Note: This function ignores case,  IE "ABC" and "abc" will return true.
+int equ( string a, string b ) {
+	if( !strcmp(toUpper(a),toUpper(b)) ) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+
+// General-use entityhandler
+//
+//
+
+
+// returns the screen-relative x-position for the specified entity.
+// note: this is the x-coordinate of the top-left corner of the entity's image,
+//       *NOT* the x-coordinate of the top-left corner of the hotspot.
+int GetEntScrX( int ent_idx ) {
+	return entity.x[ent_idx] - xwin - entity.hotx[ent_idx];
+}
+
+// returns the screen-relative y-position for the specified entity.
+// note: this is the y-coordinate of the top-left corner of the entity's image,
+//       *NOT* the y-coordinate of the top-left corner of the hotspot.
+int GetEntScrY( int ent_idx ) {
+	return entity.y[ent_idx] - ywin - entity.hoty[ent_idx];
+}
+
+// Takes a tile's x-coordinate
+// returns the screen-relative x-position of that tile.
+int GetTileScrX( int tile_x ) {
+	return (tile_x*16) - xwin;
+}
+
+// Takes a tile's x-coordinate
+// returns the screen-relative x-position of that tile.
+int GetTileScrY( int tile_y ) {
+	return (tile_y*16) - ywin;
+}
+
+
+// Waits until an entity has finished its movecode
+// -Zip
+void WaitForEntity( int wait_entity ){
+
+	// Just incase we get stuck somewhere, set a timeout
+	int timeout = timer + 1000;
+
+	// While the entity is still doing stuff
+	while (entity.movecode[wait_entity])
+	{
+		Render(); // Render the map
+		ShowPage(); // Display to screen
+
+		// If they've got stuck
+		if (timeout < timer) {
+
+			// Stop the entity
+			EntityStop(wait_entity);
+			// Notify you so you can fix your code
+			ErrorHandler("Timeout for entity number "+str(wait_entity)); // Zip: Muxed for sully
+		}
+	}
+}
+
+
+
+// takes a mapentity index, and prints out all of the current information about 
+// it to the logfile.  Useful for diagnosing problems, or just for general 
+// education.
+void EntityDiagnose( int idx )
+{
+	log( "EntityDiagnose("+str(idx)+")" );
+	log( "====================" );
+	
+	if( idx < 0 || idx >= entities )
+	{
+		log( "error: " +str(idx)+ " is not a valid mapentity index on this map.  Current entity count: " + str(entities) );
+	}
+		
+	log( "(x,y): (" +str(entity.x[idx])+","+str(entity.y[idx])+")" );
+	log( "specframe: " + str(entity.specframe[idx]) );
+	log( "frame: " + str(entity.frame[idx]) );
+	log( "hotspot (x,y) (w,h): (" + str(entity.hotx[idx]) +","+str(entity.hoty[idx])+") ("+str(entity.hotw[idx])+","+str(entity.hoth[idx])+")" );
+	log( "movecode: " + str(entity.movecode[idx]) );
+	log( "face: " + str(entity.face[idx]) );
+	log( "speed: " + str(entity.speed[idx]) );
+	log( "visible: " + str(entity.visible[idx]) );
+	log( "obstruct: " + str(entity.obstruct[idx]) );
+	log( "obstructable: " + str(entity.obstructable[idx]) );
+	
+	log( "script: " + entity.script[idx] );	
+}

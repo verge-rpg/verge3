@@ -1,0 +1,169 @@
+// These are functions that are hybrids between the v1-rpg library and the 
+// Simpletype Systems library.
+//
+// Basically, the graphical-drawing-ness/message-displayery is in the v1_rpg lib, and 
+//  all of the stuff actually being altered (money/items/etc) is in the simpletype lib.
+//////////////////////////////////
+
+
+// Removes an amount of money from the party's coffers.
+// 
+// lets you remove more than you have, resulting in a negative amount.
+//  so check before you do it!
+void TakeMoney(int amount)
+{
+	Banner( "Lost "+str(amount)+" "+moneyname+"!", 300 );
+	
+	money -= amount;
+}
+
+// Adds an amount of money to the party's coffers.
+//
+void FindMoney(int amt) {
+	Banner( "Got "+str(amt)+" "+moneyname+"!", 300 );
+	
+	money += amt;
+}
+
+
+// Takes an itemname and a quantity and give it to the party with a pretty banner 
+// with the item name, quatity and icon
+//
+// Does all errorchecking as SimpleType's GiveItem()... cuz it calls that at the top. ;)
+void FindItem( string itemname, int quantity )
+{
+	int idx;
+	string msgstr;
+	
+	int menu_mode = MenuCanBeOn();
+	MenuOff();
+	
+	GiveItem( itemname, quantity );
+	
+	idx=IsItem(itemname);
+	
+	msgstr = "Procured "+master_items[idx].name;
+	
+	if( quantity > 1 ) {
+		msgstr = msgstr + " x"+str(quantity)+"!";
+	} else {
+		msgstr = msgstr + "!";
+	}
+	
+	int wid, high;
+	int icon;
+	
+	icon = icon_get( master_items[idx].icon );
+	
+	high = FontHeight( v1rpg_SmallFont );
+	wid = TextWidth( v1rpg_SmallFont, msgstr );
+	
+	timer = 0;
+	while( timer<300 && !b1 )
+	{
+		Render();
+	
+		V1_Box( (ImageWidth(screen)/2)-(wid/2)-high, ((ImageHeight(screen)/2)-high)-16, wid+(high*2), high*3+32 );
+
+		PrintCenter(ImageWidth(screen)/2, (ImageHeight(screen)/2)-16, screen, v1rpg_SmallFont, msgstr);
+
+		TBlit( (ImageWidth(screen)/2)-8, (ImageHeight(screen)/2)+8, icon, screen );
+		
+		ShowPage();
+	}
+
+	Unpress(0);
+	
+	FreeImage( icon );
+	
+	if( menu_mode )	MenuOn();
+}
+
+
+// Special for Sully: all clean water sources heal.
+//
+void Heal_Well()
+{
+	PlaySound(sfx_well, 100);
+	WhiteIn(50);
+	//recover HP/MP
+	RecoverPartyHP();
+	RecoverPartyMP();
+	Banner( "Recovered full HP and MP!", 300 );
+	
+
+	UnPress(0); //all
+}
+
+
+
+// Completely encapsulates the inn process.
+//
+// The only time this is currently showed off in Sully is in the Bumsville Inn,
+// and only when the flashback sequence is not initiated.
+void Inn() {
+	string old_music;
+	int end_song_time;
+	
+	MenuOff();
+
+	//store the original music
+	old_music = V1_CurrentMusicName();
+	StopMusic();
+
+	//play sleep music
+	//PlayMusic( "res/music/SLEEP2.IT" );
+	end_song_time = systemtime + 890;
+	PlayMusic( "res/music/WA_INN.MP3" );
+	//fadeout
+	FadeOut( 250 );
+	
+	//wait a second for effect
+	WaitOut(500, 0);
+	
+	//recover HP/MP
+	RecoverPartyHP();
+	RecoverPartyMP();
+	
+	//cure any status ailments that get removed at an inn
+	
+	
+	//play a little heal chirp
+	MenuHappyBeep();
+	
+	//cue a dialog box saying that HP/MP recovered!
+	while ( !b1 ) 
+	{
+		Render();
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		CenterMessageBox( v1rpg_SmallFont, "Recovered full HP and MP!" );
+
+		if( systemtime > end_song_time ) {
+			StopMusic();
+		}
+
+		ShowPage();
+	}	
+	
+	//fadein
+	FadeIn(100);
+	
+	StopMusic();
+	
+	//play the original music
+	V1_StartMusic( old_music );
+	
+	MenuOn();
+}
+
+
+// Encapsulates the SavePoint process
+//
+//
+void SavePoint()
+{
+	can_save = 1;
+	PlaySound(sfx_save, 100);
+	WhiteIn(50);
+	Banner("Save Point", 300);
+}

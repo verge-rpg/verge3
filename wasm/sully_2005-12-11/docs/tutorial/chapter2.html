@@ -1,0 +1,367 @@
+<p><center><b><u>Chapter 2:<br>
+Your First Verge Game</b></u></center>
+
+<p><b>What you'll need:</b><br>
+
+<p>I've included a basic "package" that contains all the files
+that you'll need to start making a game. I've also included a music file, sound effect, a couple of .chr's,
+a test map,
+a font and a tileset for you to use. You can download it <a
+href="TutGame.zip">Here</a>. You might also need something like <a
+href="http://www.winzip.com/">WinZip</a> to extract the files.
+<br>In addition to the basic package, in order for you to use the map editor and "packed.exe", you're going to need to have
+the <a href="http://www.microsoft.com/downloads/details.aspx?FamilyId=262D25E3-F589-4842-8157-034D1E7CF3A3&displaylang=en">Microsoft .NET Framework</a>. That
+link will take you the site it is available to download from. Please note that you do *not* need the SDK. Just download
+and install the runtime. Furthermore, users are *not* required to have the .NET framework installed to run verge games. The .NET
+framework is only needed for using the map editor and "packed.exe", neither of which are required to run verge 3 games.
+
+<p>The files included in the basic package are:<br>
+<ul>
+
+<li><b>aurora.mod</b> A music file. It is the classic verge song from the good ol' days of V1.</li>
+
+<li><b>chrmak5.exe</b> This program is used to turn a ".mak" file into a
+useable sprite. Refer to <a href="http://www.verge-rpg.com/docs/view.php?libid=5">the CHRMAK doc</a> to see how to use it.</li>
+
+<li><b>Corona.dall </b>
+</b>We don't care about this.</li>
+
+<li><b>Crystal.chr </b>
+</b>The sprite file for "Crystal"</li>
+
+<li><b>Darin.chr </b>The sprite file for "Darin"</li>
+
+<li><b>Darin.mak </b>The ".mak" file used to create Darin’s sprite</li>
+
+<li><b>Darin.pcx </b>
+The image file used to create Darin’s Sprite. Created by Hahn.</li>
+
+<li><b>Fmod.dll </b>
+The music engine; we don't care about this.</li>
+
+<li><b>Hahn01.vsp </b>
+The tileset used in our map. Created by Hahn.</li>
+
+<li><b>Maped3.exe </b>
+The map editor</li>
+
+<li><b>MapedPreferences.xml
+</b>
+The configuration file for MapED3.</li>
+
+<li><b>Mru.dll </b>
+We don't care about this.</li>
+
+<li><b>Packed.exe </b>
+This is a nifty utility that will pack all the files from your game into one
+file. </li>
+
+<li><b>Pr2-common.dll </b>
+We don't care about this.</li>
+
+<li><b>Readme.txt </b>
+The verge3 readme file.</li>
+
+<li><b>RegisterFileType.dll</b>
+We don't care about this</li>
+
+<li><b>Render.dll </b>
+Don't care.</li>
+
+<li><b>save.wav </b> A sound effect.</li>
+
+<li><b>System.vc </b>
+This is our "system.vc" file as explained above. We'll be playing with this in
+a moment.</li>
+
+<li><b>textbox.pcx</b> An image file of a textbox. </li>
+
+<li><b>Tutorial.map </b>
+Our map file. You can open it in the map editor to edit it, or just see what it
+looks like.</li>
+
+<li><b>V3vergec.txt </b>
+This file contains all the functions/variables you can use with VergeC.
+It’s not complete in the least, however people are working to remedy that.</li>
+
+<li><b>Verge.exe </b>
+The engine. This is the bad boy we'll double-click to compile, and run our
+game.</li>
+
+<li><b>Zlib.net.dll </b>
+Don't care.</li>
+
+<li><b>Tutorial.vc </b>
+This is "tutorial.map"’s corresponding ".vc" file. We'll be playing with this
+in a moment.</li>
+
+<li><b>Verge.cfg </b>
+This is a configuration file, that I'll explain a whole lot more about in a
+moment. Basically it initializes certain things.</li>
+
+<li><b>Smallfont1.gif </b>
+The font I've included.</li></ul>
+
+
+<p>You're also going to
+need a text editor in order to write code and edit your scripts. You can use
+any text editor you'd like, even windows Notepad, however I suggest using <a
+href="http://www.textpad.com/">Textpad</a>, which is a favourite among
+vergers. It also has the ability to do what’s called "Syntax highlighting",
+which is very handy. Refer to the <a href="appendix.html">"Setting up Textpad for verge"</a> section for
+information on how to use it.
+
+
+<p><b>Verge.cfg:<br></b>
+Before we start writing any code, we should take a look at <b>verge.cfg</b>
+which is the configuration file that tells the engine a couple of things. Open
+it with textpad and you should see something along these lines:<br>
+<ul>
+<li><b>xres 320</b></li>
+
+<li><b>yres 240</b></li>
+
+<li><b>nosound 0</b></li>
+
+<li><b>windowmode 1</b></li>
+
+<li><b>releasemode 0</b></li>
+
+<li><b>automax 1</b></li></ul>
+
+<p>Let’s go through these
+one at a time.<br>
+<b>xres and yres:<br>
+</b>These two options determine what screen resolution your game is going to
+run at. What is screen resolution? Well screen resolution determines how many
+"pixels" can be shown on the screen at a time. The higher the number, the more
+pixels there can be, and the greater the detail. Having the <b>xres</b> set to
+320, and <b>yres</b> set to 240, (320x240) means that we can have 320 pixels
+running horizontally across the screen and 240 pixels running vertically, for a
+total of 76800 pixels on the screen at a time. <br>
+Other popular resolutions include:
+640x480 and 800x600. Having the resolution this high gives us the ability to
+create more detailed graphics, however, as Benjamin Eirich, Director of the US
+Department of Retrogaming, as been quoted as saying "Winners use 320x240." ;P
+Just keep in mind that the greater the resolution, the bigger you’re going to
+have draw your graphics to compensate for the space. Since you're just starting
+out, (assumably), it’s probably best to keep it at 320x240.<br>
+<br>
+<b>nosound:</b>
+
+<br>This toggles music
+and sound effects on and off. If we set it to “1” then the sound engine will
+turn off, and no music or sound effects will be played even if you tell the
+engine to play something.
+
+
+<p><b>Windowmode:</b><br>
+This determines whether
+or not your game will run in a window. If it is set to 0, your game will run
+full-screen.
+
+<p><b>Releasemode:</b><br>
+
+This will determine
+whether or not the verge compiler (VCC), as mentioned in the section about
+compiling, is to compile your code before executing. While working on your game
+this should be set to 0, but if you were to release a demo, or send what you've
+done to a friend you could set this to 1 and it will load faster.
+
+<p><b>Automax:<br>
+</b>
+This determines whether or not the window is maximized after verge runs. If set to 1, it will maximize, if set to 0, it will not.
+<br>Toen (guru of all things verge, bother him lots for help) says: People with big manly dual monitor setups like it because a 320x240
+window looks like a postage stamp for them.
+
+<p>So now that you know
+what the <b>verge.cfg</b> file is, what it does, and how you can edit it, you can
+now leave it alone so that we can get down to the fun part!<br>
+<br>
+<b>Your first program:</b><br>
+So you've extracted all the contents of the zip file to a folder of your
+choice. You've read the required reading, and are wondering: Now what?<br>
+Open the file "system.vc" with textpad.</p>
+
+<p>It should be blank
+except for a line that says:<br>
+<pre>
+//File: System.vc &lt;-- Our must have file
+//Please fill me with coding goodness!</pre>
+
+<p>These are what are
+known as <b>"comments"</b>. We can use comments like these to write about our
+functions and whatever else you would like to comment on, in our .vc files. <br>
+For now we'll ignore the idea of comments and get to the good stuff! However, if you wish you can read
+about comments <a href="http://www.verge-rpg.com/docs/view.php?libid=1&section=4&PHPSESSID=02aa1502689bd719fc9b43bba3558b34">here,</a> in the
+<a href="http://www.verge-rpg.com/docs/view.php?libid=1">V3 Manual</a><br>
+You can
+delete those lines, or leave them, it doesn't matter. The great thing about comments
+is that we can write anything after the double-slash (//) and the compiler will ignore it. So we'll do the
+same.
+
+<p>So let’s write some
+code!<br>
+Type:<br>
+<pre>
+void autoexec()
+{
+	Exit("Verge Rocks!");
+}
+</pre>
+
+
+<p>Save your file, and run
+verge.exe. If all went well, a small message box should have appeared that
+looks a little something like this. <img src="./images/fig5.png" ALIGN="LEFT">
+
+<p>Congratulations! You
+just made your first verge game!<br>
+.....Okay so maybe that isn't the funnest RPG anyone will ever play, but hey...it’s
+a start, right?
+
+<p>Before we do something
+a little more rewarding let’s talk a little bit about what we just did. <br>
+As I mentioned before this isn't meant to be a coding tutorial, so I won't go
+into too much detail about it. Basically what you need to understand is that,
+as I said before, our system.vc file requires a <b>"function" </b>called <b>"autoexec()"</b>.
+Verge looks to this function to figure out what it needs to do first. In this
+case we have made a call to the <b>built-in function</b> <b>"Exit()"</b> telling
+verge to quit and give us a message. In this case; "Verge rocks!". Exciting,
+no?
+
+<p><b>Built-in Functions
+and Variables:</b>
+
+<p class=MsoBodyText align=left style='text-align:left'>This is a good time to
+introduce these. Verge comes packed with a variety of what are known as <b>built-in
+functions</b> and <b>variables.</b> These help to make your game creating
+experience that much easier. Built-in functions and variables are the basis of
+all that we will do while programming our game. Again, this isn't a coding
+tutorial, so we won't go too deep into the subject, but it is important to know
+that calling these functions allow us to accomplish the things that we want to
+do. </p>
+
+<p><b>A more rewarding
+experience:</b><br>
+Okay, so now you've coded a bit, let’s do something a little more cooler.
+
+<p>We are now going to
+load a map, spawn an entity, and set it to be controlled by you(the player).
+<p>First things first,
+reopen "system.vc" and add/edit it so that it looks like this:
+<pre>
+int player;
+
+void autoexec()
+{
+	SetAppName("My First Verge Game!");
+	Map("tutorial.map");
+}
+</pre>
+
+<p>Whoa! What’s "int
+player;" ?!
+
+<p>"int player;" is what
+is known as a <b>"Global Variable"</b>. What this means is that we have created
+a variable, something that we can assign values to, that can be used in any of
+our .vc files. You can also declare <b>"local variables" </b>which can only be
+used in the function they were declared in, however, we won't worry about
+these. Read the section on "variables" in the <a
+href="http://www.verge-rpg.com/docs/view.php?libid=1">Verge 3 Manual</a> for a
+better understanding of what they are.
+
+<p>What you need to understand,
+at this point, is that we are going to use this variable to "spawn" an entity
+that will be controlled by us. Bitchin’.
+
+<p>We've also added these
+lines:<br>
+<pre>
+SetAppName("My First Verge Game!");
+Map("tutorial.map");</pre>
+
+<p>The first line:
+<pre>
+SetAppName("My first verge game!");
+</pre>
+Makes a call to the built-in function
+"<b>SetAppName()</b>", and replaces the title of the window with what we've written
+between the quotes. Feel free to change this to anything that you want, as long
+you make sure that what you write is in between quotation marks.
+
+<p>The second line:
+<pre>
+Map("tutorial.map");
+</pre>
+Tells the engine to load tutorial.map and carry out any
+instructions that have been set for that map. At this point all it will do is
+load the map and nothing else since we haven't given it anymore instructions.
+Let’s do that now.
+
+<p>Open up "tutorial.vc"
+and you should find it blank with a comment very similar to the one you found
+in system.vc. Now we're going to write some more code that will spawn an
+entity, and allow us to control it. Write:<br>
+<pre>
+void MapInit()
+{
+	player = EntitySpawn(5,5,"darin.chr"); // Spawn Darin's Entity on the map at cords 5, 5.
+	SetPlayer(player); // Set it so we can control this entity with our keyboard
+}
+</pre>
+
+<p>In this bit of code we
+have created a script called "<b>MapInit()</b>" and told it to do a couple of things.<br>
+<pre>
+player = EntitySpawn(5,5,"darin.chr");
+</pre>
+In this line we have loaded the sprite "darin.chr" and have told the engine to
+place him at the coordinates 5, 5. That is, 5 tiles to the right of the screen,
+and 5 tiles down from the top. Remember that by default tiles are 16x16, that
+is 16 pixels across and 16 pixels up and down, so even though the number 5 is a
+small number, our character will appear quite a distance from the top and left
+parts of the screen.<br>
+Why did we say "player ="? Remember that <b>global variable</b> we declared in
+system.vc? Well here we are telling verge that from now on whenever we refer to
+the variable "player", we are talking about the sprite "Darin.chr". Such as:
+<pre>
+SetPlayer(player);
+</pre>
+Here we make a call to
+the built-in function <b>"SetPlayer()"</b> which tells the engine that this is
+the sprite we want the player to be able to control. Ie. Walk around and
+interact with objects.
+
+<p>Save it, and run
+verge.exe. What? Nothing happened? But we wrote all this beautiful code! Well,
+unfortunately all this beautiful code means nothing unless we tell
+“tutorial.map” to run our script when it loads. How do we do that? Time to open
+our good friend the Map Editor!
+
+<p>Run "maped3.exe", and
+open the file "tutorial.map". After loading the map, go to the Map tab and choose
+properties. You should see a screen that looks like the image below. <img src="./images/fig6.png" ALIGN="RIGHT"><br>
+You don't really need to worry about all of these properties at this point, but
+the one we are concerned about is the last one "Startup Script". In the box
+beside it type "MapInit", click ok, and save the map.
+
+<p>What we have done here
+is set it so that when we load the map "tutorial.map" it will immediately run
+the script "MapInit", that we created just moments ago. So now when you run
+verge.exe it will go to our map, load Darin onto the screen and allow us to use
+the arrows on our keyboard to control him. Go ahead, try it out!
+
+<p>To summarize this is
+what you now know:<br>
+
+<ul><li>How to change the Window title</li>
+<li>How to switch and load a map</li>
+<li>How to spawn an entity, and set it as the controlled
+player</li></ul>
+
+<br><br>
+<hr>
+<a href="index.html">Table Of Contents</a>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="chapter3.html">Chapter 3: Entities; Populating your world </a>

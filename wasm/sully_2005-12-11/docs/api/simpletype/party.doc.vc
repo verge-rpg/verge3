@@ -1,0 +1,197 @@
+// Party.vc
+//
+// Party and character-management functions
+//
+// Original code by vecna
+// modified by McGrue
+////////////////////////////////////////////
+
+// The maximum members in a party.  
+// You may alter this, but do not expect menus built on expectations 
+// of 5 to work properly.
+///////////////////////////////////////////////////////////////////////////////
+#define MAX_PARTY_SIZE 5
+
+
+
+// an array of master_cast[] indexes for the party.
+//
+//eg:	party[3] is equal to the 4th party member's master_cast[] idx.
+//		so, for example, if you wanted to access that character's name based 
+//		on their party position, you would do:
+//
+//		master_cast[ party[4] ].name;
+///////////////////////////////////////////////////////////////////////////////
+int party[MAX_PARTY_SIZE];
+
+
+// the party's money!
+///////////////////////////////////////////////////////////////////////////////
+int money;
+
+// the name of money in this game 
+// (ie "GP", "Gold", "Gil", "Gella", "Zenny", "Meseta")
+///////////////////////////////////////////////////////////////////////////////
+string moneyname = "Clams";
+
+
+// The current party size.  
+// This is altered by AddPlayer, RemovePlayer, and any function that calls them.
+// please do not alter it by hand unless you Know What You Are Doing (tm).
+///////////////////////////////////////////////////////////////////////////////
+int curpartysize;	
+
+
+// The current party size.  
+// This is set by SpawnParty, and contains the entitys[] index of the party's 
+// leader.
+// please do not alter it by hand unless you Know What You Are Doing (tm).
+///////////////////////////////////////////////////////////////////////////////
+int playerent;
+
+
+
+// returns the current size of the party.
+//
+// It's just a protective sheild around curpartysize for those of you 
+// who do not trust yourself with read/write vars. ;)
+///////////////////////////////////////////////////////////////////////////////
+int PartySize()
+
+
+// returns the indice of the player entity.  
+// this indice is only set by SpawnParty().  
+// If SetPlayer is called after SpawnParty(), 
+// the index will point the the party's leader, 
+// *not* the current player-controlled entity.
+//
+// It's just a protective sheild around playerent for those of you 
+// who do not trust yourself with read/write vars. ;)
+///////////////////////////////////////////////////////////////////////////////
+int GetPlayer()
+
+
+// Takes a string name of a Cast member.  
+// returns master_cast idx if it's a valid cast name.  -1 if not.
+///////////////////////////////////////////////////////////////////////////////
+int IsCharacter( string name )
+
+
+// adds a member of master_cast to the party by their name.
+//
+// errors if given name isn't in master_cast.
+///////////////////////////////////////////////////////////////////////////////
+void JoinParty( string name, int level ) 
+
+
+// takes a master_cast index and a level.
+// adds the cast member to the party and levels him to the specified level
+//
+// errors on a bad index, if the character is already in the party, 
+// on a bad level, or if the party is already at max size.
+///////////////////////////////////////////////////////////////////////////////
+void JoinPartyI( int cst_idx, int level ) 
+
+
+// Takes a name of a party member.
+// returns the entity index of that party member.
+//
+// errors if the name is not a valid party member and returns -1.
+///////////////////////////////////////////////////////////////////////////////
+int GetPartyEntity( string name ) 
+
+
+// takes a master_cast name 
+// adds cast member to the active party.  If the party was empty, 
+//   this member becomes leader.
+//
+// errors if the specified name isn't valid.
+// errors if the character was already in the party
+// errors if the party is full.
+///////////////////////////////////////////////////////////////////////////////
+void AddPlayer(string name) 
+
+
+// takes a master_cast index.
+// adds cast member to the active party.  If the party was empty, 
+//   this member becomes leader.
+//
+// errors if the character was already in the party
+// errors if the party is full.
+///////////////////////////////////////////////////////////////////////////////
+void AddPlayerI(int i) 
+
+
+// takes a master_cast index
+// returns 1 if the cast member is in the party, 0 if not.
+///////////////////////////////////////////////////////////////////////////////
+int CharInPartyI(int cast_idx)
+
+
+// takes a master_cast name
+// returns 1 if the cast member is in the party, 0 if not.
+///////////////////////////////////////////////////////////////////////////////
+int CharInParty( String name )
+
+
+// takes a master_cast index
+// returns the party position if the character is in the party, -1 if not.
+///////////////////////////////////////////////////////////////////////////////
+int FindPartyPosI(int cast_idx)
+
+
+// takes a master_cast name
+// returns the party position if the character is in the party, -1 if not.
+///////////////////////////////////////////////////////////////////////////////
+int FindPartyPos(string s)
+
+
+// takes a cast member's name.
+// removes that cast member from the active party.
+//
+// errors if the character is not in the party.
+///////////////////////////////////////////////////////////////////////////////
+void RemovePlayer(string name)
+
+
+
+//turns partyfollowing on.  
+//Works best if everyone's stacked on the same tile at the time.
+///////////////////////////////////////////////////////////////////////////////
+void AutoOn()
+
+
+// Turns partyfollowing off.
+///////////////////////////////////////////////////////////////////////////////
+void AutoOff()
+
+
+// sets every party member's current HP to their max HP (healing them completely).
+///////////////////////////////////////////////////////////////////////////////
+void RecoverPartyHP() 
+
+
+// sets every party member's current MP to their max MP (recovering their MP completely).
+///////////////////////////////////////////////////////////////////////////////
+void RecoverPartyMP() {
+
+
+
+// Spawns a party based on the contents of the party[] array.
+// Party[0] becomes the Player, and each following party slot stalks the previous.
+//
+// This function should be called in the autoexec function of any map you wish to 
+// have your party to exist in.
+//
+// The party is spawned at x,y.  This function does not change cameratracking, 
+// so the camera will not automatically jump to the party if not in mode 1.
+//
+// Errors if the current party size is 0 or less or greater than MAX_PARTY_SIZE.
+///////////////////////////////////////////////////////////////////////////////
+void SpawnParty( int x, int y ) 
+
+
+// Draws a graphical box that lets you select someone presently in the party.
+// returns their master_cast index.
+///////////////////////////////////////////////////////////////////////////////
+int MenuPartyBox()

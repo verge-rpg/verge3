@@ -1,0 +1,72 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+<a name="DoInternetConversation"></a>
+<span class=comment>
+//Just a cheesy little credit-scrolling lib.
+//
+// For a much awesomer Credit solution, check out:
+// <a href=http://www.verge-rpg.com/files/detail.php?id=414>Buckermann's Credits library</a>
+
+
+int _creditCount, _creditOffs;
+
+#define MAX_CREDIT_LINES 100
+
+int _arCred[MAX_CREDIT_LINES];
+string _arCredStr[MAX_CREDIT_LINES];
+
+// adds a line of text to this credit sequence.
+//
+void addIntroLine( int offs, string text )
+{
+	if( _creditCount >= MAX_CREDIT_LINES )
+	{
+		ErrorHandler( "credits.vc::addIntroLine(), You attempted to add too many lines to a credit sequence.  Try increasing MAX_CREDIT_LINES" );
+		return;
+	}
+
+	_arCredStr[_creditCount] = text;
+	_arCred[_creditCount] = offs;
+
+	_creditCount++;
+
+}
+
+// renders the credit sequence.
+//
+void doSimpleCredits( int fnt )
+{
+	int i;
+
+	if(_creditCount==0) return;
+	if(_creditCount>=MAX_CREDIT_LINES)
+
+	timer = 0;
+	while( timer < _arCred[(_creditCount-1)]*4 )
+	{
+		Render();
+
+		for( i=0; i<_creditCount; i++ )
+		{
+			PrintCenter(ImageWidth(screen)/2, ImageHeight(screen)+_arCred[i]-(timer/4), screen, fnt, _arCredStr[i]);
+		}
+
+		ShowPage();
+	}
+}
+
+
+// Clears the simple credits library for a new credit sequence.
+//
+void resetCredits()
+{
+	_creditCount =0;
+	_creditOffs	=0;
+}
+
+// </pre>

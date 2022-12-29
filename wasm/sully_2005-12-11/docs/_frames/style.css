@@ -1,0 +1,16 @@
+.comment
+{
+	color: green;
+}
+
+.type
+{
+	color: blue;
+	font-weight: bold;
+}
+
+.brace
+{
+	color: red;
+	font-weight: bold;
+}

@@ -1,0 +1,48 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+<a name="TakeMoney"></a>
+<span class=comment>
+// Removes an amount of money from the party's coffers.
+//
+// lets you remove more than you have, resulting in a negative amount.
+//  so check before you do it!</span>
+<span class=type>void</span> TakeMoney<span class=brace>(</span><span class=type>int</span> amount<span class=brace>)</span> 
+
+<a name="FindMoney"></a>
+<span class=comment>
+// Adds an amount of money to the party's coffers.
+//</span>
+<span class=type>void</span> FindMoney<span class=brace>(</span><span class=type>int</span> amt<span class=brace>)</span> 
+
+<a name="FindItem"></a>
+<span class=comment>
+// Takes an itemname and a quantity and give it to the party with a pretty banner
+// with the item name, quatity and icon
+//
+// Does all errorchecking as SimpleType's GiveItem<span class=brace>(</span><span class=brace>)</span> ... cuz it calls that at the top. ;<span class=brace>)</span> </span>
+<span class=type>void</span> FindItem<span class=brace>(</span> <span class=type>string</span> itemname, <span class=type>int</span> quantity <span class=brace>)</span> 
+
+<a name="Heal_Well"></a>
+<span class=comment>
+// Special for Sully: all clean water sources heal.
+//</span>
+<span class=type>void</span> Heal_Well<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="Inn"></a>
+<span class=comment>
+// Completely encapsulates the inn process.
+//
+// The only time this is currently showed off in Sully is in the Bumsville Inn,
+// and only when the flashback sequence is not initiated.</span>
+<span class=type>void</span> Inn<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="SavePoint"></a>
+<span class=comment>
+// Encapsulates the SavePo<span class=type>int</span> process
+//</span>
+<span class=type>void</span> SavePoint<span class=brace>(</span><span class=brace>)</span> 

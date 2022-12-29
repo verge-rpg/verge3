@@ -1,0 +1,191 @@
+// equipment.vc
+//
+// Started by McGrue on 2004.08.27
+// Last Updated by McGrue on 2004.08.29
+//
+// Internal Handling and Common Interface for the Sully Simple equipment system
+///////////////////////////////////////////////////////////////////////////////
+
+
+// Takes a master_items index
+// returns the number of modcodes.
+// errors if there are no modcodes, as that's not equipment.
+// errors if the index is invalid.
+///////////////////////////////////////////////////////////////////////////////
+int EquModcodeCount( int idx ) 
+
+
+// Takes a master_items index, and a token index.
+// returns the stat-define value for this token.
+// errors only if the modcode is not valid, does not validate anything else.  
+// returns -1 in this case.
+///////////////////////////////////////////////////////////////////////////////
+int EquGetModcodeStat( int item_idx, int token_idx ) 
+
+
+
+// Takes a master_items index, and a token index.
+// returns the value for this token's mod.
+// does no errorchecking.
+///////////////////////////////////////////////////////////////////////////////
+int EquGetModcodeVal( int item_idx, int token_idx ) 
+
+
+
+// takes a cast index and a slot index.
+// returns true if there's a piece of equipment there, otherwise false.
+// errors if a bad index or a bad slot index are given.
+///////////////////////////////////////////////////////////////////////////////
+int HasEquipment( int cast_idx, int equ_slot ) 
+
+
+
+// takes an equipment index and a stat
+// returns the bonus this equipment gives that stat.
+// errors if it's not valid equipment or if the slot is invalid
+///////////////////////////////////////////////////////////////////////////////
+int GetEquipmentStatMod( int equ_idx, int stat_idx ) 
+
+
+
+//
+// takes a cast idx, equipment idx, and stat field.
+// returns the cast member's stat if he equipped the specified equipment, 
+//   without permanently effecting anything.
+// errors if cast, equip, slot, or stat are invalid.
+///////////////////////////////////////////////////////////////////////////////
+int GetMyStatPretendEquip( string cast_name, string equ_name, int slot_idx, int stat_idx ) 
+
+
+
+//
+// takes a cast idx, equipment idx, and stat field.
+// returns the cast member's stat if he equipped the specified equipment, 
+//   without permanently effecting anything.
+// errors if cast, equip, slot, or stat are invalid.
+///////////////////////////////////////////////////////////////////////////////
+int GetMyStatPretendEquipI( int cast_idx, int equ_idx, int slot_idx, int stat_idx ) 
+
+
+
+//
+// takes a cast idx, equipment idx, and stat field.
+// returns the cast member's stat if he removed the specified equipment, 
+//   without permanently effecting anything.
+// errors if cast, stat, or slot are invalid and returns -1.
+///////////////////////////////////////////////////////////////////////////////
+int GetMyStatPretendDequip( string cast_name, int slot_idx, int stat_idx ) 
+
+
+
+//
+// takes a cast idx, slot idx, and stat field.
+// returns the cast member's stat if he equipped the specified equipment, 
+//   without permanently effecting anything.
+// errors if cast, slot, or stat are invalid and returns -1.
+///////////////////////////////////////////////////////////////////////////////
+int GetMyStatPretendDequipI( int cast_idx, int slot_idx, int stat_idx ) 
+
+
+
+
+
+// Takes a cast name and an item name
+// returns true if this cast member can equip this item, false if not.
+// errors if cast or item do not exist.
+///////////////////////////////////////////////////////////////////////////////
+int CanEquip( string cast_name, string equ_name ) 
+
+
+
+// Takes a cast idx and an equipment idx
+// returns true if this cast member can equip this item, false if not.
+// errors if cast or item do not exist.
+///////////////////////////////////////////////////////////////////////////////
+int CanEquipI( int cast_idx, int equ_idx ) 
+
+
+
+// takes a slot index.
+// returns the number of unique pieces of equipment presently in inventory that can be 
+//   equipped in the given slot
+//
+// no real errorchecking.
+///////////////////////////////////////////////////////////////////////////////
+int EquCountBySlot( int slot_idx ) 
+
+
+
+
+// Takes a slottype and the contextual index of the set of unique equipment 
+//   in inventory that may be equipped in that slot
+//
+// returns master_items index of that equipment.
+//
+// To be used with EquCountBySlot();
+//
+// errors and returns -1 if out of bounds.
+///////////////////////////////////////////////////////////////////////////////
+int GetEquBySlot( int slot, int idx ) 
+
+
+
+
+// Takes a slottype and the contextual index of the set of unique equipment 
+//   in inventory that may be equipped in that slot
+//
+// returns the inventory quantity of that equipment.
+//
+// To be used with EquCountBySlot();
+//
+// errors and returns -1 if out of bounds.
+///////////////////////////////////////////////////////////////////////////////
+int GetEquQuantBySlot( int slot, int idx ) 
+
+
+
+// Gives the specified piece of equipment to the party, then force-equips it
+//
+///////////////////////////////////////////////////////////////////////////////
+void ForceEquip( string cast_name, string equ_name, int slot )
+
+
+// Encapsulates the entire equipping process
+//
+// errors if cast or equipment doesn't exist, 
+// or if the cast member cannot equip this piece.
+///////////////////////////////////////////////////////////////////////////////
+void EquipItem( string cast_name, string equ_name, int slot ) 
+
+
+
+// Encapsulates the entire equipping process
+//
+// errors if cast or equipment don't exist, 
+// or if the cast member cannot equip this piece.
+// or if there isn't any of that in the inventory.
+///////////////////////////////////////////////////////////////////////////////
+void EquipItemI( int cast_idx, int equ_idx, int slot ) 
+
+
+
+// Encapsulates the entire dequipping process
+//
+// ONLY USE TO MAKE SOMEONE NAKED IN THAT SLOT.
+//
+// errors if cast member doesn't exist, 
+// or if the cast member is not wearing equipment in that slot.
+///////////////////////////////////////////////////////////////////////////////
+void DequipItem( string cast_name, int slot ) 
+
+
+
+
+// takes a cast index and an equipment slot and removes the equipment
+//
+// ONLY USE TO MAKE SOMEONE NAKED IN THAT SLOT.
+//
+// errors if the cast_idx is invalid, if slot is out of bounds,
+// or if the cast member is not wearing equipment in that slot.
+///////////////////////////////////////////////////////////////////////////////
+void DequipItemI( int cast_idx, int slot ) 

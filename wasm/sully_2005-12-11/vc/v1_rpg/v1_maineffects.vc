@@ -1,0 +1,381 @@
+/***************************************************************************
+*                                                                          *
+*                    V1RPG VergeC Library for Verge3                       *
+*                        Copyright (C)2004 vecna                           *
+*                                                                          *
+***************************************************************************/
+
+/********************************** data **********************************/
+
+int crossfade_img = DuplicateImage(screen);
+int alpha_img = DuplicateImage(screen);
+int wipe_img = LoadImage("res/system/wipe2.gif");
+
+/********************************** code **********************************/
+
+/*******************************************
+ *            Transition Effects           *
+ *******************************************/
+
+// Fades the screen from black to normal over the specified duration.
+// This renders over everything.
+void FadeIn(int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+
+// Fades the screen from black to normal over the course of one second.
+// during this time the v1rpg global sound volume is changed from 0 to 100,
+// finally resting at 100.
+//
+// This renders over everything.
+void FadeInWSound()
+{
+	timer = 0;
+	while (timer<100)
+	{
+		Render();
+		SetLucent(timer);
+		V1_SetCurVolume(timer);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+	
+	V1_SetCurVolume(100);
+}
+
+// Fades the screen from normal to black over the specified time.
+//
+// This renders over everything.
+void FadeOut(int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+}
+
+
+// Fades the screen from normal to black over the specified time.
+// during this time the v1rpg global sound volume is changed from 100 to 0,
+// finally resting at 0.
+//
+// This renders over everything.
+void FadeOutWSound(int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(100 - (timer*100/_dur));
+		V1_SetCurVolume(100 - (timer*100/_dur));
+		
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+	
+	V1_SetCurVolume(0);
+}
+
+// Fades the screen from white to normal over the specified duration.
+// This renders over everything.
+void WhiteIn(int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255,255,255), screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+// Fades the screen from normal to white over the specified duration.
+// This renders over everything.
+void WhiteOut(int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255,255,255), screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+} 
+
+// fades from the image referenced by the global handle crossfade_img to
+// the present screen over the specified duration
+//
+// This renders over everything.
+void CrossFade(int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(timer*100/_dur);
+		Blit(0, 0, crossfade_img, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+}
+
+// Does a starwars-style wipe-transition from the image referenced by the 
+// global handle crossfade_img to the current screen over the specified period
+//
+// This renders over everything.
+void TransWipe(int _dur)
+{
+	RectFill(0, 0, 320, 240, RGB(255,255,255), alpha_img);
+
+	timer = 0;
+	int x;
+	while (timer<_dur)
+	{
+		x = (timer*370/_dur)-25;
+		Blit(x, 0, wipe_img, alpha_img);
+		RectFill(0-30, 0, x-1, 240, 0, alpha_img);
+		Render();
+		AlphaBlit(0, 0, crossfade_img, alpha_img, screen);
+		ShowPage();
+	}
+}
+
+// Goes from the current screen to a blackout by way of a shrinking black box
+// transition over the specified time.
+//
+// This renders over everything.
+void BoxOut(int _dur)
+{
+	timer = 0;
+	int hd, vd;
+	while (timer<_dur)
+	{
+		Render();
+		hd=timer*160/_dur;
+		vd=timer*120/_dur;
+		RectFill(0,0,hd,240,0,screen);
+		RectFill(320-hd,0,320,240,0,screen);
+		RectFill(0,0,320,vd,0,screen);
+		RectFill(0,240-vd,320,240,0,screen);
+		ShowPage();
+	}
+}
+
+// Goes from a blackout to the current screen by way of a growing black box
+// transition over the specified time.
+//
+// This renders over everything.
+void BoxIn(int _dur)
+{
+	timer = 0;
+	int hd, vd;
+	while (timer<_dur)
+	{
+		Render();
+		hd=timer*160/_dur;
+		vd=timer*120/_dur;
+		hd = 160-hd;
+		vd = 120-vd;
+		RectFill(0,0,hd,240,0,screen);
+		RectFill(320-hd,0,320,240,0,screen);
+		RectFill(0,0,320,vd,0,screen);
+		RectFill(0,240-vd,320,240,0,screen);
+		ShowPage();
+	}
+}
+
+// Goes from the current screen to a blackout by way of a shrinking black circle
+// transition over the specified time.
+//
+// This renders over everything.
+void CircleOut(int dur)
+{
+	timer = 0;
+	while (timer<dur)
+	{
+		Render();
+		RectFill(0,0,320,240,0,crossfade_img);
+		CircleFill(160, 120, 200-(timer*200/dur), 200-(timer*200/dur), transcolor, crossfade_img);
+		TBlit(0, 0, crossfade_img, screen);
+		ShowPage();
+	}
+}
+
+// Goes from a blackout to the current screen by way of a growing black circle
+// transition over the specified time.
+//
+// This renders over everything.
+void CircleIn(int dur)
+{
+	timer = 0;
+	while (timer<dur)
+	{
+		Render();
+		RectFill(0,0,320,240,0,crossfade_img);
+		CircleFill(160, 120, timer*200/dur, timer*200/dur, transcolor, crossfade_img);
+		TBlit(0, 0, crossfade_img, screen);
+		ShowPage();
+	}
+}
+
+// Fades the specified image lucently in over the screen over a specified time.
+//
+// This renders over everything.
+void FadeInImg(int _dur, int _img)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+// Fades the specified image lucently out from over the screen over a specified 
+// time.
+//
+// This renders over everything.
+void FadeOutImg(int _dur)
+{
+	timer = 0;
+	int _img = DuplicateImage(screen);
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), 0, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+	FreeImage(_img);
+}
+
+void WhiteInImg(int _dur, int _img)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255,255,255), screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+void WhiteOutImg(int _dur)
+{
+	timer = 0;
+	int _img = DuplicateImage(screen);
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), RGB(255,255,255), screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+	FreeImage(_img);
+} 
+
+void CrossFadeImg(int _dur, int _img)
+{
+	timer = 0;
+	int _scr = DuplicateImage(screen);
+	while (timer<_dur)
+	{
+		Blit(0, 0, _img, screen);
+		SetLucent(timer*100/_dur);
+		Blit(0, 0, _scr, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+	FreeImage(_scr);
+}
+
+// waits for the specified time, while continuing to update the screen 
+// and process entities.
+//
+void Wait(int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		ShowPage();
+	}
+}
+
+// Exactly like Wait() except that the screen is superimposed with the 
+// specified color.
+//
+// This renders over everything.
+void WaitOut(int _dur, int color)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), color, screen);
+		ShowPage();
+	}
+}
+
+
+// This fades from a screen full of the specifed color to normal over the 
+// specified time.
+//
+// This renders over everything.
+void FadeFromColor(int _color, int _dur)
+{
+	timer = 0;
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(timer*100/_dur);
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), _color, screen);
+		SetLucent(0);
+		ShowPage();
+	}
+}
+
+// This fades from a normal screen to a screen full of the specifed color over 
+// the specified time.
+//
+// This renders over everything.
+void FadeToColor(int _color, int _dur)
+{
+	timer = 0;	
+	while (timer<_dur)
+	{
+		Render();
+		SetLucent(100 - (timer*100/_dur));
+		RectFill(0, 0, ImageWidth(screen), ImageHeight(screen), _color, screen);
+		SetLucent(0);	
+		ShowPage();
+	}
+} 

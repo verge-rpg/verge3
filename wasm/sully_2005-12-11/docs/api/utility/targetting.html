@@ -1,0 +1,144 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+<a name="target_data"></a>
+<span class=comment>
+// A very generic structure for targetting data!
+// What you do with it is your own call.  Filfre to change all of this data
+// to your own content, but remember to change the Targetting accessors to reflect the changes,
+// and to change ClearTargetting() to unset everything inside.</span>
+<span class=type>struct</span> target_data
+<span class=brace>{</span>
+	<span class=type>int</span> id;		<span class=comment>//intended for a reference to some index somewhere.
+			// in the SimpleType RPG Library (Sully's default) this holds
+			// a master_cast index.  (master_cast is an array of Cast structures,
+			// defined in  "vc/simpletype_rpg/data.vc" by default.)</span>
+
+
+	<span class=type>int</span> mode;	<span class=comment>//intended for a reference to the context of your ID.
+			//for instance, in the upcoming v1_rpg library,
+			//</span>
+
+
+	<span class=type>string</span> text;	<span class=comment>//special parameters to attach to this target.
+			//* Could be "Monster" or "PC", to tell the effect function to look in
+			//  a different array than normal with the id above.
+			//
+			//* Could be "Direct" or "Shrapnel" to tell the effect function who a
+			//  grenade was launched at, and who was only hit by the "splash" zone.
+			//
+			//* these are just suggestions.  It's up to you as a targetting-function and
+			//  effect-function scripter to use these tools.</span>
+<span class=brace>}</span>
+
+<a name="MAX_TARGETS"></a>
+<span class=comment>
+// The maximum number of targets for your game.
+// Generally you want this to be at least equal to the
+// total number of combatants (monsters and party members)
+// involved in the biggest battle possible.</span>
+<span class=type>#define</span> MAX_TARGETS 32
+
+<a name="DoTargetting"></a>
+<span class=comment>
+// The Entrypoint for a Targetting Session.
+// It clears all previous targetting data, verifies that the user-defined targetting
+//  function exists, and calls it!
+//
+// Errors if the function named in callfunc does not exist.  Targetting callfuncs are manditory.
+// Errors if the callfunc was called and never set targetting_success.</span>
+<span class=type>void</span> DoTargetting<span class=brace>(</span> <span class=type>string</span> callfunc <span class=brace>)</span>
+
+<a name="ValidTargetting"></a>
+<span class=comment>
+// returns 1 if the targetting callfunction is satisfied that everything's set
+// with the targetting.
+//
+// returns 0 if the targetting failed, was cancelled.
+//
+// errors if the targetting was never set.</span>
+<span class=type>int</span> ValidTargetting<span class=brace>()</span>
+
+<a name="ClearTargetting"></a>
+<span class=comment>
+// Cleans up all targetting-related variables.
+// Automatically called at the top of DoTargetting();</span>
+<span class=type>void</span> ClearTargetting<span class=brace>()</span>
+
+
+<span class=comment>
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//
+// Functions for use in your private targetting function (you know, the one you're sending into DoTargeting()? )
+//
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+<a name="TargettingError"></a>
+// A wrapper around ErrorHandler() (defined in "error_handler.vc" in this same directory)
+// use this function for all fatal errors in your personal targetting callfuncs.
+// It takes care of all error overhead for this system.
+//</span>
+<span class=type>void</span> TargettingError<span class=brace>(</span> <span class=type>string</span> error_msg <span class=brace>)</span>
+
+<a name="AddTarget"></a>
+<span class=comment>
+// When your targetting function adds a valid target, please do it through this function.
+//
+// If you alter the target_data struct, please alter the arguments accordingly.
+//
+// Errors if you've filled the master_targetting array to it's capacity.</span>
+<span class=type>void</span> AddTarget<span class=brace>(</span> <span class=type>int</span> _id, <span class=type>int</span> _mode, <span class=type>string</span> _text <span class=brace>)</span>
+
+<a name="AddUniqueTarget"></a>
+<span class=comment>
+// When your targetting function adds a valid target, please do it through this function.
+// This function makes sure each target is unique.
+//
+// The criteria in the default build of this library is that id and mode together create a
+// key of uniqueness.  For example, id: 0, mode: 0 is a different target than id: 0, mode: 1.
+//
+// If your game has different criteria for the uniqueness of a target, You should alter the body of
+// this function.
+//
+// Errors if you've filled the master_targetting array to it's capacity.</span>
+<span class=type>void</span> AddUniqueTarget<span class=brace>(</span> <span class=type>int</span> _id, <span class=type>int</span> _mode, <span class=type>string</span> _text <span class=brace>)</span>
+
+<a name="CancelTargetting"></a>
+<span class=comment>
+// If your targetting function cancels peacefully (like the user decided not to
+//   use the potion after all, etc), then you should call this function before
+//   ending the targetting function.  If you do not, various error messages will flow.
+//
+// This basically tells the rest of the system to not do anything peacefully.</span>
+<span class=type>void</span> CancelTargetting<span class=brace>()</span>
+
+<a name="TargettingDone"></a>
+<span class=comment>
+// Call this function at the end of your function if everything is A-OK!
+//
+// It sets the targetting state to TARG_SUCCESS (a very good thing) if there are
+// valid targets in the array, and sets it to TARG_CANCEL if there are no targets
+// selected through accident or injury.</span>
+<span class=type>void</span> TargettingDone<span class=brace>()</span>
+
+
+<a name="GetTargettingCount"></a>
+<span class=comment>
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Functions for use in whatever function cares about the targets that your custom targetting function just selected.
+//
+// Largely just accessors to master_targetting
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//TargettingError() in the above function can be used gladly in the effect functions too.</span>
+<span class=type>int</span> GetTargettingCount<span class=brace>()</span>
+
+
+<a name="GetTargID"></a><a name="GetTargMode"></a><a name="GetTargText"></a>
+<span class=comment>//these return the various fields for the master targetting array based on index.</span>
+<span class=type>int</span> GetTargID<span class=brace>(</span> <span class=type>int</span> t_idx <span class=brace>)</span>
+<span class=type>int</span> GetTargMode<span class=brace>(</span> <span class=type>int</span> t_idx <span class=brace>)</span>
+<span class=type>string</span> GetTargText<span class=brace>(</span> <span class=type>int</span> t_idx <span class=brace>)</span>

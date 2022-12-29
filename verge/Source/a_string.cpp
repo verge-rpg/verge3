@@ -67,29 +67,29 @@ int strcasecmp(std::string_view s1, std::string_view s2) {
 }
 
 //a vc-style substring operation (very kind and lenient)
-StringRef vc_strsub(CStringRef str, int pos, int len) {
+StringRef vc_strsub(CStringRef str, int pos, int len)
+{
 	int strlen = str.size();
 	
-	if(strlen==0) return str; //empty strings always return empty strings
-	if(pos>=strlen) return str; //if you start past the end of the string, return the entire string. this is unusual, but there you have it
+	if (strlen == 0) return str; // empty strings always return empty strings
+	if (pos >= strlen) return str; // if you start past the end of the string, return the entire string. this is unusual, but there you have it
 
-	//clipping
-	if(pos<0) {
+	if(pos < 0)
+	{
 		len += pos;
 		pos = 0;
 	}
 
-	if (pos+len>=strlen)
-		len=strlen-pos+1;
+	if (pos + len >= strlen) len = strlen - pos + 1;
+	if (len <= 0) return empty_string;
 	
-	//return str.str().substr(pos,len);
-	return str.substr(pos,len);
+	return str.substr(pos, len);
 }
 
 StringRef vc_strmid(CStringRef str, int pos, int len) { return vc_strsub(str,pos,len); }
 StringRef vc_strleft(CStringRef str, int len) { return vc_strsub(str,0,len); }
 // Overkill (2007-08-25): Fixed a bug in right() where len of 0 returns str, instead of "".
-StringRef vc_strright(CStringRef str, int len) { return len ? vc_strsub(str,str.size()-len,len) : empty_string; }
+StringRef vc_strright(CStringRef str, int len) { return len > 0 ? vc_strsub(str,str.size()-len,len) : empty_string; }
 
 // Overkill: 2005-12-28
 // Thank you, Zip.

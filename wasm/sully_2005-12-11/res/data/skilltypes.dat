@@ -1,0 +1,24 @@
+// Skilltypes.dat
+//
+// This datafile contains definitions of all of the 
+// Skill Groups this game has.  A skill must belong to a group.
+//
+// This data gets parsed into the master_skilltypes[] array, defined in data.vc
+// The maximum number of skillgroups is controlled by MAX_SKILLTYPES, defined in data.vc
+//    please change this number of you wish to add more skill types than it currently 
+//    allows.
+//
+// blank lines and commented lines are ignored.  Anything else will be treated as an entry.
+//
+//
+// Field order:
+// Name		Icon	"Description"
+
+Black_Magic	1	"The magic dealing in hurting!"
+White_Magic	2	"The magic dealing in anti-hurting!"
+Fuschia_Magic	3	"The magic of interior decorating!"
+Swordtech	4	"Masterful techniques for swordsmen."
+Jive		5	"Secret arts known only to funkmasters."
+Gadgetry	6	"Engineering skills."
+
+END_OF_FILE

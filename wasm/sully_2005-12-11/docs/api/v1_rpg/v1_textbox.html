@@ -1,0 +1,149 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+<a name="SetV1TextboxYBuffer"></a>
+<span class=comment>
+// Specifies how much y-space to put between a Textbox or Promptbox line.
+//</span>
+<span class=type>void</span> SetV1TextboxYBuffer<span class=brace>(</span> <span class=type>int</span> y <span class=brace>)</span> 
+
+<a name="SetV1MaxTextLines"></a>
+<span class=comment>
+// Sets how many lines of text a textbox maxes out at <span class=brace>(</span>AutoText<span class=brace>(</span><span class=brace>)</span> ,
+// PromptDirect<span class=brace>(</span><span class=brace>)</span> , and TextboxDirect<span class=brace>(</span><span class=brace>)</span>  care mostly about this.  TextBox<span class=brace>(</span><span class=brace>)</span> ,
+// TextBoxM<span class=brace>(</span><span class=brace>)</span> , and Prompt<span class=brace>(</span><span class=brace>)</span>  max out at 3 lines without some abuse or changes.
+//</span>
+<span class=type>void</span> SetV1MaxTextLines<span class=brace>(</span> <span class=type>int</span> i <span class=brace>)</span> 
+
+<a name="SetV1TextboxBG"></a>
+<span class=comment>
+// Sets the bounding box for the background box of the v1rpg textbox and
+// promptbox functions.
+//</span>
+<span class=type>void</span> SetV1TextboxBG<span class=brace>(</span> <span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> w, <span class=type>int</span> h <span class=brace>)</span> 
+
+<a name="SetV1TextArea"></a>
+<span class=comment>
+// Sets the bounding box for the text of the v1rpg textbox and promptbox
+// functions.
+//</span>
+<span class=type>void</span> SetV1TextArea<span class=brace>(</span> <span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> w, <span class=type>int</span> h  <span class=brace>)</span> 
+
+<a name="SetV1MoreTextArrowPos"></a>
+<span class=comment>
+// Changes the coordinates of the bobby moretext arrow.
+//</span>
+<span class=type>void</span> SetV1MoreTextArrowPos<span class=brace>(</span> <span class=type>int</span> x, <span class=type>int</span> y <span class=brace>)</span> 
+
+<a name="v1_SetSmallFont"></a>
+<span class=comment>
+// Sets the Small Font for the v1rpg library.
+//</span>
+<span class=type>void</span> v1_SetSmallFont<span class=brace>(</span> <span class=type>int</span> fnt_handle <span class=brace>)</span> 
+
+<a name="v1_RestoreSmallFont"></a>
+<span class=comment>
+// Restores the Small Font for the v1rpg library to it's original font.
+//</span>
+<span class=type>void</span> v1_RestoreSmallFont<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="v1_GetSmallFont"></a>
+<span class=comment>
+// returns the font handle of the v1rpg library's current small font.
+//</span>
+<span class=type>int</span> v1_GetSmallFont<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="v1_SetLargeFont"></a>
+<span class=comment>
+// Sets the Large Font for the v1rpg library.
+//</span>
+<span class=type>void</span> v1_SetLargeFont<span class=brace>(</span> <span class=type>int</span> fnt_handle <span class=brace>)</span> 
+
+<a name="v1_RestoreLargeFont"></a>
+<span class=comment>
+// Restores the Large Font for the v1rpg library to it's original font.
+//</span>
+<span class=type>void</span> v1_RestoreLargeFont<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="v1_GetLargeFont"></a>
+<span class=comment>
+// returns the font handle of the v1rpg library's current Large font.
+//</span>
+<span class=type>int</span> v1_GetLargeFont<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="SetTextBoxScroll"></a>
+<span class=comment>
+// 1 sets Textscrolling on,
+// 0 turns it off.</span>
+<span class=type>void</span> SetTextBoxScroll<span class=brace>(</span> <span class=type>int</span> on <span class=brace>)</span> 
+
+<a name="GetTextBoxScrollMode"></a>
+<span class=comment>
+//returns 1 if text scroll mode is on, 0 if it's off.</span>
+<span class=type>int</span> GetTextBoxScrollMode<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="AutoText"></a>
+<span class=comment>
+// Takes a single <span class=type>string</span> of text and does as many TextBoxM<span class=brace>(</span><span class=brace>)</span> 's and a
+// final TextBox<span class=brace>(</span><span class=brace>)</span>  as needed.
+//
+// | and/or TAB will force a newline.
+// ~ and/or NEWLINE will force an entirely new box.
+//
+// VERGEDev doesn't advocate the use of Autotext for most cases because it
+// ruins the dramatic effect of well-plotted out textboxes.  Done correctly,
+// your game is awesomely poetic and quotable.  However, having massive boxes
+// of text taht don't have complete thoughts in one screen ruins the
+// illusion.
+//
+// Ask vec for a more in-depth explaination sometime. ;<span class=brace>)</span> 
+//
+// However, autotext is very useful if you're dynamically resizing your boxes,
+// or pulling dynamic content from somewhere, etc etc, so here's the function anyways.
+//</span>
+<span class=type>void</span> AutoText<span class=brace>(</span> <span class=type>int</span> sp, <span class=type>string</span> master_text <span class=brace>)</span> 
+
+
+<a name="TextBox"></a>
+<span class=comment>
+// The main textbox.  Takes a speech portrait index, and three strings and
+// prints them out,
+<span class=type>void</span> TextBox<span class=brace>(</span><span class=type>int</span> sp, <span class=type>string</span> s1, <span class=type>string</span> s2, <span class=type>string</span> s3<span class=brace>)</span> 
+
+<a name="TextBoxM"></a>
+<span class=comment>
+// Like Textbox, but makes a little arrow bob up and down in the corner to
+// denote that there will be more text to come.
+//</span>
+<span class=type>void</span> TextBoxM<span class=brace>(</span><span class=type>int</span> sp, <span class=type>string</span> s1, <span class=type>string</span> s2, <span class=type>string</span> s3<span class=brace>)</span> 
+
+<a name="Prompt"></a>
+<span class=comment>
+// Create a promptbox.  Takes a speech portrat and three lines of text and
+// displays a textbox of them.
+//
+// Then takes a |-delineated list and creates a promptbox.
+// Returns the token index of the choice selected.
+// Doesn't allow cancelling at this time.
+//
+// Example:
+// if choices is "Yes|No|Maybe" makes a promptbox with "Yes", "No", and "Maybe"
+// as choosable choices.  If the player chooses "Yes", it returns 0, if the
+// player chooses "No" it returns 1, and if the player chooses "Maybe" it
+// returns 2.</span>
+<span class=type>int</span> Prompt<span class=brace>(</span><span class=type>int</span> sp, <span class=type>string</span> s1, <span class=type>string</span> s2, <span class=type>string</span> s3, <span class=type>string</span> choices<span class=brace>)</span> 
+
+
+<a name="DrawSpeechPortrait"></a>
+<span class=comment>
+// Draws the Speech Portrait.
+//</span>
+<span class=type>void</span> DrawSpeechPortrait<span class=brace>(</span> <span class=type>int</span> speech_idx <span class=brace>)</span> 
+
+</pre>
+</body>
+</html>

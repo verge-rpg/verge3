@@ -1,0 +1,460 @@
+void start()
+{
+ 
+	if( flags[F_FLASH_GEAR] )
+	{
+		AlterBTile(12,85,177,2);
+	}
+	
+	InitMap();
+
+	V1_StartMusic("res/music/VANGELIS.MOD");
+	
+	FlashIntro();
+
+	Banner("Future Site of Rodent City",300);
+}
+
+void n_exit() /* 1 */
+{
+	v1_mapswitch("Overworld.MAP",25,74,0);
+}
+
+void rabbit() /* 2 */
+{
+	TextBoxM(T_BUNNY,	"Hey, Sara! What's up, toots?",
+						"I've planted a blessed seed in",
+						"the dirt patch over there.");
+	TextBox(T_BUNNY,	"I'm hoping that a carrot grows,",
+						"so don't change anything, ok?",
+						"I'm counting on you!");
+}
+
+void bird() /* 3 */
+{
+	TextBoxM(T_BIRD,	"Hi, Sara! Some weird guy with",
+						"a velvet jacket just passed by",
+						"here, heading into the woods.");
+	TextBox(T_BIRD,		"He mentioned something about",
+						"building a cabin, and putting",
+						"in some psychadelic lights.");
+}
+
+void rat() /* 4 */
+{
+	TextBox(T_SLASHER,	"Hi, Mrs. Sara! How are you today?",
+						"I'm so lonely. When are you going to",
+						"clone some rats?");
+
+	TextBox(T_SARA,	"Oh hello, Slasher. I'm fine.",
+					"The cloning engine is that big mass of",
+					"steaming pipes there.");
+
+	TextBox(T_SLASHER,	"Yay! Don't forget that you stored that",
+						"Copper Gear in the tall cabin to the north.", "");
+}
+
+void elder_enter() /* 16 */
+{
+	warp( 8,67, TCROSS );
+	Banner( "Rat Apartments",100 );
+}
+
+void weap_enter() /* 17 */
+{
+	warp( 30,69, TCROSS );
+	Banner( "Ratcersize Hall",100 );
+}
+
+void item_enter() /* 18 */
+{
+	warp( 34,90, TCROSS );
+	Banner( "Ratatorium",100 );
+}
+
+void sara_enter() /* 19 */
+{
+	warp( 53,69, TCROSS );
+	Banner( "Laboratory",100 );
+}
+
+void elder_exit() /* 20 */
+{
+	warp(11,21, TCROSS);
+}
+
+void elder_upstair() /* 21 */
+{
+	warp( 11,79, TCROSS );
+	Banner( "2F",100 );
+}
+
+void elder_down() /* 22 */
+{
+	warp( 13,61, TCROSS );
+}
+
+void sara_upstair() /* 23 */
+{
+	warp( 73,64, TCROSS );
+}
+
+void sara_down() /* 24 */
+{
+	warp( 53,80, TCROSS );
+	Banner( "Basement",100 );
+}
+
+
+void Basement_Down() /* 14 */
+{
+	warp( 54,61, TCROSS );
+}
+
+void Weap_Exit() /* 27 */
+{
+	warp( 33,21, TCROSS );
+}
+
+void Item_Exit() /* 28 */
+{
+	warp( 29,33, TCROSS );
+}
+
+void Sara_Exit() /* 29 */
+{
+	warp( 7,35, TCROSS );
+}
+
+void The_Well() /* 18 */
+{
+	Heal_Well();
+	
+	if( !flags[F_FLASH_WATER] )
+	{
+		TextBox(T_SARA,	"I got some water.",
+						"I better take it to the engine before it",
+						"falls through my fingers!");
+		
+		flags[F_FLASH_WATER] = 1;
+	}
+}
+
+void Basement_Up() /* 19 */
+{
+ 	warp( 73,68, TCROSS );
+}
+
+void engine() /* 20 */
+{
+	int sara;
+	
+	if(!flags[F_FLASH_WATER])
+	{
+		TextBox(T_SARA,	"The steam engines will not start.",
+						"I need to bring the machine some",
+						"water.");
+		return;
+	}
+	
+	if( flags[F_FLASH_WATER] && flags[F_FLASH_WATER] != 2 )
+	{
+		
+		SoundSplash();
+		FadeFromColor(RGB(0,0,255),100);
+		Banner("Poured the water",500);
+		
+		flags[F_FLASH_WATER] = 2; //we're done with the water!
+		Unpress(0);
+	}
+	
+	if( !flags[F_FLASH_GEAR] )
+	{
+		TextBox(T_SARA,	"I'll need to install a gear made of ",
+						"copper before I can activate the device.",
+						"");
+		return;
+	}
+	
+	if( flags[F_FLASH_GEAR]!=2 && flags[F_FLASH_GEAR] )
+	{
+		SoundDoubleClick();
+		Banner("Installed Gear",500);
+		flags[F_FLASH_GEAR] = 2;
+		Unpress(0);
+	}
+	
+	if( !flags[F_FLASH_TWIG] )
+	{
+		TextBox(T_SARA,	"I'll need to add some fuel.",
+						"Perhaps there's a nest of twigs in the",
+						"Forest.");
+		return;
+	}
+	
+	if( flags[F_FLASH_TWIG]!=2 && flags[F_FLASH_TWIG] )
+	{
+		SoundCrash();
+		Banner("Added the twigs",500);
+		flags[F_FLASH_TWIG]=2;
+		Unpress(0);
+	}
+	
+	if( !flags[F_FLASH_TOEJAM] )
+	{
+		TextBox(T_SARA,	"I shouldn't start the machine until I",
+						"lubricate the cogs with toe jam of",
+						"Cyclops.");
+		return;
+	}
+	
+	if(flags[F_FLASH_TOEJAM]!=2 && flags[F_FLASH_TOEJAM])
+	{
+		SoundDoubleClick();
+		Banner("Placed lubricant",500);
+		flags[F_FLASH_TOEJAM] = 2;
+		Unpress(0);
+	}
+	
+	if( !flags[F_FLASH_SOLAR] )
+	{
+		TextBox(T_SARA,	"To power the device, I need to gather",
+						"solar energy in my suit and touch the",
+						"engine.");
+	
+
+		return;
+	}
+	
+	//Oh man!  Last part of this flashback!
+	if( flags[F_FLASH_SOLAR] )
+	{
+		FadeToColor(RGB(255,255,0),100);
+		FadeFromColor(RGB(255,255,0),100);
+
+		TextBox(T_SARA,	"Alright! The ignition switch has started!",
+						"This thing should start cloning rats",
+						"in no time!");
+		TextBox(T_SARA,	"Oops! I forgot to make one minor flow",
+						"adjustment. Let me just reach in here",
+						"quick...");
+						
+		FillVCLayer( RGB(255,0,0) );
+		
+		SoundHit();
+		
+		Warp(57,64, TNONE);
+		Wait(10);
+		
+		ClearVCLayer();
+		
+		TextBox(T_SARA,	"Ouch! I cut my finger on one of those fast",
+						"moving gears.",
+						"I hope it's okay...");
+		
+		TextBox(0,	"Yay! Yay! Lots of rats to play with.",
+					"Oh joy!","");
+		
+		TextBoxM(T_SARA,	"Oh no! That drop of blood must be jamming",
+							"up the machine!",
+							"It's really smoking now!");
+		TextBox(T_SARA,		"No! According to this system monitor,",
+							"it's starting to replicate human DNA!", "");
+		
+		VCQuake( 5, 0 );
+		do_xplosions( 160,63 );
+		do_xplosions( 152,58 );
+		do_xplosions( 155,65 );
+		VCQuakeOff();
+		
+		TextBox(T_SARA,	"Egad!","The whole structure is about to explode!","");
+						
+		SoundQuake();
+		
+		Earthquake( 15, 15, 300 );
+		
+		VCQuake( 5, 0 );
+		do_xplosions( 155,65 );
+		do_xplosions( 152,58 );
+		do_xplosions( 160,63 );
+		VCQuakeOff();
+		
+		SoundExplosion();
+		
+		do_sparklies(1);
+		do_sparklies(2);
+		do_sparklies(1);
+		do_sparklies(2);
+		do_sparklies(3);
+		do_sparklies(4);
+		do_sparklies(3);
+		do_sparklies(4);
+		
+		AlterBTile(53,61,321,2);
+		AlterBTile(54,61,546,2);
+		AlterBTile(55,61,528,2);
+		AlterBTile(53,62,547,2);
+		AlterBTile(54,62,548,2);
+		AlterBTile(55,62,549,2);
+		AlterBTile(53,63,528,2);
+		AlterBTile(54,63,546,2);
+		AlterBTile(55,63,321,2);
+		AlterFTile(53,60,320,2);
+		AlterFTile(54,60,318,2);
+		AlterFTile(55,60,529,2);
+		AlterFTile(53,61,523,2);
+		AlterFTile(54,61,525,2);
+		AlterFTile(55,61,527,2);
+		AlterFTile(53,62,529,2);
+		AlterFTile(54,62,318,2);
+		AlterFTile(55,62,320,2);
+		
+		do_sparklies(5);
+		do_sparklies(6);
+		do_sparklies(5);
+		do_sparklies(6);
+		
+		entity.face[playerent] = FACE_LEFT;
+		
+		TextBox(0,	"Hello.","","");
+		TextBox(0,	"Hi! How are you today?","","");
+		TextBox(0,	"Greetings! What's your name?","","");
+		TextBox(T_SARA,	"Ahhhhhhhhhhhhhhhhhhh!","","");
+		TextBox(0,	"What's wrong, Sara?"
+					"Why aren't any rats coming out?","");
+		TextBox(T_SARA,	"*sniff* It wasn't supposed to",
+						"be this way... *sob*",
+						"It was to be a thing of beauty...");
+
+		flags[F_RODNE_FLASH_OVER] = 1; //we've done the flashback.  So rock out.
+
+		RemovePlayer( "Sara" );
+		AddPlayer( "Darin" );
+		AddPlayer( "Dexter" );
+
+		v1_MapSwitch("VILLAGE.MAP",9,84,0);
+	}
+}
+
+void chest() /* 21 */
+{
+	if( !flags[F_FLASH_GEAR] )
+	{
+		AlterBTile(12,85,177,2);
+		SoundSwitch();
+		Banner("Got Copper Gear!",500);
+		flags[F_FLASH_GEAR]=1;
+	}
+}
+
+void Nest() /* 22 */
+{
+	if(!flags[F_FLASH_TWIG])
+	{
+		SoundHit();
+		Banner("Took dry twigs!",500);
+		flags[F_FLASH_TWIG]=1;
+	}
+}
+
+void notes() /* 23 */
+{
+	TextBoxM(T_SARA,	"Here's my notes on the clone machine.",
+						"Let's see here...","");
+	TextBoxM(T_SARA,	"The cloning device is a steam powered",
+						"mechanism which will require both",
+						"fuel and power.");
+	TextBoxM(T_SARA,	"My special metal body suit can absorb",
+						"solar power and use it to ignite the",
+						"reaction.");
+	TextBoxM(T_SARA,	"The machine cannot be safely operated",
+						"unless the cogs are lubricated very",
+						"well.");
+	TextBox(T_SARA,		"Legends speak of the ancient race of",
+						"Cyclops' whose toe jam has mystical",
+						"lubricant powers.");
+}
+         
+void FlashIntro() /* 24 */
+{
+	if( !flags[F_FLASH_INTRO] )
+	{
+		FadeIn(30);
+		
+		TextBoxM(T_SARA,	"Ahh... I love that fresh air.",
+							"Building this city all by myself certainly",
+							"was fun.");
+		TextBoxM(T_SARA,	"I'm glad I was able to use my free time",
+							"constructively instead of committing",
+							"crime.");
+		TextBoxM(T_SARA,	"Now that the city is built I must finish my",
+							"cloning engine to make lots of rats.", "");
+		TextBoxM(T_SARA,	"My metropolis of rodents will be far",
+							"superior to those geeks in Bumsville",
+							"in every way!");
+		TextBox(T_SARA,		"I better go review my notes.",
+							"I think I locked them up in my basement.", "");
+		Flags[F_FLASH_INTRO] = 1;
+	}
+}
+
+void do_xplosions( int x, int y ) /* 25 */
+{
+	SoundBomb();
+
+	VCPutIMG("res/images/story_fx/POP01.PCX",x,y);
+	Wait(20);
+	ClearVCLayer();
+	VCPutIMG("res/images/story_fx/POP02.PCX",x,y);
+	Wait(20);
+	ClearVCLayer();
+	VCPutIMG("res/images/story_fx/POP03.PCX",x,y);
+	Wait(20);
+	ClearVCLayer();
+}
+
+void do_sparklies( int idx ) /* 27 */
+{
+	int x, y;
+	
+	For(x=91; x<=127; x+=16)
+	{
+		For(y=39; y<=71; y+=16)
+		{
+			if(idx=1)
+			{
+				VCPutIMG("res/images/story_fx/SPARKLE1.PCX",x,y+16);
+			}
+			
+			if(idx=2)
+			{
+				VCPutIMG("res/images/story_fx/SPARKLE2.PCX",x,y+16);
+			}
+			
+			if(idx=3)
+			{
+				VCPutIMG("res/images/story_fx/SPARKLE3.PCX",x,y+16);
+			}
+			
+			if(idx=4)
+			{
+				VCPutIMG("res/images/story_fx/SPARKLE4.PCX",x,y+16);
+			}
+			
+			if(idx=5)
+			{
+				VCPutIMG("res/images/story_fx/SPARKLE5.PCX",x,y-8+16);
+				VCPutIMG("res/images/story_fx/SPARKLE6.PCX",x,y+8+16);
+			}
+			
+			if(idx=6)
+			{
+				VCPutIMG("res/images/story_fx/SPARKLE6.PCX",x,y-8+16);
+				VCPutIMG("res/images/story_fx/SPARKLE5.PCX",x,y+8+16);
+			}
+		}
+	}
+	
+	Wait(10);
+	ClearVCLayer();
+}

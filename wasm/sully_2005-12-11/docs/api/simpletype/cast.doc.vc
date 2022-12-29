@@ -1,0 +1,156 @@
+// Cast.vc, functions that deal with the PCs.
+//
+// by McGrue
+// Started 2004.08.30
+/////////////////////////////////////////////////////////////////////////
+
+
+// The caps placed on HP and MP 
+/////////////////////////////////////////////////////////////////////////
+#define MAXIMUM_HP_VALUE	999
+#define MAXIMUM_MP_VALUE	999
+
+
+// Takes a cast index and an amount to increase the HP by.
+//
+// adds the specified amount to cur_hp, will not set above max_hp.
+// accepts negative values, will not set below 0.
+//
+// errors if the cast_idx was invalid.
+/////////////////////////////////////////////////////////////////////////
+void HealHP( int cast_idx, int amount ) 
+
+
+
+// Takes a cast index and an amount to decrease the HP by.
+//
+// adds the specified amount to cur_hp, will not set below 0.
+// accepts negative values, will not set above MAX_HP.
+//
+// errors if the cast_idx was invalid.
+/////////////////////////////////////////////////////////////////////////
+void HurtHP( int cast_idx, int amount ) 
+
+
+
+
+// Takes a cast index and an amount to increase the MP by.
+//
+// adds the specified amount to cur_mp, will not set above max_mp.
+// accepts negative values, will not set below 0.
+//
+// errors if the cast_idx was invalid.
+/////////////////////////////////////////////////////////////////////////
+void HealMP( int cast_idx, int amount ) 
+
+
+
+// Takes a cast index and an amount to decrease the MP by.
+//
+// adds the specified amount to cur_mp, will not set below 0.
+// accepts negative values, will not set above MAX_MP.
+//
+// errors if the cast_idx was invalid.
+/////////////////////////////////////////////////////////////////////////
+void TakeMP( int cast_idx, int amount ) 
+
+
+
+// gives a cast member a=n amount of XP based on their master_cast[] index
+// levels the cast member up to the appropriate level for that amount of XP.
+//
+// errors if the XP amount was less than or equal to zero, or if 
+// the master_cast[] index was bad.
+/////////////////////////////////////////////////////////////////////////
+void GiveXP( string name, int xp ) 
+
+
+
+// gives a cast member a=n amount of XP based on their master_cast[] index
+// levels the cast member up to the appropriate level for that amount of XP.
+//
+// errors if the XP amount was less than or equal to zero, or if 
+// the master_cast[] index was bad.
+/////////////////////////////////////////////////////////////////////////
+void GiveXPI( int cast_idx, int xp ) 
+
+
+
+
+
+// Full HP/MP recovery for a single person.
+/////////////////////////////////////////////////////////////////////////
+void FullHeal( int cast_idx )
+
+
+
+
+// Although Temporary effects and equipment can mod a stat below 0, 
+// when displaying or basing effect upon a stat, we want any negative stat
+// to count as zero (excepting HP which has an absolute minimum of 1... 
+// for hopefully obvious reasons).
+//
+// The following functions are accessors for cast-members stats.  They take 
+// master_cast indexes and do no bounds checking. 
+//
+// They are named short-form because they'll oft be used inside other functions.
+// if this hurts your paradigm, feel free to do a global search/replace personally.
+/////////////////////////////////////////////////////////////////////////
+int getMaxHP( int idx )
+int getMaxMP( int idx )
+int getSTR( int idx ) 
+int getEND( int idx ) 
+int getMAG( int idx ) 
+int getMGR( int idx ) 
+int getHIT( int idx ) 
+int getDOD( int idx ) 
+int getMBL( int idx ) 
+int getFER( int idx ) 
+int getREA( int idx ) 
+int getATK( int idx )
+int getDEF( int idx )
+
+
+
+// takes a master_cast[] index.
+// returns how many valid Skill Group Slots that character presently has.
+/////////////////////////////////////////////////////////////////////////
+int getMySkillGroupCount( int cast_idx )
+
+
+
+
+// takes a master_cast[] index and another index,
+// returns the master_skilltypes[] index for that Skill Group Slot, if the character has one.
+// returns -1 if the character has no skill group in that slot.
+//
+// no error-checking at present.  Sorry.
+/////////////////////////////////////////////////////////////////////////
+int GetMySkillGroup( int cast_idx, int my_group_index )
+
+
+
+
+// 
+// Takes a master_cast idx, and a stat idx, and returns that cast member's 
+// stat value for the specified stat
+//
+// this is for people who like to iterate over the stats array!
+//
+/////////////////////////////////////////////////////////////////////////
+int getStat( int cast_idx, int stat_idx ) 
+
+
+
+
+
+// This clears all of the non-permanent parts of master_cast.
+// Really, we should probably redesign the system so the 'master' and 'variable' 
+// parts of PCs and enemies live in seperate places... thoughts for the 
+// future.
+//
+// currently clears the following fields:
+//
+// level, exp, cur_hp, cur_mp, and all stats, equipment, and skills.
+/////////////////////////////////////////////////////////////////////////
+void ClearCast()

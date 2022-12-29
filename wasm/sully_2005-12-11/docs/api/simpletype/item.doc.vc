@@ -1,0 +1,75 @@
+// Item.vc, functions for using items.
+//
+// by McGrue
+// Started 2004.08.30
+/////////////////////////////////////////////////////////////////////////
+
+
+
+//
+// Takes a string name of an item.  
+// returns master_items idx if it's a valid item name.  -1 if not.
+///////////////////////////////////////////////////////////////////////////////
+int IsItem( String name ) 
+
+
+// takes a master_items[] index
+// returns true if it's a key item, false if not.
+//
+///////////////////////////////////////////////////////////////////////////////
+int IsKeyItem( int idx )
+
+
+
+// takes a master_items[] index
+// returns true if it's a piece of equipment, false if not.
+//
+///////////////////////////////////////////////////////////////////////////////
+int IsEquipmentItem( int idx ) 
+
+
+
+// takes a master_items[] index
+// returns true if it's a supply, false if not.
+//
+///////////////////////////////////////////////////////////////////////////////
+int IsSupplyItem( int idx ) 
+
+
+
+// Triggers the use of an item with the specified master_items name.
+//
+// Errors if the name is not a valid member of master_items[]
+// Errors if the item is not usable in the current context (Menu or Battle)
+// Errors if the item has no defined effect function (after all, how can you use something that doesn't have a way to be used?)
+// Errors if there's a targetting function specified, but it does not exist.
+//
+///////////////////////////////////////////////////////////////////////////////
+void UseItem( string name )
+
+
+
+// Triggers the use of an item with the specified master_items index.
+//
+// Errors if the index is not valid.
+// Errors if the item is not usable in the current context (Menu or Battle)
+// Errors if the item has no defined effect function (after all, how can you use something that doesn't have a way to be used?)
+// Errors if there's a targetting function specified, but it does not exist.
+// Errors if the item is not in your inventory.
+///////////////////////////////////////////////////////////////////////////////
+void UseItemI( int idx ) 
+
+
+// Takes a master_items[] index and a useflag
+// returns 1 if that item has that useflag, 0 if not.
+//
+///////////////////////////////////////////////////////////////////////////////
+int CheckItemUseflagI( int idx, int flag ) 
+
+
+
+// Takes a master_items[] index, returns 1 if the item can be used.  0 if not.
+//
+///////////////////////////////////////////////////////////////////////////////
+int ItemIsUsableI( int idx )
+

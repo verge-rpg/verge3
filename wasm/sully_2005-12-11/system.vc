@@ -1,0 +1,557 @@
+// Version number in 127.255.255.255 format, byte 4 ->1
+#define VERSION_4_BYTE 0
+#define VERSION_3_BYTE 0
+#define VERSION_2_BYTE 1
+#define VERSION_1_BYTE 0
+#define VERSION_STRING "(0.0.1.0) - Sully savefile format rc1"
+
+
+// This file is where all the story flag defines live
+// Flags are awesome and important!
+// Open this file to learn more if you don't already know!
+#include "flags.vc"
+
+
+
+// The master include file for all the vc libraries.  Open this up to
+// See where all of the vc system source is.
+#include "vc/includes.vc"
+
+
+
+// This is a file that holds Targetting and effect functions 
+// that items.dat and skills.dat would ask for,
+#include "effects.vc"
+
+
+
+
+// notice that there is no "v3splash.vc" in the base directory of this game.
+// This is because "v3splash.vc", and all the files it needs, are stored 
+// within the "v3splash320.vpk" packfile.  This file is loaded by the game 
+// from a command in the "verge.cfg" file as follows:
+//
+// mount1  v3splash320.vpk
+//
+// all of the folders and files in the packfile act as though they're actually 
+// in the game directory.  Load up PackEd.exe yourself and open this file up to 
+// look inside!
+#include "v3splash.vc"
+
+
+
+
+// a global array of ints and one of strings for use in functions,
+// since you can't have local arrays in mapfunctions.
+// Also useful scratch.  This data is by definition *not* saved... 
+// it's just a small playground of scrtach space!
+#define MAX_SCRATCH	100
+
+int 	arTemp[MAX_SCRATCH];
+string 	arTempStr[MAX_SCRATCH];
+
+
+// Some various Story-related variables and effects. 
+//
+int sfx_waves;	//used in the island.map flashback
+int wavetimer;	//used in the island.map flashback
+
+//used in cottage.map Stan-intro scene.
+int sparkle1 = LoadAnimation("res/images/story_fx/sparkle1.gif", 16, 32);
+int sparkle2 = LoadAnimation("res/images/story_fx/sparkle2.gif", 16, 16);
+int sparkle3 = LoadAnimation("res/images/story_fx/sparkle3.gif", 16, 16);
+
+
+
+// The AutoExec Function: The first function that gets called.
+//  Everything starts right here when you start up a game.
+//
+void AutoExec()
+{
+	
+	//the following functions initialize things in the various libraries
+	// that need initializing... images, sounds, whatever.
+	V1RPG_LoadResources();	//loads resources for the v1rpg library.
+	SSAC_LoadResources();	//loads resources for the Sully: Simple and Clean library
+	SMENU_LoadResources();	//loads resources for the Simple Menu library
+	initSpeechPortsInData(); //OMG HAX!
+	
+
+	loadFunkOrama();	//loads the FUNK!
+	
+	MenuOff();	//let's not let anyone touch the menu until we're in-game, eh?
+	
+	//we load all the data first so we can do the introduction without pause.
+
+	HookRetrace("V1RPG_RenderFunc");// this is the v1_rpg library's default
+					// Hookretrace function, defined in "vc/v1_rpg/v1_rpg.vc"
+					//
+					// It allows for the handly-dandy vclayer variable
+					// (softcode, not a system feature) to be used, providing
+					// a universal temporary area to draw to the screen with.
+					//
+					// If this confuses you, don't worry about it for now.
+
+	
+
+	//This allows alt-f4 to exit verge.
+	HookKey( SCAN_F4, "alt_f4" );
+
+	InitIntro();
+	DoIntro();
+}
+
+void help()
+{
+	int i;
+	
+	for( i=0; i<PartySize(); i++ )
+	{
+		master_cast[party[i]].cur_hp = 1;
+		master_cast[party[i]].cur_mp = 1;
+	}	
+}
+
+// Melds all the map-upkeep needs of the three libraries
+// this game uses.
+//
+void InitMap() {
+
+	// from the Simpletype library... this makes
+	// sure that your party is on the map!
+	//
+	// note: mapswitchx, mapswitchy are parts of the v1_rpg library
+	//       set by v1_MpaSwitch()
+	SpawnParty( mapswitchx, mapswitchy );
+
+	// from the menu library, this makes sure that if you're in
+	// menu-off mode, it stays off, or vica versa.
+	if (_menu_on) MenuOn();
+	else MenuOff();
+
+	// from the v1_rpg effects library
+	// this makes sure that the second half of any transition effect
+	// started by v1_MapSwitch() is completed!
+	v1_InitMap();
+}
+
+
+// The opening menu of the game!
+//
+//
+void DoIntro()
+{
+	
+	string sav_rstring = curmap.rstring;
+	
+	ResetPreferences();
+	
+	curmap.rstring = "R";
+
+	ClearVCLayer();	//part of the v1_rpg.vc lib.  Clears the vclayer.
+	
+	StopMusic();
+	
+	//calls the v3splash() function, if it exists.
+	//CallFunction("v3splash");	
+	
+	//play the unofficial VERGE theme song, Hymn to Aurora!
+	PlayMusic( "res/music/AURORA.MOD" ); 
+	SetMusicVolume( 70 ) ;
+	
+	/*int delay = 40;
+	int longdelay = 100;
+	
+	string _im = "res/images/story_fx/intro/retro.gif";
+	int im = LoadImage( _im );
+	
+	
+	if( equ(sav_rstring, "") )
+	{
+		RectFill( 0,0, ImageWidth(screen), ImageHeight(screen), RGB(0,0,0), screen );
+		SetLucent(75);
+		Blit( 0,0, im, screen );
+		Wait(delay);
+
+		SetLucent(0);
+		RectFill( 0,0, ImageWidth(screen), ImageHeight(screen), RGB(0,0,0), screen );
+		SetLucent(50);
+		Blit( 0,0, im, screen );
+		Wait(delay);
+
+		SetLucent(0);
+		RectFill( 0,0, ImageWidth(screen), ImageHeight(screen), RGB(0,0,0), screen );
+		SetLucent(25);
+		Blit( 0,0, im, screen );
+		Wait(delay);
+
+		SetLucent(0);
+		RectFill( 0,0, ImageWidth(screen), ImageHeight(screen), RGB(0,0,0), screen );
+		Blit( 0,0, im, screen );
+		Wait(longdelay);	
+
+		SetLucent(0);
+		RectFill( 0,0, ImageWidth(screen), ImageHeight(screen), RGB(0,0,0), screen );
+		SetLucent(25);
+		Blit( 0,0, im, screen );
+		Wait(delay);
+
+		SetLucent(0);
+		RectFill( 0,0, ImageWidth(screen), ImageHeight(screen), RGB(0,0,0), screen );
+		SetLucent(50);
+		Blit( 0,0, im, screen );
+		Wait(delay);
+
+		SetLucent(0);
+		RectFill( 0,0, ImageWidth(screen), ImageHeight(screen), RGB(0,0,0), screen );
+		SetLucent(75);
+		Blit( 0,0, im, screen );
+		Wait(delay);
+
+		SetLucent(0);
+		RectFill( 0,0, ImageWidth(screen), ImageHeight(screen), RGB(0,0,0), screen );
+		Wait(delay);
+	}
+	else
+	{
+		SetLucent(0);
+		FillVCLayer( RGB(0,0,0) );
+		Wait(delay);
+	
+		SetLucent(75);
+		VCPutIMG( _im, 0,0 );
+		Wait(delay);
+		
+		SetLucent(0);
+		FillVCLayer( RGB(0,0,0) );
+
+		SetLucent(50);
+		VCPutIMG( _im, 0,0 );
+		Wait(delay);
+		
+		SetLucent(0);
+		FillVCLayer( RGB(0,0,0) );
+
+		SetLucent(25);
+		VCPutIMG( _im, 0,0 );
+		Wait(delay);
+		
+		SetLucent(0);
+		FillVCLayer( RGB(0,0,0) );
+
+		SetLucent(0);
+		VCPutIMG( _im, 0,0 );
+		Wait(longdelay);
+		
+		SetLucent(0);
+		FillVCLayer( RGB(0,0,0) );
+		
+		SetLucent(25);
+		VCPutIMG( _im, 0,0 );
+		Wait(delay);
+		
+		SetLucent(0);
+		FillVCLayer( RGB(0,0,0) );
+		
+		SetLucent(50);
+		VCPutIMG( _im, 0,0 );
+		Wait(delay);
+		
+		SetLucent(0);
+		FillVCLayer( RGB(0,0,0) );
+		
+		SetLucent(75);
+		VCPutIMG( _im, 0,0 );
+		Wait(delay);
+		
+		SetLucent(0);
+		FillVCLayer( RGB(0,0,0) );
+		
+		Wait(delay);
+	}
+
+	FreeImage(im);*/
+	
+	curmap.rstring = sav_rstring;
+
+	//let's go to intro.map so we can play with entities!
+	//
+	// To follow along the execution of the program, open up intro.vc.
+	Map( "intro.map" );
+}
+
+
+
+
+// This is temporary.  The integration of the speech portraits and the
+// master_cast system is loose at best for now.  This initialization
+// keeps the data as-is synched so you can get a speech portrait based on
+// party position at the moment.
+//
+// Question to all: we should rethink the speech port system maybe?
+// -Grue
+void initSpeechPortsInData() {
+	int i;
+	string name;
+
+	for( i=0; i<MAX_CAST; i++ ) {
+
+		name = master_cast[i].name;
+
+		if( equ(name,"darin") ) {
+			master_cast[i].portrait_idx = T_DARIN;
+		} else if( equ(name,"dexter") ) {
+			master_cast[i].portrait_idx = T_DEXTER;
+		} else if( equ(name,"sara") ) {
+			master_cast[i].portrait_idx = T_SARA;
+		} else if( equ(name,"crystal") ) {
+			master_cast[i].portrait_idx = T_CRYSTAL;
+		} else if( equ(name,"galfrey") ) {
+			master_cast[i].portrait_idx = T_GALFREY;
+		}
+	}
+}
+
+// returns a speech portrait index based on party position
+//
+// I placed it here because it's the only thing relying upon that
+// horribleness above. -Grue
+int SpcByPos( int party_pos )
+{
+	if( party_pos < 0 || party_pos >= PartySize() )
+	{
+		ErrorHandler( "SpcByPos(): "+str(party_pos)+" is an invalid party index." );
+		return 0-1;
+	}
+
+	return master_cast[party[party_pos]].portrait_idx;
+}
+
+
+
+//This allows alt-f4 to exit verge.
+void alt_f4()
+{
+	if( key[SCAN_ALT] ) {
+		exit( "" );
+	}
+}
+
+void logGameFlags() {
+
+	int i;
+
+	for( i=0; i<256; i++ ) {
+		log( "flags["+str(i)+"]: " + str(flags[i]) );
+	}
+
+	MessageBox( "Done logging." );
+}
+
+// Quick workarounds to get loadgames into the main title screen.  
+int _title_menu, _title_menu_load_done;
+
+
+void Credits()
+{
+	string sav_rstring = curmap.rstring;
+
+	curmap.rstring = "R";	
+	FillVCLayer( RGB(0,0,0) );
+	
+	int y;	
+	resetCredits();
+
+	addIntroLine( y,   "The Sully Chronicles, v3 Simple Edition." );
+	y+=10;
+
+	addIntroLine( y,   "========================================" );
+	y+=30;
+
+	addIntroLine( y,   "Original game by Brian 'Hahn' Peterson" );
+	y+=30;
+
+	addIntroLine( y,   "v3 revision of the game by:" );
+	y+=20;
+
+	addIntroLine( y,   "Ben 'McGrue' McGraw" );
+	y+=20;
+
+	addIntroLine( y,  "Martin 'Zip' P." );
+	y+=30;
+
+	addIntroLine( y,  "With additional code by:" );
+	y+=20;
+	addIntroLine( y,  "Benjamin 'vecna' Eirich" );
+	y+=20;
+	addIntroLine( y,  "Tristan 'RageCage' Michael" );
+	y+=20;
+	addIntroLine( y,  "Shamus 'Kildorf' Peveril" );
+
+	y+=50;
+	addIntroLine( y,  "Originally tile and sprite art by:" );
+
+	y+=20;
+	addIntroLine( y,  "Brian 'Hahn' Peterson" );
+
+	y+=30;
+	addIntroLine( y,  "Additional art by:" );
+
+	y+=20;
+	addIntroLine( y,  "AJ 'Gayo' Joas" );
+
+	y+=20;
+	addIntroLine( y,  "Ben 'McGrue' McGraw" );
+
+	y+=50;
+	addIntroLine( y,  "Music" );
+	y+=10;
+	addIntroLine( y,  "=====" );
+	y+=25;
+	addIntroLine( y,  "Hymn to Aurora, Copyright Horace Wimp" );
+	y+=25;
+	addIntroLine( y,  "Bad Experiences, Copyright 1994 Frog" );
+	y+=25;
+	addIntroLine( y,  "D.O.S. tune #3, Copyright 1993 lotf interface" );
+	y+=25;
+	addIntroLine( y,  "Exage, Copyright 1990 Peter J. Salomonsen" );
+	y+=25;
+	addIntroLine( y,  "Medioeval, Copyright Fabio Barzagli" );
+	y+=25;
+	addIntroLine( y,  "Vangelis Remix #02, Author Unknown" );
+	y+=25;
+	addIntroLine( y,  "Song of Crying Guitar, Copyright 1995 Vadim VS" );
+	y+=25;
+	addIntroLine( y,  "Soul-o-matic, Copyright 1993" );
+	y+=10;
+	addIntroLine( y,   "by Purple Motion of Future Crew" );
+	y+=25;
+	addIntroLine( y,  "Dreams of the Acropolis, Copyright E.J.James" );
+	y+=25;
+	addIntroLine( y,  "Mystical Waters, Copyright 1993 H.T.H." );
+	y+=25;
+	addIntroLine( y,  "Simplicity 2, Copyright 1995 Sirius of Bass Productions" );
+	y+=25;
+	addIntroLine( y,  "Symphony, Copyright Skaven of Future Crew" );
+	y+=25;
+	addIntroLine( y,  "Morning Call, Copyright Michiko Naruke" );
+
+	y+=40;
+	addIntroLine( y,  "All music and sound effects are the property of" );
+	y+=10;
+	addIntroLine( y,  "their respective owners and used here without" );
+	y+=10;
+	addIntroLine( y,  "permission." );
+
+	y+=40;
+	addIntroLine( y,  "Additional sounds by:" );
+	y+=25;
+	addIntroLine( y,  "Matthew 'Zathras' Steele" );
+
+	y+=50;
+	addIntroLine( y,   "========================================" );
+	y+=10;
+	addIntroLine( y,   "VERGE 3 engine copyright 1997-2004 Ben Eirich" );
+	y+=10;
+	addIntroLine( y,   "========================================" );
+
+	y+=25;
+	addIntroLine( y,   "All source and custom graphics provided in this game" );
+	y+=10;
+	addIntroLine( y,   "are released into the Public Domain." );
+	y+=10;
+	addIntroLine( y,   "Use them as you see fit.");
+
+	y+=25;
+	addIntroLine( y,   "========================================" );
+
+	y+=25;
+	addIntroLine( y,   "Come visit us at: http://www.verge-rpg.com/" );
+	y+=10;
+	addIntroLine( y,   "We hope you enjoyed the game, ");
+	y+=10;
+	addIntroLine( y,   "and have fun making your own!" );
+	y+=25;
+	addIntroLine( y,   "========================================" );
+	y+=120;
+	addIntroLine( y,   "This game dedicated to the memory of" );
+	y+=25;
+	addIntroLine( y,   "Chris 'Kao Megura' MacDonald" );
+	y+=25;
+	addIntroLine( y,   "Driving force behind GameFAQs.com's growth," );
+	y+=10;
+	addIntroLine( y,   "and early VERGEr." );
+	
+
+	y+=350;
+	addIntroLine( y, "" );
+
+	FadeIn( 30 );
+	doSimpleCredits( menu_font[0] );
+	FadeOut(30);
+	
+	curmap.rstring = sav_rstring;
+	
+	//and... return to the very beginning of the game!
+	DoIntro();
+}
+
+
+
+// Resets all of the various game preferences to their default state.
+//
+// Mainly for the use of the NewGame() function on the intro map.
+void ResetPreferences()
+{
+	global_gametime = 0;
+//	systemtime 		= 0;
+	
+
+	global_music_volume = 85;
+	sfx_volume = 85;
+	interface_volume = 85;
+	global_noscroll = 0;
+	global_menuluc = 0;
+	
+	menu_colour[0] = rgb(0, 0, 0);
+	menu_colour[1] = rgb(112, 112, 112);
+	menu_colour[2] = rgb(144, 144, 144);
+	menu_colour[3] = rgb(0, 0, 255);
+	
+	ClearVCLayer();
+	
+	vc_quake_on = 0;
+	tint_on = 0;
+	vc_filter_on = 0;
+	vc_custom_filter_on = 0;
+	SetWeather(0);
+}
+
+
+int _Ent_tmpvar;
+
+// Call this at the beginning of any entity event or zone-event.
+//
+// This makes sure that the entity you're talking to (if any) stops 
+// moving while you're talking to them, and turns off the ability to open your 
+// menu while the conversation is going on.  VERY USEFUL.
+void EntStart() {
+	
+	MenuOff();
+	_Ent_tmpvar = entity.speed[event.entity];
+	
+	entity.speed[event.entity]=0;
+}
+
+// Call this at the end of any function where you called EntStart().
+//
+// if you fail to do this, the entity (if any) will not start moving 
+// again, nor will the playre be able to open his or her menu.
+//
+// In general, these are useful functions, but be careful in their use, lest 
+// you allow menus when you don't want them, or disallow menus when you do want
+// them.
+void EntFinish() {
+	MenuOn();
+	entity.speed[event.entity] = _Ent_tmpvar;
+}

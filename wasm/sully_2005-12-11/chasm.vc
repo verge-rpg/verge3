@@ -1,0 +1,149 @@
+void start()
+{
+	InitMap();
+	
+	SaveDisable();
+	
+	//If we're in the flashback, don't play our music or 
+	// remove the boulder
+	if( !flags[F_RODNE_FLASHBACK] ) 
+	{
+		V1_StartMusic("res/music/DREAMS2.S3M");
+
+		// If the boulder's been moved, keep it out of the way
+		if( flags[F_RAVEN_GULCH] )	
+		{
+			SetTile( 41,29, 1, 182 );
+			SetObs( 41,29, 0 );
+		}
+	}
+}
+
+void nexit()
+{
+	V1_MapSwitch("overworld.map", 33,25,TBLACK);
+}
+
+void sexit()
+{
+	V1_MapSwitch("overworld.map", 39,26,TBLACK);
+}
+
+void vorn()
+{
+	EntStart();
+	
+	TextBoxM(0,"Welcome to Raven Gulch! It is said that",
+               "he who leaps off the edge will fall to",
+               "his death!");
+    TextBox(0,"The forest village of Rodne is to the",
+               "south and Mount Jujube is to the",
+               "northeast.");
+    
+    entity.speed[0]=50;
+    
+    EntFinish();
+}
+
+void ranger()
+{
+	MenuOff();
+
+	//EntStart();
+	
+	if( !flags[F_LAB_FOUND_CRYSTAL] )
+	{
+		TextBox(0,	"Sorry. Nobody can cross the bridge to",
+					"Rodne unless I say so.",
+					"Now git outta here, kid!");
+	}
+	else if( flags[F_RAVEN_GULCH] )
+	{
+		TextBox(0,"You can cross anytime you wish",
+		"now. Have fun, kid!","");
+	}
+	else
+	{
+	
+		TextBox(0,	"This is the Raven Gulch Bridge that leads",
+					"to Rodne. Do you have authorization to",
+					"cross?");
+
+		TextBox(T_DEXTER,	"It's me, old friend. Darin and I need to ",
+							"cross in order to save the world from",
+							"doom.");
+
+		TextBoxM(0,	"Hi, Dexter. Well, you really should have a",
+					"passport or something, but you can cross.",
+					"");
+
+		TextBox(0,	"I shall remove the rock from trail here.","","");
+
+
+		EntityMove( event.entity,"D1 R4 W30");
+		WaitForEntity( event.entity );
+
+		SetTile( 41,29, 1, 182 );
+		SetObs( 41,29, 0 );
+
+		EntityMove(event.entity,"W30 L4 U1 F0");
+		WaitForEntity( event.entity );
+
+		TextBox(0,"Stay out of trouble now, ya hear?","",""); 
+		flags[F_RAVEN_GULCH] = 1;
+	}
+	
+	MenuOn();
+}
+
+void sun() 
+{
+	int a;
+	
+	//only do this in Rodne-flashback mode
+	if( flags[F_RODNE_FLASHBACK] )	
+	{
+		//only do this if we have no solar power yet!
+		if( !flags[F_FLASH_SOLAR] )
+		{
+					
+			//if we don't have all of the other pieces done, quit out early!
+			if( flags[F_FLASH_WATER]	!= 2	|| 
+				flags[F_FLASH_GEAR]		!= 2 	|| 
+				flags[F_FLASH_TWIG]		!= 2	|| 
+				flags[F_FLASH_TOEJAM]	!= 2 ) 
+			{
+				TextBoxM(T_SARA,	"My body suit can absorb the sun's energy,",
+									"but it fades quickly.","");
+				TextBox(T_SARA,		"I shouldn't prepare to ignite the machine",
+									"until all parts are in place.", "");
+				return;
+			}
+			
+			
+			// If we got this far, let's suck some sun!
+			//
+			
+			TextBox(T_SARA,	"The sun in unusually bright today.",
+							"Let me absorb the raw power into",
+							"my suit...");
+
+			CameraTracking = 0;
+			
+			camScrollTo(xwin, (ywin-50), 100);
+						
+			FadeToColor( RGB(255,255,0), 100 );		// Fade to bright yellow...
+			FadeFromColor( RGB(255,255,0), 100 );	// ...then fade back out to normal!
+			
+			camReturnToPlayer(playerent, 100);
+			
+			CameraTracking = 1;
+			
+			TextBox(T_SARA,	"I feel totally powered up!",
+							"Now I just need to touch the cloning",
+							"engine to start it!");
+			
+			flags[F_FLASH_SOLAR] = 1; //yay!  we have the power of the SUN.
+		}
+	}
+}

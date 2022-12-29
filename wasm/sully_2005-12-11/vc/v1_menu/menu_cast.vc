@@ -1,0 +1,70 @@
+// menu_cast.vc for Sully www.verge-rpg.com
+// Zip 05/09/2004
+// Last update 06/10/2004
+
+//        ---------------
+//       Cast Menu
+//        ---------------
+
+// Control function for the Cast screen of the menu
+// Called from MenuEntry() based on global menu_idx variable
+// Mostly simple, but has to deal with being called from several different origins
+// Also includes various item use code for this reason
+void MenuControlCast()
+{
+	menu_cast = MenuControlArrows(menu_cast, PartySize());
+	if (MenuConfirm())
+	{
+		MenuHappyBeep();
+		switch (menu_option)
+		{
+			case 0:	if (menu_sub == 0)
+					{
+						CallFunction(master_items[supply_inventory[menu_item].item_ref].effect_func);
+						MenuMinibox(master_items[supply_inventory[menu_item].item_ref].name+" used on "+master_cast[party[menu_cast]].name+"!", "MenuDrawCast");
+						GiveItemI(supply_inventory[menu_item].item_ref, 0-1);
+					}
+					else if (menu_sub == 1)
+					{
+						CallFunction(master_items[equipment_inventory[menu_item].item_ref].effect_func);
+						MenuMinibox(master_items[equipment_inventory[menu_item].item_ref].name+" used on "+master_cast[party[menu_cast]].name+"!", "MenuDrawCast");
+					}
+					else if (menu_sub == 2)
+					{
+						CallFunction(master_items[key_item_inventory[menu_item].item_ref].effect_func);
+						MenuMinibox(master_items[key_item_inventory[menu_item].item_ref].name+" used on "+master_cast[party[menu_cast]].name+"!", "MenuDrawCast");
+					}
+					menu_cast = 0-1;
+					menu_idx = MenuGet("Item");
+			case 1: menu_idx = MenuGet("Skill");
+			case 2: menu_idx = MenuGet("Equip");
+					menu_sub = 0;
+			case 3: menu_idx = MenuGet("Status");
+		}
+	}
+	if (MenuCancel())
+	{
+		MenuHappyBeep();
+		
+		if (menu_option == 0) // If here from Item sub menu
+		{
+			menu_cast = 0-1; // Set selected party member to null
+			menu_idx = MenuGet("Item"); // Go back to Item menu
+		}
+		else MenuRoot(); // Otherwise, return to root
+	}
+}
+
+// Draw function for the Cast screen of the menu
+// Called from MenuEntry() based on global menu_idx variable
+// Nice and straightforward
+void MenuDrawCast()
+{
+	// Display background, party, and prompt
+	MenuBlitRight(0, menu_option);
+	MenuBlitCenter(MenuIsActive("Cast"));
+	PrintRight(220, 15, screen, menu_font[0], "Select Party Member");
+
+	// Display cursor by currently selected part member
+	PrintString(16, 30 + (menu_cast * 42), screen, menu_font[0], ">");
+}

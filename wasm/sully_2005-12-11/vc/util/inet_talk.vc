@@ -1,0 +1,120 @@
+// returns 1 if a conversation happened, 0 if not.
+//
+int DoInternetConversation( string url )
+{
+	string src = GetUrlText( url );	
+	int linecount = TokenCount( src, chr(10) );
+	string s1,s2,s3;
+	int prt, i;
+	int first;
+	
+	first = 1;
+	
+	while( (i+4) <= linecount )
+	{
+		prt = NameToPort( GetToken(src,chr(10),i) );
+		
+		i++;
+		s1 = trim( GetToken(src,chr(10),i) );
+		i++;
+		s2 = trim( GetToken(src,chr(10),i) );
+		i++;
+		s3 = trim( GetToken(src,chr(10),i) );
+		i++;
+		
+		if( prt < 0 ) 
+		{
+			if( first )
+			{
+				return 0;				
+			}
+			
+			return 1;
+		}
+		
+		TextBox( prt, s1, s2, s3 );
+		
+		first = 0; //if we got here, it's no longer the first time
+	}
+	
+	if( first ) //if this is still true, no conversation happened!
+	{
+		return 0;
+	}
+	
+	return 1;
+}
+
+// returns the speech index for a given name
+// returns -1 on a bad name.
+int NameToPort( string name )
+{
+	if( equ(name,"sully") )		return T_SULLY;
+	if( equ(name,"darin") )		return T_DARIN;
+	if( equ(name,"stan") )		return T_STAN;
+	if( equ(name,"crystal") )	return T_CRYSTAL;
+	if( equ(name,"dexter") )	return T_DEXTER;
+	if( equ(name,"galfrey") )	return T_GALFREY;
+	if( equ(name,"sara") )		return T_SARA;
+	if( equ(name,"slasher") )	return T_SLASHER;
+	if( equ(name,"bert") )		return T_MANTA;
+	if( equ(name,"bunny") )		return T_BUNNY;
+	if( equ(name,"bubba") )		return T_BUBBA;
+	if( equ(name,"sancho") )	return T_SANCHO;
+	
+	return 0-1;
+}
+
+
+
+/////////////////////////////////
+//
+// These two functions are for the sully tagboard functionality.
+//
+//
+////////////////////////////
+
+string GetTag( string s )
+{
+	string src = GetUrlText( "http://www.verge-rpg.com/sully/tagboard.php?s="+s );
+	string a_txt;
+	int i;
+
+	string img_url 	= GetToken(src, chr(10), 0);
+	string name 	= GetToken(src, chr(10), 1);
+	
+	for( i=2; i<TokenCount(src,chr(10)); i++ )
+	{
+		a_txt = a_txt + GetToken(src, chr(10), i) + "~";
+	}
+		
+		
+	if( equ(src,"No messages!") )
+	{
+		AutoText(T_SANCHO,"There are no more new messages you have not read this session.  You have presently read " +str(TokenCount(s, ","))+" tagboard entries.|Resetting the session now." );
+		return "";
+	}
+
+//log( "'"+src+"'" );
+
+	int img = GetUrlImage( img_url );
+
+	TBlit( SPEECH_X, SPEECH_Y-68, img, v1_vclayer );
+	MakeBox(SPEECH_X+2+ImageWidth(img), TEXTBOX_BORDER_Y1-FontHeight(textBox_font)-13, TextWidth(textBox_font, name)+12, FontHeight(textBox_font)+12, 1, v1_vclayer);
+	PrintString( SPEECH_X+2+ImageWidth(img)+6, TEXTBOX_BORDER_Y1-FontHeight(textBox_font)-6, v1_vclayer, textBox_font, name );	
+
+	FreeImage(img);
+	
+	AutoText(0, a_txt);
+	
+
+	ClearVCLayer();
+	
+	return name;
+}
+
+void SendMessage( string user, string pass, string msg )
+{
+	string src = GetUrlText( "http://www.verge-rpg.com/sully/tagboard.php?_user="+user+"&_pass="+pass+"&msg="+msg );
+	AutoText(T_SANCHO,src);
+}

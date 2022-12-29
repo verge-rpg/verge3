@@ -1,0 +1,350 @@
+// Cast.vc, functions that deal with the PCs.
+//
+// by McGrue
+// Started 2004.08.30
+
+
+// The caps placed on HP and MP 
+// 
+#define MAXIMUM_HP_VALUE	999
+#define MAXIMUM_MP_VALUE	999
+
+
+// Takes a cast index and an amount to increase the HP by.
+//
+// adds the specified amount to cur_hp, will not set above max_hp.
+// accepts negative values, will not set below 0.
+//
+// errors if the cast_idx was invalid.
+void HealHP( int cast_idx, int amount ) {
+	if( cast_idx <0 || cast_idx >= MAX_CAST ) {
+		ErrorHandler( "HealHP(): "+str(cast_idx)+" is not a valid cast index." );
+		return;
+	}
+	
+	master_cast[cast_idx].cur_hp += amount;
+	
+	if( master_cast[cast_idx].cur_hp > master_cast[cast_idx].stats[STAT_MAX_HP] ) {
+		master_cast[cast_idx].cur_hp = master_cast[cast_idx].stats[STAT_MAX_HP];
+	} else if( master_cast[cast_idx].cur_hp < 0 ) {
+		master_cast[cast_idx].cur_hp = 0;
+	}
+}
+
+// Takes a cast index and an amount to decrease the HP by.
+//
+// adds the specified amount to cur_hp, will not set below 0.
+// accepts negative values, will not set above MAX_HP.
+//
+// errors if the cast_idx was invalid.
+void HurtHP( int cast_idx, int amount ) {
+	if( cast_idx <0 || cast_idx >= MAX_CAST ) {
+		ErrorHandler( "HurtHP(): "+str(cast_idx)+" is not a valid cast index." );
+		return;
+	}
+	
+	HealHP( cast_idx, 0-amount );
+}
+
+
+// Takes a cast index and an amount to increase the MP by.
+//
+// adds the specified amount to cur_mp, will not set above max_mp.
+// accepts negative values, will not set below 0.
+//
+// errors if the cast_idx was invalid.
+void HealMP( int cast_idx, int amount ) {
+	if( cast_idx <0 || cast_idx >= MAX_CAST ) {
+		ErrorHandler( "HealMP(): "+str(cast_idx)+" is not a valid cast index." );
+		return;
+	}
+	
+	master_cast[cast_idx].cur_mp += amount;
+	
+	if( master_cast[cast_idx].cur_mp > master_cast[cast_idx].stats[STAT_MAX_MP] ) {
+		master_cast[cast_idx].cur_mp = master_cast[cast_idx].stats[STAT_MAX_MP];
+	} else if( master_cast[cast_idx].cur_mp < 0 ) {
+		master_cast[cast_idx].cur_mp = 0;
+	}
+}
+
+// Takes a cast index and an amount to decrease the MP by.
+//
+// adds the specified amount to cur_mp, will not set below 0.
+// accepts negative values, will not set above MAX_MP.
+//
+// errors if the cast_idx was invalid.
+void TakeMP( int cast_idx, int amount ) {
+	if( cast_idx <0 || cast_idx >= MAX_CAST ) {
+		ErrorHandler( "TakeMP(): "+str(cast_idx)+" is not a valid cast index." );
+		return;
+	}
+	
+	HealMP( cast_idx, 0-amount );
+}
+
+// gives a cast member a=n amount of XP based on their master_cast[] index
+// levels the cast member up to the appropriate level for that amount of XP.
+//
+// errors if the XP amount was less than or equal to zero, or if 
+// the master_cast[] index was bad.
+void GiveXP( string name, int xp ) {
+	if (!CharInParty(name)) {
+		ErrorHandler( "GiveXP('"+name+"'): '"+name+"' is not in the party." );
+		return;
+	}
+	
+	if( xp <= 0 ) {
+		ErrorHandler( "GiveXP('"+str(xp)+"'): cannot give a negative or zero amount of XP." );
+		return;
+	}
+	
+	GiveXPI( party[FindPartyPos(name)], xp );
+}
+
+
+// gives a cast member a=n amount of XP based on their master_cast[] index
+// levels the cast member up to the appropriate level for that amount of XP.
+//
+// errors if the XP amount was less than or equal to zero, or if 
+// the master_cast[] index was bad.
+void GiveXPI( int cast_idx, int xp ) {
+	if ( !CharInPartyI(cast_idx) ) {
+		ErrorHandler( "GiveXPI(): cast idx '"+str(cast_idx)+"' is not in the party." );
+		return;
+	}
+	
+	if( xp <= 0 ) {
+		ErrorHandler( "GiveXPI('"+str(xp)+"'): cannot give a negative or zero amount of XP." );
+		return;
+	}
+	
+	master_cast[cast_idx].exp += xp;
+	
+	//level up if neccesary!
+	while( master_cast[cast_idx].level < _calcMyLevelFromMyXP(cast_idx) ) {
+		_doLevelup( cast_idx );
+	}
+}
+
+// Full HP/MP recovery for a single person.
+void FullHeal( int cast_idx )
+{
+	HealHP( cast_idx, MAXIMUM_HP_VALUE );
+	HealMP( cast_idx, MAXIMUM_MP_VALUE );
+}
+
+
+
+// Although Temporary effects and equipment can mod a stat below 0, 
+// when displaying or basing effect upon a stat, we want any negative stat
+// to count as zero (excepting HP which has an absolute minimum of 1... 
+// for hopefully obvious reasons).
+//
+// The following functions are accessors for cast-members stats.  They take 
+// master_cast indexes and do no bounds checking. 
+//
+// They are named short-form because they'll oft be used inside other functions.
+// if this hurts your paradigm, feel free to do a global search/replace personally.
+
+int getMaxHP( int idx ) {
+	if( master_cast[idx].stats[STAT_MAX_HP] < 1 ) return 1;
+	return master_cast[idx].stats[STAT_MAX_HP];	
+}
+
+int getMaxMP( int idx ) {
+	if( master_cast[idx].stats[STAT_MAX_MP] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_MAX_MP];	
+}
+
+int getSTR( int idx ) {
+	if( master_cast[idx].stats[STAT_STR] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_STR];
+}
+
+int getEND( int idx ) {
+	if( master_cast[idx].stats[STAT_END] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_END];	
+}
+
+int getMAG( int idx ) {
+	if( master_cast[idx].stats[STAT_MAG] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_MAG];
+}
+
+int getMGR( int idx ) {
+	if( master_cast[idx].stats[STAT_MGR] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_MGR];
+}
+
+int getHIT( int idx ) {
+	if( master_cast[idx].stats[STAT_HIT] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_HIT];	
+}
+
+int getDOD( int idx ) {
+	if( master_cast[idx].stats[STAT_DOD] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_DOD];	
+}
+
+int getMBL( int idx ) {
+	if( master_cast[idx].stats[STAT_MBL] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_MBL];	
+}
+
+int getFER( int idx ) {
+	if( master_cast[idx].stats[STAT_FER] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_FER];	
+}
+
+int getREA( int idx ) {
+	if( master_cast[idx].stats[STAT_REA] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_REA];	
+}
+
+
+int getATK( int idx ) {
+	if( master_cast[idx].stats[STAT_ATK] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_ATK];	
+}
+
+
+int getDEF( int idx ) {
+	if( master_cast[idx].stats[STAT_DEF] < 0 ) return 0;
+	return master_cast[idx].stats[STAT_DEF];	
+}
+
+
+// takes a master_cast[] index.
+// returns how many valid Skill Group Slots that character presently has.
+//
+int getMySkillGroupCount( int cast_idx )
+{
+	int i;
+	
+	for( i=0; i<MAX_SKILLGROUPS_PER_CLASS; i++ )
+	{
+		if( GetMySkillGroup(cast_idx,i) < 0 )
+		{
+			return i;
+		}
+	}
+	
+	return i;
+}
+
+// takes a master_cast[] index and another index,
+// returns the master_skilltypes[] index for that Skill Group Slot, if the character has one.
+// returns -1 if the character has no skill group in that slot.
+//
+// no error-checking at present.  Sorry.
+int GetMySkillGroup( int cast_idx, int my_group_index )
+{
+	int tmp = master_classes[master_cast[cast_idx].class_ref].skill_groups[my_group_index];
+	
+	if( !IsSkillType(tmp) ) return 0-1;
+	
+
+	return tmp;
+}
+
+
+// And this is for people who like to iterate over the stats array!
+
+int getStat( int cast_idx, int stat_idx ) 
+{
+	int i;
+	
+	switch( stat_idx )
+	{
+		case STAT_MAX_HP:	i = getMaxHP(cast_idx);
+		case STAT_MAX_MP:	i = getMaxMP(cast_idx);
+		case STAT_STR:		i = getSTR(cast_idx);
+		case STAT_END:		i = getEND(cast_idx);
+		case STAT_MAG:		i = getMAG(cast_idx);
+		case STAT_MGR:		i = getMGR(cast_idx);
+		case STAT_HIT:		i = getHIT(cast_idx);
+		case STAT_DOD:		i = getDOD(cast_idx);
+		case STAT_MBL:		i = getMBL(cast_idx);
+		case STAT_FER:		i = getFER(cast_idx);
+		case STAT_REA:		i = getREA(cast_idx);
+		case STAT_ATK:		i = getATK(cast_idx);
+		case STAT_DEF:		i = getDEF(cast_idx);
+	}
+	
+	return i;
+}
+
+// This clears all of the non-permanent parts of master_cast.
+// Really, we should probably redesign the system so the 'master' and 'variable' 
+// parts of PCs and enemies live in seperate places... thoughts for the 
+// future.
+//
+// currently clears the following fields:
+//
+// level, exp, cur_hp, cur_mp, and all stats, equipment, and skills.
+void ClearCast()
+{
+	int i,j;
+	for(i=0; i<MAX_CAST; i++)
+	{
+		master_cast[i].level	= 0;
+		master_cast[i].exp		= 0;
+		master_cast[i].cur_hp	= 0;
+		master_cast[i].cur_mp	= 0;	
+		
+		for( j=0; j<MAX_STATS; j++ )
+		{
+			master_cast[i].stats[j] = 0;
+		}
+
+		for( j=0; j<MAX_EQUIP_SLOTS; j++ )
+		{
+			master_cast[i].equipment[MAX_EQUIP_SLOTS] = 0-1;
+		}
+		
+		for( j=0; j<MAX_SKILLS; j++ )
+		{
+			master_cast[i].skills[MAX_SKILLS] = 0-1;
+		}
+	}
+}
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Helper fuction.  Levels up a master_cast entry once.
+//
+void _doLevelup( int cast_idx ) {
+	int i;
+
+	for (i = 0; i < MAX_GROWABLE_STATS; i++) { 
+		master_cast[cast_idx].stats[i] += master_cast[cast_idx].stat_growth[master_cast[cast_idx].level][i]; 
+	}
+	
+	master_cast[cast_idx].level++;
+}
+
+// Helper function.  Calculates what level a master_cast entry should be 
+//
+int _calcMyLevelFromMyXP( int cast_idx ) {
+
+	int i, level, xp_total_thusfar;
+	
+	while( i < MAX_LEVELS ) {
+
+		i++;
+		
+		xp_total_thusfar +=  master_cast[cast_idx].exp_require[i];
+		
+		if( xp_total_thusfar > master_cast[cast_idx].exp ) {
+			return i;
+		} 
+	}
+	
+	//we've reached max. Damn!
+	return MAX_LEVELS;
+}

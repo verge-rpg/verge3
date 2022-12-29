@@ -1,0 +1,53 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+<span class=comment>//
+// Grue's Icon library, mark I.
+//
+// -I'd like to add multiple icon sourcefiles, variable sized icons, and other neat things
+// in the future, but in all honesty I'll probably only finish the basic library.
+//
+// To the intrested, feel free to flesh this out into something more useful, and many cookies
+// shall be yours.
+//
+
+<a name="x_from_flat"></a>
+// extracts the first dimension of a flat-indexed 2 dimensionally array given
+// the second dimension's maximum value and the value of the flat index you
+// wish to extract the first dimension's value from.
+//</span>
+<span class=type>int</span> x_from_flat<span class=brace>(</span> <span class=type>int</span> flatval, <span class=type>int</span> yMax <span class=brace>)</span>
+
+<a name="y_from_flat"></a>
+<span class=comment>
+// extracts the second dimension of a flat-indexed 2 dimensionally array given
+// the second dimension's maximum value and the value of the flat index you
+// wish to extract the second dimension's value from.
+//</span>
+<span class=type>int</span> y_from_flat<span class=brace>(</span> <span class=type>int</span> flatval, <span class=type>int</span> yMax <span class=brace>)</span>
+
+<a name="ICON_WIDTH"></a><a name="ICON_HEIGHT"></a>
+<span class=type>#define</span> ICON_WIDTH	16
+<span class=type>#define</span> ICON_HEIGHT	16
+
+<a name="icon_max"></a>
+<span class=comment>
+// returns the number of icons that live inside the given source image.</span>
+<span class=type>int</span> icon_max<span class=brace>(</span> <span class=type>int</span> src_img <span class=brace>)</span>
+
+<a name="icon_init"></a>
+<span class=comment>
+// Initializes the icon library.</span>
+<span class=type>void</span> icon_init<span class=brace>(</span> <span class=type>string</span> src_file <span class=brace>)</span>
+
+<a name="icon_get"></a>
+<span class=comment>
+// Returns an imageshell refernce to the specified icon.
+// does not do bounds checking.
+//
+// remember to FreeImage() the imageshell reference when you are done with it.</span>
+<span class=type>int</span> icon_get<span class=brace>(</span> <span class=type>int</span> idx <span class=brace>)</span>

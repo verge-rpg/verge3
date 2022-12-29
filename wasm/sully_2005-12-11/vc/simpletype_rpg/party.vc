@@ -1,0 +1,474 @@
+// Party.vc
+//
+// Party and character-management functions
+//
+// Original code by vecna
+// modified by McGrue
+////////////////////////////////////////////
+
+// The maximum members in a party.  
+// You may alter this, but do not expect menus built on expectations 
+// of 5 to work properly.
+#define MAX_PARTY_SIZE 5
+
+// an array of master_cast[] indexes for the party.
+//
+//eg:	party[3] is equal to the 4th party member's master_cast[] idx.
+//		so, for example, if you wanted to access that character's name based 
+//		on their party position, you would do:
+//
+//		master_cast[ party[4] ].name;
+int party[MAX_PARTY_SIZE];
+
+
+// the party's money!
+int money;
+
+// the name of money in this game (ie "GP", "Gold", "Gil", "Gella", "Zenny", "Meseta")
+string moneyname = "Clams";
+
+
+// The current party size.  
+// This is altered by AddPlayer, RemovePlayer, and any function that calls them.
+// please do not alter it by hand unless you Know What You Are Doing (tm).
+int curpartysize;	
+
+
+// The current party size.  
+// This is set by SpawnParty, and contains the entitys[] index of the party's leader.
+// please do not alter it by hand unless you Know What You Are Doing (tm).
+int playerent;
+
+
+// returns the current size of the party.
+//
+// It's just a protective sheild around curpartysize for those of you 
+// who do not trust yourself with read/write vars. ;)
+int PartySize() {
+	return curpartysize;
+}
+
+// returns the indice of the player entity.  
+// this indice is only set by SpawnParty().  
+// If SetPlayer is called after SpawnParty(), 
+// the index will point the the party's leader, 
+// *not* the current player-controlled entity.
+//
+// It's just a protective sheild around playerent for those of you 
+// who do not trust yourself with read/write vars. ;)
+int GetPlayer() {
+	return playerent;
+}
+
+
+// Takes a string name of a Cast member.  
+// returns master_cast idx if it's a valid cast name.  -1 if not.
+int IsCharacter( string name ) {
+	int i;
+	
+	for( i=0; i<MAX_CAST; i++ ) {
+		if( equ(master_cast[i].name, name) ) {
+			return i;
+		}
+	}
+	
+	return 0-1;
+}
+
+// adds a member of master_cast to the party by their name.
+//
+// errors if given name isn't in master_cast.
+void JoinParty( string name, int level ) {
+	int i;
+	
+	i = IsCharacter( name );
+	
+	if( i<0 ) {
+		ErrorHandler( "JoinParty(): '"+name+"' is not a valid cast member." );
+		return;
+	} else {
+		JoinPartyI( i, level );
+	}
+}
+
+// takes a master_cast index and a level.
+// adds the cast member to the party and levels him to the specified level
+//
+// errors on a bad index, if the character is already in the party, 
+// on a bad level, or if the party is already at max size.
+void JoinPartyI( int cst_idx, int level ) { 
+	int i, j; 
+	if ( CharInPartyI(cst_idx) ) {
+		ErrorHandler( "JoinPartyI(): "+master_cast[cst_idx].name+" is already in the party." );
+		return;
+	}
+	
+	if( cst_idx < 0 || cst_idx >= MAX_CAST ) {
+		ErrorHandler( "JoinPartyI(): "+str(cst_idx)+" is an invalid cast index." );
+		return;
+	}
+	
+	if ( PartySize() >= MAX_PARTY_SIZE ) {
+		ErrorHandler( "JoinPartyI(): The party is already at maximum capacity." );
+		return;
+	}
+	
+
+	// Level sanity check
+	if( level <= 0 || level > MAX_LEVELS ) {
+		ErrorHandler( "JoinPartyI(): "+str(level)+" is not a valid level." );
+		return;
+	}
+
+	for (i = 0; i < MAX_GROWABLE_STATS; i++) { 
+		master_cast[cst_idx].stats[i] += master_cast[cst_idx].stat_growth[0][i]; 
+	} 
+	master_cast[cst_idx].exp += master_cast[cst_idx].exp_require[0];
+
+	for (j = 1; j < level; j++) { 
+		for (i = 0; i < MAX_GROWABLE_STATS; i++) { 
+			master_cast[cst_idx].stats[i] += master_cast[cst_idx].stat_growth[j][i]; 
+		}
+
+		master_cast[cst_idx].exp += master_cast[cst_idx].exp_require[j];
+	}
+
+	master_cast[cst_idx].level = level; 
+	master_cast[cst_idx].cur_hp = master_cast[cst_idx].stats[STAT_MAX_HP]; 
+	master_cast[cst_idx].cur_mp = master_cast[cst_idx].stats[STAT_MAX_MP]; 
+
+	AddPlayerI( cst_idx );
+}
+
+// Takes a name of a party member.
+// returns the entity index of that party member.
+//
+// errors if the name is not a valid party member and returns -1.
+int GetPartyEntity( string name ) {
+	int idx;
+	idx = FindPartyPos(name);
+	
+	if(idx<0) {
+		ErrorHandler( "GetPartyEntity('"+name+"'): '"+name+"' is not a valid character's name." );
+	} else {
+		return master_cast[party[idx]].entity;
+	}
+	
+	return 0-1;
+}
+
+// takes a master_cast name 
+// adds cast member to the active party.  If the party was empty, 
+//   this member becomes leader.
+//
+// errors if the specified name isn't valid.
+// errors if the character was already in the party
+// errors if the party is full.
+void AddPlayer(string name) {
+	int i;
+	
+	if( IsCharacter(name) < 0 ) {
+		ErrorHandler( "AddPlayer('"+name+"'): '"+name+"' is not a valid character's name." );
+		return;
+	}
+	
+	for( i=0; i<MAX_CAST; i++ ) {
+		if( equ(name, master_cast[i].name) ) {
+			AddPlayerI(i);
+			return;
+		}
+	}
+}
+
+// takes a master_cast index.
+// adds cast member to the active party.  If the party was empty, 
+//   this member becomes leader.
+//
+// errors if the character was already in the party
+// errors if the party is full.
+void AddPlayerI(int i) {
+
+	if (CharInPartyI(i)) {
+		ErrorHandler( "AddPlayerI("+str(i)+"): '"+str(i)+"' is not a valid party member's cast index." );
+		return;	
+	}
+
+	if (PartySize() >= MAX_PARTY_SIZE) {
+		ErrorHandler( "AddPlayerI("+str(i)+"): The party is already full." );
+		return;
+	}
+
+	party[PartySize()] = i;	
+
+	int e = EntitySpawn(0, 0, master_cast[i].chrname);
+	EntityStalk(e, master_cast[party[PartySize()-1]].entity);
+	master_cast[party[PartySize()]].entity = e;
+	curpartysize++;	
+
+	//what's this line for?  -Grue
+	//entity.x[playerent] = entity.x[playerent];
+}
+
+// takes a master_cast index
+// returns 1 if the cast member is in the party, 0 if not.
+int CharInPartyI(int cast_idx)
+{
+	int j;
+	for (j=0; j<PartySize(); j++)
+		if (party[j]==cast_idx) return 1;
+	return 0;
+}
+
+// takes a master_cast name
+// returns 1 if the cast member is in the party, 0 if not.
+int CharInParty( String name )
+{
+	int j;
+	for (j=0; j<PartySize(); j++) {
+		if( equ(name, master_cast[party[j]].name) ) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
+// takes a master_cast index
+// returns the party position if the character is in the party, -1 if not.
+int FindPartyPosI(int cast_idx)
+{
+	int j;
+	for (j=0; j<PartySize(); j++)
+		if (party[j]==cast_idx) return j;
+	return 0-1;
+}
+
+// takes a master_cast name
+// returns the party position if the character is in the party, -1 if not.
+int FindPartyPos(string s)
+{
+	int j;
+	for (j=0; j<PartySize(); j++) {
+		if( equ(s, master_cast[party[j]].name) ) {
+			return j;
+		}
+	}
+
+	return 0-1;
+}
+
+// takes a cast member's name.
+// removes that cast member from the active party.
+//
+// errors if the character is not in the party.
+void RemovePlayer(string name)
+{
+	if (!CharInParty(name)) 
+	{
+		ErrorHandler( "RemovePlayer('"+name+"'): '"+name+"' is not in the party." );
+		return;
+	}
+	
+	AutoOn();
+	int j=0;
+	int ent;
+	
+	j=FindPartyPos(name);
+
+	ent = master_cast[party[j]].entity;
+		
+	for (j=FindPartyPos(name); j<PartySize()-1; j++) 
+	{
+		party[j]=party[j+1];
+	}
+	
+	curpartysize--;
+	AutoOff();
+	
+	//disappear the character!
+	entity.obstruct[ent]		= 0;
+	entity.visible[ent]			= 0;
+	entity.obstructable[ent]	= 0;
+	entity.script[ent]			= "";
+}
+
+//turns partyfollowing on.  
+//Works best if everyone's stacked on the same tile at the time.
+void AutoOn()
+{
+	int i;
+	for (i=1; i<PartySize(); i++)
+		EntityStalk(master_cast[party[i]].entity, 0-1);
+}
+
+// Turns partyfollowing off.
+void AutoOff()
+{
+	int i;
+	for (i=1; i<PartySize(); i++)
+		EntityStalk(master_cast[party[i]].entity, master_cast[party[i-1]].entity);
+}
+
+// sets every party member's current HP to their max HP (healing them completely).
+void RecoverPartyHP() {
+	int i;
+	
+	for( i=0; i<PartySize(); i++ ) {
+		HealHP( party[i], MAXIMUM_HP_VALUE );
+	}
+} 
+
+// sets every party member's current MP to their max MP (recovering their MP completely).
+void RecoverPartyMP() {
+	int i;
+	
+	for( i=0; i<PartySize(); i++ ) {
+		HealMP( party[i], MAXIMUM_MP_VALUE );		
+	}
+} 
+
+
+// Spawns a party based on the contents of the party[] array.
+// Party[0] becomes the Player, and each following party slot stalks the previous.
+//
+// This function should be called in the autoexec function of any map you wish to 
+// have your party to exist in.
+//
+// The party is spawned at x,y.  This function does not change cameratracking, 
+// so the camera will not automatically jump to the party if not in mode 1.
+//
+// Errors if the current party size is 0 or less or greater than MAX_PARTY_SIZE.
+void SpawnParty( int x, int y ) {
+	
+
+	// Initialize entities
+	int i, e, last=0-1;
+	
+	if( !PartySize() || PartySize() > MAX_PARTY_SIZE ) {
+		ErrorHandler( "SpawnParty(): your party has an invalid size to span ( "+str(PartySize())+" of "+str(MAX_PARTY_SIZE)+" max)" );
+		return;
+	}
+	
+	for (i=0; i<PartySize(); i++) {
+
+		e = EntitySpawn( x,y, master_cast[party[i]].chrname );
+		EntityStalk(e, last);
+		master_cast[party[i]].entity = e;
+		if (last<0) 
+		{
+			SetPlayer(e);
+			playerent = e;
+		}
+
+		last = e;
+	}
+}
+
+
+int _MPB_panes[MAX_PARTY_SIZE];
+int _MPB_restore, _MPB_store;
+
+void MenuPartyBoxRestorePosition()
+{
+	_MPB_restore = 1;
+}
+
+
+
+// Draws a graphical box that lets you select someone presently in the party.
+// returns their master_cast index.
+int MenuPartyBox()
+{
+	int i, selected, frame;
+	int mini_hold = menu_idx;
+	menu_idx = 10000; // To make a grue happy
+	
+	int bordersize = 5;
+	int f = 0; //make this alterable.
+		
+	int x1 = TextWidth(f, "_HP");
+	int x2 = x1 + TextWidth(f, "X");
+	int x3 = x2 + TextWidth(f, "000");
+	int x4 = x3 + TextWidth(f, "/");
+	int x5 = x4 + TextWidth(f, "000");
+	
+	int y_spacer = 1; //make this alterable.
+	int y1 = y_spacer;
+	int y2 = y1+ FontHeight(f)+y_spacer;
+	int y3 = y2+ FontHeight(f)+y_spacer; 
+	int y4 = y3+ FontHeight(f)+y_spacer;
+	
+	int temp;
+	
+	if( _MPB_restore )
+	{
+		_MPB_restore = 0;
+		selected = _MPB_store;
+	}
+
+	for( i=0; i<PartySize(); i++ )
+	{
+		_MPB_panes[i] = NewImage(x5,y4);
+		
+		RectFill(0,0, x5,y4, transcolor, _MPB_panes[i]);
+		
+		PrintString(x1, y1, _MPB_panes[i], f, master_cast[party[i]].name);
+		PrintString(x3, y2, _MPB_panes[i], f, "/");
+		PrintString(x3, y3, _MPB_panes[i], f, "/");
+		
+		PrintRight(x1, y2, _MPB_panes[i], f, "HP");
+		PrintRight(x1, y3, _MPB_panes[i], f, "MP");
+		
+		PrintRight(x3, y2, _MPB_panes[i], f, str(master_cast[party[i]].cur_hp));
+		PrintRight(x5, y2, _MPB_panes[i], f, str(master_cast[party[i]].stats[STAT_MAX_HP]));
+		
+		PrintRight(x3, y3, _MPB_panes[i], f, str(master_cast[party[i]].cur_mp));
+		PrintRight(x5, y3, _MPB_panes[i], f, str(master_cast[party[i]].stats[STAT_MAX_MP]));
+	}
+	
+	int high = PartySize() * (y4+FontHeight(f)) + (bordersize*2);
+	int wid = ( x5+TextWidth(f, "000") ) + (bordersize*2);
+	int xpos = (ImageWidth(screen) / 2) - (wid / 2) - bordersize;
+	int ypos = (ImageHeight(screen) / 2) - (high / 2) - bordersize;
+	
+	int x_in = xpos+TextWidth(f, "00");
+	int y_in = ypos+FontHeight(f);
+	
+	Unpress(0);
+
+	while(!MenuConfirm())
+	{
+		MenuBackGroundDraw(); // Draw universal things
+		
+		if (IsInMenu()) CallFunction(master_menus[mini_hold].draw_func);
+
+		V1_Box(xpos, ypos, wid, high);
+
+		for(i = 0; i < PartySize(); i++)
+		{
+			TBlit( x_in, y_in + (i*(y4+FontHeight(f))), _MPB_panes[i], screen );
+
+			if (i == selected) {
+				PrintString( x_in, y_in+(i*(y4+FontHeight(f))), screen, f, "_>" );
+			}
+		}
+		
+		ShowPage();
+		selected = MenuControlArrows(selected, PartySize());
+		if (MenuCancel()) return 0-1;
+	}
+	
+	//free the temporary images...
+	for( i=0; i<PartySize(); i++ )
+	{
+		FreeImage(_MPB_panes[i]);
+	}
+	
+	_MPB_store = selected;
+	
+	menu_idx = mini_hold;
+	
+	Unpress(0);
+
+	return party[selected];
+}
+

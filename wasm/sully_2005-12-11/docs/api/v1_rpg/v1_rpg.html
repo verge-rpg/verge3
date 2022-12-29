@@ -1,0 +1,316 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+
+<a name="V1RPG_RenderFunc"></a>
+<span class=comment>
+// The main renderfunction for the v1 RPG effects library.
+// Every time Render()  is called or an R is reached on the map's
+// Renderstring, this function is called... as long as HookRetrace("V1RPG_RenderFunc")
+// was set beforehand (by default in The Sully Chronicles, this line is placed in
+// the system.vc autoexec function() )
+//
+// This function checks for and does the following events:
+// * Renders the Weather if any is on (see SetWeather()  in v1_weather.vc)
+// * if there's a color filter on, applies it. ( see the VCScreenFilter()  functions below)
+// * TBlits the vclayer over the screen. (see VCPutIMG() , ClearVCLayer() , VCText()  below)
+// * Applies a t<span>int</span> if it's on. (see VCLayerTintScreen()  below)
+// * shakes the screen if the quake has been set (see VCQuake()  below)
+//
+//</span>
+<span class=type>void</span> V1RPG_RenderFunc<span class=brace>(</span><span class=brace>)</span>
+
+<a name="VCScreenFilter"></a>
+<span class=comment>
+// Sets the colorfilter option for V1RPG_RenderFunc.
+//
+//</span>
+<span class=type>void</span> VCScreenFilter<span class=brace>(</span> <span class=type>int</span> color_filter <span class=brace>)</span>
+
+<a name="VCScreenFilterOn"></a>
+<span class=comment>
+// returns true if there's a color filter on of any type.
+//</span>
+<span class=type>int</span> VCScreenFilterOn<span class=brace>()</span>
+
+
+<a name="VCScreenFilterOff"></a>
+<span class=comment>
+//Turns the VClayer's color filter off.</span>
+<span class=type>void</span> VCScreenFilterOff<span class=brace>(</span><span class=brace>)</span>
+
+<a name="VCScreenFilterLucent"></a>
+<span class=comment>
+// applies a lucency to the colorfilter.
+// Remember: 100% lucent is nothing,
+// 0% lucent is solid, 25% lucent is lightly see-though,
+// 75% lucent is very see-through, etc etc.</span>
+<span class=type>void</span> VCScreenFilterLucent<span class=brace>(</span> <span class=type>int</span> perc <span class=brace>)</span>
+
+<a name="VCCustomFilter"></a>
+<span class=comment>
+// This sets a custom color filter.
+// color_1 defines the darkest color on a screen,
+// color_2 defines the brightest color on a screen.
+//
+// Make sure to supply both arguments using RGB()
+//
+// Example:
+//	VCCustomFilter( RGB(0,0,0) , RGB(255,255,0)  ) ; //this will make the screen
+//		//all shades of Yellow... as long as V1RPG_RenderFunc is in the HookRetrace.</span>
+<span class=type>void</span> VCCustomFilter<span class=brace>(</span> <span class=type>int</span> color_1, <span class=type>int</span> color_2 <span class=brace>)</span>
+
+<a name="VCCustomFilterRestore"></a>
+<span class=comment>
+// If something else accesses SetCustomColorFilter()  directly without accessing
+// VCCustomFilter() , that something else can just call VCCustomFilterRestore()  after
+// it's done and the V1RPG library will continue to function as normal with it's custom
+// color filter.
+//
+// In the Sully Chronicles, the menu function uses SetCustomColorFilter()  to draw it's
+// colored menu backgrounds, and so it calls this function after it's done to make sure
+// any custom screen filtering resumes as normal (like in Sara's flashback) .</span>
+<span class=type>void</span> VCCustomFilterRestore<span class=brace>(</span><span class=brace>)</span>
+
+<a name="VCCustomFilterOn"></a>
+<span class=comment>// returns 1 if VCCustomFilter()  is active, 0 if it is not.</span>
+<span class=type>int</span> VCCustomFilterOn<span class=brace>(</span><span class=brace>)</span>
+
+<a name="getVCCustomFilterColor1"></a>
+<span class=comment>
+// returns the integer color-value of the current VCCustomFilter's "dark" color.</span>
+<span class=type>int</span> getVCCustomFilterColor1<span class=brace>(</span><span class=brace>)</span>
+
+<a name="getVCCustomFilterColor2"></a>
+<span class=comment>
+// returns the integer color-value of the current VCCustomFilter's "light" color.</span>
+<span class=type>int</span> getVCCustomFilterColor2<span class=brace>(</span><span class=brace>)</span>
+
+<a name="VCLayerTintScreen"></a>
+<span class=comment>
+// Tints the vc layer the given color a given percent.
+// Useful for fading too and from a specific color.</span>
+<span class=type>void</span> VCLayerTintScreen<span class=brace>(</span><span class=type>int</span> color, <span class=type>int</span> percent<span class=brace>)</span>
+
+<a name="VCLayerTintOff"></a>
+<span class=comment>
+// Turns off the vc layer tinting, if it was on.</span>
+<span class=type>void</span> VCLayerTintOff<span class=brace>(</span><span class=brace>)</span>
+
+<a name="ClearVCLayer"></a>
+<span class=comment>
+// Clears the VC Layer of any and all images.
+//</span>
+<span class=type>void</span> ClearVCLayer<span class=brace>(</span><span class=brace>)</span>
+
+<a name="VCPutIMG"></a>
+<span class=comment>
+// Takes an image's path and filename, and the position to put it onto the
+// VC Layer.  It then loads it, blits it only the vc layer, and deletes the
+// image.
+//
+// No fuss, no muss.  Very useful for drawing things to the screen to stick
+// around for a while in a simple manner.
+//
+// If you ever want to wipe the screen after calling this, use ClearVCLayer().</span>
+<span class=type>void</span> VCPutIMG<span class=brace>(</span> <span class=type>string</span> img_name, <span class=type>int</span> x_pos, <span class=type>int</span> y_pos <span class=brace>)</span>
+
+<a name="FillVCLayer"></a>
+<span class=comment>
+// Fills the vclayer with an RGB()</span>
+<span class=type>void</span> FillVCLayer<span class=brace>(</span> <span class=type>int</span> matte_color <span class=brace>)</span>
+
+<a name="VCText"></a>
+<span class=comment>
+// Prints string s at (x,y) on the VCLayer in the v1-rpg lib's SmallFont.
+//
+// the v1-rpg lib's SmallFont.can be changed with v1_setSmallfont() </span>
+<span class=type>void</span> VCText<span class=brace>(</span> <span class=type>int</span> x, <span class=type>int</span> y, <span class=type>string</span> s <span class=brace>)</span>
+
+<a name="VCCenterText"></a>
+<span class=comment>
+// Prints string s centered on the vclayer at height y.
+// the font is the v1rpg smallfont.
+//</span>
+<span class=type>void</span> VCCenterText<span class=brace>(</span> <span class=type>int</span> y, <span class=type>string</span> s <span class=brace>)</span>
+
+<a name="VCQuake"></a>
+<span class=comment>
+// Turns on vc-layer quaking with a horizontal shake of quake_x and a vertical
+// shake of quake_y.
+//
+// The screen will shake but loosely follow the player until VCQuakeOff() is
+// called.
+//
+// This is similar to EarthQuake() in v1_weather.vc, but allows the player to
+// walk around and do stuff wile the screen is shaking.</span>
+<span class=type>void</span> VCQuake<span class=brace>(</span> <span class=type>int</span> quake_x, <span class=type>int</span> quake_y <span class=brace>)</span>
+
+<a name="VCQuakeOff"></a>
+<span class=comment>
+// Turns off the vclayer quake effect.</span>
+<span class=type>void</span> VCQuakeOff<span class=brace>(</span><span class=brace>)</span>
+
+<a name="V1_StartDualMode"></a>
+<span class=comment>
+// This function enables the V1RPG Dual VC-layer mode!  It's totally wacky!
+// It basically allows for two Rs in curmap.rstring, with V1RPG_RenderFunc<span class=brace>(</span><span class=brace>)</span>  being
+// called when the first R triggers, and a straight-up TBlit of the second vc layer
+// image on the second R.
+//
+// This mode is used on lab.map to blit things in the foreground, since lab.map puts
+// the regular R-layer behind the entities and the tiles to make the neat translucent
+// fog effect work.
+//</span>
+<span class=type>void</span> V1_StartDualMode<span class=brace>(</span> <span class=type>string</span> newr<span class=type>string</span> <span class=brace>)</span>
+
+<a name="V1_StopDualMode"></a>
+<span class=comment>
+// If Dual-rendering mode is on when this is called, it turns the mode off and
+// restores the original curmap.rstring.
+//
+// Otherwise does nothing at all.</span>
+<span class=type>void</span> V1_StopDualMode<span class=brace>(</span><span class=brace>)</span>
+
+<a name="V1RPG_RenderFunc_DUALMODE"></a>
+<span class=comment>
+// This is the function that gets set to the HookRetrace by V1_StartDualMode<span class=brace>(</span><span class=brace>)</span>
+// Do not call this yourself unless you Know What You're Doing.
+//
+// ...generally, you shouldn't use the Dual rendering mode unless you Know What
+// You're Doing, too.</span>
+<span class=type>void</span> V1RPG_RenderFunc_DUALMODE<span class=brace>(</span><span class=brace>)</span>
+
+<a name="V1RPG_LoadResources"></a>
+<span class=comment>
+// This function takes care of all the loading and initialization for the v1_RPG
+// library.
+//
+// You may recall seeing it in The Sully Chronicles's system.vc at the top of the
+// autoexec() function with all the other library load functions!</span>
+<span class=type>void</span> V1RPG_LoadResources<span class=brace>(</span><span class=brace>)</span>
+
+<a name="V1_MapSwitch"></a>
+<span class=comment>
+// One of the cornerstones of the v1RPG effect library, this function takes
+// care of all of the awesome things this library can do on the mapswitch.
+//
+// It stores the x and y that the party goes to on the new map, and the effect
+// to use when the new map loads.  The it does the first half of the effect,
+// sets the music volume to the global value (set by the v1_music.vc functions)
+// just incase the volume was altered manually using SetVolume() , and turns off
+// any weather that was going on.
+//
+// At that point, it calls Map()  with the specified mapname.  Map() , if you've
+// read the v3 manual, ceases all activity on the present map, loads the new map,
+// and calls the new map's personal autoexec function (you set that in maped.
+// All of the Sully maps have theirs set to "start() ", but you can name yours
+// whatever.)
+//
+// To have a V1_MapSwitch()  complete successfully on the new map, make sure
+// v1_InitMap() ; is called.  In The Sully Chronicles, v1_InitMap()  is called
+// inside InitMap() , which is defined in system.vc
+//</span>
+<span class=type>void</span> V1_MapSwitch<span class=brace>(</span><span class=type>string</span> mapn, <span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> effect<span class=brace>)</span>
+
+<a name="V1_InitMap"></a>
+<span class=comment>
+// The v1_rpg library's map upkeep function.
+//
+// Put this function in your map's autoexec function if you want
+// your v1_mapswitch transitions to properly work.
+//
+// To have a V1_MapSwitch()  complete successfully on the new map, make sure
+// v1_InitMap() ; is called.
+
+// In The Sully Chronicles, v1_InitMap()  is called inside InitMap() , which is
+// defined in system.vc</span>
+<span class=type>void</span> V1_InitMap<span class=brace>(</span><span class=brace>)</span>
+
+<a name="Warp"></a>
+<span class=comment>
+// Warps the player to tile coordinates (x,y) , using a specified fade effect.
+// The fade effects have the following valid defines:
+//   TNONE, TWHITE, TCROSS, TBOX, TWIPE, TCIRCLE
+//
+// NOTE: References simpletype library's GetPlayer()  to get the mapindex of
+//       the player entity.  If you decide to use a different partyhandling
+//       system with this library, make sure to change those to the proper
+//       player entity index.</span>
+<span class=type>void</span> Warp<span class=brace>(</span><span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> effect<span class=brace>)</span>
+
+<a name="V1_Box"></a>
+<span class=comment>
+// Box-drawing tool for this library.
+// Draws a box at screen coordinates (x,y)  with width and height of (w,h)
+//
+// NOTE: This is presently a wrapper around the v1_Menu's MenuDrawBackground()  function.
+//       if you wish to use this library without v1_Menu, alter the contents of this
+//       function as you see fit.
+//</span>
+<span class=type>void</span> V1_Box<span class=brace>(</span><span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> w, <span class=type>int</span> h<span class=brace>)</span>
+
+<a name="CenterMessageBox"></a>
+<span class=comment>
+// Takes a one-line message and prints it in a centered MenuBox with the specified font.
+//
+// Does not do stringlength-checking, so you can make a long string draw off of the screen.
+// Does not factor in newlines or tabs, either.</span>
+<span class=type>void</span> CenterMessageBox<span class=brace>(</span> <span class=type>int</span> font, <span class=type>string</span> msg <span class=brace>)</span>
+
+<a name="Banner"></a>
+<span class=comment>
+// Takes a one-line message and prints it in a centered MenuBox
+// with the v1rpg Small Font.  The message stays up for duration, or until
+// b1 is pressed.
+//
+// the menu is disabled during this function.</span>
+<span class=type>void</span> Banner<span class=brace>(</span> <span class=type>string</span> msg, <span class=type>int</span> duration <span class=brace>)</span>
+
+<a name="SaveEnable"></a>
+<span class=comment>
+// Turns on the ability to save.
+// </span>
+<span class=type>void</span> SaveEnable<span class=brace>(</span><span class=brace>)</span>
+
+<a name="SaveDisable"></a>
+<span class=comment>
+// Turns off the ability to save.
+// </span>
+<span class=type>void</span> SaveDisable<span class=brace>(</span><span class=brace>)</span>
+
+<a name="AlterBTile"></a>
+<span class=comment>
+// Places tile t onto map layer 0 at <span class=brace>(</span>x,y<span class=brace>)</span> .
+//
+// obstructs the tile if obs is 1, unobstructs the tile if obs is 0
+// leaves the obstruction alone if obs is any other value.</span>
+<span class=type>void</span> AlterBTile<span class=brace>(</span><span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> t, <span class=type>int</span> obs<span class=brace>)</span>
+
+<a name="AlterFTile"></a>
+<span class=comment>
+// Places tile t onto map layer 1 at <span class=brace>(</span>x,y<span class=brace>)</span> .
+//
+// obstructs the tile if obs is 1, unobstructs the tile if obs is 0
+// leaves the obstruction alone if obs is any other value.</span>
+<span class=type>void</span> AlterFTile<span class=brace>(</span><span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> t, <span class=type>int</span> obs<span class=brace>)</span>
+
+<a name="OpenTreasure"></a>
+<span class=comment>
+// The master Chest-opening script.
+// returns 1 if the chest referenced at flags[flag] was not open, and sets the tile at
+// <span class=brace>(</span>x,y<span class=brace>)</span>  to t, while playing an opening-the-chest sound.
+//
+// else returns 0.
+//
+// See any treasure script in Sully for use example.
+//</span>
+<span class=type>int</span> OpenTreasure<span class=brace>(</span> <span class=type>int</span> flag, <span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> open_tile <span class=brace>)</span>
+
+</pre>
+</body>
+</html>

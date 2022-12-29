@@ -1,0 +1,331 @@
+// Equip.dat
+//
+//
+//
+// Here's the format for a equipment entry:
+//
+// EQUIPMENT_NAME
+// CLASS_1, CLASS_2, CLASS_3
+// EQUIP_SLOT
+// STAT_1 MODVAL 
+// STAT_2 MODVAL
+// ...
+// STAT_N MODVAL
+// -
+//
+// To explain:
+// The first line of an equipment entry must be the item we're defining the 
+//   equipment values for.  This must be the name of an item in Items.dat.
+// The second line is a comma separated list of the classes that can equip 
+//   this item. The classes must be valid class names defined in Class.dat.
+//   As a special-case token, You may specify ALL_CLASSES if every class can
+//   equip this item.
+// The third line is the slot this piece of equipment can be equipped in.  In 
+//   this release, the only slots are LEFT_HAND, RIGHT_HAND, BODY, and 
+//   ACCESSORY.  Note that in this release there are two accessory slots and 
+//   anything that is an ACCESSORY can be equipped in *either* slot.
+// The fourth line, and each subsequent line until the equipment terminator 
+//   line is reached is a  modvalue line.  This takes a stat abbreviation, 
+//   some whitespace, and a value.  When a piece of equipment is equipped, the
+//   character's stats alter by that value, and when that equipment is removed,
+//   they alter by the negative of that value. 
+//   At this time, the stats allowed are hardcoded.  The following list shows 
+//   the valid stat tokens:
+//   
+//   MAX_HP, MAX_MP, STR, END, MAG, MGR, HIT, DOD, MBL, FER, REA, ATK, DEF	
+//
+//   Also note that the default equipment code will not allow a character to 
+//   equip any equipment that would lower any stat to 0 or less by putting it 
+//   on.
+//
+// An equipment entry ends when you put a lone dash on a line.  Then the system
+//   expects to see the next equipment's data afterwards, and the circle of 
+//   life continues on.
+//
+// As a final note, any token, name or otherwise is case-insensitive, and any 
+//   blank lines and/or commented lines are ignored as par usual for these
+//   datafiles.  Go nuts.
+
+Dagger
+all_classes
+right_hand
+
+ATK	+5
+
+- 
+
+Iron_Sword
+Knight, Spearguy
+right_hand
+
+ATK +22
+
+- 
+
+Wand
+Priest, Wizard
+right_hand
+
+ATK +3
+MAG +5
+
+- 
+
+Staff
+all_classes
+right_hand
+
+ATK +9
+MAG +2
+
+- 
+
+Sting_Whip
+priest //WHAT KIND OF RELIGION IS THIS?!
+right_hand
+
+ATK +18
+HIT +5
+
+- 
+
+Brass_Pipe
+Knight, Engineer, Spearguy
+right_hand
+
+ATK +10
+
+- 
+
+Lead_Wrench
+Engineer
+right_hand
+
+ATK +21
+
+- 
+
+Spear
+Spearguy
+right_hand
+
+ATK +15
+
+- 
+
+Steel_Lance
+Spearguy
+right_hand
+
+ATK +28
+
+- 
+
+Garment
+ALL_CLASSES
+body
+
+DEF +2
+
+- 
+
+Cloak
+ALL_CLASSES
+body
+
+DEF +4
+MGR +4
+- 
+
+Robe
+Priest, Wizard
+body
+
+DEF +7
+MGR +2
+
+- 
+
+Leather_Vest
+Knight, Engineer, Spearguy
+body
+
+DEF +8
+
+- 
+
+Titanium_Suit
+Knight, Engineer, Spearguy
+body
+
+DEF +11
+
+- 
+
+Bronze_Armor
+Knight, Spearguy
+body
+
+DEF +16
+MBL -1
+
+- 
+
+Headband
+ALL_CLASSES
+accessory
+
+DEF +1
+- 
+
+Hood
+Wizard, Priest
+accessory
+
+DEF +2
+MAG +2
+
+- 
+
+Cap // Short lines bust my ass
+Knight, Engineer, Spearguy
+accessory
+
+DEF +4
+
+- 
+
+Tiara
+Priest, Engineer
+accessory
+
+DEF +6
+MAG +2
+
+- 
+
+Head_Brace
+Engineer
+accessory
+
+DEF +7
+
+- 
+
+Gold_Helmet
+Knight, Spearguy
+accessory
+
+DEF +8
+
+- 
+
+Bracer
+ALL_CLASSES
+accessory
+DEF +4
+
+- 
+
+Silver_Brace
+Engineer, Priest
+accessory
+
+DEF +5
+MGR +2
+
+- 
+
+Buckler
+Knight, Engineer, Spearguy
+accessory
+
+DEF +6
+
+- 
+
+Laser_Shield
+Engineer
+left_hand
+
+ATK +3
+DEF +10
+
+- 
+
+Tower_Shield
+Knight, Spearguy
+left_hand
+
+DEF +13
+
+- 
+
+Blur_Ring
+ALL_CLASSES
+left_hand
+
+DOD +10
+- 
+
+Fury_Ring
+ALL_CLASSES
+left_hand
+
+FER +5
+
+- 
+
+Running_Boots
+ALL_CLASSES
+accessory
+
+MBL +2
+- 
+
+Protect_Locket
+ALL_CLASSES
+accessory
+
+MGR +15
+- 
+
+Carrot_Blade
+Knight
+right_hand
+
+ATK +30
+- 
+
+Pharaoh_Sceptre
+Wizard
+right_hand
+
+ATK +15
+MAG +10
+MAX_HP +100
+MAX_MP +50
+MBL -1
+DEF -4
+FER +3
+
+-
+
+Dark_Sword
+Knight, Spearguy
+right_hand
+
+ATK +20
+
+-
+
+Speed_Boots
+ALL_CLASSES
+accessory
+
+REA +3
+MBL +1
+-
+
+
+END_OF_FILE

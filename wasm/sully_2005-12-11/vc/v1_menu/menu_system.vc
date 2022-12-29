@@ -1,0 +1,883 @@
+// menu_system.vc for Sully www.verge-rpg.com
+// Zip 05/09/2004
+// Last update 06/10/2004
+
+#define MAX_MENUS 15
+#define MENU_COLOUR_NUM 4
+
+#define MENU_PRESS_DELAY 30
+#define MENU_SLIDE_DELAY 1
+
+#define MENU_A_X1	10
+#define MENU_A_Y1	10
+#define MENU_A_X2	230
+#define MENU_A_Y2	230
+#define MENU_B_X1	240
+#define MENU_B_Y1	10
+#define MENU_B_X2	310
+#define MENU_B_Y2	170
+#define MENU_C_X1	240
+#define MENU_C_Y1	180
+#define MENU_C_X2	310
+#define MENU_C_Y2	230
+
+#define MENU_CAST_X	25
+#define MENU_CAST_Y	25
+#define MENU_STATS_X	25
+#define MENU_STATS_Y	60
+
+#define MENU_COLOR_BORDER_OUT	0
+#define MENU_COLOR_BORDER_IN	1
+#define MENU_COLOR_PASSIVE		2
+#define MENU_COLOR_ACTIVE 		3
+
+#define MENU_DESCRIPTION_X 25
+#define MENU_DESCRIPTION_Y 228
+
+
+#define CHR_SAD_FRAME 25
+
+#include "vc/v1_menu/menu_cast.vc"
+#include "vc/v1_menu/menu_choice.vc"
+#include "vc/v1_menu/menu_equip.vc"
+#include "vc/v1_menu/menu_item.vc"
+#include "vc/v1_menu/menu_main.vc"
+#include "vc/v1_menu/menu_option.vc"
+#include "vc/v1_menu/menu_save.vc"
+#include "vc/v1_menu/menu_shop.vc"
+#include "vc/v1_menu/menu_skill.vc"
+#include "vc/v1_menu/menu_status.vc"
+
+//#include "vc/v1_menu/otherstuffs.vc"
+
+
+struct Menu
+{
+	string name;	//my uid
+
+	string draw_func;		//the function that does all drawing for this menu
+	string control_func;	//the function that does all control-listening for this menu
+}
+
+Menu master_menus[MAX_MENUS];
+int _menuCount;
+
+int menu_number;
+
+int menu_done; // menu sentinel.  Whenever it's time for the entire menu to go back to the real world, we set this to 1.
+int menu_idx; // the index of the current menu.  Pass this around like a cheap whore!
+int menu_option = 0;
+int menu_sub = 0;
+int menu_cast = 0;
+int menu_item = 0;
+int menu_start = 0;
+int lastpress = 0;
+int menu_colour[MENU_COLOUR_NUM];
+int menu_font[4];
+int menu_fonth;
+
+int global_noscroll = 1;
+int global_menuluc = 0;
+int global_gametime;
+int _menu_on = 1; 	// Grue = tit. Loveable, but tit -Zip
+					// I HATE YOU SO VERY MUCH! -Grue
+int _menu_is_on;
+
+//
+// Grue's amazing sound effect handles!
+int	sfx_roll = LoadSound( "res/system/menu/menu_roll.wav" );
+int	sfx_beep = LoadSound( "res/system/menu/happy_beep.wav" );
+int	sfx_buzz = LoadSound( "res/system/menu/angry_buzz.wav" );
+int	sfx_page = LoadSound( "res/system/menu/pageturn.wav" );
+int	sfx_wush = LoadSound( "res/system/menu/woosh.wav" );
+int sfx_mony = LoadSound( "res/system/menu/BUYSELL.WAV" );
+int sfx_eqip = LoadSound( "res/system/menu/EQUIP.WAV" );
+
+//        --------------------------
+//        Menu Initialisation
+//        --------------------------
+
+// Load the menus into the struct and set defaults
+void SMENU_InitMenus()
+{
+	AddMenu( "main", "MenuDrawMain", "MenuControlMain" );
+	AddMenu( "item", "MenuDrawItem", "MenuControlItem" );
+	AddMenu( "skill", "MenuDrawSkill", "MenuControlSkill" );
+	AddMenu( "equip", "MenuDrawEquip", "MenuControlEquip" );
+	AddMenu( "status", "MenuDrawStatus", "MenuControlStatus" );
+	AddMenu( "option", "MenuDrawOption", "MenuControlOption" );
+	AddMenu( "save", "MenuDrawSave", "MenuControlSave" );
+	AddMenu( "cast", "MenuDrawCast", "MenuControlCast" );
+	AddMenu( "equipsub", "MenuDrawEquipSub", "MenuControlEquipSub" );
+	AddMenu( "optionrgb", "MenuDrawOptionRGB", "MenuControlOptionRGB" );
+	AddMenu( "optionvol", "MenuDrawOptionVol", "MenuControlOptionVol" );
+
+	ValidateMenuFunctions();
+
+	MenuInitColours();
+	MenuInitFonts();
+	icon_init("res/system/ITEMS.PCX");
+	HookButton( 3, "MenuEntry" );
+}
+
+// Add a menu to the game
+void AddMenu( string name, string draw_func, string control_func )
+{
+	if( _menuCount >= MAX_MENUS )
+	{
+		ErrorHandler( "AddMenu(): tried to add more than MAX_MENUS ("+str(MAX_MENUS)+")" );
+		return;
+	}
+	else
+	{
+		master_menus[_menuCount].name 			= name;
+		master_menus[_menuCount].draw_func 		= draw_func;
+		master_menus[_menuCount].control_func 	= control_func;
+
+		_menuCount++;
+	}
+}
+
+// Check added menus have appropriate functions
+void ValidateMenuFunctions()
+{
+	int i;
+	for( i=0; i<_menuCount; i++ )
+	{
+		if( !FunctionExists(master_menus[i].draw_func) )
+		{
+			ErrorHandler( "ValidateMenuFunctions(): Menu '"+master_menus[i].name+"' requires a callfunc to '"+master_menus[i].draw_func+"' to Draw.  And it doesn't exist." );
+		}
+
+		if( !FunctionExists(master_menus[i].control_func) )
+		{
+			ErrorHandler( "ValidateMenuFunctions(): Menu '"+master_menus[i].name+"' requires a callfunc to '"+master_menus[i].control_func+"' for control handling.  And it doesn't exist." );
+		}
+	}
+}
+
+// Load and set font variables
+void MenuInitFonts()
+{
+	menu_font[0] = LoadFont("res/system/menu_font_white.png");
+	menu_font[1] = LoadFont("res/system/menu_font_grey1.png");
+	menu_font[2] = LoadFont("res/system/menu_font_green.png");
+	menu_font[3] = LoadFont("res/system/menu_font_red.png");
+	menu_fonth = FontHeight(menu_font[0]);
+	EnableVariableWidth(menu_font[0]);
+	EnableVariableWidth(menu_font[1]);
+	EnableVariableWidth(menu_font[2]);
+	EnableVariableWidth(menu_font[3]);
+}
+
+// Set default colour scheme
+void MenuInitColours()
+{
+	//menu_colour[0] = rgb(224, 224, 255);
+	//menu_colour[1] = rgb(160, 224, 160);
+	//menu_colour[2] = rgb(96, 96, 192);
+	//menu_colour[3] = rgb(64, 160, 64);
+	menu_colour[0] = rgb(0, 0, 0);
+	menu_colour[1] = rgb(112, 112, 112);
+	menu_colour[2] = rgb(144, 144, 144);
+	menu_colour[3] = rgb(0, 0, 255);
+}
+
+//        -----------------------------
+//       Basic Menu Control
+//        -----------------------------
+
+int IsInMenu()
+{
+	return _menu_is_on;
+}
+
+// Disable the user opening of the menu
+int MenuOff()
+{
+	_menu_on = 0;
+	HookButton( 3, "" );
+}
+
+// Enable the user opening of the menu
+int MenuOn()
+{
+	_menu_on = 1;
+	HookButton( 3, "MenuEntry" );
+}
+
+int MenuCanBeOn()
+{
+	return _menu_on;
+}
+
+// Return the index of a menu name
+int MenuGet(string name)
+{
+	int i;
+	for (i = 0; i < _menuCount; i++)
+	{
+		if (equ(master_menus[i].name, name)) return i;
+	}
+	ErrorHandler("POOOOOOOO!");
+}
+
+// Determines if the passed menu name has focus
+int MenuIsActive(string name)
+{
+	if (menu_idx == MenuGet(name)) return 1;
+	else return 0;
+}
+
+// Return to the root menu
+void MenuRoot()
+{
+	menu_idx = MenuGet("Main");
+	menu_sub = 0-1;
+	menu_item = 0-1;
+	menu_cast = 0-1;
+	menu_start = 0;
+}
+
+// Enter the menu system and control
+void MenuEntry()
+{
+	Unpress(3);
+	_menu_is_on = 1;
+	menu_done = 0;
+	menu_option = 0;
+	MenuRoot();
+	HookButton( 3, "" );
+
+	MenuHappyBeep(); //hey, you've entered a menu!  Chirp happily about it!
+
+	while( !menu_done )
+	{
+		MenuBackGroundDraw(); //draw universal things
+		CallFunction( master_menus[menu_idx].draw_func );
+
+		ShowPage();
+		CallFunction( master_menus[menu_idx].control_func );
+	}
+
+	_menu_is_on = 0;
+	HookButton( 3, "MenuEntry" );
+}
+
+
+//        -----------------------------------
+//       Generic Menu Functions
+//        -----------------------------------
+
+// This function does the rendering stuff you want to happen before the custom render each cycle.
+void MenuBackGroundDraw()
+{
+	Render();
+}
+
+// A small notification box
+void MenuMinibox(string text, string draw_func)
+{
+	int wid = TextWidth( menu_font[0], " "+text+" " );
+	int border = 5;
+
+	int mini_hold = menu_idx;
+	//menu_idx = 1000000;
+	while(!MenuConfirm() && !MenuCancel())
+	{
+		MenuBackGroundDraw(); //draw universal things
+		CallFunction(draw_func);
+
+		MenuDrawBackground(((ImageWidth(screen)-wid)/2)-border, 110, ((ImageWidth(screen)-wid)/2)+wid+border, 130, 1); // CatchMe
+		PrintCenter(160, 120 - (menu_fonth / 2) + 1, screen, menu_font[0], " "+text+" ");
+
+		ShowPage();
+	}
+	//menu_idx = mini_hold;
+}
+
+
+// A small verification box
+// returns 1 if choice was accepted, 0 if cancelled.
+// the choice index is accessible via GetMenuChoiceAnswer();
+int MenuMiniChoicebox(string text, string choices, string draw_func)
+{
+	int wid = TextWidth( menu_font[0], " "+text+" " );
+	int border = 5;
+	int done;
+	int mini_hold = menu_idx;
+	//menu_idx = 1000000;
+	while(!done)
+	{
+		MenuBackGroundDraw(); //draw universal things
+		CallFunction(draw_func);
+
+		MenuDrawBackground(((ImageWidth(screen)-wid)/2)-border, 110, ((ImageWidth(screen)-wid)/2)+wid+border, 130, 1); // CatchMe
+		PrintCenter(160, 120 - (menu_fonth / 2) + 1, screen, menu_font[0], " "+text+" ");
+
+		MenuSimplePrompt( choices );
+
+		done = MenuConfirm();
+
+		if( !done )
+			done = MenuCancel();
+
+		ShowPage();
+	}
+
+	if( done > 0 )
+		return 1;
+	else
+		return 0;
+	//menu_idx = mini_hold;
+}
+
+
+int _menu_simple_choice;
+int MenuSimplePrompt(string choices)
+{
+	int i;
+	int font_h = FontHeight(promptBox_font) + PROMPT_Y_BUFF;
+	int tex_font_h = FontHeight(textBox_font) + TEXTBOX_Y_BUFF;
+	int prompt_wid, prompt_high;
+	int prompt_x1, prompt_x2;
+
+	int ptr_w = TextWidth(promptBox_font, "> ");
+
+	int count = TokenCount(choices, "|");
+	if (count > MAX_PROMPT_OPTIONS) ErrorHandler("Moar than "+str(MAX_PROMPT_OPTIONS)+" options passed to the choicebox. This may cause graphical oddness");
+
+	int prompt_y1;
+
+	if( PROMPT_BOTM_Y ) {
+		prompt_y1 = PROMPT_BOTM_Y - (font_h * count) - (PROMPT_PADDING*2);
+
+		prompt_high = PROMPT_BOTM_Y - prompt_y1;
+
+	} else {
+		prompt_y1 = PROMPT_Y;
+
+		prompt_high = (PROMPT_PADDING*2)+TEXTBOX_Y_BUFF+(count * font_h);
+	}
+
+	if( PROMPT_WIDTH ) {
+		prompt_wid = PROMPT_WIDTH;
+
+	} else { //dynamic width!
+		prompt_wid = _LongestWidth(choices) + (PROMPT_PADDING*2) + (font_h*2);
+	}
+
+	//if the promptbox would've gone off the screen... make it align with the textbox
+	if( (PROMPT_X+prompt_wid) > ImageWidth(screen) ) {
+		prompt_x2 = TEXTBOX_BORDER_WIDTH+TEXTBOX_BORDER_X1;
+		prompt_x1 = prompt_x2 - prompt_wid;
+	} else {
+		prompt_x2 = PROMPT_X+prompt_wid;
+		prompt_x1 = PROMPT_X;
+	}
+
+	Menu1ArrowSetSounds( "MenuHappyBeep" );
+	_menu_simple_choice = MenuControlArrows(_menu_simple_choice, count);
+
+	MenuDrawBackground(prompt_x1, prompt_y1-TEXTBOX_Y_BUFF, prompt_x1+prompt_wid, prompt_high+prompt_y1-TEXTBOX_Y_BUFF, 1);
+
+	//set the clipping rectangle so we cannot draw outside the promptbox's area!
+	SetClip( 	prompt_x1+PROMPT_PADDING, prompt_y1+PROMPT_PADDING,
+				prompt_x2-PROMPT_PADDING,prompt_y1+prompt_high-PROMPT_PADDING, screen );
+
+	//print out the options.
+	for(i = 0; i <= count; i++)
+	{
+		PrintString(prompt_x1+PROMPT_PADDING+ptr_w+TEXTBOX_Y_BUFF, prompt_y1+PROMPT_PADDING+((i) * font_h), screen, promptBox_font, GetToken(choices, "|", i));
+	}
+
+	//print the pointer...
+	PrintString(prompt_x1+PROMPT_PADDING+TEXTBOX_Y_BUFF, prompt_y1+PROMPT_PADDING+((_menu_simple_choice) * font_h), screen, promptBox_font, ">");
+
+	//restore the clipping rectangle.
+	SetClip(0,0, ImageWidth(screen), ImageHeight(screen), screen);
+
+	Menu1ArrowSetSounds( "" );
+}
+
+int GetMenuChoiceAnswer() {
+	return _menu_simple_choice;
+}
+
+
+//        -----------------------------------
+//        Menu Control Functions
+//        -----------------------------------
+
+// If the confirm button is pressed
+int MenuConfirm()
+{
+	if (b1)
+	{
+		Unpress(b1);
+		return 1;
+	}
+	return 0;
+}
+
+// If the cancel button is pressed
+int MenuCancel()
+{
+	if (b2)
+	{
+		Unpress(2);
+		return 0-1;
+	}
+	if (b3)
+	{
+		Unpress(3);
+		return 0-1;
+	}
+	return 0;
+}
+
+
+//global vars for the sound callfuncs set by Menu1ArrowSetSounds() and called by MenuControlArrows()
+string _m1ASnd;
+
+// Sets the sounds to be played while using MenuControlArrows()
+// s1 is called whenever an arrow is pressed.
+//
+// to turn off a sound, just set it to ""
+//
+void Menu1ArrowSetSounds( string s1 )
+{
+	_m1ASnd = s1;
+}
+
+// A basic 1 dimenional menu control
+int MenuControlArrows(int value, int limit)
+{
+	if (up || left)
+	{
+		if (lastpress + MENU_PRESS_DELAY < timer)
+		{
+			value = (value - 1 + limit) % limit;
+			lastpress = timer;
+
+			CallFunction(_m1ASnd); //call the sound function defined with Menu1ArrowSetSounds()
+		}
+	}
+	else if (down || right)
+	{
+		if (lastpress + MENU_PRESS_DELAY < timer)
+		{
+			value = (value + 1) % limit;
+			lastpress = timer;
+
+			CallFunction(_m1ASnd); //call the sound function defined with Menu1ArrowSetSounds()
+		}
+	}
+	else lastpress = 0;
+	return value;
+}
+
+
+//global vars for the sound callfuncs set by Menu2ArrowSetSounds() and called by MenuControlTwoArrows()
+string _m2ASnd1, _m2ASnd2;
+
+// Sets the sounds to be played while using MenuControlTwoArrows()
+// s1 is called when the up/down control is changed
+// s2 is called when the left/right control is changed
+//
+// to turn off a sound, just set it to ""
+//
+void Menu2ArrowSetSounds( string s1, string s2 )
+{
+	_m2ASnd1 = s1;
+	_m2ASnd2 = s2;
+}
+
+
+// A generic control method for 2 dimensions
+int MenuControlTwoArrows(string int_one, int lim_one, string int_two, int lim_two)
+{
+	int change = 0;
+	if (up)
+	{
+		if (lastpress + MENU_PRESS_DELAY < timer)
+		{
+			SetInt(int_one, (GetInt(int_one) - 1 + lim_one) % lim_one);
+			lastpress = timer;
+			change = 1;
+
+			CallFunction(_m2ASnd1); //call the sound function defined with Menu2ArrowSetSounds()
+		}
+	}
+	else if (down)
+	{
+		if (lastpress + MENU_PRESS_DELAY < timer)
+		{
+			SetInt(int_one, (GetInt(int_one) + 1) % lim_one);
+			lastpress = timer;
+			change = 1;
+
+			CallFunction(_m2ASnd1); //call the sound function defined with Menu2ArrowSetSounds()
+		}
+	}
+	else lastpress = 0;
+
+	if (left)
+	{
+		SetInt(int_two, (GetInt(int_two) - 1 + lim_two) % lim_two);
+		Unpress(7);
+		change += 2;
+
+		CallFunction(_m2ASnd2); //call the sound function defined with Menu2ArrowSetSounds()
+	}
+	else if (right)
+	{
+		SetInt(int_two, (GetInt(int_two) + 1) % lim_two);
+		Unpress(8);
+		change += 2;
+
+		CallFunction(_m2ASnd2); //call the sound function defined with Menu2ArrowSetSounds()
+	}
+	return change;
+}
+
+// A different version of the above. should probably be combined
+int MenuControlFastArrows(string int_one, int max_one, string int_two, int lim_two)
+{
+	if (up)
+	{
+		if (lastpress + MENU_SLIDE_DELAY < timer && GetInt(int_one) < max_one)
+		{
+			SetInt(int_one, GetInt(int_one) + 1);
+			lastpress = timer;
+		}
+	}
+	else if (down)
+	{
+		if (lastpress + MENU_SLIDE_DELAY < timer && GetInt(int_one) > 0)
+		{
+			SetInt(int_one, GetInt(int_one) - 1);
+			lastpress = timer;
+		}
+	}
+	else lastpress = 0;
+	if (left)
+	{
+		SetInt(int_two, (GetInt(int_two) - 1 + lim_two) % lim_two);
+		Unpress(7);
+		return 1;
+	}
+	else if (right)
+	{
+		SetInt(int_two, (GetInt(int_two) + 1) % lim_two);
+		Unpress(8);
+		return 1;
+	}
+	return 0;
+}
+
+
+//        -----------------------------------
+//        Menu Drawing Functions
+//        -----------------------------------
+
+// Draws a box. This needs moar options
+void MenuDrawBackgroundSimple(int x1, int y1, int x2, int y2, int active)
+{
+	SetLucent(20);
+	Rect(x1, y1, x2 - 1, y2 - 1,
+	 menu_colour[3], screen);
+	Rect(x1 + 1, y1 + 1, x2 - 2, y2 - 2,
+	 menu_colour[0], screen);
+	Rect(x1 + 2, y1 + 2, x2 - 3, y2 - 3,
+	 menu_colour[1], screen);
+	RectFill(x1 + 3, y1 + 3, x2 - 4, y2 - 4,
+	 menu_colour[2 + active], screen);
+	SetLucent(0);
+}
+
+int ColourDivider(int colour, int division)
+{
+	return Rgb(GetR(colour) / division, GetG(colour) / division, GetB(colour) / division);
+}
+
+// Draws a box. This needs moar options
+void MenuDrawBackground(int x1, int y1, int x2, int y2, int active)
+{
+	SetLucent(global_menuluc * 10);
+	SetCustomColorFilter(ColourDivider(menu_colour[2 + active], 4), menu_colour[2 + active]);
+	active = ImageShell(x1 + 4, y1 + 4, x2 - 5 - x1, y2 - 5 - y1, screen);
+	
+	ColorFilter(CF_CUSTOM, active);
+	FreeImage(active);
+	SetLucent(0);
+
+
+	Line(x1, y1 + 2, x1, y2 - 3, menu_colour[0], screen); // TL -> BL
+	Line(x1 + 2, y1, x2 - 3, y1, menu_colour[0], screen); // TL -> TR
+
+	Line(x2 - 1, y2 - 3, x2 - 1, y1 + 2, menu_colour[0], screen); // BR -> TR
+	Line(x2 - 3, y2 - 1, x1 + 2, y2 - 1, menu_colour[0], screen); // BR -> BL
+
+
+	Rect(x1 + 1, y1 + 1, x2 - 2, y2 - 2, menu_colour[1], screen);
+	 SetPixel(x1 + 1, y1 + 1, menu_colour[0], screen); // TL
+	 SetPixel(x2 - 2, y1 + 1, menu_colour[0], screen); // TR
+	 SetPixel(x1 + 1, y2 - 2, menu_colour[0], screen); // BL
+	 SetPixel(x2 - 2, y2 - 2, menu_colour[0], screen); // BR
+
+
+	Rect(x1 + 2, y1 + 2, x2 - 3, y2 - 3, menu_colour[2], screen);
+	 SetPixel(x1 + 2, y1 + 2, menu_colour[1], screen); // TL
+	 SetPixel(x2 - 3, y1 + 2, menu_colour[1], screen); // TR
+	 SetPixel(x1 + 2, y2 - 3, menu_colour[1], screen); // BL
+	 SetPixel(x2 - 3, y2 - 3, menu_colour[1], screen); // BR
+
+
+	Rect(x1 + 3, y1 + 3, x2 - 4, y2 - 4, menu_colour[0], screen);
+	 SetPixel(x1 + 3, y1 + 3, menu_colour[2], screen); // TL
+	 SetPixel(x2 - 4, y1 + 3, menu_colour[2], screen); // TR
+	 SetPixel(x1 + 3, y2 - 4, menu_colour[2], screen); // BL
+	 SetPixel(x2 - 4, y2 - 4, menu_colour[2], screen); // BR
+
+	if( VCCustomFilterOn() )
+	{
+		VCCustomFilterRestore();
+	}
+}
+
+// Draws the main menu list on the right side of the screen
+void MenuBlitRight(int active, int selected)
+{
+	MenuDrawBackground(MENU_B_X1, MENU_B_Y1, MENU_B_X2, MENU_B_Y2, active);
+	PrintString(248, selected * 20 + 25, screen, menu_font[0], ">");
+	PrintString(255, 25, screen, menu_font[0], "ITEM");
+	PrintString(255, 45, screen, menu_font[0], "SKILL");
+	PrintString(255, 65, screen, menu_font[0], "EQUIP");
+	PrintString(255, 85, screen, menu_font[0], "STATUS");
+	PrintString(255, 105, screen, menu_font[0], "OPTION");
+	PrintString(255, 125, screen, menu_font[1 - can_save], "SAVE");
+	PrintString(255, 145, screen, menu_font[0], "LOAD");
+	MenuBlitBottom();
+}
+
+// Generic gold/timer thang
+void MenuBlitBottom()
+{
+	MenuDrawBackground(MENU_C_X1, MENU_C_Y1, MENU_C_X2, MENU_C_Y2, 0);
+	PrintString(245, 185, screen, menu_font[0], moneyname + ":");
+	PrintRight(305, 195, screen, menu_font[0], str(money));
+	PrintString(245, 205, screen, menu_font[0], "Time:");
+	PrintRight(305, 215, screen, menu_font[0], GetTimeString(global_gametime + systemtime));
+}
+
+// Return time in (H)H:MM:SS format
+string GetTimeString(int time)
+{
+	return str(time/360000)+":"+TwoDigit((time/6000)%60)+":"+TwoDigit((time/100)%60);
+}
+
+// Displays the party in the main window
+void MenuBlitCenter(int active)
+{
+	int i, frame;
+	MenuDrawBackground(MENU_A_X1, MENU_A_Y1, MENU_A_X2, MENU_A_Y2, active);
+	for (i = 0; i < PartySize(); i++)
+	{
+		if(i == menu_cast) frame = GetFrameWalk();
+		else frame = 0;
+		MenuBlitCast(i, i, frame);
+	}
+}
+
+// Makey little people walk
+int GetFrameWalk()
+{
+	int t = (timer / 10) % 8;
+	// Zip: ignore this.  I had to do something cryptic lest I go insane
+	return (((t % 4) + (t % 3)) / 2) + (2*(t / 5))  + (t / 6) - (2*(t / 7));
+}
+
+// Makey little people walk
+int GetFrameSad()
+{
+	return CHR_SAD_FRAME;
+}
+
+// Easy Wrapper
+void MenuBlitCast(int member, int location, int frame)
+{
+	MenuBlitCastFull(MENU_CAST_X, MENU_CAST_Y + (location * 42), member, frame);
+
+	MenuBlitCastPoints(MENU_CAST_X, MENU_CAST_Y + (location * 42), member, location);
+}
+
+// Displays info about one party member
+void MenuBlitCastFull(int x, int y, int member, int frame)
+{
+	BlitEntityFrame(x, y + 10, master_cast[party[member]].entity, frame, screen);
+	PrintString(x + 25, y, screen, menu_font[0], master_cast[party[member]].name);
+	PrintString(x + 35, y + 10, screen, menu_font[0], master_classes[master_cast[party[member]].class_ref].name);
+	PrintString(x + 115, y, screen, menu_font[0], "Level: ");
+	PrintRight(x + 185, y, screen, menu_font[0], str(master_cast[party[member]].level));
+	PrintString(x + 115, y + 10, screen, menu_font[0], "HP:");
+	PrintRight(x + 161, y + 10, screen, menu_font[0], str(master_cast[party[member]].cur_hp)+"/");
+	PrintString(x + 115, y + 20, screen, menu_font[0], "MP:");
+	PrintRight(x + 161, y + 20, screen, menu_font[0], str(master_cast[party[member]].cur_mp)+"/");
+}
+
+
+// Draw the max point separately, as equip needs to do them apart
+void MenuBlitCastPoints(int x, int y, int member, int location)
+{
+	if( MenuIsActive("equip") || MenuIsActive("equipsub") )
+	{
+
+	}
+	else
+	{
+		PrintRight(x + 185, y + 10, screen, menu_font[0], str(getMaxHP(party[member])) );
+		PrintRight(x + 185, y + 20, screen, menu_font[0], str(getMaxMP(party[member])) );					
+	}
+}
+
+//        -----------------------------------
+//       Generic Useful Functions
+//        -----------------------------------
+// Should probably move to another file
+
+// Zip: My lovely text wrapper... not speed optimised
+string WrapText(int wt_font, string wt_s, int wt_linelen)
+{
+	int wt_i;
+	string wt_tpara = "";
+	string wt_tline = "";
+	string wt_output = "";
+	int wt_breaks = TokenCount(wt_s, "|");
+	while (len(wt_s))
+	{
+		wt_tpara = GetToken(wt_s, "|", 0);
+		wt_s = right(wt_s, len(wt_s) - len(wt_tpara) - 1);
+		if (TextWidth(wt_font, wt_tpara) < wt_linelen)
+		{
+			wt_output = wt_output + wt_tpara + "|";
+		}
+		else
+		{
+			while (len(wt_tpara))
+			{
+				wt_tline = wt_tline + GetToken(wt_tpara, " ", 0);
+				wt_tpara = right(wt_tpara, len(wt_tpara) - len(GetToken(wt_tpara, " ", 0)) - 1);
+
+				if (TextWidth(wt_font, wt_tline + GetToken(wt_tpara, " ", 0) + " ") > wt_linelen)
+				{
+					wt_output = wt_output + wt_tline + "|";
+					wt_tline = "";
+				}
+				else wt_tline = wt_tline + " ";
+			}
+			if (len(wt_tline))
+			{
+				wt_output = wt_output + left(wt_tline, len(wt_tline) - 1) + "|";
+				wt_tline = "";
+			}
+		}
+	}
+	return left(wt_output, len(wt_output) - 1);
+}
+
+// Returns number in three digit format. Hyper useful
+string ThreeDigit(int number)
+{
+	if (number > 999) ErrorHandler("Number to convert to 3 digits past 999. This is bad.");
+	if (number < 0) ErrorHandler("Number to convert to 3 digits negative. This is bad.");
+	if (number < 10) return "00"+str(number);
+	if (number < 100) return "0"+str(number);
+	return str(number);
+}
+
+// Returns number in two digit format. Hyper useful
+string TwoDigit(int number)
+{
+	if (number > 99) ErrorHandler("Number to convert to 2 digits past 99. This is bad.");
+	if (number < 0) ErrorHandler("Number to convert to 2 digits negative. This is bad.");
+	if (number < 10) return "0"+str(number);
+	return str(number);
+}
+
+
+//
+// Grue's amazing menu soundeffect wrappers!
+void MenuHappyBeep() {
+	PlaySound( sfx_beep, interface_volume );
+}
+
+void MenuAngryBuzz() {
+	PlaySound( sfx_buzz, interface_volume );
+}
+
+void MenuRollSound() {
+	PlaySound( sfx_roll, interface_volume );
+}
+
+void MenuWoosh() {
+	PlaySound( sfx_wush, interface_volume );
+}
+
+void MenuPageTurn() {
+	PlaySound( sfx_page, interface_volume );
+}
+
+void MenuPurchase() {
+	PlaySound( sfx_mony, interface_volume );
+}
+
+void MenuForceEquip() {
+	PlaySound( sfx_eqip, interface_volume );
+}
+
+void MakeBox(int x1, int y1, int w, int h, int active, int dest)
+{
+	int x2 = x1+w;
+	int y2 = y1+h; 
+	
+	SetLucent(global_menuluc * 10);
+	SetCustomColorFilter(ColourDivider(menu_colour[2 + active], 4), menu_colour[2 + active]);
+	active = ImageShell(x1 + 4, y1 + 4, x2 - 5 - x1, y2 - 5 - y1, dest);
+	ColorFilter(CF_CUSTOM, active);
+	FreeImage(active);
+	SetLucent(0);
+
+	
+	Line(x1, y1 + 2, x1, y2 - 3, menu_colour[0], dest); // TL -> BL
+	Line(x1 + 2, y1, x2 - 3, y1, menu_colour[0], dest); // TL -> TR
+	
+	Line(x2 - 1, y2 - 3, x2 - 1, y1 + 2, menu_colour[0], dest); // BR -> TR
+	Line(x2 - 3, y2 - 1, x1 + 2, y2 - 1, menu_colour[0], dest); // BR -> BL
+	
+
+	Rect(x1 + 1, y1 + 1, x2 - 2, y2 - 2, menu_colour[1], dest);
+	 SetPixel(x1 + 1, y1 + 1, menu_colour[0], dest); // TL
+	 SetPixel(x2 - 2, y1 + 1, menu_colour[0], dest); // TR
+	 SetPixel(x1 + 1, y2 - 2, menu_colour[0], dest); // BL
+	 SetPixel(x2 - 2, y2 - 2, menu_colour[0], dest); // BR
+	
+
+	Rect(x1 + 2, y1 + 2, x2 - 3, y2 - 3, menu_colour[2], dest);
+	 SetPixel(x1 + 2, y1 + 2, menu_colour[1], dest); // TL
+	 SetPixel(x2 - 3, y1 + 2, menu_colour[1], dest); // TR
+	 SetPixel(x1 + 2, y2 - 3, menu_colour[1], dest); // BL
+	 SetPixel(x2 - 3, y2 - 3, menu_colour[1], dest); // BR
+	
+
+	Rect(x1 + 3, y1 + 3, x2 - 4, y2 - 4, menu_colour[0], dest);
+	 SetPixel(x1 + 3, y1 + 3, menu_colour[2], dest); // TL
+	 SetPixel(x2 - 4, y1 + 3, menu_colour[2], dest); // TR
+	 SetPixel(x1 + 3, y2 - 4, menu_colour[2], dest); // BL
+	 SetPixel(x2 - 4, y2 - 4, menu_colour[2], dest); // BR
+	 
+	if( VCCustomFilterOn() )
+	{
+		VCCustomFilterRestore();
+	}
+}

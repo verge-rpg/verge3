@@ -1,0 +1,54 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+<pre>
+<span class=comment>
+// error_handler.vc for Sully www.verge-rpg.com
+// Zip 28/08/2004
+//
+//
+//        ---------------------
+//        Error functions
+//        ---------------------
+//
+// Notifies by MessageBox() and/or Log() of problems when loading data from file
+// No comments, as the text to display should be pretty explanatory
+//
+
+// Used to set how errors are reported, 3 is recommend, 0 should not be used
+// 3 is MessageBox() and Log(), 2 is MessageBox(), 1 is Log(), 0 is neither</span>
+<span class=type>#define</span> ERROR_HANDLING 2
+
+<span class=comment>// Used to set shortest valid length of description text, should be 1 at least</span>
+<span class=type>#define</span> MICRO_STRING 5
+
+<span class=comment> // Used to prevent while loops getting stuck if the EOF marker is forgotten in file loading</span>
+<span class=type>#define</span> COUNT_OUT 1000
+
+<span class=comment>
+// This is the only error function I ever use.
+// Zip didn't really document the others, but as far as I can tell they're all semantic wrappers.
+// -Grue</span>
+<span class=type>void</span> ErrorHandler<span class=brace>(</span><span class=type>string</span> error_content<span class=brace>)</span>
+
+
+
+<span class=type>void</span> ErrorCountOut<span class=brace>(</span><span class=type>string</span> erco_filename<span class=brace>)</span>
+<span class=type>void</span> ErrorDuplicateName<span class=brace>(</span><span class=type>string</span> erdn_location, <span class=type>string</span> erdn_names<span class=brace>)</span>
+<span class=type>void</span> ErrorDuplicateType<span class=brace>(</span><span class=type>string</span> erdt_location, <span class=type>string</span> erdt_typestring<span class=brace>)</span>
+<span class=type>void</span> ErrorLoadDefine<span class=brace>(</span><span class=type>string</span> erld_location, <span class=type>string</span> erld_valstring<span class=brace>)</span>
+<span class=type>void</span> ErrorLoadFile<span class=brace>(</span><span class=type>string</span> erlf_filename<span class=brace>)</span>
+<span class=type>void</span> ErrorLoadNumber<span class=brace>(</span><span class=type>int</span> erln_numconv, <span class=type>string</span> erln_numstring<span class=brace>)</span>
+<span class=type>void</span> ErrorLoadOver<span class=brace>(</span><span class=type>int</span> erlo_maxentries, <span class=type>string</span> erlo_filename<span class=brace>)</span>
+<span class=type>void</span> ErrorLoadstring<span class=brace>(</span><span class=type>string</span> erls_fail<span class=type>string</span><span class=brace>)</span>
+<span class=type>void</span> ErrorLoadType<span class=brace>(</span><span class=type>string</span> erlt_location, <span class=type>string</span> erlt_typestring<span class=brace>)</span>
+<span class=type>void</span> ErrorMatchstrings<span class=brace>(</span><span class=type>string</span> erms_findstring, <span class=type>string</span> erms_checkstring<span class=brace>)</span>
+<span class=type>void</span> ErrorStupidNumber<span class=brace>(</span><span class=type>int</span> ersn_numconv, <span class=type>string</span> ersn_numstring<span class=brace>)</span>
+
+</pre>
+
+</body>
+
+</html>

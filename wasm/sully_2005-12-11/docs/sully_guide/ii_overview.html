@@ -1,0 +1,133 @@
+<table border=0 width=100%>
+<tr>
+	<td><a href=./I_foreword.html>&laquo;Foreword&laquo;</a></td>
+	<td align=right><a href=./III_Start>&raquo;Where to start.&raquo;</a></td>
+</tr>
+</table>
+
+<h3>VERGE C, System VC, and Map VC</h3>
+<p>VERGE C, otherwise known as vc, is the scripting language you use to make your games do what you want.  VC comes in two different flavors, "system vc" which your entire game has access to, and "map vc", which exists on a 1-to-1 basis with each map.  If you're not familiar with the difference, check out <a href=http://rysen.actionsketch.com/VergeTutorial target=_new>Rysen's Tutorial</a>, and then read <a target=_new2 href=http://www.verge-rpg.com/docs/view.php?libid=1&section=6>this section of the Manual by vecna</a>.</p>
+
+<p>Most of the System VC that was created for Sully lives in the <a href=../../vc/>vc</a> folder.  The exceptions to this rule at present are <a href=../../system.vc>system.vc</a> (which always has to be in the base directory), <a href=../../flags.vc>flags.vc</a> (which I left in the basedir since it is very closely tied to the mapcode), and <a href=../../effects.vc>effects.vc</a>, (which is where I presently put the functions that define item use).  All the other vc files in the base directory have a corresponding mapfile.</p>
+
+<h3>VERGE-style libraries</h3>
+
+<p>VERGE C is not a high-level language that goes out of it's way to hold your hand.  There is no allowance for packages or libraries or private variables as such.  However, since reusing code is a <i>very</i> good thing, we've attempted to impose some order on the libraries here.  Some of them, like the v1_rpg effects library, are exceptionally portable.  Some, like the V1_Menu library, have strong interdependancies to other libraries (in this case, the Simpletype_RPG library) and are generally only good as an example rather than something you can easily adapt.</p>
+
+<p>All of the libraries have listed in their documentation sections all of the global variables and function names they contain, and a list of all of the functions from other libraries that they use.  As a point of design, I suggest that anytime you make something in a new library that you want other code to get, set, or otherwise access, that you do it via a function rather than a public variable, just as a point of making it easier to integrate and change 'politely' with other systems.</p>
+
+<p>It's always better to use someone else's library, provided it's not a piece of utter crap, either in whole or as a base to modify from.  The reason for this is simple: Why reinvent?  Sure, you may want to do something yourself, and by all means go and implement things by yourself (it's a great way to learn), but once you're comfortable with programming concepts, you'll find that it's quite a time-saver to use pre-existing code.  And trust me, saving time in a gamemaking project is <i>quite</i> a boon.</p>
+
+<p>I actively encourage people to improve the libraries here, to suggest ways to improve them be it in code or in examples, and to make their own new libraries either to interface with the Sully Simpletype codebase.  I only ask that when you make a library, you try to document the interface and use clearly, and always note what other functions/libraries your library has dependancies on.</p>
+
+<h3>The includes</h3>
+<p>Near the top of system.vc is #included <a href=../../vc/includes.vc>includes.vc</a> which serves as a master include file to clear up the clutter that would otherwise go at the top of system.vc.  In the <a href=../../vc/util/>vc/Util</a> folder are a bunch of single-serving general-purpose collections of functions.  Any of these files can pretty much be of use to anyone, IMO.  Here's a list of them with breif descriptions:
+
+<ul>
+	<li>
+		<a href=../../vc/util/general.vc>general.vc</a> (various authors)
+		<br/>
+		<i>Incredibly general-use functions, mainly string manipulation and entity handling.</i>
+
+		<br/>
+		<br/>
+	</li>
+	<li>
+		<a href=../../vc/util/error_handler.vc>error_handler.vc</a> (zip)
+		<br/>
+		<i>A collection of error-reporting functions.  It's good to put error-messages in your own libraries.</i>
+		<br/>
+		<br/>
+	</li>
+	<li>
+		<a href=../../vc/util/icons.vc>icons.vc</a> (grue)
+		<br/>
+		<i>A simple interface to load and retrieve v1-style iconsets (ie, an image with constant-sized 'tiles' and 1px padding).</i>
+		<br/>
+		<br/>
+	</li>
+	<li>
+		<a href=../../vc/util/camscroll.lib.vc>camscroll.lib.vc</a> (kildorf)
+		<br/>
+		<i>A very useful library to automate camera-panning from the player to a location, to another entity or back.</i>
+		<br/>
+		<br/>
+	</li>
+	<li>
+		<a href=../../vc/util/targetting.vc>targetting.vc</a> (grue)
+		<br/>
+		<i>A generic library to handle targetting transactions.  A simple, but <b>very</b> useful concept.</i>
+		<br/>
+		<br/>
+	</li>
+	<li>
+		<a href=../../vc/util/credits.vc>credits.vc</a> (grue)
+		<br/>
+		<i>A very simple, lightweight scrolling credit sequence.  For a more frilly version, try <a href= target=_new>Buckermann's credits</a>!</i>
+		<br/>
+		<br/>
+	</li>
+</ul>
+
+There are also three special-effect files, in the <a href=../../vc/Special_effects>vc/Special_effects</a> folder.
+
+<ul>
+	<li>
+		<a href=../../vc/Special_effects/Blur.vc>Blur.vc</a> (ragecage)
+		<br/>
+		<i>Probably the only file in this folder that has much reusability value, this is a library to blur images.</i>
+		<br/>
+		<br/>
+	</li>
+	<li>
+		<a href=../../vc/Special_effects/funk-o-rama.vc>funk-o-rama.vc</a> (ragecage)
+		<br/>
+		<i>This is the awesome, but very specific, effect for Big Daddy Bubba's Lever-o-funk.</i>
+		<br/>
+		<br/>
+	</li>
+	<li>
+		<a href=../../vc/Special_effects/bouncy.vc>bouncy.vc</a> (grue)
+		<br/>
+		<i>This is a datafile containing the timeline coordinates for Crystal's jumping in the Sully Simpletype intro.  Completly worthless to anyone else, except as an example of how *not* to make entities move ^_^</i>
+		<br/>
+		<br/>
+	</li>
+</ul>
+</p>
+
+<p>In addition, there are three complete libraries. Each one has it's own subsection in this document:
+
+<ul>
+	<li>
+		<a href=IV_v1_RPG.html>The v1 RPG Effects library</a> (vec, grue, and zip)
+		<br/>
+		<i>This set of functions has a great deal of graphical functions, fades, transitions, and the ever-useful reincarnation of the v1 "vclayer".  In addition, game-specific effects are in this library (savepoints, inns, treasure chest maintenance, etc...).</i>
+		<br/>
+		<br/>
+	</li>
+	<li>
+		<a href=V_Simpletype_RPG.html>The Simpletype RPG library</a> (grue and zip)
+		<br/>
+		<i>The data bones of a simple RPG setup.  Items, Equipment, classes, skills, and the interfaces to use them, along with datafile parsers.</i>
+		<br/>
+		<br/>
+	</li>
+	<li>
+		<a href=VI_v1_menu.html>The V1 Menu Library</a> (zip and grue)
+		<br/>
+		<i>This is the library for the menu system you see in Sully.  It also has the box-drawing mechanism that the other libraries wrap when the want to use boxes, and some good general-purpose control mechanisms.  It is perhaps the most daunting to look at the code (save the data parsers), but not a bad place to look once you have some confidence in your skills.</i>
+		<br/>
+		<br/>
+	</li>
+</ul>
+
+</p>
+
+
+<table border=0 width=100%>
+<tr>
+	<td><a href=./I_foreword.html>&laquo;Foreword&laquo;</a></td>
+	<td align=right><a href=./III_Start>&raquo;Where to start.&raquo;</a></td>
+</tr>
+</table>

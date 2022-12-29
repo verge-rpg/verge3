@@ -1,0 +1,37 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+<a name="WEATHER_NONE"></a>
+<span class=comment>
+// Valid weather modes.</span>
+<a name="WEATHER_NONE">#define WEATHER_NONE		0</a>
+<a name="WEATHER_CLOUDS">#define WEATHER_CLOUDS		1</a>
+<a name="WEATHER_RAIN">#define WEATHER_RAIN		2</a>
+<a name="WEATHER_SNOW">#define WEATHER_SNOW		3</a>
+<a name="WEATHER_FOG">#define WEATHER_FOG		4</a>
+<a name="WEATHER_NIGHT">#define WEATHER_NIGHT		5</a>
+
+<span class=comment>
+// Sets a weather mode to be displayed via the V1RPG_Renderfunc<span class=brace>(</span><span class=brace>)</span> 
+// function from v1_rpg.vc
+//
+// valid weather modes are:
+//
+// WEATHER_NONE, WEATHER_CLOUDS, ,
+// WEATHER_FOG, WEATHER_NIGHT
+//
+// WEATHER_RAIN and WEATHER_SNOW are not yet implemented.</span>
+<span class=type>void</span> SetWeather<span class=brace>(</span><span class=type>int</span> mode<span class=brace>)</span> 
+
+
+<span class=comment>
+// shakes the screen horizontally with a magnitude of x_intensity and
+// vertically with a magnitude of y_intensity for duration time </span>
+<span class=type>void</span> Earthquake<span class=brace>(</span> <span class=type>int</span> x_intensity, <span class=type>int</span> y_intensity, <span class=type>int</span> duration <span class=brace>)</span> 
+
+</body>
+</html>

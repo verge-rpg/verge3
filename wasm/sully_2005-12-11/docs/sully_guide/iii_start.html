@@ -1,0 +1,188 @@
+<html>
+<head>
+	<LINK href='style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<table border=0 width=100%>
+<tr>
+	<td><a href=./II_Overview.html>&laquo;Overview&laquo;</a></td>
+	<td align=right><a href=./IV_v1_RPG.html>&raquo;The V1 RPG effects library&raquo;</a></td>
+</tr>
+</table>
+
+
+<h3>Where to start</h3>
+<p>When you run VERGE.EXE without "releasemode 1" in the VERGE.CFG file, it will attempt to compile the vc code.  Assuming there are no errors in the code, it will then start the game in the AutoExec() function within the system vc.  If you don't have an AutoExec() in your system vc code, VERGE will just exit unceremoniously, no errorbox or other message.</p>
+
+<p>Before I tackle the order of events in Sully, first we're going to bring up some tips and tricks for debugging vc code that will not compile.</p>
+
+<h3>Debuggery!</h3>
+<p>vc is flexible, but it's sometimes cryptic.  At present, the sometimes ambiguous compile-error messages would have to be my second biggest pet peeve.  First I'll cover some errors you <i>will</i> encounter, and what they mean.</p>
+<p>
+(Note that all fatal errors will have their message after something like "Exiting: system.vc(60):".  That specific message means that the bad line is in the system.vc file around line 60.  If you are using <a href=http://textpad.com target=_new>Textpad</a> like Rysen (and vecna.  And I.) suggest, then you just open up system.vc, press CTRL-G, enter the line number (60 in this case), hit enter, and you will be automagically transported right to that line.
+<br />...trust me, this'll become second nature before too long. )
+</p>
+
+<p>
+also note: if the error message starts with "<b>Exiting: preprocessor step:</b>", then something went wrong with the preprocessor, which is very specific and is checked before anything else.  This basically means that something went wrong wither with a #define statement or an #include statement.
+</p>
+
+<p>
+And now, some common error messages:
+<ul>
+	<li>
+		<b> "SomeName" is not a recognized keyword or identifier!</b>
+		<br />
+		<br />
+		This means that "SomeName" is not a built-in vc function or variable, and it's not a user-defined function or variable.  This is very easy to correct; You either misspelled it, or you never defined it in the first place.
+		<br />
+		<br />
+	</li>
+
+	<li>
+		<b>No matching bracket.</b>
+		<br />
+		<br />
+		This is one of the errors you'll get from that most-common of programmer's foes: the missing semicolon.  with the exception of conditionals, loops, and function definitions, every line of code needs to end in a semicolon.  You'll get this error if you had this:
+			<pre>
+void AutoExec()
+{
+	int caca
+
+	ShowPage();
+}
+			</pre>
+
+			Instead of
+
+			<pre>
+void AutoExec()
+{
+	int caca<b>;</b>
+
+	ShowPage();
+}
+			</pre>
+
+		<br />
+		<br />
+	</li>
+
+
+	<li>
+		<b>Exiting: preprocessor step: circular dependencies on system.vc</b>
+		<br />
+		<br />
+		You will recieve this error if you ever have a file either #include itself, or have two files both include each other.  For instance, if you put:
+
+		<pre>#include "system.vc"</pre>
+
+		<i>in</i> system.vc, then the compiler would open it up, hit that line, open it up, hit that line, open it up, hit that line, etc.  Into infinity.  That'd be bad.
+		<br />
+		A good way to avoid this is to make all your includes in a clear order.  I tend to make a master include file so I can keep track of things that might have dependancies.  In Sully Simpletype, that file is <a href=../../vc/includes.vc>"vc/includes.vc"</a>.
+		<br />
+		<br />
+	</li>
+
+	<li>
+		<b>Exiting: Unknown HVAR0 (42) (set 3):</b>
+		<br />
+		<br />
+		Whenever you see an "Unknown HVAR" error, that means one thing: you've tried to set a new value to a read-only variable!  Look for a read-only system variable around the line number you've given.
+		<br />
+		To see this error in action, compile this function:
+		<pre>
+void AutoExec()
+{
+	entities = 17;	//entities is the variable that reports how
+			//many entities are presently on a map.
+}
+		</pre>
+
+		<br />
+		<br />
+	</li>
+</ul>
+
+I'll add more common errors and what they mean as I come across them.  I really should've been compiling this list over the last few weeks, but I didn't think to.  If anyone wants to contribute errors, their causes, and their solutions to this list, please email me <mcgrue@verge-rpg.com>, aim me (AIM: astradian) or leave a message about it on the forums.
+</p>
+
+<h3>General debugging techniques</h3>
+<p>Sometimes you'll find an error you just can't figure out.  If it's a compile error, and you can't locate what's going wrong, you really have to localize the error.  Here's two ways to do this.
+<ol type=1>
+<li>You can either insert garbage above the line the error is reporting to, or comment out the offending line.  Say you had the following block (the grey nubers represent line numbers, they aren't in the code):
+<pre>
+<span class=note>41</span>	taco = bob;
+<span class=note>42</span>	if( TonyRandalLives() ) {
+<span class=note>43</span>		bob = 17;
+<span class=note>44</span>	} else
+<span class=note>45</span>		exit( "I am a banana" );
+</pre>
+And you keep getting something like <b>Spooky Error on line 43</b>, your first task is to identify if it's actually line 43 that's erroring, or if it's something else nearby, or if it's something else entirely.  If you changed it to:
+<pre>
+<span class=note>41</span>	taco = bob;
+<span class=note>42</span>	if( TonyRandalLives() ) {
+<span class=note>43</span>dflkjsf
+<span class=note>44</span>		bob = 17;
+<span class=note>45</span>	} else	exit( "I am a banana" );
+</pre>
+And you still get the same error, it means the error is higher up.  Rinse wash and repeat until you get <b>system.vc(some line number): "dflkjsf" is not a recognized keyword or identifier!</b>, and then you've found the error.  If you got that error right away, tho, start moving it down, like:
+<pre>
+<span class=note>41</span>	taco = bob;
+<span class=note>42</span>	if( TonyRandalLives() ) {
+<span class=note>43</span>		bob = 17;
+<span class=note>44</span>dflkjsf
+<span class=note>45</span>	} else	exit( "I am a banana" );
+</pre>
+And if the original error appears, it means <b>bob = 17;</b> really was to blame, and now you know for a fact what's wrong.  If instead you keep getting the <b>"dflkjsf" is not a recognized keyword or identifier!</b> error, well, you've not yet found the real error!  Keep moving the garbage down until you find it!
+<br />
+<br />
+This method is rather hacky, but it works fast, especially if you're good with CTRL-X and CTRL-V.
+<br />
+<br />
+<br />
+</li>
+<li>
+Alternately, you can just comment out whole blocks.  This is a very good method if verge is completely lying about the origin of an error (which can sometimes happen with errors in other files due to #include).  If you can't localize a problem, try commenting out the entire body of the current function.  Then the next error message should be more forthcoming.  For instance, assume this function has a mystery error reporting within it:
+<pre>
+int myFunction() {
+
+	// pretend there's a
+	// whole bunch of code in
+	// here
+	//
+
+	return caca;
+}
+</pre>
+Well, if you change that to:
+<pre>
+int myFunction() {
+	/*
+	// pretend there's a
+	// whole bunch of code in
+	// here
+	//
+
+	return caca;
+	*/
+
+	return 0;
+}
+</pre>
+and it still errors, the new error message will be closer to where the real error is.  If the error's gone, well, you at least know the real error lives inside that funciton.  Then you can use method #1 to localize it.  Yay for you.
+</li>
+</ol>
+</p>
+
+
+<table border=0 width=100%>
+<tr>
+	<td><a href=./II_Overview.html>&laquo;Overview&laquo;</a></td>
+	<td align=right><a href=./IV_v1_RPG.html>&raquo;The V1 RPG effects library&raquo;</a></td>
+</tr>
+</table>
+
+
+</body></html>

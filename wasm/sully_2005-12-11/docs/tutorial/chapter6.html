@@ -1,0 +1,403 @@
+<p><center><b><u>Chapter 6: Fonts and Images<br>
+A Basic Textbox</b></u></center>
+
+<p><b>Introduction to Fonts and Images:</b>
+<br>
+I've decided to introduce both fonts and images at the same time so that we can go ahead a make an almost
+essential part to any RPG: The textbox.
+<br>We're going to get a bit code intensive from this point on as I will be introducing <b>control structures</b> and
+a few more built-in functions. Though I won't be going into great detail about the reason why we are writing the
+statements that we are, I will explain what each thing does, and how it relates to what we are trying to accomplish.
+Ultimately, by the end of this section you will have a complete, fully-functional textbox to add to your game and, hopefully,
+an understanding as to how it all works.
+<br><br>
+<b>Images:</b><br>
+Use for images vary greatly in an RPG. Whether they're there to display speech portraits, menu selectors, or act as a background,
+they are there. If you understood the loading part of playing sound effects, then you're a step ahead when thinking
+about images. Images, like sound, must be loaded into memory before they can be displayed. That is, we must create a handle(a variable of type <b>int</b>)
+so that when we want to display them on the screen, we have something to reference to. We'll go into more detail when we see some actual
+code of using an image, however, it is worth pointing out that there are a variety of image types you can use. These include: .png, .jpg, .gif, .pcx, .tga and .bmp.
+
+<br><br>
+<b>Fonts:</b><br>
+Fonts, if you remember, look like the image below. Like images and sounds, in order to use a font we must load it into memory by creating a handle and storing it in the variable.
+Fonts are image files, which means they can be of any of the aforementioned formats in the Images section. There isn't a whole lot to say about images and fonts on there own, so let's
+get right to creating a textbox.<br>
+<img src="./images/comic.png" width="520" height="152">
+
+<br><br>
+<b>A Basic Textbox:</b><br>
+Up until now we have only been dealing with map scripts. Now we're going to venture into the world of
+creating our own functions, and using them within map scripts.<br>
+When writing a piece of code, it is always a good idea to try and figure out what you need to accomplish on paper first.
+Generally the idea is to create what's known as <b>pseudo-code</b> before you actually attempt to program. <b>Pseudo-code</b> is basically
+programming something using English. The pseudo-code for our textbox might look a little something like this:
+<pre>
+Write some text
+Load an image (our textbox)
+Load a font (for our text)
+display image and text until the player presses the activation key.
+</pre>
+
+Seems simple enough right? Now that we have an idea of what it is that we need to accomplish, we can begin to think about
+what it is that verge can do to help us out. So let's look to our pseudo-code and the <a href="http://www.verge-rpg.com/docs/view.php?libid=1&section=12&PHPSESSID=02aa1502689bd719fc9b43bba3558b34">Verge function reference</a>
+to try and figure out how we are going to do this.
+<pre>
+Write some text
+</pre>
+If we are going to make a textbox function, we should make it so that we can use it over and over again in our scripts. That is, we should
+create a new function that we can put some text into. This way we won't have to type out the 20 lines of code over and over again when
+the only difference is going to be the text output on screen. So, we'll need to create a function in a system vc file, so that we can
+call it as many times as we need it. For simplicity, we'll create a new function in "system.vc". So under our "autoexec()" function, let's create a new one.
+
+<pre>
+
+void autoexec()
+{
+	SetAppName("My First Verge Game!");
+	Map("tutorial.map");
+}
+
+
+void TextBox()
+{
+}
+</pre>
+
+Remember that in the built-in functions,that we have used so far, we have entered something inside the brackets. ie. "EntitySpawn(<b>5,5,"darin.chr"</b>);"?
+We passed <b>arguments</b> to the function that manipulated the output. In this case we made it so Darin's .chr file was placed at the map co-ordinates, 5, 5. If we were
+to change any one of those arguments the output would be completely different.
+<br>
+If you were to look at the actual code for the function <b>EntitySpawn()</b> we might see it defined similar to this:
+<pre>
+int EntitySpawn(<b>int x, int y, string chrfile</b>)
+{
+	DoStuff();
+}
+</pre>
+When think back to our pseudo-code, we know that we are going to want to be able to change the output every time we call our new function. So, we are
+going to want to add an argument, or two, or three, to our textbox function so that we have the ability to change the output every time we call it.
+<pre>
+void TextBox(string text)
+{
+}
+</pre>
+Having this argument now gives us the ability to manipulate the output so that when we call the function <b>TextBox()</b>, we can now write:
+<pre>
+void SomeMapScript()
+{
+	TextBox("Hi! Isn't Vecna the greatest?!!!!");
+}
+</pre>
+Which, by the time we're finished, will create a textbox and write the phrase "Hi! Isn't Vecna the greatest?!!!!" onto the screen.
+This is all because we created an argument, a variable of type <b>string</b>, called "text" that we can change to anything that we want.
+<br><i>For more information on strings check out the <a href="http://www.verge-rpg.com/docs/view.php?libid=1&section=80&PHPSESSID=02aa1502689bd719fc9b43bba3558b34">"Variables"</a>
+section in the <a href="http://www.verge-rpg.com/docs/view.php?libid=1">V3 Manual.</a></i>
+<br>
+With that out of the way we can move forward.
+<pre>
+Load an image (our textbox)
+</pre>
+As I mentioned before verge loads images just like it loads sounds. We're going to need a new variable, and we're going to need a built-in function to tell
+verge to store our image in that variable. If we search through the v3 function reference (or vergeC.txt) we will find a function that does exactly this. It's called
+<b>LoadImage()</b>. Handy that. So let's load the image I included with the basic package, "textbox.pcx".
+
+<pre>
+void TextBox(string text)
+{
+	int TextBg = LoadImage("textbox.pcx"); // Load an image and prepare it for use
+}
+</pre>
+
+Now we have an image stored in memory, and we can use it by referencing to the handle "TextBg", when we want to use it.
+
+<pre>
+Load a font (for our text)
+</pre>
+Just like images and sounds, we'll create a handle, use a built-in function and load our font. Let's use the font I included "smallfont1.gif".
+
+<pre>
+void TextBox(string text)
+{
+	int TextBg = LoadImage("textbox.pcx"); // Load an image and prepare it for use
+	int MyFont = LoadFont("smallfont1.gif"); // Load a font and prepare it for use
+}
+</pre>
+Our font is now ready for use!
+<pre>
+display image and text until the player presses the activation key.
+</pre>
+This is the heart of what we are going to do. It may not seem like it but there is a lot we'll have to do here, and all the while
+we need to <i>keep</i> doing it until our player presses the activation key. This is a good time to introduce the concept of "<b>loops</b>.
+<br><br>
+<b>Loops:</b><br>
+<b>Loops</b> are a handy part of the VergeC scripting language. A loop will keep repeating the same commands over and over again until
+you give it a reason not to. There are two types of loops verge can do, one is the <b>For</b> loop, and the other (the one we'll be using) is
+the <b>While</b> loop.
+<br>Since we'll be using the <b>while</b> loop, I'll use it as an example when describing exactly how a loop works.
+<pre>
+while(x&lt;5) // While the variable "x"'s value is less than 5....
+{
+	DoStuff(); // Call this command
+	x+=1; // and increase the value of "x" by 1.
+}
+</pre>
+This looks fairly complicated, but it really isn't that difficult of a concept. Basically, somewhere in a function we have created an integer variable "x"
+and have told the engine to repeat the function "DoStuff()" until the value of "x" is equal to 5. That is, if the original value of "x" was 0, then "DoStuff()"
+would be called 5 times increasing the value of "x" by 1, each time.
+<br>When verge gets to the above loop in our function this is what happens:<br>
+<pre>We'll assume that the value of x was originally 0
+
+Begin Loop
+Call DoStuff()
+Increase value of x by 1, x now equals 1. Because it is still less than 5....
+Call DoStuff()
+Increase value of x by 1, x now equals 2. Because it is still less than 5....
+Call DoStuff()
+Increase value of x by 1, x now equals 3. Because it is still less than 5....
+Call DoStuff()
+Increase value of x by 1, x now equals 4. Because it is still less than 5....
+Call DoStuff()
+Increase value of x by 1, x now equals 5. Because x is no longer less than 5....
+The Conditions for this loop are broken. End Loop.
+</pre>
+
+I hope that makes sense, as it is an important aspect in programming with vergeC. Since this isn't a programming tutorial we're now
+finished with the concepts behind "loops". This example was just so that you have a basic idea of how they work.
+<br>For more information on loops, and the other style of loop you can do, check out the <a href="http://www.verge-rpg.com/docs/view.php?libid=1&section=5&PHPSESSID=02aa1502689bd719fc9b43bba3558b34">
+Control Structures</a> section in the <a href="http://www.verge-rpg.com/docs/view.php?libid=1">V3 Manual</a>.
+
+<br><br>
+<b>Back to the Textbox:</b>
+<br>
+Now that we have a basic understanding of what a loop is, and what it does, we can now look at why we need to use one in our textbox function.
+<br>In our textbox function we want both the image AND text to stay on the screen until the player presses the activation key. (From this point I will
+say "Enter" as that is the default activation key on the keyboard.) If we were to use the built-in functions that display an image and text without putting it inside
+of a loop, we would never see them. This is because verge doesn't know how long to keep the image or text on the screen. If we don't specify how long we want them to show
+up, verge will quickly display them, and quickly get rid of them. So it appears that we will have to use a loop! In this case I have chosen to use the <b>while</b> loop.
+<pre>
+void TextBox(string text)
+{
+	int TextBg = LoadImage("textbox.pcx");
+	int MyFont = LoadFont("smallfont1.gif");
+	while()
+	{
+	}
+}
+</pre>
+We're going to need to tell verge a condition to keep looping the stuff we're going to put inside the while loop. In our case, we want it to keep looping
+until the player presses the "Enter" key. So the condition is:
+<pre>while the enter key is not pressed...Do stuff</pre>
+Verge has a few handy built-in variables that can make this a little easier on us. There are four which correspond to the keyboard. These are <b>b1, b2, b3 and b4</b>. The one we are concerned
+with right now is <b>b1</b> as it, by default, corresponds to the "Enter" key on the keyboard. You can set it so that <b>b1</b> is a different key, however it's best just to stick to the defaults
+for now. ~_^
+<br>When we think of the keys on a keyboard, or the buttons on a game pad, we can conclude the following: They are either pressed, or they're not. That is, they are either True or False. 1 or 0.
+This most basic of concepts is the foundation for a lot of what you do with code.<br> <i>As a side note, I HIGHLY recommend you check out the book <a href="http://www.amazon.com/exec/obidos/ASIN/0735611319/qid=1096434975/sr=ka-2/ref=pd_ka_2/103-3585562-2583015">
+"Code: The Hidden Language of Computer Hardware and Software"</a> by Charles Petzold for an amazing
+look at this concept and other code information.</i>
+<br>For our textbox we only want our loop to...loop, while the enter key is <b>NOT</b> pressed. That this, while b1 is equal to 0.
+<br>We can express this in VC in two ways:
+<pre>
+while(b1==0) // while the value of b1 is equal to 0
+while(!b1) // while b1 is NOT equal, that is, doesn't have a value greater than 0
+</pre>
+What's the difference? There isn't one, (for our purposes) except the <b>operator</b> that is used. Check out <a href="http://www.verge-rpg.com/docs/view.php?libid=1&section=133&PHPSESSID=02aa1502689bd719fc9b43bba3558b34">The Operators</a> section in the V3 Manual
+to learn more about them. We're going to use the <b>NOT</b>(!) operator in our example, as it is my preferred way of doing things. :)
+<pre>
+void TextBox(string text)
+{
+	int TextBg = LoadImage("textbox.pcx");
+	int MyFont = LoadFont("smallfont1.gif");
+	while(!b1)
+	{
+	}
+}
+</pre>
+So now when it reaches our loop it will repeat everything we put inside the braces until the enter key is pressed. Groovy.
+<br>
+Next we need to add a bunch of functions to display our textbox image, the font, and text we enter when we call the function. I'll just add them
+and explain what they do after.
+<pre>
+void TextBox(string text)
+{
+	int TextBg = LoadImage("textbox.pcx");
+	int MyFont = LoadFont("smallfont1.gif");
+	while(!b1)
+	{
+		Render(); // Clear the screen
+		Blit(0,178,TextBg,screen); // Display our image
+		PrintString(10,185,screen,MyFont,text); // Put our text on the image
+		ShowPage(); // Show our image and text on the screen
+	}
+}
+</pre>
+
+Whoa! There's a lot to digest there, so let's look at what we've done.
+<br>We've made a call to four new built-in functions we haven't seen before. <b>Render(), Blit(), PrintString()</b> and <b>ShowPage()</b>.
+Let's look at them one at a time.
+<pre>Render();</pre>
+This function draws all the entities and map to the "screen". It will clear the screen for us, so that if there is
+something currently drawn to the "screen", that we don't need anymore, it will be taken off.
+<pre>Blit(0,178,TextBg,screen);</pre>
+Here we make a call to do what is called "Blitting" an image. That is we are displaying the image we loaded onto the screen.
+<br>Blit() takes four arguments. The x and y co-ordinates the image is to be displayed (in pixels), the handle that we loaded our image into, in our case the variable TextBg,
+and where we want to draw the image on. In this case we want to draw it on the <b>screen</b>.
+<br>If we were to change
+the x and y co-ordinates the image would appear on a different spot on the screen. In this case we're drawing it at pixel 0 from the left, and pixel 178 down from the top.
+Remember that we are working in a resolution of 320x240, which means we have 320 pixels running horitzontally, and 240 pixels running vertically. The actual size of the textbox image is 320x62.
+By placing it at point (0,178) on the screen we are making just enough room for the image to fit since the screenwidth (320) minus the image width (320) equals 0, and the screen height(240) minus the image height(62) equals 178.
+<br>As a final note we don't need to really worry about "screen", just know that it
+should be there. ~_^
+<pre>
+PrintString(10,185,screen,MyFont,text);
+</pre>
+This function takes 5 arguments. The x and y co-ordinates where the text will be displayed, where we are displaying it, the handle we used to load our font
+and what text is written. In our case, we want to the text output to change depending on what we write when we call our function, <b>TextBox();</b> so we'll input the string
+variable we created way back when we created our function.
+<pre>
+ShowPage();
+</pre>
+This makes it so all the stuff we have drawn to the "screen" is displayed on our monitor. We MUST have this if we want to see our text and textbox image.
+<br>
+There that wasn't so tough? So now if we look at our code, and think to what we have learned about loops, we can understand what's happening: While the enter
+key is not pressed, render the screen, show our textbox image, show our text on top of the textbox image, and finally show all that we have drawn on our monitors.
+Rockin'. But wait...isn't there something else we should be doing? Maybe, oh I don't know, "freeing" up the memory we used when we loaded the image and font after
+we don't need it anymore? You are absolutely right!
+<br>To free our image we use the built-in function <b>FreeImage()</b> and to free the font we use the function <b>FreeFont()</b>. But we don't want verge to free
+either until we're done with them, so how do we make sure this happens? By putting the calls AFTER the loop. A-like so:
+<pre>
+void TextBox(string text)
+{
+	int TextBg = LoadImage("textbox.pcx");
+	int MyFont = LoadFont("smallfont1.gif");
+	while(!b1)
+	{
+		Render();
+		Blit(0,178,TextBg,screen);
+		PrintString(10,185,screen,MyFont,text);
+		ShowPage();
+	}
+
+	FreeImage(TextBg);
+	FreeFont(MyFont);
+}
+</pre>
+
+So now when the loop is terminated, by pressing enter, verge moves on to what comes AFTER the loop. In this case a call to <b>FreeImage</b> and <b>FreeFont</b>.
+<br>But wait! That's not all. There is ONE more function we must have after our loop. It is <b>Unpress(1);</b>
+
+<pre>
+
+void TextBox(string text)
+{
+	int TextBg = LoadImage("textbox.pcx");
+	int MyFont = LoadFont("smallfont1.gif");
+	while(!b1)
+	{
+		Render();
+		Blit(0,178,TextBg,screen);
+		PrintString(10,185,screen,MyFont,text);
+		ShowPage();
+	}
+	Unpress(1);
+	FreeImage(TextBg);
+	FreeFont(MyFont);
+}
+</pre>
+We make a call to <b>Unpress()</b> so as to force verge to think that the key is no longer being pressed. If we left this out, there is a chance that verge would
+recall the function. Why does this happen if the conditions of the loop are no longer valid? Turns out it has nothing to do with our script at all. When we activate Crystal's entity to call
+our script we press "Enter" to do it. We also use "Enter" to terminate our function. So, if we are still holding onto the "Enter" key when the function is terminated, it gives control back to
+the engine, sees enter has been pressed, and so it will activate Crystal's entity, over and over again, unless we force verge to "Unpress" the key. We do this using the built-in function <b>Unpress(1);</b>
+The number inside the brackets, <b>1</b>, corresponds to the the variable <b>b1</b>, which by default is the "Enter" key. It is important to understand that certain numbers correspond to the variables. That is, if we used <b>b2</b>
+(which is the left ALT key by default) instead of <b>b1</b>, in our loop, instead of <b>Unpress(1);</b> we would call <b>Unpress(2);</b> If we used <b>b3</b> (Esc by default), use <b>Unpress(3);</b>, etc.
+<br>We now have a complete, and fully functional textbox function.
+<br><br>
+<b>Testing our new Function:</b><br>
+So now that we have created our text function we can use it to talk to Crystal in "tutorial.vc". Open it up, find the script we created
+in Chapter 3 and make a call to our new function:
+<pre>
+void TalkToCrystal()
+{
+	TextBox("Hola!");
+}
+</pre>
+<img src="./images/fig15.png" ALIGN="LEFT">Now when we move Darin and press enter by Crystal our textbox image will appear with the text "Hola!" written in our font over
+top of it, until we press Enter. Booyah.
+<br><br>
+<b>Final Touch:</b>
+<br>It's all fine and dandy that our textbox works exactly the way we hoped it would, however, there's a lot of extra space at the bottom,
+and with the function written the way it is we are limited to only have one line of text while talking to Crystal. How can we make it so that
+we have more lines? We know what <b>PrintString()</b> does, and how we can pass arguments to our function, so let's add some more to the function.
+<br>With the size of our font, and the size of our textbox image, we have room for a 3 more lines. That's a total of 4 lines my friend! So we can add
+3 new arguments in our function declaration, and 3 more calls to <b>PrintString()</b>!
+<br><br><br>
+<pre>
+void TextBox(string text, string text2, string text3, string text4)
+{
+	int TextBg = LoadImage("textbox.pcx");
+	int MyFont = LoadFont("smallfont1.gif");
+	while(!b1)
+	{
+		Render();
+		Blit(0,178,TextBg,screen);
+		PrintString(10,185,screen,MyFont,text);
+		PrintString(10,195,screen,MyFont,text2);
+		PrintString(10,205,screen,MyFont,text3);
+		PrintString(10,215,screen,MyFont,text4);
+		ShowPage();
+	}
+	Unpress(1);
+	FreeImage(TextBg);
+	FreeFont(MyFont);
+}
+</pre>
+
+Notice how the "y" co-ordinate in the <b>PrintString()</b> functions increase by 10? This is so that the lines of text don't overlap each other when
+they are displayed. If we just copied and pasted the original call to <b>PrintString</b>, all four lines of text would appear in the same spot, leaving
+us with a garbled mess. By increasing it by 10 we create a new line for the text to appear on. :)
+<br>
+When we call this function, however, we need to pass 3 more arguements than before, so back to <b>TalktoCrystal()</b> script we created, let's add some more text.
+<pre>
+void TalktoCrystal()
+{
+	TextBox("Crystal:","Hola!","As you can see, I can speak a","lot more than before!");
+}
+</pre>
+
+A question you might now ask is, "What if I don't need to use all four lines when I call the function?", well when you call the function you still need to pass four arguments regardless.
+In the case of strings, we can simply denote "No-text" by using double quotes. For example:
+<pre>
+void TalkToCrystal()
+{
+	TextBox("Crystal:","Only need one line!","","");
+}
+</pre>
+Notice the quotes, and how they are seperated by commas? This is still a very valid call to this function, except nothing will be displayed
+on the 3rd and 4th lines, when you talk to Crystal.
+<br><br><b>Conclusion:</b>
+<br>
+Wow, that was a lot to take in. Don't worry if you're struggling with some of the concepts. At this point, most of this is completely new to you. As you work with it more
+and play around with the functions we used, you'll have a better idea of what's going on. It takes both practise and patience. :)<br>
+You should be carefull when using this function, as it will not format it for you. Meaning, if you write too much in one arguement, it will appear off screen and
+the player won't see it. So you need to keep in mind how many letters you can type on one line before you must write the next line. There are ways that
+you can format it so that it does this automatically for you (and actually make it so you're only required to pass one argument), but, that is a bit more advanced
+then what we are ready for. For the more ambitious of you out there, you could always read the <a href="http://www.verge-rpg.com/docs/view.php?libid=1">V3 Manual</a>
+and see if you can figure it out. ~_^
+
+<br><br>
+<B>Summary:</b>
+<br>This is what you now know:
+<ul><li>How to create functions</li>
+	<li>How to load, display and free images.</li>
+	<li>How to load fonts and display strings of text with them.</li>
+	<li>What a loop is, and how a <b>While()</b> loop works.</li>
+	<li>How to create a basic Textbox function</li>
+</ul>
+
+<br><br>
+<hr>
+<a href="index.html">Table Of Contents</a>
+
+
+
+

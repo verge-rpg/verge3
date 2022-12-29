@@ -1,0 +1,7 @@
+The files in the menu folder are used by the simple_menu library.
+( "vc\simplemenu\menu_system.vc", lines 72-76 )
+
+The files in this folder are used by the v1_rpg library.
+( "vc\v1_rpg\v1_rpg.vc", lines 70-75, 183-184 )
+( "vc\v1_rpg\v1_weather.vc", lines 98-100, 180 )
+( "vc\v1_rpg\v1_maineffects.vc", line 12 )

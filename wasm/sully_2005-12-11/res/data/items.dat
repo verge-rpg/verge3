@@ -1,0 +1,72 @@
+// Items.dat
+//
+// This datafile contains definitions of all of the 
+// Skill Groups this game has.  A skill must belong to a group.
+//
+// This data gets parsed into the master_item[] array, defined in data.vc
+// The maximum number of items is controlled by MAX_ITEMS, defined in data.vc
+//    please change this number of you wish to add more items than it currently 
+//    allows.
+//
+// blank lines and commented lines are ignored.  Anything else will be treated as an entry.
+//
+// Use_Flag is either Battle, Menu, Both, or ignored.
+//
+// This file best viewed with a tab of 8.
+//
+//
+// Field order:
+// Name		Icon	UseFlag	target_func	effect_func	Price	"Description"
+
+Starlight 	0	Both	MP_OC_targ	starlight_use	300	"Restores 15 MP"
+Herb 		1	Both	HP_OC_targ	herb_use	30   	"Restores 15 HP Or something with a really long description."
+Speed_Boots 	2	-	-		-		300   	"+3 REA, +1 MBL"
+Dark_Sword 	3       -	-		-		2000   	"ATK +20, *darkness"
+Iron_Sword 	4       -	-		-		440	"ATK +22"
+Leather_Vest 	5       -	-		-		160	"DEF +8"
+Cap 		6       -	-		-		80	"DEF +4"
+Buckler 	7       -	-		-		120	"DEF +6"
+Staff 		8       -	-		-		200	"ATK +9, MAG +2"
+Pooh 		0       -	-		-		0	"Pooh!"
+Cloak 		9       -	-		-		120	"DEF +4, MGR +4"
+Hood 		10      -	-		-		50	"DEF +2, MAG +2"
+Bracer 		11 	-	-		-		80	"DEF +4"
+Sting_Whip 	12 	-	-		-		400	"ATK +18, HIT +5"
+Robe 		13      -	-		-		140	"DEF +7, MGR +2"
+Tiara 		14      -	-		-		180	"DEF +6, MAG +2"
+Silver_Brace 	15      -	-		-		150	"DEF +5, MGR +2"
+Lead_Wrench 	16      -	-		-		425	"ATK +21"
+Titanium_Suit 	17      -	-		-		220	"DEF +11"
+Head_Brace 	18      -	-		-		140	"DEF +7"
+Laser_Shield 	19      -	-		-		300	"DEF +10, ATK +3"
+Thermal_Activator 20	-	-		-		0	"Starts crystal machine"
+Bronze_Key 	21	-	-		-		0	"Key to the love shack.  Awww yeah."
+Pearl_of_Truth 	22	Menu	LIVE_OC_targ	pearl_use	0	"Shows the truth to all.  Also opens castle gate and makes Julienne fries!"
+Steel_Lance 	23	-	-		-		560	"ATK +28"
+Bronze_Armor 	24	-	-		-		320	"DEF +16"
+Gold_Helmet 	25	-	-		-		160	"DEF +8"
+Tower_Shield 	26	-	-		-		260	"DEF +13 Or something with a really long description."
+West_Tower_Key 	21	-	-		-		0	"Key to West Tower"
+East_Tower_Key 	21	-	-		-		0	"Key to East Tower"
+Spire_Key 	21	-	-		-		0	"Key to Central Spire"
+Dagger 		27	-	-		-		100	"ATK +5"
+Wand 		28	-	-		-		90	"ATK +3, MAG +5"
+Brass_Pipe 	29	-	-		-		200	"ATK +10"
+Spear 		30	-	-		-		300	"ATK +15"
+Headband 	31	-	-		-		20	"DEF +1"
+Garment 	32	-	-		-		40	"DEF +2"
+Medicine 	33	Both	HP_OC_targ	medicine_use	100	"Restores 45 HP"
+Miracle_Brew 	34	Both	DEAD_OC_targ	brew_use	250	"Heals defeated ally"
+Blur_Ring 	35	-	-		-		450	"Improves evasion rate"
+Fury_Ring 	36	-	-		-		600	"Increases Ferocity"
+Running_Boots 	37	-	-		-		750	"Extends Mobility"
+Protect_Locket 	38	-	-		-		1000	"Fortifies magic defense"
+Carrot_Blade 	39	-	-		-		5000	"ATK +30"
+Sacred_Carrot 	40	-	-		-		0	"Item of Absolute Power"
+Pharaoh_Sceptre	41	-	-		-		1	"ATK +15, MAG +10"
+Atlas_Scroll 	42	Menu	-		worldmap_use	0	"Shows position on map"
+Golden_Switch	43	Menu	-		gswitch_use	0	"Award for completing the Switch Puzzle in the minimum moves."
+
+END_OF_FILE
+
+internationalazation

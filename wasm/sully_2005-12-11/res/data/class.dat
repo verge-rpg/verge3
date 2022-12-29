@@ -1,0 +1,49 @@
+// Class.dat
+//
+// This datafile contains definitions of all of the 
+// Character Classes this game has.  A character must have a class.
+//
+// This data gets parsed into the master_class[] array, defined in data.vc
+// The maximum number of items is controlled by MAX_CLASSES, defined in data.vc
+//    please change this number of you wish to add more items than it currently 
+//    allows.
+//
+// blank lines and commented lines are ignored.  Anything else will be treated as an entry.
+//
+// Entries go as follows:
+//
+// class_name	"class_description"
+// skill_type, skill_type, skill_type, skill_type
+//
+// skill_group must reference entries by name in skilltypes.dat  
+// A class may have any number of skillgroups up to MAX_SKILLGROUPS_PER_CLASS, which is 
+//   defined in data.vc
+// the skillgroups must be separated by commas.  Whitespace is optional.
+//
+// If a class has no skills, please put the NO_SKILLS token on the entry's second line.
+//
+
+Knight		"A guy who hits things.  Usually with swords."
+Swordtech
+
+
+Wizard		"A girly-man in a dress who plays with fire."
+Black_Magic
+
+
+Priest		"A healy-type job."
+White_Magic
+
+
+Funkmaster	"Master of all things groovy, baby."
+Jive, Fuschia_Magic
+
+
+Engineer	"Wenches with Wrenches!  (Also dudes with tools.)"
+Gadgetry
+
+
+Spearguy	"No clue what Galfrey is, really.  Dragoon?  Centurion?"
+NO_SKILLS
+
+END_OF_FILE

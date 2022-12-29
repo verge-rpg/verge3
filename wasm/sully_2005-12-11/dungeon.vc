@@ -1,0 +1,720 @@
+void start() 
+{
+	SaveDisable(); //cannot save in towns.
+		
+	InitMap();
+
+	V1_StartMusic("res/music/BADEXPER.MOD");
+
+	//don't show the banner when we return from the flashback
+	if( flags[F_LOVE_SARA_JOIN] )
+	{
+		Banner("Dungeon of Loooove",300);
+	}
+
+	//sets all the tiles as they should be.
+	dungeon_upkeep();
+}
+
+void dungeon_upkeep() /* 0 */
+{
+
+	if(Flags[F_LOVE_SARA_JOIN])
+	{
+		AlterFTile(25,39,0,0);
+		AlterBTile(25,40,273,0);
+		AlterBTile(25,41,273,0);
+	}
+	
+	if( flags[F_LOVE_GATE_OPEN] )
+	{
+		AlterFTile(25,15,0,0);
+		AlterBTile(25,16,273,0);
+	}
+	
+
+	if( flags[F_LOVE_LEVER] ) 
+	{
+		AlterBTile(35,17,518,2);
+		AlterBTile(36,16,273,0);
+		AlterFTile(36,15,0,0);
+	}
+
+	UpdateDial( F_LOVE_SWITCH_A,40 );
+	UpdateDial( F_LOVE_SWITCH_B,41 );
+	UpdateDial( F_LOVE_SWITCH_C,42 );	
+	
+	LoveDungMasterChestUpkeep(CHEST_LOVE_A,43,3);
+	LoveDungMasterChestUpkeep(CHEST_LOVE_B,45,3);
+	LoveDungMasterChestUpkeep(CHEST_LOVE_C,21,45);
+	LoveDungMasterChestUpkeep(CHEST_LOVE_D,29,45);
+	
+
+	if(!Flags[F_LOVE_SARA_JOIN])
+	{
+		sara_event();
+	}
+}
+
+void upstair() /* 1 */
+{
+	FLAGS[F_LOVE_ESCAPE] = 1; //we've escaped!
+	v1_mapswitch("SHACK.MAP",71,5,0);
+}
+
+void sara_event() /* 2 */
+{
+	int darin, dexter, sara;
+	int i;
+	
+	MenuOff();
+	
+	darin	= GetPartyEntity( "Darin" );
+	dexter	= GetPartyEntity( "Dexter" );
+	sara	= 0;	//sara's mapent #0 on this map
+
+	Entity.X[sara] -= (40*16); //move the mapentity sara onscreen.
+	entity.face[sara] = FACE_UP;
+	
+	AutoOn();
+	
+	//cameratracker = sara; //let's put the camera on Sara.
+	//cameratracking = 2;
+	SetPlayer( sara );
+	Render();
+	cameratracking = 0;
+	Ywin += 60;
+	Render();
+	
+	Entity.X[darin]=24*16;
+	Entity.Y[darin]=33*16;
+	Entity.X[dexter]=24*16;
+	Entity.Y[dexter]=33*16;
+	
+	entity.speed[darin]=125;
+	entity.speed[dexter]=155;
+	entity.specframe[darin]=21;
+	entity.specframe[dexter]=21;
+	
+
+	curmap.rstring = "1,2,E,R";
+	
+	FadeIn(60);
+	
+
+	SoundFall();
+	
+
+	EntityMove(darin,"D12 D0");
+	WaitForEntity(darin);
+	
+	SoundBomb();
+	
+	For(i=10; i>1; i--)
+	{
+		Earthquake(0,i,10);
+	}
+	
+	entity.specframe[darin] = 0;
+	entity.specframe[sara] = 21;
+	
+
+	Wait(75);
+	
+	entity.face[sara]=FACE_DOWN;
+	
+	entity.specframe[sara]=0;
+	Wait(30);
+	
+	entity.specframe[sara]=24;
+	Wait(30);
+	
+	entity.specframe[sara]=0;
+	Wait(30);
+	
+	entity.specframe[sara]=24;
+	Wait(30);
+	
+	entity.specframe[sara]=0;
+	
+	entity.face[darin]=FACE_RIGHT;
+	Wait(50);
+	
+	entity.face[darin]=FACE_UP;
+	Wait(100);
+	
+	entity.specframe[darin]=21;
+	entity.specframe[sara]=21;
+	
+	SoundFall();
+	
+	EntityMove(dexter,"D12 D0");
+	WaitForEntity(dexter);
+	
+	EntityMove(darin,"R2 L0");
+	SoundBomb();
+
+	For(i=10; i>1; i--)
+	{
+		Earthquake(0,i,10);
+	}
+
+	entity.specframe[darin]=0;
+	entity.specframe[dexter]=0;
+	entity.specframe[sara]=0;
+	Wait(30);
+	entity.specframe[dexter]=24;
+	Wait(30);
+	entity.specframe[dexter]=0;
+	Wait(30);
+	entity.specframe[dexter]=24;
+	Wait(30);
+	entity.specframe[dexter]=0;
+	
+	entity.Face[dexter] = FACE_RIGHT;
+	Wait(30);
+
+	entity.Face[darin]  = FACE_UP;
+	entity.Face[dexter] = FACE_UP;
+	Wait(100);
+	
+	curmap.rstring = "1,E,2,R";
+
+	TextBox(T_SARA,	"Huh? Who are you?",
+					"Oh, don't tell me you fell into that leaf",
+					"patch trap as well!");
+					
+	entity.Speed[darin]=75;
+	entity.Speed[dexter]=75;
+	entity.Speed[sara]=75;
+	
+	EntityMove(darin,"U3");
+	WaitForEntity(darin);
+	
+	TextBox(T_DARIN,	"Yep. What a nasty trick!",
+						"Who are you and where are we?", "");
+	
+	TextBox(T_SARA,	"My name is Sara, from the town of Rodne.",
+					"We are beneath the love shack.", "");
+					
+	entity.specframe[darin]=21;
+	Wait(75);
+	entity.specframe[darin]=0;
+	
+	TextBox(T_DARIN,	"Sara! We've been looking for you.",
+						"We need you to help us melt a crystal",
+						"in Mt. Jujube.");
+	EntityMove(dexter,"U3");
+	WaitForEntity(dexter);
+
+	TextBox(T_DEXTER,	"Might you, by any chance, have access ",
+						"to a [Thermal Activator], Sara?", "");
+	
+
+	entity.specframe[sara]=23;
+	Wait(100);
+	entity.specframe[sara]=0;
+	
+	TextBox(T_SARA,	"Yes, I have one stored in my basement",
+					"behind a secret passage.", "");
+					
+	TextBox(T_DARIN,	"Splendid! Can you help us, then? ",
+						"I will gladly pay you all that I have and ",
+						"more!");
+						
+	TextBox(T_SARA,	"Keep your money. The [Thermal Activator]",
+					"is yours if you can just get me out ",
+					"of here!");
+	TextBox(T_DEXTER,	"Is Big Daddy Bubba in that small dwelling",
+						"above us?","");
+	Wait(30);
+	entity.specframe[sara]=25;
+	
+	TextBoxM(T_SARA,	"Yes, it's horrible. He comes down here each",
+						"night and drags me up to the cabin.", "");
+	TextBox(T_SARA,		"I have to wear a leather thong and dance",
+						"to Barry White music!",
+						"It's torture!");
+						
+	TextBox(T_DARIN,	"Then it's time we teach him a thing or",
+						"two about justice!","");
+	
+
+	TextBox(T_DEXTER,	"But how can we get out of this cell?",
+						"Those bars look thick and sturdy.", "");
+						
+	entity.specframe[sara]=0;
+	
+	TextBox(T_SARA,	"I can almost break them, but with two",
+					"people, I bet I could do it!", "");
+					
+	entity.specframe[dexter]=23;
+	Wait(100);
+	entity.specframe[dexter]=0;
+	
+	TextBox(T_DEXTER,	"Two people? But I can help too!",
+						"Just watch me!","");
+						
+	EntityMove(darin,"L1");
+	WaitForEntity(darin);
+	
+	TextBox(T_DARIN,	"Step aside, wizard boy. This",
+						"is a job for me!","");
+	
+	EntityMove(darin,"D3 F3 W30 U0");
+	EntityMove(sara,"D3 F2 W30 U0");
+	WaitForEntity(sara);
+	
+	Entity.Speed[sara]  = 150;
+	Entity.Speed[darin] = 150;
+	
+	TextBox(T_SARA,"Hieeeee-yah!","","");
+	
+	EntityMove(sara,"U3 Z9");
+	WaitForEntity(sara);
+
+	SoundShing();
+	
+	For(i=10; i>1; i--)
+	{
+		Earthquake(0,i,10);
+	}
+	
+	Entity.Speed[sara]= 75;
+	entity.specframe[sara]=0;
+	
+	EntityMove(sara,"D1 R1 F0 W30 L0");
+	WaitForEntity(sara);
+	
+	TextBox(T_DARIN,"Sho-Ryu-Ken!","","");
+	
+	EntityMove(darin,"U4 Z7");
+	WaitForEntity(darin);
+	
+	SoundShing();
+	SoundSwitch();
+	
+	AlterFTile(25,39,0,0);
+	AlterBTile(25,40,273,0);
+	
+	For(i=10; i>1; i--)
+	{
+		Earthquake(0,i,10);
+	}
+	
+
+	Entity.Speed[darin] = 75;
+	entity.specframe[darin]=0;
+	
+	EntityMove(darin,"D1");
+	WaitForEntity(darin);
+	
+	Entity.Face[dexter] = FACE_RIGHT;
+	Wait(50);
+	
+	TextBox(T_SARA,	"All right! We did it. Now",
+					"let's escape from this",
+					"terrible place.");
+	Wait(50);
+	entity.specframe[darin]=25;
+	Wait(20);
+	entity.specframe[darin]=0;
+	Wait(50);
+	entity.specframe[dexter]=29;
+	entity.specframe[sara]=28;
+	Wait(20);
+	entity.specframe[dexter]=0;
+	entity.specframe[sara]=0;
+	Wait(50);
+	entity.Face[darin]=FACE_LEFT;
+	Wait(20);
+	entity.Face[darin]=FACE_UP;
+	
+	EntityMove(dexter,"R1");
+	EntityMove(sara,"L1");
+	WaitForEntity(sara);
+	
+	i = IsCharacter( "Darin" );   	//get darin's cast index.
+	i = master_cast[i].level + 1; 	//use the index to get his level, and add one to it.
+	
+
+	JoinParty("Sara", i );			//sara joins the party a level higher than Darin.  
+									// 'Cuz she's rockin'.
+	
+
+	Entity.X[0]=30000; //warp the mapent of Sara away.
+	
+
+	Warp(25,42,TNONE);
+	
+	SetPlayer( darin );
+	
+	AutoOff();
+	
+	camReturnToPlayer( playerent, 50 );
+	
+	entity.Speed[darin]=100;
+	entity.Speed[dexter]=100;
+	entity.Speed[sara]=100;
+	
+	Flags[F_LOVE_SARA_JOIN]=1;
+	
+	MenuOn();
+}
+
+void gate() /* 3 */
+{
+	if( flags[F_LOVE_GATE_OPEN] )
+	{
+		return;
+	}
+	
+	if( !flags[CHEST_LOVE_A] )
+	{
+		TextBox(SpcByPos(0),"Oh pooh. This gate is locked.","","");
+		return;
+	}
+	
+	SoundSwitch();
+	AlterFTile(25,15,0,0);
+	AlterBTile(25,16,273,0);
+	TextBox(SpcByPos(0),"The Bronze Key fits. Let's go.","","");
+	DestroyItem( "Bronze_Key" );
+	
+
+	flags[F_LOVE_GATE_OPEN] = 1;
+}
+
+void chest_a() /* 4 */
+{
+	if( OpenTreasure(CHEST_LOVE_A,43,3,367) )
+	{
+		FindItem( "Bronze_Key", 1 );
+	}
+}
+
+void chest_b() /* 5 */
+{
+	if( OpenTreasure(CHEST_LOVE_B, 45,3,367) )
+	{
+		FindMoney(325);
+	}
+}
+
+void chest_c() /* 6 */
+{
+	if( OpenTreasure(CHEST_LOVE_C,21,45,367) )
+	{
+		FindItem( "Herb", 2 );
+	}
+}
+
+void chest_d() /* 7 */
+{
+	if( OpenTreasure(CHEST_LOVE_D,29,45,367) )
+	{
+		FindItem( "Herb", 1 );
+	}
+}
+
+// This bridge can be easier done by just setting the obs properly and 
+// changing Rstrings.  However, I'm keeping the old way because it's done.
+// If anyone wants to replace this with a much better example, go ahead and
+// do it and send it my way. -Grue
+void Bridge_On() /* 8 */
+{
+	AlterFTile(15,26,0,0);
+	AlterFTile(35,26,0,0);
+	AlterFTile(11,24,0,1);
+	AlterFTile(11,25,0,1);
+	AlterFTile(12,23,0,1);
+	AlterFTile(13,23,0,1);
+	AlterFTile(14,24,0,1);
+	AlterFTile(15,24,0,1);
+	AlterFTile(16,24,0,1);
+	AlterFTile(17,23,0,1);
+	AlterFTile(18,23,0,1);
+	AlterFTile(19,23,0,1);
+	AlterFTile(20,23,0,1);
+	AlterFTile(21,23,0,1);
+	AlterFTile(23,23,0,1);
+	AlterFTile(24,23,0,1);
+	AlterFTile(25,23,0,1);
+	AlterFTile(26,23,0,1);
+	AlterFTile(27,23,0,1);
+	AlterFTile(29,23,0,1);
+	AlterFTile(30,23,0,1);
+	AlterFTile(31,23,0,1);
+	AlterFTile(32,23,0,1);
+	AlterFTile(33,23,0,1);
+	AlterFTile(34,24,0,1);
+	AlterFTile(35,24,0,1);
+	AlterFTile(36,24,0,1);
+	AlterFTile(37,23,0,1);
+	AlterFTile(38,23,0,1);
+	AlterFTIle(39,23,0,1);
+	AlterFTile(39,24,0,1);
+	AlterFTile(39,25,0,1);
+	AlterFTile(25,26,352,1);
+	AlterFTile(12,25,153,0);
+	AlterFTile(13,25,153,0);
+	AlterFTile(17,25,153,0);
+	AlterFTile(18,25,153,0);
+	AlterFTile(19,25,153,0);
+	AlterFTile(20,25,153,0);
+	AlterFTile(21,25,153,0);
+	AlterFTile(29,25,153,0);
+	AlterFTile(30,25,153,0);
+	AlterFTile(31,25,153,0);
+	AlterFTile(32,25,153,0);
+	AlterFTile(33,25,153,0);
+	AlterFTile(37,25,153,0);
+	AlterFTile(38,25,153,0);
+	AlterFTile(23,25,153,0);
+	AlterFTile(24,25,153,0);
+	AlterFTile(26,25,153,0);
+	AlterFTile(27,25,153,0);
+	AlterFTile(22,24,153,0);
+	AlterFTile(28,24,153,0);
+	
+	curmap.rstring = "1,2,E,R";
+}
+
+void bridge_off() /* 9 */
+{
+	AlterFTile(15,26,0,1);
+	AlterFTile(35,26,0,1);
+	AlterFTile(11,24,0,0);
+	AlterFTile(11,25,0,0);
+	AlterFTile(12,23,0,0);
+	AlterFTile(13,23,0,0);
+	AlterFTile(14,24,0,0);
+	AlterFTile(15,24,0,0);
+	AlterFTile(16,24,0,0);
+	AlterFTile(17,23,0,0);
+	AlterFTile(18,23,0,0);
+	AlterFTile(19,23,0,0);
+	AlterFTile(20,23,0,0);
+	AlterFTile(21,23,0,0);
+	AlterFTile(23,23,0,0);
+	AlterFTile(24,23,0,0);
+	AlterFTile(25,23,0,0);
+	AlterFTile(26,23,0,0);
+	AlterFTile(27,23,0,0);
+	AlterFTile(29,23,0,0);
+	AlterFTile(30,23,0,0);
+	AlterFTile(31,23,0,0);
+	AlterFTile(32,23,0,0);
+	AlterFTile(33,23,0,0);
+	AlterFTile(34,24,0,0);
+	AlterFTile(35,24,0,0);
+	AlterFTile(36,24,0,0);
+	AlterFTile(37,23,0,0);
+	AlterFTile(38,23,0,0);
+	AlterFTile(39,23,0,0);
+	AlterFTile(39,24,0,0);
+	AlterFTile(39,25,0,0);
+	AlterFTile(25,26,352,0);
+	AlterFTile(12,25,153,1);
+	AlterFTile(13,25,153,1);
+	AlterFTile(17,25,153,1);
+	AlterFTile(18,25,153,1);
+	AlterFTile(19,25,153,1);
+	AlterFTile(20,25,153,1);
+	AlterFTile(21,25,153,1);
+	AlterFTile(29,25,153,1);
+	AlterFTile(30,25,153,1);
+	AlterFTile(31,25,153,1);
+	AlterFTile(32,25,153,1);
+	AlterFTile(33,25,153,1);
+	AlterFTile(37,25,153,1);
+	AlterFTile(38,25,153,1);
+	AlterFTile(23,25,153,1);
+	AlterFTile(24,25,153,1);
+	AlterFTile(26,25,153,1);
+	AlterFTile(27,25,153,1);
+	AlterFTile(22,24,153,1);
+	AlterFTile(28,24,153,1);
+	
+	curmap.rstring = "1,E,2,R";
+}
+
+void LoveDungMasterChestUpkeep( int flag_idx, int x, int y ) // Chest Cleanup
+{
+	if(flags[flag_idx])
+	{
+		AlterBTile(x,y,367,2);
+	}
+}
+
+void Console_Lever() /* 15 */
+{
+	MenuOff();
+	
+	if(!flags[F_LOVE_LEVER])
+	{
+		//if this is true, we've solved it!
+		if( flags[F_LOVE_SWITCH_A] == 4 && 
+			flags[F_LOVE_SWITCH_B] == 2 && 
+			flags[F_LOVE_SWITCH_C] == 7 )
+		{
+			
+			SoundSwitch();
+			
+			AlterBTile(35,17,518,2);
+			AlterBTile(36,16,273,0);
+			AlterFTile(36,15,0,0);
+			
+			flags[F_LOVE_LEVER]=1;
+			
+			MenuOn();
+			return;
+		}
+		
+		//if we got here, we didn't solve it ;(
+		MenuAngryBuzz();
+		TextBox( SpcByPos(0), "The lever is stuck.","","" );
+	}
+	
+	MenuOn();
+}
+
+void Console_A() /* 16 */
+{
+	MasterDial( F_LOVE_SWITCH_A,40 );
+}
+
+void Console_B() /* 17 */
+{
+	MasterDial( F_LOVE_SWITCH_B,41 );
+}
+
+void Console_C() /* 18 */
+{
+	MasterDial( F_LOVE_SWITCH_C,42 );
+}
+
+
+void UpdateDial( int flag_idx, int pos )
+{
+	AlterFTile(pos,15,flags[flag_idx]+507,2);
+}
+
+void MasterDial( int flag_idx, int pos ) /* 19 */
+{
+	int answer, old_state;
+	
+	EntStart();
+	
+	old_state = GetTextBoxScrollMode(); //set the original TextBox Scroll State.
+	
+	SetTextBoxScroll( 0 ); //set the Scroll off for this question.  We do this a lot after all.
+	
+	answer = prompt(SpcByPos(0),	"The red button decreases.",
+									"The green button increases.", "", 
+									"Red|Green");
+	
+
+	SetTextBoxScroll( old_state ); //and now we restore the original state!
+	
+	if( answer )
+	{
+		if(flags[flag_idx]=9)
+		{
+			MenuAngryBuzz();
+			return;
+		}
+		
+		flags[flag_idx]+=1;
+		AlterFTile(pos,15,Flags[flag_idx]+507,2);
+		
+		MenuPageTurn();
+		
+		EntFinish();
+		return;
+	}
+		
+	if(!flags[flag_idx])
+	{
+		MenuAngryBuzz();
+		
+		EntFinish();
+		return;
+	}
+	
+	flags[flag_idx]-=1;
+	
+	UpdateDial(flag_idx, pos);
+	
+	MenuPageTurn();
+	
+	EntFinish();
+}
+
+void Skull_A() /* 20 */
+{
+	EntStart();
+	TextBox(0,	"You fell into Big Daddy Bubba's",
+				"trap! Ha ha!","");
+	EntFinish();	
+}
+
+void Skull_B() /* 21 */
+{
+	EntStart();
+	TextBox(0,	"Please don't leave this cell.",
+				"We're so bored and lonely!","");
+	EntFinish();	
+}
+
+void Skull_C() /* 22 */
+{
+	EntStart();
+	TextBox(0,	"Don't look at me. I'm just a dumb skull!","","");
+	EntFinish();	
+}
+
+void Skull_D() /* 23 */
+{
+	EntStart();
+	TextBox(0,"The sum of the numbers is 13.","","");
+	EntFinish();	
+}
+
+void Skull_E() /* 24 */
+{
+	EntStart();
+	TextBox(0,"The second number is not odd.","","");
+	EntFinish();	
+}
+
+void Skull_F() /* 25 */
+{
+	EntStart();
+	TextBox(0,	"The first number is greater than 3.","","");
+	EntFinish();	
+}
+
+void Skull_G() /* 26 */
+{
+	EntStart();
+	TextBox(0,	"The first and second numbers",
+				"are not the same.","");
+	EntFinish();	
+}
+
+void Skull_H() /* 27 */
+{
+	EntStart();
+	TextBox(0,	"The third number is greater",
+				"than the sum of the first two.","");
+	EntFinish();	
+}
+
+
+void Skull_I()
+{
+	EntStart();
+	TextBox(0,	"None of the numbers are zero.","","");
+	EntFinish();	
+}

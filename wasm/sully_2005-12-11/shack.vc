@@ -1,0 +1,516 @@
+void start() 
+{
+	SaveDisable(); //cannot save in towns.
+		
+	InitMap();
+
+	V1_StartMusic("res/music/DISCO.S3M");
+
+	//don't show the banner when we return from the flashback
+	if( !flags[F_LOVE_ESCAPE] )
+	{
+		entity.visible[1]=0;
+		Banner("???",300);
+	}
+	else
+	{
+		if( !Flags[F_LOVE_DEX_GONE] && CharInParty("Sara") )
+		{
+			entity.visible[1]=0;
+			Bubba_Scene();
+		}
+		else
+		{
+			entity.visible[1]=1;
+			Banner("Big Daddy Bubba's Funkaporium",300);
+		}
+	}
+
+	//sets all the tiles as they should be.
+	shack_upkeep();	
+}
+
+void shack_upkeep() /* 0 */
+{
+	if(flags[F_LOVE_PITFALL])
+	{
+		AlterBTile(25,19,195,1);
+		AlterBTile(26,19,195,1);
+		AlterBTile(27,19,195,1);
+	}
+
+	if(flags[F_LOVE_REMOVE_ROCK])
+	{
+		AlterBTile(32,21,0,0);
+	}
+	
+	
+	if(Flags[F_LOVE_DEX_GONE])
+	{
+		entity.specframe[1] = 25;
+	}
+}
+
+void cabin_enter() /* 1 */
+{
+	Warp(79,23,TNONE);
+}
+
+void cabin_exit() /* 2 */
+{
+	flags[F_LOVE_FUNKSWITCH] = 0;
+	
+	HookRetrace( "V1RPG_RenderFunc" );
+	
+	AlterBTile(80,4,550,2);
+	Warp(26,6, TNONE);
+}
+
+void pit_trap() /* 3 */
+{
+	if( !flags[F_LOVE_PITFALL] )
+	{
+		EntStart();
+
+		AlterBTile(25,19,195,1);
+		AlterBTile(26,19,195,1);
+		AlterBTile(27,19,195,1);
+
+		TextBox(T_DEXTER,	"Oh no! The leaf patch has collapsed",
+							"beneath us!","");
+		TextBox(T_DARIN,	"Ahhhh!","","");
+
+		flags[F_LOVE_PITFALL]=1;
+
+		EntFinish();
+
+		v1_mapswitch("DUNGEON.MAP",0,0,TNONE);
+	}
+}
+
+void stone() /* 4 */
+{
+	int darin, sara, i;
+	
+	EntStart();
+	
+	if( !CharInParty("Sara") )
+	{
+		TextBox(T_DEXTER, "Darin, this rock is too heavy",
+						"for you and I to break. Let's",
+						"just leave it alone for now.");
+		EntFinish();
+		return;
+	}
+	
+	if( !flags[F_LOVE_REMOVE_ROCK] && CharInParty("Sara") )
+	{
+		darin	= GetPartyEntity( "Darin" );
+		sara 	= GetPartyEntity( "Sara" );
+		
+		AutoOn();
+		
+		EntityMove(darin,"X33 Y21 L0");
+		EntityMove(sara,"X34 Y21 L0");
+		
+		WaitForEntity(darin);
+		WaitForEntity(sara);
+		
+		Wait(20);
+		
+		entity.specframe[darin] = 28;
+		Wait(50);
+		entity.specframe[darin]=0;
+		Wait(30);
+		entity.face[darin]=FACE_DOWN;
+		Wait(30);
+		entity.face[darin]=FACE_RIGHT;
+		TextBox(T_DARIN,	"Sara, this rock is pretty",
+							"heavy. I don't think we can",
+							"break it.");
+		entity.specframe[sara]=22;
+		
+		TextBox(T_SARA,	"Sheesh! Men always give up",
+						"so easily.","");
+		entity.specframe[sara]=0;
+		
+		EntityMove(sara,"D1 L1 U0");
+		
+		WaitForEntity(sara);
+		
+		entity.face[darin]=FACE_DOWN;
+		
+		TextBox(T_SARA,"Clear the runway!","","");
+		entity.specframe[darin]=21;
+		
+		EntityMove(darin,"U1 D0");
+		EntityMove(sara,"U1");
+		
+		WaitForEntity(darin);
+		WaitForEntity(sara);
+		
+		entity.specframe[darin]=0;
+		EntityMove(sara,"R6 F0 W30 L0");
+		
+		WaitForEntity(sara);
+		
+		TextBox(T_SARA,"Hieeeee-yahhh!","","");
+		
+		entity.speed[sara] = 150;
+		
+		entity.specframe[sara]=26;
+		
+		EntityMove(sara,"L6");
+		
+		WaitForEntity(sara);
+		
+		SoundCrash();
+		AlterBTile(32,21,0,0);
+		
+		for(i=10; i>1; i--) {
+			Earthquake( i,i, 5 );
+		}
+		
+		entity.specframe[sara]=0;
+		entity.face[sara]=FACE_UP;
+		
+		TextBox(T_SARA,"Yipee! We did it.","","");
+		EntityMove(darin,"D1");
+		entity.speed[darin] = 75;
+		
+		WaitForEntity(darin);
+				
+		AutoOff();
+		
+		Warp(33,21,TNONE);
+		
+		flags[F_LOVE_REMOVE_ROCK]=1;
+		
+		entity.speed[darin] = 100;
+		entity.speed[sara] = 100;
+	}
+	
+	EntFinish();
+}
+
+void map_exit() /* 5 */
+{
+	v1_mapswitch("overworld.map",42,60,TBLACK);
+}
+
+void enter_speak() /* 6 */
+{
+	int darin, dexter;
+	
+	MenuOff();
+	
+	if(!flags[F_LOVE_INTRO])
+	{
+		darin 	= GetPartyEntity( "Darin" );
+		dexter	= GetPartyEntity( "Dexter" );
+		
+		entity.specframe[darin]  = 23;
+		entity.specframe[dexter] = 23;
+		
+		Wait(100);
+		
+		entity.specframe[darin]=0;
+		entity.specframe[dexter]=0;
+		
+		TextBox(T_DEXTER,	"There appears to be a strange little",
+							"dwelling up ahead.","");
+		TextBox(T_DARIN,	"Yeah, and where is that funky music",
+							"coming from?","");
+		
+		flags[F_LOVE_INTRO]=1;
+	}
+	
+	MenuOn();
+}
+
+void dungeon() /* 7 */
+{
+	v1_mapswitch("DUNGEON.MAP",25,5,TNONE);
+}
+
+void Bubba_Talk() /* 8 */
+{
+	EntStart();
+	TextBox(T_BUBBA,	"Farewell my love children.",
+				"Feel free to return whenever",
+				"you want to groove to my love.");
+				
+	EntFinish();
+	entity.face[0] = FACE_DOWN;
+}
+
+void dexter_talk() /* 9 */
+{
+	EntStart();
+	entity.specframe[1]=25;
+	TextBoxM(T_DEXTER,	"Thanks a lot, guys. You go off and save",
+						"the world while I'm trapped here",
+						"with a funklord.");
+	TextBox(T_DEXTER,	"I'll be sure to remember this when your",
+						"birthday comes, Darin.", "");
+	entity.specframe[1]=0;
+	EntFinish();
+}
+
+void Bubba_Scene() /* 10 */
+{
+	int darin, dexter, sara, d,e ;
+
+	
+	EntStart();
+	
+	darin	= GetPartyEntity( "Darin" );
+	dexter	= GetPartyEntity( "Dexter" );
+	sara	= GetPartyEntity( "Sara" );
+
+	FadeIn(30);
+
+	EntityMove(darin, "R4");
+	WaitForEntity(darin);
+		
+	AutoOn();
+	
+	entity.specframe[darin]=21;
+	entity.specframe[sara]=21;
+	entity.specframe[dexter]=21;
+	
+
+	Wait(100);
+	
+
+	entity.specframe[darin]=0;
+	entity.specframe[sara]=0;
+	entity.specframe[dexter]=0;
+	
+
+	TextBox(T_BUBBA,	"Not so fast, my prisoners of love.",
+	 			"You cannot leave my humble abode!", "");
+	 			
+	EntityMove(darin,"X75 Y7 R0");
+	EntityMove(sara,"X76 Y6 R0");
+	EntityMove(dexter,"X75 Y5");
+	
+	WaitForEntity(sara);
+	
+	Wait(50);
+	entity.specframe[sara]=27;
+	
+	TextBox(T_SARA,	"We're leaving, Big Daddy Bubba!",
+	 				"You can't stop me this time!", "");
+	 			
+	TextBoxM(T_BUBBA,	"You're ruining my groove, babe!",
+	 			"Now I have no dancers for my funky",
+				"dance floor.");
+	
+
+	entity.specframe[sara]=0;
+	
+
+	TextBoxM(T_BUBBA,	"I once had dozens of dancers to boogie",
+	 			"to the {musical{ language of #love#.", "");
+	 			
+	TextBox(T_BUBBA,	"But they all escaped from my dungeon.",
+	 			"What am I to do now?",
+	 			"I am incomplete without them.");
+	 			
+	EntityMove(darin,"R1");
+	WaitForEntity(darin);
+	
+	
+	TextBox(T_DARIN,	"You cannot force people to stay here in",
+						"this wretched little cabin!", "");
+	
+
+	TextBox(T_BUBBA,	"I really do need some heart-shaped",
+	 			"pillows and a floating disco ball, don't I?", "");
+	 			
+	entity.face[sara]=FACE_DOWN;
+	TextBox(T_SARA,	"Darin, let's make a run for it!",
+	 				"Now's our chance to escape from here!", "");
+					 
+	entity.face[sara]=FACE_RIGHT;
+	TextBox(T_BUBBA,	"No can do, honey babe.",
+	 			"Nobody can ever leave this place unless",
+	 			"it's groovy with me!");
+	 			
+	TextBox(T_BUBBA,	"Wait... the boy in the gold headband there.",
+	 			"I feel the #love# is strong with him.", "");
+	
+
+	entity.specframe[dexter]=21;
+	Wait(50);
+	entity.specframe[dexter]=23;
+	Wait(100);
+	
+
+	TextBox(T_DEXTER,	"What...? Me?","","");
+	entity.specframe[dexter]=0;
+	
+	TextBoxM(T_BUBBA,	"I sense a strong soul in him.",
+	 			"Oh yeah... I can sense it.",
+	 			"He shall be the next Big Daddy!");
+	TextBoxM(T_BUBBA,	"When my groove runs flat, I will need",
+	 			"an heir to carry on the love in this",
+	 			"Forest.");
+	TextBox(T_BUBBA,	"That's my condition.",
+				"Leave the young funkmaster here and the",
+				"rest of you may leave.");
+	
+
+	EntityMove(darin,"D1 R1 L0");
+	EntityMove(sara,"D2 R0");
+	
+	CameraTracking=0;
+	d=XWin;
+	e=YWin;
+	
+
+	Timer=0;
+	While(YWin<e+33)
+	{
+		YWin=e+Timer;
+		Render();
+		ShowPage();
+	}
+	
+	Timer=0;
+	While(XWin<d+32)
+	{
+		XWin=d+Timer;
+		Render();
+		ShowPage();
+	}
+	
+	Wait(50);
+	entity.specframe[darin]=28;
+	Wait(20);
+	entity.specframe[darin]=0;
+	Wait(50);
+	entity.specframe[sara]=29;
+	Wait(20);
+	entity.specframe[sara]=0;
+	Wait(50);
+	
+	EntityMove(dexter,"R2 D0");
+	WaitForEntity(dexter);
+	
+	TextBox(T_DEXTER,	"Come on, Darin! Let's attack!",
+	 					"If we fight together, I bet we can defeat", 
+	 					"him!");
+	 					
+	entity.face[darin]=FACE_UP;
+	entity.face[sara]=FACE_UP;
+	
+	TextBox(T_DARIN,	"Actually, Dexter, Sara and I have talked it",
+	 					"over and we're going to leave you here.", "");
+	 					
+	entity.specframe[dexter]=21;
+	Wait(50);
+	entity.specframe[dexter]=22;
+	
+	TextBox(T_DEXTER,	"What?! You can't be serious.","","");
+	TextBox(T_SARA,	"Look at the size of those platforms,",
+					"Dexter. He could totally kick our butts!", "");
+	 				
+	 				
+	TextBox(T_DARIN,	"We know you'll do what is best for the",
+	 					"good of the party, Dexter.", "");
+	TextBox(T_DEXTER,	"This isn't very heroic, not to mention ","humane.","");
+	
+
+	TextBox(T_BUBBA,	"That's the spirit, my young love birds.",
+	 			"I will instruct Dexter in the ways of...",
+	 			"loooove.");
+	
+
+	entity.specframe[dexter]=20;
+	Wait(100);
+	entity.specframe[dexter]=22;
+	
+	TextBox(T_DEXTER,	"Eek! You guys aren't helping very much.","","");
+	TextBox(T_SARA,	"Ah, calm down Dexter. You'll survive.",
+	 				"We'll look you up if we ever come back",
+	 				"here.");
+	
+
+	TextBox(T_DARIN,	"Seeya, Dex!","Come on, Sara.",
+	 					"We have work to do!");
+	
+
+	TextBox(T_BUBBA,	"Later, sweet peas!",
+	 			"If the groove is ever beating strong",
+	 			"you can come back anytime.");
+	
+
+	Entity.Speed[dexter]=75;
+	entity.specframe[dexter]=0;
+	EntityMove(dexter,"R2 U1 F2 W30 F0 W50 Z25");
+	WaitForEntity(dexter);
+	
+	entity.face[darin]=FACE_RIGHT;
+	Wait(30);
+	entity.face[darin]=FACE_DOWN;
+	Wait(30);
+	entity.face[sara]=FACE_RIGHT;
+	Wait(30);
+	Entity.Speed[sara]=75;
+	EntityMove(sara,"R1");
+	WaitForEntity(sara);
+	
+	Warp(77,8,TNONE);
+	
+	RemovePlayer( "Dexter" );	//remove dexter from the party...
+	entity.x[dexter]=30000;		//...then warp his entity offscreen!
+	
+	
+	
+	//Entity.X[1] = (79*16);		// and move his mapentity doppleganger into place!
+	//Entity.Y[1] = (4*16);		// and move his mapentity doppleganger into place!
+	entity.visible[1]=1;
+	entity.specframe[1]=25;
+	
+
+	
+	AutoOff();
+	camReturnToPlayerS(darin, 25);
+	
+	Flags[F_LOVE_DEX_GONE]=1;
+	EntFinish();
+}
+
+void disco_lever() /* 13 */
+{
+	if(!flags[F_LOVE_FUNKSWITCH])
+	{
+		EntStart();
+		TextBoxM(T_BUBBA,	"No, you fool!",
+							"That's my super duper psycho-trip lever!",
+							"It amplifies the dance floor!");
+		TextBox(T_BUBBA,	"You cannot handle Funk of such great",
+							"magnatude!",
+							"You'll destroy your little ungroovy souls!!" );
+		EntFinish();
+	
+		AlterBTile(80,4,551,2);
+		SoundSwitch();
+		
+		flags[F_LOVE_FUNKSWITCH]=1;
+		HookRetrace( "funkOrama" );	//RageCage's FUNKORAMA
+		Unpress(0);
+		return;
+	}
+	
+	if( flags[F_LOVE_FUNKSWITCH] )
+	{
+		SoundSwitch();
+		AlterBTile(80,4,550,2);
+		flags[F_LOVE_FUNKSWITCH]=0;
+		Unpress(0);
+		HookRetrace( "V1RPG_RenderFunc" );
+	}
+}

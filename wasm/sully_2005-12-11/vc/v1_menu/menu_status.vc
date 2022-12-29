@@ -1,0 +1,115 @@
+// menu_status.vc for Sully www.verge-rpg.com
+// Zip 05/09/2004
+// Last update 06/10/2004
+
+//        -----------------
+//       Status Menu
+//        -----------------
+
+// Control function for the Status screen of the menu
+// Called from MenuEntry() based on global menu_idx variable
+// Very simple at the moment, room for additions
+void MenuControlStatus()
+{
+	//setting the angry buzz here as a reminder that it does, in fact, 
+	// have room for additions.
+	Menu2ArrowSetSounds( "MenuAngryBuzz","MenuPageTurn" );
+	MenuControlTwoArrows("menu_item", 1, "menu_cast", PartySize());
+	if (MenuConfirm())
+	{
+		Menu2ArrowSetSounds( "","" );
+		MenuRoot();
+	}
+	if (MenuCancel())
+	{
+		Menu2ArrowSetSounds( "","" );
+		MenuHappyBeep();
+		MenuRoot();
+	}
+}
+
+// Drawing function for the Status screen of the menu
+// Called from MenuEntry() based on global menu_idx variable
+// Very simple at the moment, room for additions
+void MenuDrawStatus()
+{
+	int i;
+
+	// Draw the background and title
+	MenuBlitRight(0, menu_option);
+	MenuDrawBackground(MENU_A_X1, MENU_A_Y1, MENU_A_X2, MENU_A_Y2, MenuIsActive("Status"));
+	PrintRight(220, 15, screen, menu_font[0], "Status");
+
+	// Draw the current selected party member and stats
+	MenuBlitCast(menu_cast, 0, 0);
+	for (i = 0; i < MAX_STATS; i++)
+	{
+		MenuPrintStat(MENU_CAST_X, MENU_CAST_Y, i, 0, master_cast[party[menu_cast]].stats[i]);
+	}
+
+	// Print party member description
+	MenuPrintDescVar(menu_font[0], master_cast[party[menu_cast]].desc, 190);
+}
+
+
+//        -------------------------------
+//       Description Functions
+//        -------------------------------
+// A few functions for wrapping and displaying short lines of text
+
+// Gives the number of lines a description needs
+int MenuLenDesc(int desc_font, string desc_text, int desc_width)
+// Pass: The font that will be used, the text to be displayed, and the width available
+// Return: The number of lines needed to display the description
+// No error checking
+{
+	desc_text = WrapText(menu_font[0], desc_text, desc_width);
+	return TokenCount(desc_text, "|");
+}
+
+// Displays a description of up to two lines, at position set by defines
+int MenuPrintDesc(int desc_font, string desc_text, int desc_width)
+// Pass: The font that will be used, the text to be displayed, and the width available
+// Return: The number of lines that were displayed
+// No error checking
+{
+	return MenuPrintDescFull(MENU_DESCRIPTION_X, MENU_DESCRIPTION_Y, desc_font, desc_text, desc_width);
+}
+
+// Displays a description of up to two lines, at position set by defines
+int MenuPrintDescFull(int x, int y, int desc_font, string desc_text, int desc_width)
+// Pass: The x,y coords of the bottom left had corner, the font that will be used, the text to be displayed, and the width available
+// Return: The number of lines that were displayed
+// No error checking
+{
+	desc_text = WrapText(menu_font[0], desc_text, desc_width);
+	int lines = TokenCount(desc_text, "|");
+	if (lines == 1)
+	{
+		PrintString(x, y - (3 * (menu_fonth + 2) / 2), screen, desc_font, GetToken(desc_text, "|", 0));
+	}
+	else
+	{
+		PrintString(x, y - ((menu_fonth + 2) * 2), screen, desc_font, GetToken(desc_text, "|", 0));
+		PrintString(x, y - ((menu_fonth + 2) * 1), screen, desc_font, GetToken(desc_text, "|", 1));
+	}
+	return lines;
+}
+
+// Prints description of any number of lines, working upwards. You get a free line with this one.
+int MenuPrintDescVar(int desc_font, string desc_text, int desc_width)
+// Pass: The font that will be used, the text to be displayed, and the width available
+// Return: The number of lines that were displayed
+// No error checking
+{
+	int i;
+	desc_text = WrapText(menu_font[0], desc_text, desc_width);
+	int lines = TokenCount(desc_text, "|");
+	for (i = 0; i < lines; i++)
+	{
+		PrintString(MENU_DESCRIPTION_X, MENU_DESCRIPTION_Y - ((menu_fonth + 2) * (lines - i)), screen, desc_font, GetToken(desc_text, "|", i));
+	}
+	Line(MENU_DESCRIPTION_X - 5, MENU_DESCRIPTION_Y - 4 - (lines * (menu_fonth + 2)),
+		MENU_DESCRIPTION_X + desc_width + 5, MENU_DESCRIPTION_Y - 4 - (lines * (menu_fonth + 2)), menu_colour[2], screen);
+	return lines;
+}

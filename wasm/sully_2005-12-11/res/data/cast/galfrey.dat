@@ -1,0 +1,69 @@
+//DARIN.dat - Darin's stat-growth chart!
+//
+// lvl is ignored and just exists for readability.  If you mis-number your level, 
+// the system will not use those stats for that level.  IE: The third entry will be for 
+// level 3 regardless of what lvl it has listed.
+//
+// A level-up is triggered when the character has increased his XP by the specified amount.
+// for example, to reach level 2, Darin needs 5 XP total.  To reach level 3 he needs 
+// 11 more, for a grand total of 16 XP.
+//
+// When this happens, each of the character's stats alter by the value listed.
+//
+//lvl	exp	maxhp	maxmp	str	end	mag	mgr	hit%	dod%	mbl	fer	rea
+1	0	30	6	7	6	3	4	7	6	3	8	6 
+2	5	12	3	3	3	2	2	3	2	0	1	3 
+3	11	11	3	2	3	1	1	3	3	0	0	2 
+4	18	13	2	3	2	2	3	2	3	0	1	3 
+5	26	12	3	3	3	2	2	3	2	0	0	3 
+6	35	11	3	2	3	1	1	3	3	0	1	2 
+7	45	13	2	3	2	2	3	2	3	0	0	3 
+8	56	12	3	3	3	2	2	3	2	1	1	3 
+9	68	11	3	2	3	1	1	3	3	0	0	2 
+10	81	13	2	3	2	2	3	2	3	0	1	3 
+
+11	95	12	3	3	3	2	2	3	2	0	0	3 
+12	110	11	3	2	3	1	1	3	3	0	1	2 
+13	126	13	2	3	2	2	3	2	3	0	0	3 
+14	143	12	3	3	3	2	2	3	2	0	1	3 
+15	161	11	3	2	3	1	1	3	3	0	0	2 
+16	180	13	2	3	2	2	3	2	3	1	1	3 
+17	200	12	3	3	3	2	2	3	2	0	0	3 
+18	221	11	3	2	3	1	1	3	3	0	1	2 
+19	243	13	2	3	2	2	3	2	3	0	0	3 
+20	266	12	3	3	3	2	2	3	2	0	1	3 
+
+21	290	11	3	2	3	1	1	3	3	0	0	2 
+22	315	13	2	3	2	2	3	2	3	0	1	3 
+23	331	12	3	3	3	2	2	3	2	0	0	3 
+24	358	11	3	2	3	1	1	3	3	1	1	2 
+25	386	13	2	3	2	2	3	2	3	0	0	3 
+26	415	12	3	3	3	2	2	3	2	0	1	3 
+27	445	11	3	2	3	1	1	3	3	0	0	2 
+28	486	13	2	3	2	2	3	2	3	0	1	3 
+29	518	12	3	3	3	2	2	3	2	0	0	3 
+30	551	11	3	2	3	1	1	3	3	0	1	2 
+
+31	585	13	2	3	2	2	3	2	3	0	0	3 
+32	620	12	3	3	3	2	2	3	2	1	1	3 
+33	656	11	3	2	3	1	1	3	3	0	0	2 
+34	693	13	2	3	2	2	3	2	3	0	1	3 
+35	731	12	3	3	3	2	2	3	2	0	0	3 
+36	770	11	3	2	3	1	1	3	3	0	1	2 
+37	810	13	2	3	2	2	3	2	3	0	0	3 
+38	851	12	3	3	3	2	2	3	2	0	1	3 
+39	893	11	3	2	3	1	1	3	3	0	0	2 
+40	936	13	2	3	2	2	3	2	3	1	1	3 
+
+41	980	12	3	3	3	2	2	3	2	0	0	3 
+42	1025	11	3	2	3	1	1	3	3	0	1	2 
+43	1071	13	2	3	2	2	3	2	3	0	0	3 
+44	1118	12	3	3	3	2	2	3	2	0	1	3 
+45	1166	11	3	2	3	1	1	3	3	0	0	2 
+46	1215	13	2	3	2	2	3	2	3	0	1	3
+47	1265	12	3	3	3	2	2	3	2	0	0	3 
+48	1316	11	3	2	3	1	1	3	3	1	1	2
+49	1368	13	2	3	2	2	3	2	3	0	0	3
+50	1421	11	3	3	3	2	2	3	2	0	1	3
+
+END_OF_FILE

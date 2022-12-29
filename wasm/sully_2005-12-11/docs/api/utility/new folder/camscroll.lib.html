@@ -1,0 +1,40 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+
+<a name="DoInternetConversation"></a>
+<span class=comment>
+// Scrolls the camera to [x],[y] in [time] ticks.
+// This function places x,y at the topleft corner.
+// your 'starting position' is xwin, ywin.</span>
+camScrollTo(x, y, time);</span>
+<span class=comment>
+// Scrolls the camera to [x],[y] at [speed] pixels/second.
+// This function places x,y at the topleft corner.
+// your 'starting position' is xwin, ywin.</span>
+camScrollToS(x, y, speed);
+<span class=comment>
+// Scrolls the camera centered upon [x],[y] in [time] ticks.
+// your 'starting position' is xwin, ywin.</span>
+camCtrScrollTo(x, y, time);
+<span class=comment>
+// Scrolls the camera centered upon [x],[y] at [speed] pixels/second.
+// your 'starting position' is xwin, ywin.</span>
+camCtrScrollToS(x, y, speed);
+<span class=comment>
+// Returns the camera to [entity]'s position in [time] ticks.
+camReturnToPlayer(entity, time);</span>
+<span class=comment>
+// Returns the camera to [entity]'s position at [speed] pixels/second.</span>
+camReturnToPlayerS(entity, speed);
+
+<span class=comment>
+// Like camReturnToPlayer/S, but for any entity.  Does not set CameraTracking to 1.</span>
+camZoomToEntity(<span class=type>int</span> ent, <span class=type>int</span> time)
+camZoomToEntityS(<span class=type>int</span> ent, <span class=type>int</span> speed)
+
+</pre>

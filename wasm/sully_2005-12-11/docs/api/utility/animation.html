@@ -1,0 +1,89 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre><span class=comment>
+/***************************************
+ * animation.vc                        *
+ * author: vecna                       *
+ * a quick utility library to simplify *
+ * using an 'animation-strip' style    *
+ * image in animations.                *
+ ***************************************/
+
+/**************************** data ****************************/
+</span>
+<span class=type>#define</span> MAX_ANIMATIONS 	16	<span class=comment>// Tweak this to your liking!</span>
+<span class=type>#define</span> NO_INDEX	65535	<span class=comment>// This is just a sentinel.</span>
+
+<a name="anim_t"></a>
+<span class=type>struct</span> anim_t
+{
+	<span class=type>int</span> sizex, sizey;	<span class=comment>// the width andh height of a single frame of this animation.</span>
+	<span class=type>int</span> numframes;		<span class=comment>// the total framecount of this animation</span>
+	<span class=type>int</span> active;		<span class=comment>// the status of this animation <span class=brace>(</span>0 means the slot is free for plundering!<span class=brace>)</span></span>
+	<span class=type>int</span> image;		<span class=comment>// the reference to the base image data.</span>
+
+	<span class=type>int</span> bufimage;		<span class=comment>// a new image one frame in size that is a copy of the current frame.</span>
+	<span class=type>int</span> bufferedframe;	<span class=comment>//.the index of the presently buffered frame.  65535 is a sentinel.</span>
+};
+
+<a name="LoadAnimation"></a>
+<span class=comment>
+// Loads an animation from a 'filmstrip'-style file.
+// it auto-calculates how many frames there are based on the overall image size
+// and the specific frame size you specify.  This does not allow for whitespace
+// in the base image.
+//
+// returns an anims[] index to be used in other functions in this library.</span>
+<span class=type>int</span> LoadAnimation<span class=brace>(</span><span class=type>string</span> filename, <span class=type>int</span> sizex, <span class=type>int</span> sizey<span class=brace>)</span>
+
+<a name="FreeAnimation"></a>
+<span class=comment>
+// Takes an anims[] index.
+//
+// frees that slot of the anims[] array, releasing it's data back into the
+// wild.</span>
+<span class=type>void</span> FreeAnimation<span class=brace>(</span><span class=type>int</span> index<span class=brace>)</span>
+
+<a name="BlitFrame"></a>
+<span class=comment>
+// Blits the specified frame of the specified animation to <span class=brace>(</span>x,y<span class=brace>)</span> of Dest.
+//
+// This function buffers the frame the first time it blits a new frame for an
+// image, and continues to blit that buffered image as long as the frame
+// doesn't change.
+//
+// Fatally errors if you attempt to render from an inactive animation.
+// quietly does nothing if the frame index was invalid for this animation</span>
+<span class=type>void</span> BlitFrame<span class=brace>(</span><span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> anim, <span class=type>int</span> frame, <span class=type>int</span> dest<span class=brace>)</span>
+
+<a name="TBlitFrame"></a>
+<span class=comment>
+// TBlits the specified frame of the specified animation to <span class=brace>(</span>x,y<span class=brace>)</span> of Dest.
+//
+// This function buffers the frame the first time it blits a new frame for an
+// image, and continues to blit that buffered image as long as the frame
+// doesn't change.
+//
+// Fatally errors if you attempt to render from an inactive animation.
+// quietly does nothing if the frame index was invalid for this animation</span>
+<span class=type>void</span> TBlitFrame<span class=brace>(</span><span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> anim, <span class=type>int</span> frame, <span class=type>int</span> dest<span class=brace>)</span>
+
+<a name="BlitFrameAt"></a>
+<span class=comment>
+// Transparently draws frame #'frame of animation 'anim' onto 'dest' with the frame centered on <span class=brace>(</span>x,y<span class=brace>)</span>
+// 'dest' must be a valid v3 image reference.
+// 'anim' must be a valid animation index, does nothing if invalid.
+//
+// Fatally errors if you attempt to render from an inactive animation.
+// quietly does nothing if the frame index was invalid for this animation</span>
+<span class=type>void</span> BlitFrameAt<span class=brace>(</span><span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> anim, <span class=type>int</span> frame, <span class=type>int</span> dest<span class=brace>)</span>
+
+<a name="BlitAt"></a>
+<span class=comment>
+// Transparently draws 'img' onto 'dest' with 'img' centered on <span class=brace>(</span>x,y<span class=brace>)</span>
+// 'img' and 'dest' must be valid v3 image references.</span>
+<span class=type>void</span> BlitAt<span class=brace>(</span><span class=type>int</span> x, <span class=type>int</span> y, <span class=type>int</span> img, <span class=type>int</span> dest<span class=brace>)</span>

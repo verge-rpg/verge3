@@ -1,0 +1,74 @@
+<html>
+<head>
+	<LINK href='style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<table border=0 width=100%>
+<tr>
+	<td><a href=./IIIb_style.html>&laquo;Overview&laquo;</a></td>
+	<td align=right><a href=./IV_v1_RPG.html>&raquo;The V1 RPG effects library&raquo;</a></td>
+</tr>
+</table>
+
+<h3>Tracing execution</h3>
+<p>Okay, finally, let's assume everything compiled and the program is running.  Yay for the program!  As previously mentioned, it'll go to the Systemcode AutoExec() function.  If your program ever quits without doing anything or saying anything, make sure that AutoExec() is defined!</p>
+<p>Let's assume you have an AutoExec().  In fact, let's assume you have the AutoExec() I wrote for Sully.  Here's what it looks like (it starts on line 57 of <a href=../../system.vc target=_new>system.vc</a>):
+<pre>
+// The AutoExec Function: The first function that gets called.
+//  Everything starts right here when you start up a game.
+//
+void AutoExec()
+{
+
+	//the following functions initialize things in the various libraries
+	// that need initializing... images, sounds, whatever.
+	V1RPG_LoadResources();	//loads resources for the v1rpg library.
+	SSAC_LoadResources();	//loads resources for the Sully: Simple and Clean library
+	SMENU_LoadResources();	//loads resources for the Simple Menu library
+	initSpeechPortsInData(); //OMG HAX!
+
+
+	loadFunkOrama();	//loads the FUNK!
+
+	MenuOff();	//let's not let anyone touch the menu until we're in-game, eh?
+
+	//we load all the data first so we can do the introduction without pause.
+
+	HookRetrace("V1RPG_RenderFunc");// this is the v1_rpg library's default
+					// Hookretrace function, defined in "vc/v1_rpg/v1_rpg.vc"
+					//
+					// It allows for the handly-dandy vclayer variable
+					// (softcode, not a system feature) to be used, providing
+					// a universal temporary area to draw to the screen with.
+					//
+					// If this confuses you, don't worry about it for now.
+
+
+
+	//This allows alt-f4 to exit verge.
+	HookKey( SCAN_F4, "alt_f4" );
+
+	InitIntro();
+	DoIntro();
+}
+</pre>
+
+Wow!  It's actually like all those comments actually are useful or something.  If you can read the comments (which is a lot easier in textpad with syntax highlighting on.  Go read <a target=_new href=../tutorial/appendix.html>Rysen's Tutorial on how to set that up and why it's absolutely vital</a>), you'll see that I'm basically loading up a bunch of stuff that the various libraries need loaded at the beginning of a game, then I'm turning off the Menu (or else people could bring the menu up during the intro: tacky!), and then I'm Setting the HookRetrace to V1RPG_RenderFunc(), which is a compeltely awesome function of much love, that we'll be explaining in the next section.
+</p>
+<p>After that, We're hooking the F4 key to the alt_f4() function, which is defined lower down in the same file (which basically checks if alt is also being pressed, and exits if so.  Alt-f4 is the typical windwos quit-program command, after all).</p>
+<p>And finally we initialize the into sequence (that function's defined in <a href=../../vc/Special_effects/bouncy.vc target=_new>"vc/Special_effects/bouncy.vc"</a>) and after that crap's all loaded, we call DoIntro(), defined lower down in system.vc, and that does all the intros and then calls Map( "intro.map" ), which shifts the vc execution to the map-autoexec function of <a href=../../intro.vc target=_new>Intro.vc</a> (which is void start() right at the top.)</p>
+<p>If you can follow it that far, you can trace your execution anywhere.  Whenever you want to find where a user-defined function is actually defined, do a CTRL-f5 in textpad.  Make sure the directory to browse is your game's directory, and check the "search subfolders" option, and then you can search for, say, "void SMENU_LoadResources()" if you wanted to find where precisely that function was defined so you could look in it and see what it does.
+</p>
+<p>If you're still confused, hit <a href=../tutorial/index.html>Rysen's Tutorial</a> and work through it.  If you're still confused after that, email me <mcgrue@verge-rpg.com>, AIM me (sn: astradian), or post a message to the <a href=http://verge-rpg.com/boards/>VERGE-RPG.COM forums</a>.</p>
+<br />
+<br />
+<table border=0 width=100%>
+<tr>
+	<td><a href=./IIIb_style.html>&laquo;Overview&laquo;</a></td>
+	<td align=right><a href=./IV_v1_RPG.html>&raquo;The V1 RPG effects library&raquo;</a></td>
+</tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,94 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+<a name="DoInternetConversation"></a>
+<span class=comment>
+// A general-use vc function library!
+//
+// This is the home for functions that could pretty much belong in
+// the builtins, but don't for one reason or another <span class=brace>(</span>usually duplication<span class=brace>)</span>
+//
+
+
+<a name="FACE_UP"></a><a name="FACE_DOWN"></a><a name="FACE_LEFT"></a><a name="FACE_RIGHT"></a>
+// The valid values of Entity.Face[]
+//
+// These should really be predefined.</span>
+#define FACE_UP			1
+#define FACE_DOWN		2
+#define FACE_LEFT		3
+#define FACE_RIGHT		4
+
+
+<a name="FacingUp"></a><a name="FacingDown"></a><a name="FacingLeft"></a><a name="FacingRight"></a><span class=comment>
+// These four functions return true if the player entity is facing in the specified
+// direction
+//
+// they all assume that GetPlayer<span class=brace>(</span><span class=brace>)</span> will return the current map entity index
+// of the player... which is a good thing to assume, IMO.</span>
+<span class=type>int</span> FacingUp<span class=brace>(</span><span class=brace>)</span>
+<span class=type>int</span> FacingDown<span class=brace>(</span><span class=brace>)</span>
+<span class=type>int</span> FacingLeft<span class=brace>(</span><span class=brace>)</span>
+<span class=type>int</span> FacingRight<span class=brace>(</span><span class=brace>)</span>
+
+
+<a name="abs"></a><span class=comment>
+// Takes an integer
+// Returns the absolute value of that integer.</span>
+<span class=type>int</span> abs<span class=brace>(</span><span class=type>int</span> i<span class=brace>)</span>
+
+<a name="trim"></a><span class=comment>
+// Takes a string, returns the string with leading and trailing whitespace
+// removed.</span>
+<span class=type>string</span> trim<span class=brace>(</span> <span class=type>string</span> s <span class=brace>)</span>
+
+
+<a name="equ"></a><span class=comment>
+// Takes two strings.
+// Returns true if the two strings are the same.
+//
+// Note: This function ignores case,  IE "ABC" and "abc" will return true.</span>
+<span class=type>int</span> equ<span class=brace>(</span> <span class=type>string</span> a, <span class=type>string</span> b <span class=brace>)</span>
+
+
+
+<a name="GetEntScrX"></a><span class=comment>
+// returns the screen-relative x-position for the specified entity.
+// note: this is the x-coordinate of the top-left corner of the entity's image,
+//       *NOT* the x-coordinate of the top-left corner of the hotspot.</span>
+<span class=type>int</span> GetEntScrX<span class=brace>(</span> <span class=type>int</span> ent_idx <span class=brace>)</span>
+
+<a name="GetEntScrY"></a><span class=comment>
+// returns the screen-relative y-position for the specified entity.
+// note: this is the y-coordinate of the top-left corner of the entity's image,
+//       *NOT* the y-coordinate of the top-left corner of the hotspot.</span>
+<span class=type>int</span> GetEntScrY<span class=brace>(</span> <span class=type>int</span> ent_idx <span class=brace>)</span>
+
+<a name="GetTileScrX"></a><span class=comment>
+// Takes a tile's x-coordinate
+// returns the screen-relative x-position of that tile.</span>
+<span class=type>int</span> GetTileScrX<span class=brace>(</span> <span class=type>int</span> tile_x <span class=brace>)</span>
+
+
+<a name="GetTileScrY"></a><span class=comment>
+// Takes a tile's x-coordinate
+// returns the screen-relative x-position of that tile.</span>
+<span class=type>int</span> GetTileScrY<span class=brace>(</span> <span class=type>int</span> tile_y <span class=brace>)</span>
+
+
+<a name="WaitForEntity"></a><span class=comment>
+// Waits until an entity has finished its movecode
+// -Zip</span>
+<span class=type></span> WaitForEntity<span class=brace>(</span> <span class=type>int</span> wait_entity <span class=brace>)</span>
+
+
+
+<a name="EntityDiagnose"></a><span class=comment>
+// takes a mapentity index, and prints out all of the current information about
+// it to the logfile.  Useful for diagnosing problems, or just for general
+// education.</span>
+<span class=type></span> EntityDiagnose<span class=brace>(</span> <span class=type>int</span> idx <span class=brace>)</span>

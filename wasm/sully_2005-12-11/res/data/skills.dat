@@ -1,0 +1,26 @@
+// Skills.dat
+//
+// This datafile contains definitions of all of the 
+// Skills this game has.  Skills must be members of a Skilltype
+//
+// This data gets parsed into the master_skill[] array, defined in data.vc
+// The maximum number of items is controlled by MAX_SKILLS, defined in data.vc
+//    please change this number of you wish to add more items than it currently 
+//    allows.
+//
+// blank lines and commented lines are ignored.  Anything else will be treated as an entry.
+//
+// Entries go as follows:
+//
+// skill_group must reference entries by name in skilltypes.dat  
+// useflag is either BATTLE, MENU, or BOTH.  Skills are not allowed to not have a valid usetype.
+//
+// name		skill_group	icon	useflag	target_func	effect_func	MP	"description"
+
+Cure_1		White_magic	0	BOTH	targ_single	cure1_effect	3	"heals 20 to 50 HP."
+Fire_1 		Black_Magic	1   	BATTLE	targ_single_nme	fire1_effect	3	"Fire-based Attack."
+Ice_1 		Black_Magic 	2	BATTLE	targ_single_nme	ice1_effect	3	"Ice-based Attack."
+Lit_1 		Black_Magic	3	BATTLE	targ_single_nme	lit1_effect	3	"Lightning-based Attack"
+Warp 		WHITE_MAGIC	4 	MENU	-		warp_effect	4	"Warps to town.  Cannot be used in dungeons."
+
+END_OF_FILE

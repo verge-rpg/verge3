@@ -1,0 +1,51 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+
+<a name="V1_StartMusic"></a>
+<span class=comment>
+//
+// Just a little wrapper so we can have our map music
+// and switch easily between it and battle/incidental/whatever
+//
+// Stores the music's filename, and plays it at the v1rpg global music volume.</span>
+<span class=type>void</span> V1_StartMusic<span class=brace>(</span> <span class=type>string</span> name <span class=brace>)</span> 
+
+<a name="V1_CurrentMusicName"></a>
+<span class=comment>
+// Returns the currently playing music's name.
+// Only accurate if the currently playing music was started by V1_StartMusic<span class=brace>(</span><span class=brace>)</span> </span>
+<span class=type>string</span> V1_CurrentMusicName<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="V1_GetCurVolume"></a>
+<span class=comment>
+// returns the current v1rpg global music volume..
+//</span>
+<span class=type>int</span> V1_GetCurVolume<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="V1_SetCurVolume"></a>
+<span class=comment>
+//sets the current v1rpg global music volume and changes the currently
+// playing music to that volume.</span>
+<span class=type>int</span> V1_SetCurVolume<span class=brace>(</span> <span class=type>int</span> new_vol <span class=brace>)</span> 
+
+<a name="V1_FadeOutMusic"></a>
+<span class=comment>
+// Fades the music to volume 0 over a period of delay time.
+//</span>
+<span class=type>void</span> V1_FadeOutMusic<span class=brace>(</span> <span class=type>int</span> delay <span class=brace>)</span> 
+
+<a name="V1_FadeInMusic"></a>
+<span class=comment>
+// Fades the music to volume vol over a period of delay time.
+//
+// the v1RPG global music volume is = vol at the end</span>
+<span class=type>void</span> V1_FadeInMusic<span class=brace>(</span> <span class=type>int</span> delay, <span class=type>int</span> vol <span class=brace>)</span> 
+
+</pre>
+</body>
+</html>

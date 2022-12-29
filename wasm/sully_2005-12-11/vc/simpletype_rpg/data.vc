@@ -1,0 +1,356 @@
+// Data.vc, datatype definitions for the Simpletype RPG Subsystems Library
+//
+// by McGrue
+// Started 2004.08.30
+/////////////////////////////////////////////////////////////////////////
+// Best viewed with tab of 4 in a text-editor with syntax-highlighted vc
+/////////////////////////////////////////////////////////////////////////
+// These are the master arrays of structs that the datafiles parse into.
+// 
+// The Load/Save system alters none of them *except* master_cast[], for
+// reasons that I hope are obvious.
+//
+// Accessor functions might be a nice revision to add for all these member
+// variables, based on index, but were left out of this verion.
+//
+/////////////////////////////////////////////////////////////////////////
+
+
+// The directory that general-datafiles live in.
+string dat_directory 		= "res/data/";
+
+// The directory that cast-datafiles live in.
+string cast_dat_directory 	= "res/data/Cast/";
+
+// The directory that .chr files live in.
+string chr_dir 				= "res/chrs/";
+
+
+// These define the maximum number of entries in specific datafiles.
+// If you alter datafiles too much, you may want to increase these values
+#define MAX_SKILLTYPES	10
+#define MAX_CLASSES		10
+#define MAX_SKILLS		100
+#define MAX_CAST		10
+#define MAX_ITEMS		100
+
+// the maximum number of skillgroups a single class can have
+#define MAX_SKILLGROUPS_PER_CLASS	4
+
+// maxhp   maxmp   str    end    mag   mgr    hit%   dod%   mbl   fer  rea
+//
+// The growable stats are the ones that can be altered by level-gain as defined in the
+// growth tables of a specific cast member's datafile.
+//
+// The non-growable stats are ATT and DEF.
+#define MAX_GROWABLE_STATS	11
+#define MAX_STATS			13
+
+// the maximum level attainable.  minimum is 1.
+#define MAX_LEVELS	99
+
+
+//USEFLAG DEFINES - Bit positions for item/spell use
+// ie, something battle-only is 1, menu-only is 2, and both is 3.
+#define USE_BATTLE	1
+#define USE_MENU	2
+
+
+// left-hand, right-hand, body, acc1, acc2
+#define MAX_EQUIP_SLOTS 5
+
+//EQUIP SLOT DEFINES - indices for equipment arrays.
+#define SLOT_RHAND	0
+#define SLOT_LHAND	1
+#define SLOT_BODY	2
+#define SLOT_ACC1	3
+#define SLOT_ACC2	4
+
+#define MAX_SLOTS	5
+
+
+
+//STAT DEFINES - indexes for growable-stats arrays.
+#define STAT_MAX_HP	0
+#define STAT_MAX_MP	1
+#define STAT_STR	2
+#define STAT_END	3
+#define STAT_MAG	4 
+#define STAT_MGR	5 
+#define STAT_HIT	6 
+#define STAT_DOD	7 
+#define STAT_MBL	8
+#define STAT_FER	9
+#define STAT_REA	10
+
+//additional indexes for total-stats arrays.
+#define STAT_ATK	11
+#define STAT_DEF	12
+
+///////////////////////////////////////////////////////////////////////////////
+// SkillType
+///////////////////////////////////////////////////////////////////////////////
+//
+// this struct holds the data for a family of skills
+//
+// IE: White Magic, Black Magic, Karate, Swordtech, Gambling... anything you want.
+//
+struct SkillType {
+	string 	name; //remember to make sure names are unique.
+	string 	desc; //the description string.
+	int 	icon; //the index of the icon in the iconfile. (see icons.vc)
+}
+
+//the master array of skilltypes
+SkillType master_skilltypes[MAX_SKILLTYPES];
+
+///////////////////////////////////////////////////////////////////////////////
+// Class
+///////////////////////////////////////////////////////////////////////////////
+//
+// this struct holds the data for a specific character class.
+//
+// IE: Knight, White Mage, Guru, Funkmaster, etc...
+//
+struct Class {
+	string 	name; //names must be unique
+	string 	desc; //the description string
+	int 	icon; //the index of the icon in the iconfile. (see icons.vc)
+	int 	skill_groups[MAX_SKILLGROUPS_PER_CLASS];
+}
+
+//the master array of classes
+Class master_classes[MAX_CLASSES];
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Skill
+///////////////////////////////////////////////////////////////////////////////
+// this struct holds the data for specific skills
+//
+// IE: Fire, Cure, Aim, Slice
+//
+struct Skill {
+	string 	name;			//make sure this is unique.
+	string 	desc;			//description string
+	int 	icon;			//icon reference
+	int 	use_flag;		//can this skill be used from menus, battle, or both?
+	string 	target_func;	//the callfunc for the skill's targetting.
+	string 	effect_func;	//the callfunc for the skill's effect.
+	int 	mp_cost;		//the MP cost to use this skill.  Can be 0.
+	int 	type;			//index reference to the master_skilltypes array (see above)
+}
+
+//the master array of skills
+Skill master_skills[MAX_SKILLS];
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Cast
+///////////////////////////////////////////////////////////////////////////////
+//
+// this struct holds the data for specific cast members and their specifics.
+//
+// this is probably the master-array you will deal with the most, unless you're a
+// wacky systems coder.
+//
+struct Cast {
+	string	name;		//The name is a second unique identifier for this character.  
+	string	desc;		//description.
+	
+	string	chrname;	//relative path and filename of this cast member's chr.
+	int		entity;		//the entity reference of this character on the current map!
+						//
+						//NOTE: this system only sets this to the mapentity reference when 
+						//      SpawnParty() or AddPlayer() are called.  Please refer to the 
+						//      Party.vc docs on their proper usage.
+	
+	int portrait_idx;	//the speech portrait index for this character.
+						// NOTE: these are presently set by the completely hacky
+						//       initSpeechPortsInData() in the Sully system.vc file.
+						//       It is advised that any future revisions include this index
+						//       in the datafile.
+	
+	int	class_ref;		//index reference to the master_classes[] array.
+	
+	int level;			// the level of this cast member. Obvious, no?
+	int exp;			// the experience point total of this cast member.
+	int cur_hp, cur_mp;	// current HP and MP.
+	
+	
+	int		stats[MAX_STATS];	//the current stats for this cast member
+								//refer to STAT_MAX_HP through STAT_DEF for index defines for this array.
+	
+	
+	int		stat_growth[MAX_LEVELS][MAX_GROWABLE_STATS];	
+								//the stat-growth table for this character.
+								//refer to STAT_MAX_HP through STAT_REA for index defines for this array.
+								
+	
+	int		exp_require[MAX_LEVELS];	
+								//the XP requirements for each level for this character
+
+
+	int		equipment[MAX_EQUIP_SLOTS];	
+								//the equipment slots for this character
+								//contains master_items[] references for each slot.
+	
+									
+	int		skills[MAX_SKILLS];	//the skills this cast member knows.
+								//contains master_skills[] references for each slot.
+}
+
+Cast master_cast[MAX_CAST];	//the master array of cast members.
+
+
+
+///////////////////////////////////////////////////////////////////////////////
+// Item
+///////////////////////////////////////////////////////////////////////////////
+//
+// this struct holds the data for all items, be they supplies, equipment, or key
+//
+struct Item {
+	string	name;	//name.  Must be unique.
+	string	desc;	//description.  FLUFF.
+	int		icon;	//index to icon
+	int		price;	//base price for the item.  value of zero or less prevents sale.
+	
+	int		use_flag;	//specifies if it can be used in battle, menu, or both.
+	
+	string	target_func;	//the name of the function that deals with targetting for this 
+	string	effect_func;	//the name of the function that deals with effect resolution.
+	
+	int		equ_classes[MAX_CLASSES]; //master_class[] index references to the classes that can equip this item
+
+	int		equ_slot;		//the slot this equipment can be put in.
+	string	equ_modcode;	//a special string representing what happens when this equipment is put on or taken off.
+}
+
+//the master array of items.
+Item master_items[MAX_ITEMS];
+
+
+
+// Load Zip's Awesome (Yet Scary) Dataparsers!
+//
+#include "vc/simpletype_rpg/parser/flags.vh" 			// Zip
+#include "vc/simpletype_rpg/parser/data_front.vc" 		// Zip
+#include "vc/simpletype_rpg/parser/data_load.vc" 		// Zip
+
+// Load the rest of the RPG Subsystems
+//
+#include "vc/simpletype_rpg/inventory.vc" 	// Grue
+#include "vc/simpletype_rpg/equipment.vc" 	// Grue
+#include "vc/simpletype_rpg/cast.vc" 		// Grue
+#include "vc/simpletype_rpg/party.vc" 		// Grue
+#include "vc/simpletype_rpg/item.vc" 		// Grue
+#include "vc/simpletype_rpg/skills.vc" 		// Grue
+
+
+
+void debugItem( int idx )
+{
+	int i;
+
+	string classes;
+
+	
+	log( "" );
+	log( "==============================" );
+	log( "debugItem( "+str(idx)+" )" );
+	log( "==============================" );
+	
+	if( idx < 0 || idx > MAX_ITEMS )
+	{
+		log( str(idx)+" is an invalid index.  master_items[] has a valid range of 0 through " + str(MAX_ITEMS) );
+	}
+	else
+	{
+		log( "       master_items["+str(idx)+"].name: " + master_items[idx].name );
+		log( "       master_items["+str(idx)+"].desc: " + master_items[idx].desc );
+		log( "       master_items["+str(idx)+"].icon: " + str(master_items[idx].icon) );
+		log( "   master_items["+str(idx)+"].use_flag: " + str(master_items[idx].use_flag) );
+		log( "master_items["+str(idx)+"].target_func: " + master_items[idx].target_func );
+		log( "master_items["+str(idx)+"].effect_func: " + master_items[idx].effect_func );
+		log( "   master_items["+str(idx)+"].equ_slot: " + str(master_items[idx].equ_slot) );
+		log( "master_items["+str(idx)+"].equ_modcode: " + master_items[idx].equ_modcode );
+		
+		
+		for( i=0; i<MAX_CLASSES; i++ )
+		{
+			if( master_items[idx].equ_classes[i] > 0 )
+			{
+				if( equ(classes,"") )
+				{
+					classes = str(master_items[idx].equ_classes[i]);
+				}
+				else
+				{
+					classes = classes + "," + str(master_items[idx].equ_classes[i]);
+				}
+			}
+		}
+		
+		log( "    master_items["+str(idx)+"].classes: " + classes );
+	
+	}
+	
+	log( "==============================" );
+}
+
+
+
+
+void debugCast( int idx )
+{
+	int i;
+
+	
+	log( "" );
+	log( "==============================" );
+	log( "debugCast( "+str(idx)+" )" );
+	log( "==============================" );
+	
+	if( idx < 0 || idx > MAX_CAST )
+	{
+		log( str(idx)+" is an invalid index.  master_cast[] has a valid range of 0 through " + str(MAX_CAST) );
+	}
+	else
+	{
+			
+		log( "        master_cast["+str(idx)+"].name: " + master_cast[idx].name );
+		log( "        master_cast["+str(idx)+"].desc: " + master_cast[idx].desc );
+		log( "     master_cast["+str(idx)+"].chrname: " + master_cast[idx].chrname );
+		log( "      master_cast["+str(idx)+"].entity: " + str(master_cast[idx].entity) );
+		log( "master_cast["+str(idx)+"].portrait_idx: " + str(master_cast[idx].portrait_idx) );
+		log( "       master_cast["+str(idx)+"].class: " + master_classes[master_cast[idx].class_ref].name );
+		log( "       master_cast["+str(idx)+"].level: " + str(master_cast[idx].level) );
+		log( "         master_cast["+str(idx)+"].exp: " + str(master_cast[idx].exp) );
+		log( "      master_cast["+str(idx)+"].cur_hp: " + str(master_cast[idx].cur_hp) );
+		log( "      master_cast["+str(idx)+"].cur_mp: " + str(master_cast[idx].cur_mp) );
+		
+		log( "STATS: " );
+		
+		for( i=0; i<MAX_STATS; i++ )
+		{
+			log( GetStatName(i)+": real: "+str(master_cast[idx].stats[i])+"; getStat(): " +str(getStat(idx, i)) );
+		}
+		
+		log( "Equipment: " );
+		
+		for( i=0; i<MAX_EQUIP_SLOTS; i++ )
+		{
+			if( master_cast[idx].equipment[i] < 0 )
+			{
+				log( GetSlotName(i)+": NOTHING " );
+			}
+			else
+			{
+				log( GetSlotName(i)+": "+master_items[master_cast[idx].equipment[i]].name+" (id: "+str(master_cast[idx].equipment[i])+")" );
+			}
+		}	
+	}
+	
+	log( "==============================" );
+}

@@ -1,0 +1,26 @@
+body pre br {
+	display:none;
+}
+
+html>body pre {
+	line-height: 13px;
+}
+
+
+pre {
+	font-family: monospace;
+	font: 13px Courier; 
+	margin: 20px;
+	padding: 15px;
+	background-color: #EEEEEE;
+	font-size: 13px;
+}
+
+b {
+	color: red;
+	font-size: 17px;
+}
+
+.note {
+	color: silver;
+}

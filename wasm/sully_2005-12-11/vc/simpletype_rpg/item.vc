@@ -1,0 +1,252 @@
+// Item.vc, functions for using items.
+//
+// by McGrue
+// Started 2004.08.30
+/////////////////////////////////////////////////////////////////////////
+
+/*
+struct Item {
+	string	name;	//name.  Must be unique.
+	string	desc;	//description.  FLUFF.
+	int		icon;	//index to icon
+	int		price;	//base price for the item.  value of zero or less prevents sale.
+	
+	int		use_flag;	//specifies if it can be used in battle, menu, or both.
+	
+	string	target_func;	//the name of the function that deals with targetting for this 
+	string	effect_func;	//the name of the function that deals with effect resolution.
+	
+	int		equ_classes[MAX_CLASSES]; //master_class[] index references to the classes that can equip this item
+
+	int		equ_slot;		//the slot this equipment can be put in.
+	string	equ_modcode;	//a special string representing what happens when this equipment is put on or taken off.
+}
+*/
+
+//
+// Takes a string name of an item.  
+// returns master_items idx if it's a valid item name.  -1 if not.
+int IsItem( String name ) 
+{
+	int i;
+	
+	for( i=0; i<MAX_ITEMS; i++ ) 
+	{
+		if( equ(name, master_items[i].name) ) 
+		{
+			return i;
+		}
+	}
+	
+	return 0-1;
+}
+
+
+// takes a master_items[] index
+// returns true if it's a key item, false if not.
+//
+int IsKeyItem( int idx ) {
+	
+
+	//bounds checking.
+	if( idx < 0 || idx > MAX_ITEMS ) {
+		ErrorHandler( "IsKeyItem(): "+str(idx)+" is not a valid index." );
+		return 0;
+	}
+	
+	//this is the current, very bad criteria for Key Itemness.
+	// If the price is 0, it's key.  
+	if( master_items[idx].price == 0 ) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+// takes a master_items[] index
+// returns true if it's a piece of equipment, false if not.
+//
+int IsEquipmentItem( int idx ) {
+	//bounds checking.
+	if( idx < 0 || idx > MAX_ITEMS ) {
+		ErrorHandler( "IsEquipmentItem(): "+str(idx)+" is not a valid index." );
+		return 0;
+	}
+	
+	//this is the current, very bad criteria for Equipmentness.
+	// If the modcode is not an empty string, it's a piece of equipment.
+	if( equ( master_items[idx].equ_modcode,"" ) ) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+
+// takes a master_items[] index
+// returns true if it's a supply, false if not.
+//
+int IsSupplyItem( int idx ) {
+	//bounds checking.
+	if( idx < 0 || idx > MAX_ITEMS ) {
+		ErrorHandler( "IsSupplyItem(): "+str(idx)+" is not a valid index." );
+		return 0;
+	}
+	
+	//this is the current, very *VERY* bad criteria for Supplyness.
+	// If the item is not a Key Item, and it's not an Equipment item, it's a Supply item!
+	if( IsKeyItem(idx) || IsEquipmentItem(idx) ) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+
+// Triggers the use of an item with the specified master_items name.
+//
+// Errors if the name is not a valid member of master_items[]
+// Errors if the item is not usable in the current context (Menu or Battle)
+// Errors if the item has no defined effect function (after all, how can you use something that doesn't have a way to be used?)
+// Errors if there's a targetting function specified, but it does not exist.
+//
+void UseItem( string name )
+{
+	int idx = IsItem( name );
+	
+	if( idx < 0 )
+	{
+		ErrorHandler( "UseItem(): "+name+" is not a valid item name." );
+		return;
+	}
+	
+	UseItemI( idx );
+}
+
+
+// Triggers the use of an item with the specified master_items index.
+//
+// Errors if the index is not valid.
+// Errors if the item is not usable in the current context (Menu or Battle)
+// Errors if the item has no defined effect function (after all, how can you use something that doesn't have a way to be used?)
+// Errors if there's a targetting function specified, but it does not exist.
+// Errors if the item is not in your inventory.
+void UseItemI( int idx ) 
+{
+	if( idx < 0 || idx >= MAX_ITEMS )
+	{
+		ErrorHandler( "UseItemI(): "+str(idx)+" is not a valid index (max: "+str(MAX_ITEMS)+")" );
+		return;
+	}
+	
+	string name = master_items[idx].name;
+	string fx_func = master_items[idx].effect_func;
+
+	if( !HasItemI(idx) )
+	{
+		ErrorHandler( "UseItemI("+str(idx)+"): "+name+" is not in your party's inventory.  You cannot use it." );
+		return;
+	}
+	
+	if( !ItemIsUsableI(idx) )
+	{
+		ErrorHandler( "UseItemI(): '"+name+"' IS NOT USABLE!  Why are you attempting to use it?" );
+		return;
+	}
+	
+	else if( !FunctionExists(fx_func) )
+	{
+		ErrorHandler( "UseItemI(): '"+name+"' is *supposed* to be usable, BUT it's effect function '"+fx_func+"()' DOES NOT EXIST.  Bad oversight.  If you're the gamemaker, you might want to make it. ;)" );
+		return;
+	}
+	
+	if( IsInMenu() )
+	{
+		if( !CheckItemUseflagI(idx,USE_MENU) )
+		{
+			ErrorHandler( "UseItemI(): '"+name+"' is not allowed to be used in menus. If this is wrong, check its useflag permissions in the datafile." );
+			return;
+		}
+	}
+	else if( IsInBattle() )
+	{
+		if( !CheckItemUseflagI(idx,USE_BATTLE) )
+		{
+			ErrorHandler( "UseItemI(): '"+name+"' is not allowed to be used in battles. If this is wrong, check its useflag permissions in the datafile." );
+			return;
+		}
+	}
+	else
+	{
+		ErrorHandler( "UseItemI(): Items cannot be used outside of menus or battles at this time.  Bring it up with Grue or alter the library to your needs." );
+		return;
+	}
+	
+	//okay, if we got here, we can use it!
+	
+
+	//if the target_func variable is not blank, it has targetting!  Check it and call it!
+	if( !equ(master_items[idx].target_func, "") ) 
+	{
+		DoTargetting( master_items[idx].target_func );
+
+		if( ValidTargetting() )
+		{
+			CallFunction(fx_func);
+			
+			//lastly, if it was a supply, deduct one from the inventory.
+			
+			if( IsSupplyItem(idx) )
+			{
+				TakeItemI( idx, 1 );
+				
+				//if there are more, call it again!
+				if( HasItemI(idx) )
+				{
+					UseItemI(idx);
+				}
+			}			
+		}
+		
+		//if the targetting was invalid, we assume it was from cancelling.  
+		//If an error happened there, it's the fault of the targetting system, and it 
+		//should be the one to report the error.
+	}
+	else //if there's no targetting, 
+	{
+		CallFunction(fx_func);
+		
+		//lastly, if it was a supply, deduct one from the inventory.
+		if( IsSupplyItem(idx) )
+		{
+			TakeItemI( idx, 1 );
+		}
+		
+	}
+	
+	//there.  We used it.  Yay.  
+	
+
+}
+
+int CheckItemUseflagI( int idx, int flag ) 
+{
+	int i;
+	
+	i = master_items[idx].use_flag & flag;
+	
+	return i;
+}
+
+int ItemIsUsableI( int idx )
+{
+	//if the effect_func is empty, it cannot be used.
+	if( equ(master_items[idx].effect_func, "") )
+	{
+		return 0;
+	}
+	else
+	{
+		return 1;
+	}
+}

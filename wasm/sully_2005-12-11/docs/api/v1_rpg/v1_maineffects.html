@@ -1,0 +1,155 @@
+<html>
+<head>
+	<LINK href='../../_frames/style.css' type=text/css rel=stylesheet>
+</head>
+<body>
+
+<pre>
+<a name="FadeIn"></a>
+<span class=comment>
+// Fades the screen from black to normal over the specified duration.
+// This renders over everything.</span>
+<span class=type>void</span> FadeIn<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="FadeInWSound"></a>
+<span class=comment>
+// Fades the screen from black to normal over the course of one second.
+// during this time the v1rpg global sound volume is changed from 0 to 100,
+// finally resting at 100.
+//
+// This renders over everything.</span>
+<span class=type>void</span> FadeInWSound<span class=brace>(</span><span class=brace>)</span> 
+
+<a name="FadeOut"></a>
+<span class=comment>
+// Fades the screen from normal to black over the specified time.
+//
+// This renders over everything.</span>
+<span class=type>void</span> FadeOut<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="FadeOutWSound"></a>
+<span class=comment>
+// Fades the screen from normal to black over the specified time.
+// during this time the v1rpg global sound volume is changed from 100 to 0,
+// finally resting at 0.
+//
+// This renders over everything.</span>
+<span class=type>void</span> FadeOutWSound<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="WhiteIn"></a>
+<span class=comment>
+// Fades the screen from white to normal over the specified duration.
+// This renders over everything.</span>
+<span class=type>void</span> WhiteIn<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="WhiteOut"></a>
+<span class=comment>
+// Fades the screen from normal to white over the specified duration.
+// This renders over everything.</span>
+<span class=type>void</span> WhiteOut<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="CrossFade"></a>
+<span class=comment>
+// fades from the image referenced by the global handle crossfade_img to
+// the present screen over the specified duration
+//
+// This renders over everything.</span>
+<span class=type>void</span> CrossFade<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="TransWipe"></a>
+<span class=comment>
+// Does a starwars-style wipe-transition from the image referenced by the
+// global handle crossfade_img to the current screen over the specified period
+//
+// This renders over everything.</span>
+<span class=type>void</span> TransWipe<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="BoxOut"></a>
+<span class=comment>
+// Goes from the current screen to a blackout by way of a shrinking black box
+// transition over the specified time.
+//
+// This renders over everything.</span>
+<span class=type>void</span> BoxOut<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="BoxIn"></a>
+<span class=comment>
+// Goes from a blackout to the current screen by way of a growing black box
+// transition over the specified time.
+//
+// This renders over everything.</span>
+<span class=type>void</span> BoxIn<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="CircleOut"></a>
+<span class=comment>
+// Goes from the current screen to a blackout by way of a shrinking black circle
+// transition over the specified time.
+//
+// This renders over everything.</span>
+<span class=type>void</span> CircleOut<span class=brace>(</span><span class=type>int</span> dur<span class=brace>)</span> 
+
+<a name="CircleIn"></a>
+<span class=comment>
+// Goes from a blackout to the current screen by way of a growing black circle
+// transition over the specified time.
+//
+// This renders over everything.</span>
+<span class=type>void</span> CircleIn<span class=brace>(</span><span class=type>int</span> dur<span class=brace>)</span> 
+
+<a name="FadeInImg"></a>
+<span class=comment>
+// Fades the specified image lucently in over the screen over a specified time.
+//
+// This renders over everything.</span>
+<span class=type>void</span> FadeInImg<span class=brace>(</span><span class=type>int</span> _dur, <span class=type>int</span> _img<span class=brace>)</span> 
+
+<a name="FadeOutImg"></a>
+<span class=comment>
+// Fades the specified image lucently out from over the screen over a specified
+// time.
+//
+// This renders over everything.</span>
+<span class=type>void</span> FadeOutImg<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="WhiteInImg"></a>
+<span class=type>void</span> WhiteInImg<span class=brace>(</span><span class=type>int</span> _dur, <span class=type>int</span> _img<span class=brace>)</span> 
+
+<a name="WhiteOutImg"></a>
+<span class=type>void</span> WhiteOutImg<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="CrossFadeImg"></a>
+<span class=type>void</span> CrossFadeImg<span class=brace>(</span><span class=type>int</span> _dur, <span class=type>int</span> _img<span class=brace>)</span> 
+
+<a name="Wait"></a>
+<span class=comment>
+// waits for the specified time, while continuing to update the screen
+// and process entities.
+//</span>
+<span class=type>void</span> Wait<span class=brace>(</span><span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="WaitOut"></a>
+<span class=comment>
+// Exactly like Wait<span class=brace>(</span><span class=brace>)</span>  except that the screen is superimposed with the
+// specified color.
+//
+// This renders over everything.</span>
+<span class=type>void</span> WaitOut<span class=brace>(</span><span class=type>int</span> _dur, <span class=type>int</span> color<span class=brace>)</span> 
+
+<a name="FadeFromColor"></a>
+<span class=comment>
+// This fades from a screen full of the specifed color to normal over the
+// specified time.
+//
+// This renders over everything.</span>
+<span class=type>void</span> FadeFromColor<span class=brace>(</span><span class=type>int</span> _color, <span class=type>int</span> _dur<span class=brace>)</span> 
+
+<a name="FadeToColor"></a>
+<span class=comment>
+// This fades from a normal screen to a screen full of the specifed color over
+// the specified time.
+//
+// This renders over everything.</span>
+<span class=type>void</span> FadeToColor<span class=brace>(</span><span class=type>int</span> _color, <span class=type>int</span> _dur<span class=brace>)</span> 
+
+</body>
+</html>

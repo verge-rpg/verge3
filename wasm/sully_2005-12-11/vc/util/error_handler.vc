@@ -1,0 +1,86 @@
+// error_handler.vc for Sully www.verge-rpg.com
+// Zip 28/08/2004
+//
+//
+//        ---------------------
+//        Error functions
+//        ---------------------
+//
+// Notifies by MessageBox() and/or Log() of problems when loading data from file
+// No comments, as the text to display should be pretty explanatory
+//
+
+// Used to set how errors are reported, 3 is recommend, 0 should not be used
+// 3 is MessageBox() and Log(), 2 is MessageBox(), 1 is Log(), 0 is neither
+#define ERROR_HANDLING 2
+
+// Used to set shortest valid length of description text, should be 1 at least
+#define MICRO_STRING 5
+
+ // Used to prevent while loops getting stuck if the EOF marker is forgotten in file loading
+#define COUNT_OUT 1000
+
+// Used as a count of the line number in currently open file for error reporting
+int global_linenum;
+
+
+void ErrorHandler(string error_content)
+{
+	if (ERROR_HANDLING & 1) Log(error_content);
+	if (ERROR_HANDLING & 2) MessageBox(error_content);
+}
+
+void ErrorCountOut(string erco_filename)
+{
+	ErrorHandler("FATAL ERROR: Count out on end of file: '"+erco_filename+"'. Ensure the file has the escape sequence and less than "+str(COUNT_OUT)+" lines of non-data.");
+}
+
+void ErrorDuplicateName(string erdn_location, string erdn_names)
+{
+	ErrorHandler("ERROR on line: "+str(global_linenum)+" duplicate name for '"+erdn_location+"' changed: '"+erdn_names+"'");
+}
+
+void ErrorDuplicateType(string erdt_location, string erdt_typestring)
+{
+	ErrorHandler("Possible error on line: "+str(global_linenum)+" for '"+erdt_location+"' type already defined: '"+erdt_typestring+"'");
+}
+
+void ErrorLoadDefine(string erld_location, string erld_valstring)
+{
+	ErrorHandler("Possible error on line: "+str(global_linenum)+" for: '"+erld_location+"' unrecognised define: '"+erld_valstring+"'");
+}
+
+void ErrorLoadFile(string erlf_filename)
+{
+	ErrorHandler("FATAL ERROR: Failed to load file: '"+erlf_filename+"'. Make sure the file exists, is named correctly and placed in the right directory.");
+}
+
+void ErrorLoadNumber(int erln_numconv, string erln_numstring)
+{
+	ErrorHandler("Possible error on line: "+str(global_linenum)+" converting string: '"+erln_numstring+"' to number: '"+str(erln_numconv)+"'");
+}
+
+void ErrorLoadOver(int erlo_maxentries, string erlo_filename)
+{
+	ErrorHandler("FATAL ERROR: Attempting to load from: '"+erlo_filename+"' with max: "+str(erlo_maxentries)+" entries. Either increase allowed number of entries, or trim file.");
+}
+
+void ErrorLoadString(string erls_failstring)
+{
+	ErrorHandler("Possible error on line: "+str(global_linenum)+" loading string: '"+erls_failstring+"' due to length under: "+str(MICRO_STRING));
+}
+
+void ErrorLoadType(string erlt_location, string erlt_typestring)
+{
+	ErrorHandler("ERROR on line: "+str(global_linenum)+" for '"+erlt_location+"' unrecognised type: '"+erlt_typestring+"'");
+}
+
+void ErrorMatchStrings(string erms_findstring, string erms_checkstring)
+{
+	ErrorHandler("Possible error on line: "+str(global_linenum)+" comparing similar strings: '"+erms_findstring+"' and: '"+erms_checkstring+"'");
+}
+
+void ErrorStupidNumber(int ersn_numconv, string ersn_numstring)
+{
+	ErrorHandler("ERROR on line: "+str(global_linenum)+" the number value: '"+str(ersn_numconv)+"' converted from: '"+ersn_numstring+"' has no meaning");
+}

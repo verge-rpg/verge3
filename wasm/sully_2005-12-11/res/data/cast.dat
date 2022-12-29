@@ -1,0 +1,26 @@
+// Cast.dat
+//
+// This datafile contains definitions of all of the 
+// Castmembers this game has.  These are characters that can be added to the party.
+//
+// This data gets parsed into the master_cast[] array, defined in data.vc
+// The maximum number of items is controlled by MAX_CAST, defined in data.vc
+//    please change this number of you wish to add more items than it currently 
+//    allows.
+//
+// blank lines and commented lines are ignored.  Anything else will be treated as an entry.
+//
+// Entries go as follows:
+//
+// class must reference entries by name in class.dat  
+// statfile must reference a valid datafile.  Relative paths only.
+//
+// name		class		chrfile		statfile	"description"
+
+Darin		Knight		Darin.chr	Darin.dat	"Unlikely hero, out for adventure.  Now with Headband!"
+Crystal		Priest		Crystal.chr	Crystal.dat	"Stereotypical kidnapping fodder!"
+Dexter		Wizard		Dexter.chr	Dexter.dat	"Neeeeeeeeeerd!"
+Sara		Engineer	Sara.chr	Sara.dat	"She has a tool!"
+Galfrey		Spearguy	Galfrey.chr	Galfrey.dat	"I like to poke things."
+
+END_OF_FILE

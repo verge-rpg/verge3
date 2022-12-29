@@ -1,0 +1,23 @@
+VERGE License
+===========================================================================
+
+1) 
+VERGE is provided for free use without warranty to anyone creating 
+products with it for non-profit use.
+
+It is suggested, but not required, that any freeware game or application 
+have a startup sequence proclaiming something along the lines of "made with
+VERGE 3" and providing a URL to the official verge homepage.  
+We won't force you, though.
+
+However, links and credits should be left in all of your readmes, 
+documentation, and credits. The existance of a Readme file of some kind is
+required, if only to proclaim that this was made using VERGE.
+
+These requirements may be waived with permission from the author.
+
+2) 
+For all other uses of VERGE (ie, anything commercial), please contact
+the author.
+
+(c)1997-2004 Ben Eirich <vecna@verge-rpg.com>

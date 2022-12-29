@@ -1,0 +1,79 @@
+// Just a master-include file...
+//
+//
+
+/*************************************************/
+/************* Non-library includes **************/
+/*************************************************/
+
+// A bunch of general-use functions that are awesome.
+// also, they're used by all three of the libraries, so 
+// where they go, so should this.
+#include "vc/util/general.vc" 			// Grue
+
+// Error-reporting and handling is good!
+#include "vc/util/error_handler.vc" 	// Zip
+
+// Oh yeah, a class to handle those sexy icons.
+#include "vc/util/icons.vc" 			// Grue
+
+#include "vc/util/camscroll.lib.vc"		// Kildorf
+
+//targetting!  Both menus and battle systems love targetting!
+#include "vc/util/targetting.vc"		// Grue
+
+// simple credits library
+#include "vc/util/credits.vc"			//Grue
+
+// simple animation library
+#include "vc/util/animation.vc"			//vecna
+
+
+#include "vc/sfx.vc"	// resources
+
+
+/*************************************************/
+/******************* libraries *******************/
+/*************************************************/
+
+//Loads Grue's RPG Subsystems library. (Party/Items/Equip/Skills/Characters)
+#include "vc/simpletype_rpg/data.vc" 		// Grue
+
+//loads Vec's Wonderous RPG-world Library! (Fades/vclayer/weather/special_Fx)
+#include "vc/v1_rpg/v1_rpg.vc" 			// Vec
+
+//loads Zip's Amazing V1-Compatibility Library (...menus!)
+#include "vc/v1_menu/menu_system.vc" // Zip
+
+//loads Grue's INEFFABLY COOL BATTLE SYSTEM
+#include "vc/v1_battle/battle.vc" // Grue
+
+
+///
+/// Just a stupid little library.  Needs the Speech-port defines at this time, so 
+/// it needs to come after v1_rpg's include
+///
+#include "vc/util/inet_talk.vc"			// Grue
+
+
+// THE MEGA-ULTRA FUNK EFFECT
+#include "vc/Special_effects/funk-o-rama.vc"	//RageCage
+#include "vc/Special_effects/blur.vc"			//RageCage
+#include "vc/Special_effects/bouncy.vc"			//Grue's crappy hack of the intro sequence
+
+//
+// These wrappers given to make a unified naming sceme for the 
+// resource-loading functions for clarity's sake to the user.
+//
+
+// the resource-loader for the Sully, Simple and Clean library
+void SSAC_LoadResources() {
+	SSAC_InitData(); //loads datafiles.
+	initInventories(); //cleans inventory
+}
+
+// the resource-loader for the Simple Menu library
+void SMENU_LoadResources() {
+	SMENU_InitMenus();
+}
+

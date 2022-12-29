@@ -1,0 +1,157 @@
+// inventory.vc
+//
+// Started by McGrue on 2004.08.26
+// Last updated by McGrue on 2004.08.26
+//
+// Internal Handling and Common Interface for the Sully Simple inventory system
+///////////////////////////////////////////////////////////////////////////////
+
+
+//MAX_ITEMS defined in data.vc
+///////////////////////////////////////////////////////////////////////////////
+#define MAX_SUPPLIES	25
+#define MAX_EQUIPMENT	50
+#define MAX_KEY_ITEMS	25
+
+//this is the most of a single item you can have.
+///////////////////////////////////////////////////////////////////////////////
+#define MAX_INV_SLOT	99
+
+
+struct InventorySlot {
+	int item_ref;	//the index of the item
+	int quant;		//the number of this item the party currently possesses.
+}
+
+
+InventorySlot supply_inventory[MAX_SUPPLIES];
+InventorySlot equipment_inventory[MAX_EQUIPMENT];
+InventorySlot key_item_inventory[MAX_KEY_ITEMS];
+
+
+// Accessors for how many unique items of each type 
+//   are currently in inventory.
+///////////////////////////////////////////////////////////////////////////////
+int SupplyCount()		{	return _supply_count; }
+int EquipmentCount()	{	return _equip_count; }
+int KeyItemCount()		{	return _key_count; }
+
+
+
+// Nukes the inventory.  Best only to use on newgame ;)
+///////////////////////////////////////////////////////////////////////////////
+void ClearInventory()
+
+
+
+// returns the quantity of a specific item you have.
+// errors and returns 0 if the name is not a valid item name.
+///////////////////////////////////////////////////////////////////////////////
+int ItemCount( string name )
+
+
+
+// Takes a supply inventory index and returns a master_items index
+// Errors on illegal bounds and returns -1
+///////////////////////////////////////////////////////////////////////////////
+int GetSupply( int idx ) 
+
+
+
+// Takes a supply inventory index and returns a master_items index
+// Errors on illegal bounds and returns -1
+///////////////////////////////////////////////////////////////////////////////
+int GetEquipment( int idx ) 
+
+
+
+// Takes a supply inventory index and returns a master_items index
+// Errors on illegal bounds and returns -1
+///////////////////////////////////////////////////////////////////////////////
+int GetKeyItem( int idx ) 
+
+
+
+// Takes a name of an Item and a number.
+// If the name is a valid item, adds the number to your inventory.
+// Otherwise, errors.
+///////////////////////////////////////////////////////////////////////////////
+void GiveItem( string name, int num )
+
+
+// Takes a master_items index and a number.
+// If the index is valid, adds the number to your inventory.
+// Otherwise, errors.
+///////////////////////////////////////////////////////////////////////////////
+void GiveItemI( int idx, int num ) 
+
+
+//
+// Takes a string name of an item.  
+// Returns true if that item is in inventory.  returns false if not.
+// Errors if the item isn't an item at all.
+///////////////////////////////////////////////////////////////////////////////
+int HasItem( String name ) 
+
+
+
+//
+// Takes a master_items idx
+// Returns true if there is at least one of that item in your inventory, false if not
+// Errors if idx is invalid.
+///////////////////////////////////////////////////////////////////////////////
+int HasItemI( int idx ) 
+
+
+
+
+// Takes a master_items name
+// Returns the appropriate inventory index, if it's in inventory.   -1 if not.
+// Errors if name is invalid.
+///////////////////////////////////////////////////////////////////////////////
+int InvIdx( string name ) 
+
+
+//
+// Takes a master_items idx
+// Returns the appropriate inventory index, if it's in inventory.   -1 if not.
+// Errors if idx is invalid.
+///////////////////////////////////////////////////////////////////////////////
+int InvIdxI( int idx ) 
+
+
+
+// Like GiveItem, but removes.
+// num must be a positive non-zero integer.  
+//   If you want positive and negative functionality, use GiveItem.
+//   This is just a semantic wrapper, dammit!
+//
+//note, could be done 'better'.  Very tired now.  -Grue.
+///////////////////////////////////////////////////////////////////////////////
+void TakeItem( string name, int num ) 
+
+
+
+// Like GiveItemI, but removes.
+// num must be a positive non-zero integer.  
+//   If you want positive and negative functionality, use GiveItem.
+//   This is just a semantic wrapper, dammit!
+//
+//note, could be done 'better'.  Very tired now.  -Grue.
+///////////////////////////////////////////////////////////////////////////////
+void TakeItemI( int idx, int num ) 
+
+
+// Destroys all of this item in inventory.  Simple wrapper around TakeItem.
+//
+// name must be a valid item name and must have at least one in inventory.
+///////////////////////////////////////////////////////////////////////////////
+void DestroyItem( string name )
+
+
+// Lists out the items and quantities of each inventory
+//
+///////////////////////////////////////////////////////////////////////////////
+void ReportSupplyInventory() 
+void ReportEquipmentInventory() 
+void ReportKeyInventory() 

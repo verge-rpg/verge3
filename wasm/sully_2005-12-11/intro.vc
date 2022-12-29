@@ -1,0 +1,491 @@
+//
+//
+//
+
+void start()
+{
+	MenuOff();
+	cameratracking = 0;
+	xwin = 10*16;
+	
+	int darin	= EntitySpawn(29, 12, "res/chrs/darin.chr");
+	int crystal	= EntitySpawn(10, 12, "res/chrs/crystal.chr");
+	
+	entity.face[darin] 		= FACE_LEFT;
+	entity.face[crystal] 	= FACE_RIGHT;
+	
+	V1_StartDualMode( "2,R,1,E,R" );
+	HookRetrace( "IntroRender" ); //hookrender the 
+	
+	arTemp[0] = 0;
+	arTemp[1] = 0;
+	arTemp[2] = 0;
+	arTemp[3] = 0;
+	arTemp[3] = 4;
+	
+	arTemp[0] = LoadImage( "res/images/story_fx/intro/curtain.gif" );
+	arTemp[1] = LoadImage( "res/images/story_fx/intro/title-1.gif" );
+	arTemp[2] = LoadImage( "res/images/story_fx/intro/background-2.gif" );
+	arTemp[3] =	LoadImage( "res/images/story_fx/intro/castles.gif" );
+	arTemp[4] = LoadImage( "res/images/story_fx/intro/title-2.pcx" );
+
+	int acc = 99;
+	int vel = 98;
+	int posy_100 = 97;
+	int last_time = 96;	
+	
+	arTemp[acc] = 100;
+	arTemp[posy_100] = (0-7700);
+	arTemp[vel] = 1;
+	arTemp[last_time] = 0;
+	
+	
+	VCPutIMG( "res/images/story_fx/intro/background-2.gif",0,0 );
+	VCPutIMG( "res/images/story_fx/intro/castles.gif",0,113 );
+	
+	VCLayerTintScreen(RGB(0,0,0), 0);
+	
+	DrawVC2(0,0,arTemp[0]);
+	
+	FadeIn( 100 );
+
+	wait(75);
+	
+	entity.speed[darin] = 50;
+	EntityMove(darin, "W20 L8 W10 R0 W10 L0 W10 R0 W10 L0");
+	
+	
+	timer = 0;
+	while( timer < ImageHeight(arTemp[0]) )
+	{
+		Render();
+		DrawVC2(0,0-timer,arTemp[0]);
+		ShowPage();
+	}
+	
+
+	RectFill( 0,0, ImageWidth(v1_vclayer2), ImageHeight(v1_vclayer2), transcolor, v1_vclayer2 );
+	
+	curmap.rstring = "2,R,1,E,R";
+	
+	//runny and jumpy!
+	int darin_hit;
+	timer = 0;
+	while( timer < 160 )
+	{
+		Render();
+		
+		Entity.x[crystal] = (10*16) + (_iCry[timer].x_100/100);
+		Entity.y[crystal] = (12*16) + (_iCry[timer].y_100/100);
+		Entity.SpecFrame[crystal] = _iCry[timer].frame;
+		
+		if( timer > 94 && timer < 110 )
+		{
+			EntityMove(darin, "");
+			
+			darin_hit = 1;
+			
+			if( Entity.Face[darin]  == FACE_LEFT )
+				Entity.SpecFrame[darin] = 30;
+			else
+				Entity.SpecFrame[darin] = 31;
+		}
+		
+		if( timer >= 130 )
+		{
+			doDroppy();
+		}
+			
+		ShowPage();
+	}
+	
+	Entity.speed[Crystal] = 80;
+	Entity.x[crystal] = (28*16);
+	Entity.y[crystal] = (12*16);
+	EntityMove(Crystal, "R1 W20 L0 W30 L2 W40 R4");
+	EntityMove(Darin, "Z0");
+	//EntityMove(Crystal, "");
+	
+	while( arTemp[vel] )
+	{
+		Render();
+		
+		doDroppy();
+		
+		ShowPage();
+	}
+	
+	timer=0;
+	while( timer < 100 )
+	{
+		Render();
+		VCLayerTintScreen(RGB(0,0,0), timer);
+		ShowPage();
+	}
+	
+	VCLayerTintOff();
+	TBlit( 74, (arTemp[posy_100]/100), arTemp[1], v1_vclayer );
+
+	int stan		= EntitySpawn(0, 0, "res/chrs/stan.chr");
+	int lil_stan	= EntitySpawn(0, 0, "res/chrs/lil_stan.chr");
+	int sully		= EntitySpawn(0, 0, "res/chrs/sully.chr");
+	
+	EntityMove( darin, "R0 W15 Z32 W15" );
+	
+	WaitForEntity( darin );
+	
+	entity.x[stan]		= 16*26;
+	entity.y[stan]		= 16*(0-1);
+	entity.speed[stan]	= 150;
+	EntityMove( stan, "D13" );
+	
+	entity.x[sully]		=16*13;
+	entity.y[sully]		=16*(0-1);
+	entity.speed[sully]	= 225;
+	EntityMove( sully, "D14" );
+	
+	WaitForEntity( sully );
+	entity.y[sully] = entity.y[sully]-9;
+	
+	WaitForEntity( stan );		
+	
+	entity.SpecFrame[darin] = 0;
+	entity.face[darin] 		= FACE_RIGHT;
+	entity.speed[darin] 	= 250;
+	
+	EntityMove( darin, "W15 Z15 U2 D2 U2 D2 Z0" );
+	WaitForEntity(darin);
+
+	entity.speed[darin] 	= 150;
+	
+	EntityMove( darin, "L10 W15 R0 W20 R1" );
+	WaitForEntity(darin);
+	
+	EntityMove( sully, "R13" );
+	EntityMove( darin, "R2" );
+	WaitForEntity(sully);
+	
+
+	EntityMove( sully, "R13" );
+	switchAndWait( stan, lil_stan, 8 );
+	switchAndWait( stan, lil_stan, 8 );
+	switchAndWait( stan, lil_stan, 8 );
+	switchAndWait( stan, lil_stan, 8 );
+	switchAndWait( stan, lil_stan, 8 );
+	
+	EntityMove( lil_stan, "W10 L0 W10" );
+	WaitForEntity( lil_stan );
+	
+
+	entity.speed[lil_stan]	= 250;
+	EntityMove( lil_stan, "Z6 U2 D2 U2 D2 U2 D2 Z0" );
+	WaitForEntity( lil_stan );
+	entity.speed[lil_stan]	= 200;
+	EntityMove( lil_stan, "L6" );
+	WaitForEntity( lil_stan );
+	
+
+	DrawVC2( 0,240-32-95,arTemp[3] );
+	
+	EntityMove( lil_stan, 	"L15" );
+	EntityMove( darin, 		"L15" );
+	
+	WaitForEntity( lil_stan );
+	
+	TBlit(74, (arTemp[posy_100]/100), arTemp[1], v1_vclayer);
+	
+	timer = 0;
+	while( timer < 100 )
+	{
+		Render();
+		
+		SetLucent( 100-timer );
+		TBlit(74, 17, arTemp[4], screen);
+		SetLucent( 0 );
+		
+		ShowPage();
+	}
+	
+	TBlit(74, 17, arTemp[4], v1_vclayer);
+	
+	Wait( 100 );
+	
+	DoMenu();
+}
+
+
+void IntroRender()
+{
+	V1RPG_RenderFunc_DUALMODE();
+
+	if( b3 )
+	{
+		DoMenu();
+	}
+}
+
+// This takes care of drawing the entire screen properly
+// if the intro was cut short or watched through to the end, 
+// and also handles the main menu options.
+void DoMenu()
+{
+	// Cleanup everything that could've been changed during the intro....
+	//
+	V1_StopDualMode();
+	
+	curmap.rstring = "2,R,1,E";	
+	HookRetrace( "V1RPG_RenderFunc" );
+	
+	VCLayerTintOff();	//the tint could've been on during the intro, so turn it off.
+	//SetEntitiesPaused(1);
+	
+	int i;	//Let's hide all of the entities.
+	for( i=0; i<entities; i++ )
+	{
+		entity.visible[i] = 0;
+	}
+	
+	cleanupIntro();
+	
+	// Wipe the vc layer.
+	//
+	ClearVCLayer();
+	
+	// Reconstruct the vc layer as it should've been, plus add the menu.
+	//
+	VCPutIMG( "res/images/story_fx/intro/background-2.gif", 0, 0 );
+	VCPutIMG( "res/images/story_fx/intro/castles.gif",0,113 );
+	VCPutIMG( "res/images/story_fx/intro/title-1.gif",74, 44 );
+	VCPutIMG( "res/images/story_fx/intro/title-2.pcx",74, 17 );
+	VCPutIMG( "res/images/story_fx/intro/menu.pcx", 125, 160 );
+	
+	int ptr = LoadImage( "res/images/story_fx/intro/pointer.pcx" );
+	
+	int done, arrow;
+	
+	Menu1ArrowSetSounds( "MenuHappyBeep" );
+		
+	while( !MenuConfirm() )
+	{
+		Render();
+		
+		arrow = MenuControlArrows(arrow, 4);	
+		
+		TBlit( 118, 161+(arrow*9), ptr, screen );
+		
+		ShowPage();
+	}
+	
+
+	Menu1ArrowSetSounds( "" );
+	
+	if( arrow == 3 ) exit( "Thanks for trying out VERGE 3!"+chr(10)+chr(10)+"Visit us at http://www.verge-rpg.com/" );
+	if( arrow == 2 ) credits();
+	if( arrow == 1 ) newgame();
+	if( arrow == 0 ) {
+		Menu1ArrowSetSounds( "MenuHappyBeep" );
+		LoadGame();
+		Menu1ArrowSetSounds( "" );
+	}
+}
+
+void LoadGame()
+{
+	menu_idx = MenuGet("Save");
+	menu_sub = MenuInitSave();
+	menu_item = 0;	
+	menu_option = 6; 
+	
+	_title_menu = 1;
+	
+	_title_menu_load_done = 0;
+	
+	while( !_title_menu_load_done )
+	{
+		MenuBackGroundDraw(); //draw universal things
+		CallFunction( "MenuDrawSave" );
+
+		ShowPage();
+		CallFunction( "MenuControlSave" );
+	}
+	
+	_title_menu = 0;
+	DoMenu();
+}
+
+
+// helper function: draws an image to vc layer 2
+void DrawVC2( int x, int y, int im )
+{
+	RectFill( 0,0, ImageWidth(v1_vclayer2), ImageHeight(v1_vclayer2), transcolor, v1_vclayer2 );
+	Blit(x, y, im, v1_vclayer2);
+}
+
+// a helper function to clean up the temporary images.
+void cleanupIntro()
+{
+	int i;
+	
+	for( i=0; i<5; i++ )
+	{
+		if( arTemp[i] )
+		{
+			freeImage( arTemp[i] );	
+			arTemp[i] = 0;	
+		}
+	}
+}
+
+
+
+// This function starts it all!  Oh boy!
+//
+//
+void newgame() {
+
+	FadeOut(30);
+
+	int i;
+	
+	//reset everything! :o
+	ClearFlags();
+	ClearInventory();
+	ClearCast();
+	
+	ResetPreferences();
+	
+	//kill the party if anyone's in there.
+	curpartysize = 0;
+	
+	//let's give everyone their initial equipment....
+	ForceEquip( "Darin", "Dagger", SLOT_RHAND );
+	ForceEquip( "Darin", "Headband", SLOT_ACC1 );
+	ForceEquip( "Darin", "Garment", SLOT_BODY );
+
+	ForceEquip( "Sara", "Brass_Pipe", SLOT_RHAND );
+	ForceEquip( "Sara", "Cap", SLOT_ACC1 );
+	ForceEquip( "Sara", "Bracer", SLOT_ACC2 );
+	ForceEquip( "Sara", "Garment", SLOT_BODY );
+
+	ForceEquip( "Dexter", "Dagger",  SLOT_RHAND );
+	ForceEquip( "Dexter", "Headband", SLOT_ACC1 );
+	ForceEquip( "Dexter", "Garment",  SLOT_BODY );
+
+	ForceEquip( "Crystal", "Staff",  SLOT_RHAND );
+	ForceEquip( "Crystal", "Garment", SLOT_BODY );
+
+	ForceEquip("Galfrey","Spear",SLOT_RHAND);
+	ForceEquip("Galfrey","Gold_Helmet",SLOT_ACC1);
+	ForceEquip("Galfrey","Leather_Vest",SLOT_BODY);
+	ForceEquip("Galfrey","Buckler",SLOT_ACC2);
+
+
+	//we need to have a party member to start off with, or else the partyhandling 
+	// system cries.  Let's make it Darin! :D
+	JoinParty( "Darin", 1 );
+	
+	FillVCLayer( RGB(0,0,0) );
+
+	// Let's put up a pretty picture and then scroll some pretty 
+	// text in front of it!
+	VCPutIMG("res/images/cells/island.gif",80,50);
+	
+	curmap.Rstring = "R";
+	
+	resetCredits();
+
+	int y;	
+
+	addIntroLine( y,   "Our world is but one in the universe." );	y+=25;
+	addIntroLine( y,  "The imagination is vast and limitless." );	y+=25;
+	addIntroLine( y,  "An astral force known as VERGE allows" );	y+=25;
+	addIntroLine( y,  "us to shape our dreams into reality." );		y+=25;
+	addIntroLine( y, "Darin's is but one small world in the" );		y+=25;
+	addIntroLine( y, "endless reaches of space. Darin sailed" );	y+=25;
+	addIntroLine( y, "from his home in search of a new world," );	y+=25;
+	addIntroLine( y, "but alas, he found each of the worlds" );		y+=25;
+	addIntroLine( y, "still undergoing construction. Sad, yet" );	y+=25;
+	addIntroLine( y, "hopeful, Darin returns to spend time" );		y+=25;
+	addIntroLine( y, "in peace with his eternal soulmate..." );		y+=240;
+	addIntroLine( y, "" );
+
+	FadeIn(30);
+	
+	doSimpleCredits( menu_font[0] );
+
+	FadeOut(30);
+	ClearVCLayer();
+
+	VCCenterText(82,  "- VERGE -" );
+	VCCenterText(110, "The Sully Chronicles" );
+
+	FadeIn( 120 );
+	Wait( 300 );
+	FadeOut( 120 );
+	ClearVCLayer();
+	
+
+	MenuOn();
+	cameratracking = 1;
+
+	v1_MapSwitch( "Island.map",3,5, TBLACK );
+}
+
+
+
+
+void switchAndWait( int e1, int e2, int delay )
+{
+	int tx, ty;
+	
+	tx = entity.x[e1];
+	ty = entity.y[e1];
+	
+	entity.x[e1] = entity.x[e2];
+	entity.y[e1] = entity.y[e2];
+	
+	entity.x[e2] = tx;
+	entity.y[e2] = ty;
+	
+	Wait(delay);
+}
+
+
+
+int doDroppy()
+{
+	int acc = 99;
+	int vel = 98;
+	int posy_100 = 97;
+	int last_time = 96;
+	int bouncecount = 95;
+	
+	if( systemtime > (arTemp[last_time]+2) )
+	{
+		arTemp[last_time] = systemtime;
+		
+		arTemp[posy_100] += arTemp[vel];
+		arTemp[vel] += arTemp[acc];
+		
+		if( arTemp[posy_100] > 4400 )
+		{
+			arTemp[posy_100] = 4400;
+			
+			if( arTemp[bouncecount] < 3 )
+			{
+			
+				arTemp[vel] = arTemp[vel] /2;
+				arTemp[vel] = arTemp[vel] * (0-1);
+				arTemp[bouncecount]++;
+			}
+			else
+			{
+				arTemp[vel] = 0;
+			}
+		}
+	}
+	
+	DrawVC2( 74, (arTemp[posy_100]/100), arTemp[1] );
+	
+	return arTemp[vel];
+}

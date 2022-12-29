@@ -1,0 +1,118 @@
+/**************************** public resources ****************************/
+
+int sfx_open 	= LoadSound("res/sfx/open03.wav");
+int sfx_warp 	= LoadSound("res/sfx/shadow.wav");
+int sfx_switch	= LoadSound("res/sfx/boxopen.wav");
+int sfx_save 	= LoadSound("res/sfx/ding.wav");
+int sfx_magic1	= LoadSound("res/sfx/magic05.mp3");
+int sfx_hit		= LoadSound("res/sfx/HIT01.WAV");
+int sfx_well	= LoadSound("res/sfx/MAGIC.WAV");
+int sfx_magic2	= LoadSound("res/sfx/MAGIC02.WAV");
+int sfx_magic4	= LoadSound("res/sfx/MAGIC04.WAV");
+int sfx_bling	= LoadSound("res/sfx/BUYSELL.WAV");
+int sfx_bomb	= LoadSound("res/sfx/BOMB.WAV");
+int sfx_crikts	= LoadSound("res/sfx/CRICKETS.WAV");
+int sfx_shing	= LoadSound("res/sfx/SHING.WAV");
+int sfx_quake	= LoadSound("res/sfx/QUAKE.WAV");
+int sfx_xplode	= LoadSound("res/sfx/EXPLOSION.WAV");
+int sfx_fanfare	= LoadSound("res/sfx/SFANFARE.mp3");
+int sfx_splash	= LoadSound("res/sfx/WATER02.WAV");
+int sfx_dblclck	= LoadSound("res/sfx/CLICK01.WAV");
+int sfx_crash	= LoadSound("res/sfx/crash05.WAV");
+int sfx_twinkle	= LoadSound("res/sfx/twinkle.WAV");
+int sfx_grandfn	= LoadSound("res/sfx/BIGFNFR.mp3");
+int sfx_fall	= LoadSound("res/sfx/fall02.wav");
+
+/**************************** functions ****************************/
+
+//
+// In-game sound effects.
+// all play at the global sfx_volume volume.
+
+void SoundChaChing() {
+	PlaySound( sfx_bling, sfx_volume );
+}
+
+void SoundOpenBox() {
+	PlaySound( sfx_open, sfx_volume );
+}
+
+void SoundWarpZone() {
+	PlaySound( sfx_warp, sfx_volume );
+}
+
+void SoundSwitch() {
+	PlaySound( sfx_switch, sfx_volume );
+}
+
+void SoundSavePoint() {
+	PlaySound( sfx_save, sfx_volume );
+}
+
+void SoundMagic1() {
+	PlaySound( sfx_magic1, sfx_volume );
+}
+
+void SoundMagic2() {
+	PlaySound( sfx_magic2, sfx_volume );
+}
+
+void SoundHit() {
+	PlaySound( sfx_hit, sfx_volume );
+}
+
+void SoundHealingWell() {
+	PlaySound( sfx_well, sfx_volume );
+}
+
+void SoundBomb() {
+	PlaySound( sfx_bomb, sfx_volume );
+}
+
+void SoundChirpChirp() {
+	PlaySound( sfx_crikts, sfx_volume );
+}
+
+void SoundIceShing() {
+	PlaySound( sfx_magic4, sfx_volume );
+}
+
+void SoundShing() {
+	PlaySound( sfx_shing, sfx_volume );
+}
+
+void SoundFanfare() {
+	PlaySound( sfx_fanfare, sfx_volume );
+}
+
+void SoundGrandFanfare() {
+	PlaySound( sfx_grandfn, sfx_volume );
+}
+
+void SoundQuake() {
+	PlaySound( sfx_quake, sfx_volume );
+}
+
+void SoundExplosion() {
+	PlaySound( sfx_xplode, sfx_volume );
+}
+
+void SoundSplash() {
+	PlaySound( sfx_splash, sfx_volume );
+}
+
+void SoundDoubleClick() {
+	PlaySound( sfx_dblclck, sfx_volume );
+}
+
+void SoundCrash() {
+	PlaySound( sfx_crash, sfx_volume );
+}
+
+void SoundTwinkle() {
+	PlaySound( sfx_twinkle, sfx_volume );
+}
+
+void SoundFall() {
+	PlaySound( sfx_fall, sfx_volume );
+}

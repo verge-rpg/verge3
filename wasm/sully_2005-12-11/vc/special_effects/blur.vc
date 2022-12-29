@@ -1,0 +1,141 @@
+/****************************************************
+*****Blur Library v1.5 by Tristan Michael(ragecage)**********
+*************completed: sept 1, 2004********************
+****************************************************/
+
+#define BLUR_ITERATIONS 6
+#define BLUR_DLY 5
+
+int blur_buffer[BLUR_ITERATIONS];
+int blur_stamp;
+
+void loadBlurBuffer(){
+	int i;
+	for(i=0;i<BLUR_ITERATIONS;i++){
+		blur_buffer[i]=newImage(windowGetWidth(screen),windowGetHeight(screen));
+	}
+}
+
+void freeBlurBuffer(){
+	int i;
+	for(i=0;i<BLUR_ITERATIONS;i++){
+		freeImage(blur_buffer[i]);
+	}
+}
+
+void renderMotionBlur(){
+	int i;
+//screen buffering
+	if(timer>blur_stamp+BLUR_DLY){
+		blur_stamp=timer;     
+		for(i=1;i<BLUR_ITERATIONS;i++){
+			blit(0,0,blur_buffer[i],blur_buffer[i-1]);
+		}
+		blit(0,0,screen,blur_buffer[i-1]);
+	}
+//blur blitting
+	for(i=0;i<BLUR_ITERATIONS-1;i++){
+		setLucent(100/(BLUR_ITERATIONS-i));
+		blit(0,0,blur_buffer[i],screen);
+	}
+	setLucent(0);
+}
+
+void focalBlur(int iterations, int distance, int src){
+	int i;
+	int tempImage=newImage(imageWidth(src),imageHeight(src));
+	blit(0,0,src,tempImage);
+	
+	if(iterations >= distance) iterations=distance-1;
+	
+	for(i=1;i<=iterations;i++){  
+		setLucent(100/iterations *i);
+		TScaleBlit(0-(distance/iterations *i /2), 
+			0-(distance/iterations*i /2), 
+			imageWidth(tempImage)+(distance/iterations*i), 
+			imageHeight(tempImage)+(distance/iterations*i), 
+			tempImage, src);
+	}
+	setLucent(0);
+	freeImage(tempImage);
+}
+
+void xyBlur(int x, int y, int iterations, int distance, int src){
+	int i;
+
+//check for offscreen extremes
+	if(x > imageWidth(screen)) x=imageHeight(screen);
+	if(y > imageHeight(screen)) y=imageHeight(screen);
+	if(x < 0) x=0;
+	if(y < 0) y=0;
+
+//grab focus region
+	int tempImage=newImage(imageWidth(screen)*2, imageHeight(screen)*2);
+	grabRegion(x-(imageWidth(tempImage)/2), y-(imageHeight(tempImage)/2), x+(imageWidth(tempImage)/2), y+(imageHeight(tempImage)/2),0,0,src,tempimage);
+	
+//Make sure that the iterations does not exceed the distance
+	if(iterations >= distance) iterations=distance-1;
+
+//streach focus region to create blur
+	for(i=1;i<=iterations;i++){  
+		setLucent(100/iterations *i);
+		ScaleBlit(		x - (imageWidth(tempImage)/2)-(distance/iterations *i /2), 
+					y - (imageheight(tempImage)/2)-(distance/iterations *i /2), 
+					imageWidth(tempImage)+(distance/iterations*i), 
+					imageHeight(tempImage)+(distance/iterations*i), 
+					tempImage, src);
+	}
+	
+//end of function
+	setLucent(0);
+	freeImage(tempImage);
+}
+
+void radialBlur(int iterations, int distance, int src){
+	int i;
+	int tempImage=newImage(imageWidth(src),imageHeight(src));
+	blit(0,0,src,tempImage);
+	
+	for(i=0;i<iterations;i++){
+		setLucent(100/iterations *i);
+		RotScale(imageWidth(src)/2, imageHeight(src)/2, distance/(iterations-i), 1000, tempImage, src);
+	}
+	setLucent(0);
+	freeImage(tempImage);
+}
+
+void crossBlur(int iterations, int distance, int src){
+	int i;
+	int tempImage=newImage(imageWidth(src),imageHeight(src));
+	blit(0,0,src,tempImage);
+	
+	if(iterations >= distance) iterations=distance-1;
+	
+	for(i=1;i<=iterations;i++){  
+		setLucent(100/iterations *i);
+		Blit(0-(distance/iterations *i), 0-(distance/iterations *i), tempImage, src);
+	}
+	setLucent(0);
+	freeImage(tempImage);
+}
+
+void imageBlur(int iterations, int distance, int src){
+	int i;
+	int tempImage=newImage(imageWidth(src),imageHeight(src));
+	blit(0,0,src,tempImage);
+	
+	if(iterations >= distance) iterations=distance-1;
+	
+	for(i=1;i<=iterations;i++){  
+		setLucent(100/iterations *i);
+		Blit(0-(distance/iterations *i), 0, tempImage, src);
+	}
+	setLucent(0);
+	blit(0,0,src,tempImage);
+	for(i=1;i<=iterations;i++){  
+		setLucent(100/iterations *i);
+		Blit(0, 0-(distance/iterations *i), tempImage, src);
+	}
+	setLucent(0);
+	freeImage(tempImage);
+}
