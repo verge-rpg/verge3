@@ -129,6 +129,7 @@
         <footer id="build-date"></footer>
     </div>
 
+    <script type="text/javascript" src="jszip.min.js"></script>
     <script>
         (function() {
             const screen_size = [320, 240];
@@ -202,16 +203,112 @@
                 }
             };
 
+            function getDirectoryName(path) {
+                const pieces = path.split('/');
+                return pieces.length > 1
+                    ? pieces.slice(0, pieces.length - 1).join('/')
+                    : '.';
+            }
+
+            function getBaseName(path) {
+                const pieces = path.split('/');
+                return pieces.length > 0 ? pieces[pieces.length - 1] : '';
+            } 
+
+            function stripExtension(path) {
+                const pieces = path.split('.');
+                return pieces.length > 1 ? pieces.slice(0, pieces.length - 1).join('.') : path;
+            }
+
+            function getExtension(path) {
+                const pieces = path.split('.');
+                return pieces.length > 1 ? pieces[pieces.length - 1] : '';
+            }            
+
             const u = new URLSearchParams(window.location.search);
             let game = u.get('game') || 'cuddles';
+            let gameFolderName = stripExtension(game);
 
-            console.log(canvas);
+            console.log(canvas, game, gameFolderName);
 
             window.Module = {
                 print: msg => console.log(msg),
                 printErr: msg => console.log(msg),
                 canvas: canvas,
-                arguments: ['-C:redefinelibfuncs=1', '-C:ignoreduplicatefuncs=1', '-C:ignoreduplicatelocals=1', '-C:scalefull=1', '-r:' + game + '/'],
+                arguments: ['-C:redefinelibfuncs=1', '-C:ignoreduplicatefuncs=1', '-C:ignoreduplicatelocals=1', '-C:scalefull=1', '-r:' + gameFolderName + '/'],
+                preRun: function() {
+                    window.Module.addRunDependency('vc_source');
+
+                    let fetchedSources = [];
+                    let filesToFetch = 0;
+
+                    let onComplete = () => {
+                        //console.log('passing sources to emscripten ', fetchedSources);
+
+                        let sources = fetchedSources;
+                        let dirLevelsToCreate = [];
+
+                        for (const source of sources) {
+                            const path = gameFolderName + '/' + source.path;
+                            const pieces = getDirectoryName(path).split('/');
+                            while (dirLevelsToCreate.length < pieces.length) {
+                                dirLevelsToCreate.push({});
+                            }
+
+                            for (let level = 0; level < pieces.length; level++) {
+                                const subpath = pieces.slice(0, level + 1).join('/');
+                                dirLevelsToCreate[level][subpath] = subpath;
+                            }
+                        }
+
+                        for (const dirsToCreate of dirLevelsToCreate) {
+                            for (const path in dirsToCreate) {
+                                window.Module.FS_createPath('.', path, true, true);
+                            }
+                        }
+
+                        for (const source of sources) {
+                            const path = gameFolderName + '/' + source.path;
+                            const dirname = getDirectoryName(path);
+                            const filename = getBaseName(path);
+                            window.Module.FS_createDataFile(dirname, filename, source.data, true, true);
+                        }
+
+                        window.Module.removeRunDependency('vc_source');
+                    };
+
+                    if (game.endsWith('.zip')) {
+                        fetch(game)
+                            .then(response => response.arrayBuffer())
+                            .then(buffer => {
+                                JSZip.loadAsync(buffer).then(zip => {
+                                    zip.forEach(function (relativePath, file) {
+                                        if (file.dir) {
+                                            return;
+                                        }
+
+                                        filesToFetch++;
+                                        //console.log('fetching ' + file.name, filesToFetch);
+                                        file.async('uint8array').then(data => {
+                                            //console.log('got ' + file.name, filesToFetch);
+
+                                            fetchedSources.push({
+                                                path: file.name.replace(/\\/g, "/").toLowerCase(),
+                                                data: data
+                                            });
+
+                                            filesToFetch--;
+                                            if (filesToFetch == 0) {
+                                                onComplete();
+                                            }
+                                        });
+                                    });
+                                });
+                            });          
+                    } else {
+                        onComplete();
+                    }         
+                }
             };
         </script>
         <script async type="text/javascript" src="verge3.out.js"></script>

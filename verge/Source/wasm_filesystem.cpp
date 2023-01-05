@@ -9,16 +9,33 @@
 
 std::string wasm_gameRoot;
 
-EM_JS(void, wasm_initFileSystem, (const char* c), {
+EM_JS(void, wasm_initFileSystem, (const char* s), {
+    let gameRoot = UTF8ToString(s);
+    if (gameRoot.endsWith('/'))
+        gameRoot = gameRoot.substr(0, gameRoot.length - 1);
 
-    let sgr = UTF8ToString(c);
-    if (sgr.endsWith('/'))
-        sgr = sgr.substr(0, sgr.length - 1);
+    //console.log('wasm_initFileSystem: creating "persist"...');
     FS.mkdir("persist");
-    FS.mkdir(sgr);
-    FS.mkdir("persist/" + sgr);
+
+    //console.log('wasm_initFileSystem: searching for "' + gameRoot + '"...');
+    let gameRootNode;
+    try {
+        let lookup = FS.lookupPath(gameRoot);
+        gameRootNode = lookup.node;
+    } catch (e) {}
+    
+    //console.log('wasm_initFileSystem: lookup result:', gameRootNode);
+
+    if (!gameRootNode) {
+        //console.log('wasm_initFileSystem: creating "' + gameRoot + '"...');
+        FS.mkdir(gameRoot);
+    }
+
+    //console.log('wasm_initFileSystem: creating "persist/' + gameRoot + '"...');
+    FS.mkdir("persist/" + gameRoot);
+
     // Then mount with IDBFS type
-    FS.mount(IDBFS, {}, "persist/" + sgr);
+    FS.mount(IDBFS, {}, "persist/" + gameRoot);
 
     // Then sync
     window.verge.syncFileSystemRequested = true;
