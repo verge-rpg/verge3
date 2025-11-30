@@ -57,6 +57,7 @@ def EmscriptenEnvironment():
         '-s', 'ALLOW_MEMORY_GROWTH=1',
         '-s', 'LLD_REPORT_UNDEFINED',
         '-s', 'NO_DISABLE_EXCEPTION_CATCHING',
+        '-s', 'STACK_SIZE=5MB',
     ]
 
     cflags = ['-fcolor-diagnostics', '-fexceptions']
